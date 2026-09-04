@@ -1,0 +1,14 @@
+{
+  "rulesetVersion": "mvp-v1",
+  "rules": [
+    {
+      "ruleId": "RULE-5G-NONCRIT-DED-001",
+      "generation": 5,
+      "benefitClass": "NON_COVERED",
+      "severityClass": "NON_SEVERE",
+      "requiredCoverage": "SPECIAL_RIDER_2",
+      "selfPaymentRate": 0.5,
+      "description": "5세대 비급여 특약2 가입 및 비중증 비급여 치료의 자기부담률 50%"
+    }
+  ]
+}
