@@ -1,5 +1,10 @@
 import { create } from "zustand";
 
+import {
+  createJSONStorage,
+  persist,
+} from "zustand/middleware";
+
 import type { InsuranceContract } from "../domain/insurance";
 import type { MedicalUsage } from "../domain/medical";
 
@@ -12,7 +17,9 @@ interface AnalysisState {
 
   usages: MedicalUsage[];
 
-  setContract: (contract: InsuranceContract) => void;
+  setContract: (
+    contract: InsuranceContract
+  ) => void;
 
   setTarget5GMonthlyPremium: (
     monthlyPremium: number
@@ -22,35 +29,80 @@ interface AnalysisState {
     coverages: string[]
   ) => void;
 
-  setUsages: (usages: MedicalUsage[]) => void;
+  setUsages: (
+    usages: MedicalUsage[]
+  ) => void;
+
+  resetAnalysis: () => void;
 }
 
-export const useAnalysisStore = create<AnalysisState>((set) => ({
+const initialState = {
   contract: null,
-
   target5GMonthlyPremium: null,
-
   target5GCoverages: [],
-
   usages: [],
+};
 
-  setContract: (contract) => {
-    set({ contract });
-  },
+export const useAnalysisStore =
+  create<AnalysisState>()(
+    persist(
+      (set) => ({
+        ...initialState,
 
-  setTarget5GMonthlyPremium: (monthlyPremium) => {
-    set({
-      target5GMonthlyPremium: monthlyPremium,
-    });
-  },
+        setContract: (contract) => {
+          set({
+            contract,
+          });
+        },
 
-  setTarget5GCoverages: (coverages) => {
-    set({
-      target5GCoverages: coverages,
-    });
-  },
+        setTarget5GMonthlyPremium: (
+          monthlyPremium
+        ) => {
+          set({
+            target5GMonthlyPremium:
+              monthlyPremium,
+          });
+        },
 
-  setUsages: (usages) => {
-    set({ usages });
-  },
-}));
+        setTarget5GCoverages: (
+          coverages
+        ) => {
+          set({
+            target5GCoverages:
+              coverages,
+          });
+        },
+
+        setUsages: (usages) => {
+          set({
+            usages,
+          });
+        },
+
+        resetAnalysis: () => {
+          set({
+            ...initialState,
+          });
+        },
+      }),
+      {
+        name: "ai-indemnity-doctor-analysis",
+
+        storage: createJSONStorage(
+          () => sessionStorage
+        ),
+
+        partialize: (state) => ({
+          contract: state.contract,
+
+          target5GMonthlyPremium:
+            state.target5GMonthlyPremium,
+
+          target5GCoverages:
+            state.target5GCoverages,
+
+          usages: state.usages,
+        }),
+      }
+    )
+  );
