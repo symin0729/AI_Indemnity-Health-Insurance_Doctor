@@ -1,4 +1,8 @@
 import type {
+  ComparisonResult,
+} from "../domain/calculation";
+
+import type {
   InsuranceContract,
   InsuranceGeneration,
 } from "../domain/insurance";
@@ -23,16 +27,162 @@ import {
 
 import {
   calculateBreakEven as calculateBreakEvenEngine,
+  calculateBreakEvenBySimulation,
   type BreakEvenResult,
+  type BreakEvenSimulationResult,
 } from "../engine/calculateBreakEven";
+
+import {
+  calculateScenario as calculateScenarioV2,
+  type ScenarioAssumptions,
+  type ScenarioUsageContext,
+} from "../engine/calculateScenario";
 
 import type {
   RuleSet,
 } from "../engine/loadRuleSet";
 
-export const CALCULATION_ENGINE_VERSION =
-  "mvp-engine-v1";
+/**
+ * 기존 M04 화면과의 연결을 유지하기 위한
+ * 기존 입력 인터페이스.
+ *
+ * M04를 새 결과 구조로 교체하기 전까지 유지한다.
+ */
+export interface CalculationInput {
+  contract: InsuranceContract;
 
+  target5GMonthlyPremium: number;
+
+  target5GCoverages: string[];
+
+  usages: MedicalUsage[];
+
+  ruleSet: RuleSet;
+}
+
+export interface ValidationResult {
+  valid: boolean;
+
+  errors: string[];
+}
+
+/**
+ * 기존 M04 호환용 item.
+ *
+ * 새 계산 코어의 정식 결과 타입은
+ * domain/calculation.ts의 ClaimCalculationItem이다.
+ */
+export interface ScenarioCalculationItem {
+  usage: MedicalUsage;
+
+  treatmentCost: number;
+
+  selfPaymentResult:
+    SelfPaymentResult;
+
+  excludedExpenseResult:
+    ExcludedExpenseResult;
+
+  effectiveSelfPayment:
+    number | null;
+
+  isSupported: boolean;
+}
+
+/**
+ * 기존 M04 호환용 결과.
+ *
+ * 기존 UI가 아직 아래 필드를 사용하고 있으므로
+ * 이번 단계에서는 제거하지 않는다.
+ */
+export interface ScenarioCalculationResult {
+  generation:
+    InsuranceGeneration;
+
+  annualPremium: number;
+
+  items:
+    ScenarioCalculationItem[];
+
+  hasUnsupportedCalculation:
+    boolean;
+
+  totalSelfPayment: number;
+
+  totalExcludedExpense:
+    number | null;
+
+  officialDiscount: number;
+
+  totalAnnualCost:
+    number | null;
+}
+
+/**
+ * 기존 M04 호환용 결과 타입.
+ */
+export interface CalculationResult {
+  rulesetVersion: string;
+
+  current:
+    ScenarioCalculationResult;
+
+  target5G:
+    ScenarioCalculationResult;
+
+  warnings: string[];
+}
+
+/**
+ * mvp-v2 정식 계산 입력.
+ *
+ * 임의 가정을 엔진 내부에서 만들어내지 않도록
+ * assumptions를 반드시 호출부에서 넘기게 한다.
+ */
+export interface CalculationV2Input
+  extends CalculationInput {
+  /**
+   * usage.id별 정밀 계산 보조정보.
+   *
+   * 예:
+   * - 급여 통원 건강보험 본인부담률 r
+   * - 의료기관 종별
+   * - 보장대상 인정금액 C
+   * - 기존 지급한도 사용액
+   * - 자기부담 상한 누적액
+   */
+  usageContexts?: Record<
+    string,
+    ScenarioUsageContext
+  >;
+
+  /**
+   * 계산 가정은 화면/사용자가 명시적으로 선택한 값만 전달한다.
+   */
+  assumptions:
+    ScenarioAssumptions;
+
+  /**
+   * 비교 기준 연도.
+   * 1년 계산 기준이며 3년 계산은 추후 연도별로 별도 실행한다.
+   */
+  year?: number;
+}
+
+export interface CalculationV2Result
+  extends ComparisonResult {
+  engineVersion: string;
+}
+
+export const CALCULATION_ENGINE_VERSION =
+  "mvp-engine-v2";
+
+/**
+ * 결정론적 입력 해시.
+ *
+ * 보안용 해시가 아니라
+ * "동일 입력 + 동일 룰셋 → 동일 결과" 재현 확인용이다.
+ */
 function stableStringify(
   value: unknown
 ): string {
@@ -72,77 +222,39 @@ function stableStringify(
     .join(",")}}`;
 }
 
-/**
- * MVP 추적용 결정론적 입력 해시.
- *
- * 암호화/보안 목적이 아니라
- * 동일 입력이 동일 계산 결과로
- * 재현되는지 확인하기 위한 식별자다.
- */
 function createInputHash(
-  input: CalculationInput
+  input: CalculationV2Input
 ): string {
-  const hashTarget = {
-    contract: {
-      insurer:
-        input.contract.insurer,
-      productName:
-        input.contract.productName,
-      inceptionDate:
-        input.contract.inceptionDate,
-      generation:
-        input.contract.generation,
-      monthlyPremium:
-        input.contract.monthlyPremium,
-      renewalCycleMonths:
-        input.contract
-          .renewalCycleMonths,
-      reentryCycleMonths:
-        input.contract
-          .reentryCycleMonths,
-      coverages: [
-        ...input.contract
-          .coverages,
-      ].sort(),
-    },
-
-    target5GMonthlyPremium:
-      input
-        .target5GMonthlyPremium,
-
-    target5GCoverages: [
-      ...input
-        .target5GCoverages,
-    ].sort(),
-
-    usages:
-      input.usages.map(
-        (usage) => ({
-          id: usage.id,
-          treatmentName:
-            usage.treatmentName,
-          careSetting:
-            usage.careSetting,
-          benefitClass:
-            usage.benefitClass,
-          severityClass:
-            usage.severityClass,
-          frequency:
-            usage.frequency,
-          unitCost:
-            usage.unitCost,
-        })
-      ),
-
-    rulesetVersion:
-      input.ruleSet
-        .rulesetVersion,
-  };
-
   const serialized =
-    stableStringify(
-      hashTarget
-    );
+    stableStringify({
+      contract:
+        input.contract,
+
+      target5GMonthlyPremium:
+        input
+          .target5GMonthlyPremium,
+
+      target5GCoverages: [
+        ...input
+          .target5GCoverages,
+      ].sort(),
+
+      usages:
+        input.usages,
+
+      usageContexts:
+        input.usageContexts ?? {},
+
+      assumptions:
+        input.assumptions,
+
+      year:
+        input.year ?? 1,
+
+      rulesetVersion:
+        input.ruleSet
+          .rulesetVersion,
+    });
 
   let hash = 0x811c9dc5;
 
@@ -169,85 +281,25 @@ function createInputHash(
     .padStart(8, "0")}`;
 }
 
-export interface CalculationInput {
-  contract: InsuranceContract;
-
-  target5GMonthlyPremium: number;
-
-  target5GCoverages: string[];
-
-  usages: MedicalUsage[];
-
-  ruleSet: RuleSet;
-}
-
-export interface ValidationResult {
-  valid: boolean;
-
-  errors: string[];
-}
-
-export interface ScenarioCalculationItem {
-  usage: MedicalUsage;
-
-  treatmentCost: number;
-
-  selfPaymentResult:
-    SelfPaymentResult;
-
-  excludedExpenseResult:
-    ExcludedExpenseResult;
-
-  effectiveSelfPayment:
-    number | null;
-
-  isSupported: boolean;
-}
-
-export interface ScenarioCalculationResult {
+/**
+ * 기존 M04가 아직 사용하는 계산 경로.
+ *
+ * 화면을 한 파일씩 마이그레이션하고 있으므로
+ * 이번 단계에서는 삭제하지 않는다.
+ *
+ * 단, 보장 제외 판정은 새 함수 시그니처에 맞춰
+ * severityClass와 룰 매칭 여부를 전달한다.
+ */
+function calculateLegacyScenario(
   generation:
-    InsuranceGeneration;
+    InsuranceGeneration,
 
-  annualPremium: number;
-
-  items:
-    ScenarioCalculationItem[];
-
-  hasUnsupportedCalculation:
-    boolean;
-
-  totalSelfPayment: number;
-
-  totalExcludedExpense:
-    number | null;
-
-  officialDiscount: number;
-
-  totalAnnualCost:
-    number | null;
-}
-
-export interface CalculationResult {
-  engineVersion: string;
-
-  rulesetVersion: string;
-
-  inputHash: string;
-
-  current:
-    ScenarioCalculationResult;
-
-  target5G:
-    ScenarioCalculationResult;
-
-  warnings: string[];
-}
-
-function calculateScenario(
-  generation: InsuranceGeneration,
   annualPremium: number,
+
   coverages: string[],
+
   usages: MedicalUsage[],
+
   ruleSet: RuleSet
 ): ScenarioCalculationResult {
   const items =
@@ -258,21 +310,15 @@ function calculateScenario(
           usage.unitCost;
 
         /**
-         * 자기부담금은 회당 비용을 기준으로
-         * 1회분을 먼저 계산한 뒤 연간 횟수를 곱한다.
+         * 기존 M04 결과 구조를 유지해야 하므로
+         * 기존 방식대로 합산 금액을 계산한다.
          *
-         * 예:
-         * 3세대 MRI 특약
-         * max(20,000원, 회당 비용의 30%) × 연간 횟수
-         *
-         * 이렇게 해야 최소 자기부담금이 있는 룰에서
-         * 여러 회차의 비용을 먼저 합쳐 공제액을
-         * 한 번만 적용하는 오류를 막을 수 있다.
+         * 정식 mvp-v2 결과는 calculateV2()가 사용하며
+         * 그 경로에서는 회차별 계산을 수행한다.
          */
-        const perVisitSelfPaymentResult =
+        const selfPaymentResult =
           calculateSelfPayment({
-            treatmentCost:
-              usage.unitCost,
+            treatmentCost,
 
             generation,
 
@@ -291,19 +337,6 @@ function calculateScenario(
               ruleSet.rules,
           });
 
-        const selfPaymentResult:
-          SelfPaymentResult =
-          perVisitSelfPaymentResult.amount ===
-          null
-            ? perVisitSelfPaymentResult
-            : {
-                ...perVisitSelfPaymentResult,
-
-                amount:
-                  perVisitSelfPaymentResult.amount *
-                  usage.frequency,
-              };
-
         const excludedExpenseResult =
           calculateExcludedExpense({
             treatmentCost,
@@ -313,6 +346,9 @@ function calculateScenario(
             benefitClass:
               usage.benefitClass,
 
+            severityClass:
+              usage.severityClass,
+
             coverages,
 
             hasSupportedSelfPaymentRule:
@@ -320,14 +356,6 @@ function calculateScenario(
               null,
           });
 
-        /**
-         * 보장 제외로 판정된 치료는
-         * 해당 의료비를 excluded 항목으로
-         * 분리한다.
-         *
-         * 같은 금액을 자기부담과
-         * 보장 제외에 중복 합산하지 않는다.
-         */
         const effectiveSelfPayment =
           excludedExpenseResult.status ===
             "EXCLUDED" &&
@@ -398,9 +426,11 @@ function calculateScenario(
         );
 
   /**
-   * 현재 MVP에서는
-   * 실제 적용이 확인된 공식 할인
-   * 입력값이 없으므로 0원으로 둔다.
+   * 레거시 표시값.
+   *
+   * 실제 mvp-v2 총부담은 이 공식을 사용하지 않는다.
+   * 정식 공식은 calculateV2() 내부의
+   * annualPremium + ΣM - ΣI 이다.
    */
   const officialDiscount = 0;
 
@@ -433,95 +463,252 @@ function calculateScenario(
   };
 }
 
-export const calculationService = {
-  validate(
-    input: CalculationInput
-  ): ValidationResult {
-    const errors: string[] =
-      [];
+function validateBaseInput(
+  input: CalculationInput
+): ValidationResult {
+  const errors:
+    string[] = [];
 
-    if (
-      !input.contract
-        .insurer.trim()
-    ) {
-      errors.push(
-        "보험사 정보가 필요합니다."
-      );
-    }
-
-    if (
-      !input.contract
-        .productName.trim()
-    ) {
-      errors.push(
-        "보험 상품명이 필요합니다."
-      );
-    }
-
-    if (
-      input.contract
-        .monthlyPremium <= 0
-    ) {
-      errors.push(
-        "현재 월 보험료를 확인해주세요."
-      );
-    }
-
-    if (
-      input.target5GMonthlyPremium <=
-      0
-    ) {
-      errors.push(
-        "5세대 비교용 월 보험료를 확인해주세요."
-      );
-    }
-
-    if (
-      input.usages.length < 1 ||
-      input.usages.length > 3
-    ) {
-      errors.push(
-        "예정 치료는 1건 이상 3건 이하로 입력해주세요."
-      );
-    }
-
-    input.usages.forEach(
-      (usage) => {
-        if (
-          usage.frequency < 1
-        ) {
-          errors.push(
-            `${usage.treatmentName}: 예상 횟수를 확인해주세요.`
-          );
-        }
-
-        if (
-          usage.unitCost <= 0
-        ) {
-          errors.push(
-            `${usage.treatmentName}: 회당 비용을 확인해주세요.`
-          );
-        }
-      }
+  if (
+    !input.contract
+      .insurer.trim()
+  ) {
+    errors.push(
+      "보험사 정보가 필요합니다."
     );
+  }
 
-    return {
-      valid:
-        errors.length === 0,
+  if (
+    !input.contract
+      .productName.trim()
+  ) {
+    errors.push(
+      "보험 상품명이 필요합니다."
+    );
+  }
 
-      errors,
-    };
+  if (
+    !Number.isFinite(
+      input.contract
+        .monthlyPremium
+    ) ||
+    input.contract
+      .monthlyPremium <= 0
+  ) {
+    errors.push(
+      "현재 월 보험료를 확인해주세요."
+    );
+  }
+
+  if (
+    !Number.isFinite(
+      input
+        .target5GMonthlyPremium
+    ) ||
+    input.target5GMonthlyPremium <=
+      0
+  ) {
+    errors.push(
+      "5세대 비교용 월 보험료를 확인해주세요."
+    );
+  }
+
+  if (
+    input.usages.length < 1 ||
+    input.usages.length > 3
+  ) {
+    errors.push(
+      "예정 치료는 1건 이상 3건 이하로 입력해주세요."
+    );
+  }
+
+  input.usages.forEach(
+    (usage) => {
+      const usageLabel =
+        usage.treatmentName.trim() ||
+        usage.id;
+
+      if (
+        !usage.treatmentName.trim()
+      ) {
+        errors.push(
+          "치료명을 확인해주세요."
+        );
+      }
+
+      if (
+        !Number.isInteger(
+          usage.frequency
+        ) ||
+        usage.frequency < 1
+      ) {
+        errors.push(
+          `${usageLabel}: 예상 횟수를 확인해주세요.`
+        );
+      }
+
+      if (
+        !Number.isFinite(
+          usage.unitCost
+        ) ||
+        usage.unitCost <= 0
+      ) {
+        errors.push(
+          `${usageLabel}: 회당 환자부담 의료비(M)를 확인해주세요.`
+        );
+      }
+
+      if (
+        usage.patientPaidAmount !==
+          undefined &&
+        (
+          !Number.isFinite(
+            usage.patientPaidAmount
+          ) ||
+          usage.patientPaidAmount < 0
+        )
+      ) {
+        errors.push(
+          `${usageLabel}: 환자부담액을 확인해주세요.`
+        );
+      }
+
+      if (
+        usage.nhisPaidAmount !==
+          undefined &&
+        (
+          !Number.isFinite(
+            usage.nhisPaidAmount
+          ) ||
+          usage.nhisPaidAmount < 0
+        )
+      ) {
+        errors.push(
+          `${usageLabel}: 건강보험공단 부담액을 확인해주세요.`
+        );
+      }
+
+      if (
+        usage.healthInsuranceCopayRate !==
+          undefined &&
+        (
+          !Number.isFinite(
+            usage.healthInsuranceCopayRate
+          ) ||
+          usage.healthInsuranceCopayRate <
+            0 ||
+          usage.healthInsuranceCopayRate >
+            1
+        )
+      ) {
+        errors.push(
+          `${usageLabel}: 건강보험 본인부담률(r)은 0~1 범위여야 합니다.`
+        );
+      }
+
+      const medicalCost =
+        usage.patientPaidAmount ??
+        usage.unitCost;
+
+      if (
+        usage.coveredAmount !==
+          undefined &&
+        (
+          !Number.isFinite(
+            usage.coveredAmount
+          ) ||
+          usage.coveredAmount < 0 ||
+          usage.coveredAmount >
+            medicalCost
+        )
+      ) {
+        errors.push(
+          `${usageLabel}: 보장대상 인정금액(C)은 0원 이상이며 의료비(M)를 초과할 수 없습니다.`
+        );
+      }
+    }
+  );
+
+  return {
+    valid:
+      errors.length === 0,
+
+    errors,
+  };
+}
+
+function validateV2Input(
+  input: CalculationV2Input
+): ValidationResult {
+  const base =
+    validateBaseInput(input);
+
+  const errors = [
+    ...base.errors,
+  ];
+
+  if (
+    typeof input.assumptions !==
+      "object" ||
+    input.assumptions === null ||
+    typeof input.assumptions
+      .assumeEntireMedicalCostCovered !==
+      "boolean" ||
+    typeof input.assumptions
+      .assumeNoPriorLimitUsage !==
+      "boolean" ||
+    typeof input.assumptions
+      .assumeEachOccurrenceSeparate !==
+      "boolean"
+  ) {
+    errors.push(
+      "계산 가정 정보를 확인해주세요."
+    );
+  }
+
+  return {
+    valid:
+      errors.length === 0,
+
+    errors,
+  };
+}
+
+export const calculationService = {
+  /**
+   * 기존 호출부 호환.
+   */
+  validate(
+    input:
+      | CalculationInput
+      | CalculationV2Input
+  ): ValidationResult {
+    if (
+      "assumptions" in input
+    ) {
+      return validateV2Input(
+        input
+      );
+    }
+
+    return validateBaseInput(
+      input
+    );
   },
 
+  /**
+   * 기존 M04 화면용 계산.
+   *
+   * M04를 mvp-v2 결과 구조로 교체하는 단계에서
+   * calculateV2()로 전환한다.
+   */
   calculate(
     input: CalculationInput
   ): CalculationResult {
     const validation =
-      this.validate(input);
+      validateBaseInput(input);
 
-    if (
-      !validation.valid
-    ) {
+    if (!validation.valid) {
       throw new Error(
         validation.errors.join(
           " "
@@ -542,7 +729,7 @@ export const calculationService = {
       );
 
     const current =
-      calculateScenario(
+      calculateLegacyScenario(
         input.contract
           .generation,
 
@@ -557,7 +744,7 @@ export const calculationService = {
       );
 
     const target5G =
-      calculateScenario(
+      calculateLegacyScenario(
         5,
 
         targetAnnualPremium,
@@ -570,15 +757,15 @@ export const calculationService = {
         input.ruleSet
       );
 
-    const warnings: string[] =
-      [];
+    const warnings:
+      string[] = [];
 
     if (
       current
         .hasUnsupportedCalculation
     ) {
       warnings.push(
-        "현재 계약의 일부 계산 조건은 현재 MVP 룰셋에서 지원되지 않습니다."
+        "현재 계약의 일부 계산 조건은 현재 룰셋에서 지원되지 않습니다."
       );
     }
 
@@ -587,20 +774,14 @@ export const calculationService = {
         .hasUnsupportedCalculation
     ) {
       warnings.push(
-        "5세대 비교안의 일부 계산 조건은 현재 MVP 룰셋에서 지원되지 않습니다."
+        "5세대 비교안의 일부 계산 조건은 현재 룰셋에서 지원되지 않습니다."
       );
     }
 
     return {
-      engineVersion:
-        CALCULATION_ENGINE_VERSION,
-
       rulesetVersion:
         input.ruleSet
           .rulesetVersion,
-
-      inputHash:
-        createInputHash(input),
 
       current,
 
@@ -610,6 +791,335 @@ export const calculationService = {
     };
   },
 
+  /**
+   * mvp-v2 정식 계산.
+   *
+   * 총부담:
+   *
+   *   T = annualPremium + ΣM - ΣI
+   *
+   * 자기부담 d*, 제외액 E, 한도초과 U는
+   * 총부담에 다시 더하지 않는다.
+   */
+  calculateV2(
+    input: CalculationV2Input
+  ): CalculationV2Result {
+    const validation =
+      validateV2Input(input);
+
+    if (!validation.valid) {
+      throw new Error(
+        validation.errors.join(
+          " "
+        )
+      );
+    }
+
+    const year =
+      input.year ?? 1;
+
+    const currentAnnualPremium =
+      calculateAnnualPremium(
+        input.contract
+          .monthlyPremium
+      );
+
+    const targetAnnualPremium =
+      calculateAnnualPremium(
+        input
+          .target5GMonthlyPremium
+      );
+
+    const current =
+      calculateScenarioV2({
+        option:
+          "CURRENT",
+
+        year,
+
+        generation:
+          input.contract
+            .generation,
+
+        annualPremium:
+          currentAnnualPremium,
+
+        coverages:
+          input.contract
+            .coverages,
+
+        usages:
+          input.usages,
+
+        ruleSet:
+          input.ruleSet,
+
+        usageContexts:
+          input.usageContexts,
+
+        assumptions:
+          input.assumptions,
+      });
+
+    const target5G =
+      calculateScenarioV2({
+        option:
+          "TARGET_5G",
+
+        year,
+
+        generation: 5,
+
+        annualPremium:
+          targetAnnualPremium,
+
+        coverages:
+          input
+            .target5GCoverages,
+
+        usages:
+          input.usages,
+
+        ruleSet:
+          input.ruleSet,
+
+        usageContexts:
+          input.usageContexts,
+
+        assumptions:
+          input.assumptions,
+      });
+
+    const target5GSaving =
+      current.totalBurden ===
+        null ||
+      target5G.totalBurden ===
+        null
+        ? null
+        : current.totalBurden -
+          target5G.totalBurden;
+
+    const warnings =
+      Array.from(
+        new Set([
+          ...current.warnings,
+          ...target5G.warnings,
+
+          /**
+           * 2026-09-05 기준 제출 계산명세에 따라
+           * 선택형 할인특약 C안은 시행/상품조건 검증 전
+           * 정밀 계산 결과를 만들지 않는다.
+           */
+          "선택형 할인특약(C안)은 실제 시행·대상 상품·보험료 견적이 확인되기 전까지 정보성 옵션으로만 표시합니다.",
+        ])
+      );
+
+    return {
+      engineVersion:
+        CALCULATION_ENGINE_VERSION,
+
+      current,
+
+      target5G,
+
+      selectiveDiscount:
+        null,
+
+      target5GSaving,
+
+      selectiveDiscountSaving:
+        null,
+
+      rulesetVersion:
+        input.ruleSet
+          .rulesetVersion,
+
+      inputHash:
+        createInputHash(input),
+
+      warnings,
+    };
+  },
+
+  /**
+   * mvp-v2 정식 손익분기 계산.
+   *
+   * 선택한 치료의 연간 횟수를 0~maxFrequency까지 바꾸면서
+   * CURRENT / TARGET_5G 시나리오를 매번 전체 재계산한다.
+   *
+   * 따라서 아래의 비선형 구조를 그대로 반영한다.
+   *
+   * - 최소공제
+   * - 일당/회당/연간 지급한도
+   * - 횟수 한도
+   * - 자기부담 상한
+   *
+   * 0회는 해당 치료를 usages에서 제거해
+   * "치료 없음" 시나리오로 계산한다.
+   */
+  calculateBreakEvenV2(
+    input: CalculationV2Input,
+    usageId: string,
+    options?: {
+      minFrequency?: number;
+      maxFrequency?: number;
+    }
+  ): BreakEvenSimulationResult | null {
+    const validation =
+      validateV2Input(input);
+
+    if (!validation.valid) {
+      return null;
+    }
+
+    const usageIndex =
+      input.usages.findIndex(
+        (usage) =>
+          usage.id === usageId
+      );
+
+    if (usageIndex < 0) {
+      return null;
+    }
+
+    const currentAnnualPremium =
+      calculateAnnualPremium(
+        input.contract
+          .monthlyPremium
+      );
+
+    const targetAnnualPremium =
+      calculateAnnualPremium(
+        input
+          .target5GMonthlyPremium
+      );
+
+    const year =
+      input.year ?? 1;
+
+    return calculateBreakEvenBySimulation({
+      minFrequency:
+        options?.minFrequency ??
+        0,
+
+      maxFrequency:
+        options?.maxFrequency ??
+        50,
+
+      evaluate: (
+        frequency
+      ) => {
+        /**
+         * 0회는 "미래에 질병이 없다"는 예측이 아니라
+         * 선택한 치료의 이용량을 0건으로 놓은 비교 가정이다.
+         */
+        const simulatedUsages:
+          MedicalUsage[] =
+          frequency === 0
+            ? input.usages.filter(
+                (_, index) =>
+                  index !==
+                  usageIndex
+              )
+            : input.usages.map(
+                (
+                  usage,
+                  index
+                ) =>
+                  index ===
+                  usageIndex
+                    ? {
+                        ...usage,
+                        frequency,
+                      }
+                    : usage
+              );
+
+        const current =
+          calculateScenarioV2({
+            option:
+              "CURRENT",
+
+            year,
+
+            generation:
+              input.contract
+                .generation,
+
+            annualPremium:
+              currentAnnualPremium,
+
+            coverages:
+              input.contract
+                .coverages,
+
+            usages:
+              simulatedUsages,
+
+            ruleSet:
+              input.ruleSet,
+
+            usageContexts:
+              input.usageContexts,
+
+            assumptions:
+              input.assumptions,
+          });
+
+        const target5G =
+          calculateScenarioV2({
+            option:
+              "TARGET_5G",
+
+            year,
+
+            generation: 5,
+
+            annualPremium:
+              targetAnnualPremium,
+
+            coverages:
+              input
+                .target5GCoverages,
+
+            usages:
+              simulatedUsages,
+
+            ruleSet:
+              input.ruleSet,
+
+            usageContexts:
+              input.usageContexts,
+
+            assumptions:
+              input.assumptions,
+          });
+
+        return {
+          currentTotalBurden:
+            current.totalBurden,
+
+          targetTotalBurden:
+            target5G.totalBurden,
+
+          warnings:
+            Array.from(
+              new Set([
+                ...current.warnings,
+                ...target5G.warnings,
+              ])
+            ),
+        };
+      },
+    });
+  },
+
+  /**
+   * 기존 M04의 손익분기 UI 호환용.
+   *
+   * 이 메서드는 기존 단순식을 유지한다.
+   * 새 화면 연결에서는 calculateBreakEvenV2()를 사용한다.
+   */
   calculateBreakEven(
     input: CalculationInput,
     usageId: string
@@ -643,6 +1153,13 @@ export const calculationService = {
       result.target5G.items[
         usageIndex
       ];
+
+    if (
+      !currentItem ||
+      !targetItem
+    ) {
+      return null;
+    }
 
     const hasExcludedExpense =
       currentItem

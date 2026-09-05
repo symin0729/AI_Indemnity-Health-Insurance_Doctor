@@ -32,6 +32,12 @@ function M03ConfirmPage() {
     (state) => state.usages
   );
 
+  const calculationAssumptions =
+    useAnalysisStore(
+      (state) =>
+        state.calculationAssumptions
+    );
+
   if (
     !contract ||
     target5GMonthlyPremium === null ||
@@ -80,7 +86,8 @@ function M03ConfirmPage() {
       (sum, usage) =>
         sum +
         usage.frequency *
-          usage.unitCost,
+          (usage.patientPaidAmount ??
+            usage.unitCost),
       0
     );
 
@@ -89,9 +96,32 @@ function M03ConfirmPage() {
       (usage) =>
         usage.benefitClass ===
           "UNKNOWN" ||
-        usage.severityClass ===
-          "UNKNOWN"
+        (
+          usage.benefitClass ===
+            "NON_COVERED" &&
+          usage.severityClass ===
+            "UNKNOWN"
+        )
     );
+
+  const hasMissingPrecisionInput =
+    usages.some((usage) => {
+      if (
+        usage.benefitClass ===
+          "COVERED" &&
+        usage.careSetting ===
+          "OUTPATIENT"
+      ) {
+        return (
+          usage.healthInsuranceCopayRate ===
+            undefined ||
+          usage.institutionType ===
+            undefined
+        );
+      }
+
+      return false;
+    });
 
   const handleCalculate = () => {
     if (isCalculating) {
@@ -309,33 +339,51 @@ function M03ConfirmPage() {
             </strong>
           </div>
 
-          <div>
-            <p className="amount-label">
-              비급여 특약
-            </p>
+          {contract.generation === 5 ? (
+            <>
+              <div>
+                <p className="amount-label">
+                  중증 비급여 특약1
+                </p>
 
-            <strong>
-              {contract.coverages.includes(
-                "NON_COVERED"
-              )
-                ? "가입으로 입력"
-                : "미가입으로 입력"}
-            </strong>
-          </div>
+                <strong>
+                  {contract.coverages.includes(
+                    "SPECIAL_RIDER_1"
+                  )
+                    ? "가입으로 입력"
+                    : "미가입으로 입력"}
+                </strong>
+              </div>
 
-          <div>
-            <p className="amount-label">
-              비급여 특약2
-            </p>
+              <div>
+                <p className="amount-label">
+                  비중증 비급여 특약2
+                </p>
 
-            <strong>
-              {contract.coverages.includes(
-                "SPECIAL_RIDER_2"
-              )
-                ? "가입으로 입력"
-                : "미가입으로 입력"}
-            </strong>
-          </div>
+                <strong>
+                  {contract.coverages.includes(
+                    "SPECIAL_RIDER_2"
+                  )
+                    ? "가입으로 입력"
+                    : "미가입으로 입력"}
+                </strong>
+              </div>
+            </>
+          ) : (
+            <div>
+              <p className="amount-label">
+                비급여 특약
+              </p>
+
+              <strong>
+                {contract.coverages.includes(
+                  "NON_COVERED"
+                )
+                  ? "가입으로 입력"
+                  : "미가입으로 입력"}
+              </strong>
+            </div>
+          )}
         </div>
       </section>
 
@@ -384,7 +432,21 @@ function M03ConfirmPage() {
 
           <div>
             <p className="amount-label">
-              비급여 특약2
+              중증 비급여 특약1
+            </p>
+
+            <strong>
+              {target5GCoverages.includes(
+                "SPECIAL_RIDER_1"
+              )
+                ? "가입으로 입력"
+                : "미가입으로 입력"}
+            </strong>
+          </div>
+
+          <div>
+            <p className="amount-label">
+              비중증 비급여 특약2
             </p>
 
             <strong>
@@ -436,9 +498,13 @@ function M03ConfirmPage() {
 
         {usages.map(
           (usage, index) => {
+            const perOccurrenceMedicalCost =
+              usage.patientPaidAmount ??
+              usage.unitCost;
+
             const treatmentCost =
               usage.frequency *
-              usage.unitCost;
+              perOccurrenceMedicalCost;
 
             return (
               <article
@@ -488,9 +554,73 @@ function M03ConfirmPage() {
                 <p className="treatment-meta">
                   {usage.frequency}
                   회 ×{" "}
-                  {usage.unitCost.toLocaleString()}
-                  원
+                  {perOccurrenceMedicalCost.toLocaleString()}
+                  원 (회당 M)
                 </p>
+
+                <div className="form-grid">
+                  <div>
+                    <p className="amount-label">
+                      치료 분류
+                    </p>
+                    <strong>
+                      {usage.treatmentCategory ??
+                        "미입력"}
+                    </strong>
+                  </div>
+
+                  <div>
+                    <p className="amount-label">
+                      진료 예정일
+                    </p>
+                    <strong>
+                      {usage.treatmentDate ??
+                        "미입력"}
+                    </strong>
+                  </div>
+
+                  <div>
+                    <p className="amount-label">
+                      의료기관 종별
+                    </p>
+                    <strong>
+                      {usage.institutionType ===
+                      "CLINIC_HOSPITAL"
+                        ? "병·의원"
+                        : usage.institutionType ===
+                            "GENERAL_TERTIARY"
+                          ? "종합·상급종합병원"
+                          : "미입력"}
+                    </strong>
+                  </div>
+
+                  <div>
+                    <p className="amount-label">
+                      건강보험 본인부담률 r
+                    </p>
+                    <strong>
+                      {usage.healthInsuranceCopayRate ===
+                      undefined
+                        ? "미입력"
+                        : `${(
+                            usage.healthInsuranceCopayRate *
+                            100
+                          ).toLocaleString()}%`}
+                    </strong>
+                  </div>
+
+                  <div>
+                    <p className="amount-label">
+                      보장대상 인정금액 C
+                    </p>
+                    <strong>
+                      {usage.coveredAmount ===
+                      undefined
+                        ? "미입력 · 확인 필요"
+                        : `${usage.coveredAmount.toLocaleString()}원`}
+                    </strong>
+                  </div>
+                </div>
               </article>
             );
           }
@@ -498,11 +628,19 @@ function M03ConfirmPage() {
 
         {hasUnknownUsage && (
           <div className="notice-box warning">
-            급여 여부 또는 중증 여부가
-            '모름'인 치료가 있습니다.
+            급여 여부가 '모름'이거나 비급여 치료의
+            중증/비중증 분류가 '모름'인 항목이 있습니다.
             결과에서는 이를 임의 분류하지 않고
-            확인 필요 또는 계산 불가로
-            표시합니다.
+            확인 필요로 표시합니다.
+          </div>
+        )}
+
+        {hasMissingPrecisionInput && (
+          <div className="notice-box warning">
+            급여 통원 치료 중 건강보험 본인부담률 r 또는
+            의료기관 종별이 비어 있는 항목이 있습니다.
+            해당 값이 필요한 계산은 임의 대표값을 사용하지 않고
+            확인 필요로 표시합니다.
           </div>
         )}
       </section>
@@ -544,7 +682,7 @@ function M03ConfirmPage() {
             </p>
 
             <strong>
-              mvp-v1
+              mvp-v2
             </strong>
           </div>
 
@@ -564,7 +702,7 @@ function M03ConfirmPage() {
             </p>
 
             <strong>
-              연간 횟수 × 회당 비용
+              회차별 M 계산 후 약관 계산 단위 적용
             </strong>
           </div>
 
@@ -574,30 +712,98 @@ function M03ConfirmPage() {
             </p>
 
             <strong>
-              보험료 + 자기부담금 +
-              보장 제외 의료비
+              연 보험료 + ΣM - ΣI
+            </strong>
+          </div>
+
+          <div>
+            <p className="amount-label">
+              C 미입력 시 M 전체 보장대상 가정
+            </p>
+
+            <strong>
+              {calculationAssumptions
+                .assumeEntireMedicalCostCovered
+                ? "적용"
+                : "적용 안 함"}
+            </strong>
+          </div>
+
+          <div>
+            <p className="amount-label">
+              기존 한도·상한 사용량 0 가정
+            </p>
+
+            <strong>
+              {calculationAssumptions
+                .assumeNoPriorLimitUsage
+                ? "적용"
+                : "적용 안 함"}
+            </strong>
+          </div>
+
+          <div>
+            <p className="amount-label">
+              여러 회 치료를 서로 다른 계산 단위로 가정
+            </p>
+
+            <strong>
+              {calculationAssumptions
+                .assumeEachOccurrenceSeparate
+                ? "적용"
+                : "적용 안 함"}
             </strong>
           </div>
         </div>
 
         <div className="notice-box">
-          공식 할인은 실제 적용이 확인된
-          값이 있을 때만 총부담에서
-          차감합니다. 현재 MVP에는
-          확인된 공식 할인 입력값이 없어
-          임의로 차감하지 않습니다.
+          자기부담액 d*, 보장 제외액 E,
+          지급한도 초과액 U는 최종 의료비 부담
+          M-I의 분해값이므로 총부담에 다시 더하지 않습니다.
         </div>
 
         <div className="notice-box">
-          감소·증가 의료이용 시나리오와
-          3년 상세 비교는 이번 2일 MVP에서
-          계산하지 않습니다.
+          현재 확인 화면은 1년 비교 입력을 검토합니다.
+          확인되지 않은 계약 조건·한도·분류는 0이나
+          대표값으로 채우지 않고 결과에서 확인 필요로 남깁니다.
         </div>
+
+        {!calculationAssumptions
+          .assumeEntireMedicalCostCovered && (
+          <div className="notice-box warning">
+            C가 비어 있는 치료는 M 전체를 자동으로
+            보장대상으로 간주하지 않습니다.
+          </div>
+        )}
+
+        {!calculationAssumptions
+          .assumeNoPriorLimitUsage && (
+          <div className="notice-box warning">
+            기존 지급한도 사용액 또는 자기부담 상한 누적액이
+            필요한 계산은 0으로 자동 처리하지 않습니다.
+          </div>
+        )}
+
+        {!calculationAssumptions
+          .assumeEachOccurrenceSeparate &&
+          usages.some(
+            (usage) =>
+              usage.frequency > 1 &&
+              !usage.treatmentDate &&
+              !usage.admissionId &&
+              !usage.sameDayGroupId
+          ) && (
+            <div className="notice-box warning">
+              여러 회 치료 중 날짜·동일입원·동일일자 정보가 없는
+              항목이 있습니다. 각 회차를 서로 다른 계산 단위라고
+              자동 가정하지 않습니다.
+            </div>
+          )}
       </section>
 
       <div className="notice-box warning">
         본 비교는 사용자가 확인한 입력값과
-        현재 MVP 룰셋을 이용한 모의 계산입니다.
+        mvp-v2 룰셋을 이용한 모의 계산입니다.
         실제 보험금, 가입 가능 여부,
         전환 보험료를 확정하지 않으며
         보험상품 전환을 권유하지 않습니다.

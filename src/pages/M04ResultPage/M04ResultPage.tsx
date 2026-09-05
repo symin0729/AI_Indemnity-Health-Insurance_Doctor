@@ -8,26 +8,733 @@ import { useNavigate } from "react-router-dom";
 import { useAnalysisStore } from "../../store/useAnalysisStore";
 
 import {
-  analyzeCoverageGaps,
-} from "../../engine/analyzeCoverageGap";
-
-import {
   loadRuleSet,
   type RuleSet,
 } from "../../engine/loadRuleSet";
 
 import {
-  explanationService,
-} from "../../services/explanationService";
-
-import {
   calculationService,
-  type CalculationInput,
+  type CalculationV2Input,
 } from "../../services/calculationService";
 
-import {
-  createRuleTrace,
-} from "../../engine/createRuleTrace";
+import type {
+  AnnualCalculationResult,
+  ClaimCalculationItem,
+} from "../../domain/calculation";
+
+function formatMoney(
+  value: number | null
+): string {
+  if (value === null) {
+    return "확인 필요";
+  }
+
+  return `${value.toLocaleString()}원`;
+}
+
+function getStatusLabel(
+  status: string
+): string {
+  if (status === "CALCULATED") {
+    return "계산 완료";
+  }
+
+  if (
+    status ===
+    "CONFIRMATION_REQUIRED"
+  ) {
+    return "확인 필요";
+  }
+
+  return "지원 확인 필요";
+}
+
+function getCoverageLabel(
+  value: string
+): string {
+  if (value === "COVERED") {
+    return "보장대상";
+  }
+
+  if (
+    value ===
+    "PARTIALLY_COVERED"
+  ) {
+    return "일부 보장";
+  }
+
+  if (value === "EXCLUDED") {
+    return "보장 제외";
+  }
+
+  return "확인 필요";
+}
+
+function ClaimDetail({
+  item,
+}: {
+  item: ClaimCalculationItem;
+}) {
+  return (
+    <article
+      className="treatment-card"
+      style={{
+        border: "1px solid var(--color-border)",
+        borderRadius: "18px",
+        background: "#ffffff",
+        boxShadow: "0 8px 24px rgba(18, 54, 89, 0.05)",
+        padding: "18px",
+      }}
+    >
+      <div className="treatment-card-header">
+        <div>
+          <span
+            className={
+              item.status === "CALCULATED"
+                ? "status-badge success"
+                : "status-badge warning"
+            }
+          >
+            {getStatusLabel(
+              item.status
+            )}
+          </span>
+
+          <h3>{item.treatmentName}</h3>
+        </div>
+
+        <div
+          style={{
+            textAlign: "right",
+            minWidth: "130px",
+          }}
+        >
+          <p
+            className="amount-label"
+            style={{
+              margin: "0 0 4px",
+            }}
+          >
+            최종 의료비 부담 M-I
+          </p>
+
+          <strong>
+            {formatMoney(
+              item.finalMedicalBurden
+            )}
+          </strong>
+        </div>
+      </div>
+
+      <div className="form-grid">
+        <div>
+          <p className="amount-label">
+            의료비 M
+          </p>
+          <strong>
+            {formatMoney(
+              item.medicalCost
+            )}
+          </strong>
+        </div>
+
+        <div>
+          <p className="amount-label">
+            보장대상 C
+          </p>
+          <strong>
+            {formatMoney(
+              item.coveredAmount
+            )}
+          </strong>
+        </div>
+
+        <div>
+          <p className="amount-label">
+            보장 제외 E
+          </p>
+          <strong>
+            {formatMoney(
+              item.excludedAmount
+            )}
+          </strong>
+        </div>
+
+        <div>
+          <p className="amount-label">
+            기본 자기부담 d
+          </p>
+          <strong>
+            {formatMoney(
+              item.baseDeductible
+            )}
+          </strong>
+        </div>
+
+        <div>
+          <p className="amount-label">
+            조정 자기부담 d*
+          </p>
+          <strong>
+            {formatMoney(
+              item.adjustedDeductible
+            )}
+          </strong>
+        </div>
+
+        <div>
+          <p className="amount-label">
+            한도 전 보험금 q
+          </p>
+          <strong>
+            {formatMoney(
+              item.preLimitBenefit
+            )}
+          </strong>
+        </div>
+
+        <div>
+          <p className="amount-label">
+            최종 보험금 I
+          </p>
+          <strong>
+            {formatMoney(
+              item.insuranceBenefit
+            )}
+          </strong>
+        </div>
+
+        <div>
+          <p className="amount-label">
+            한도초과 U
+          </p>
+          <strong>
+            {formatMoney(
+              item.limitExceededAmount
+            )}
+          </strong>
+        </div>
+      </div>
+
+      <p className="treatment-meta">
+        보장 판정: {getCoverageLabel(
+          item.coverageDecision
+        )}
+      </p>
+
+      {item.appliedLimitIds.length >
+        0 && (
+        <p className="treatment-meta">
+          적용 한도: {item.appliedLimitIds.join(
+            ", "
+          )}
+        </p>
+      )}
+
+      {item.traces.length > 0 && (
+        <div
+          style={{
+            marginTop: "18px",
+            display: "grid",
+            gap: "12px",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: "12px",
+              flexWrap: "wrap",
+            }}
+          >
+            <div>
+              <p
+                className="amount-label"
+                style={{
+                  marginBottom: "4px",
+                }}
+              >
+                적용 근거
+              </p>
+
+              <strong>
+                Rule Trace
+              </strong>
+            </div>
+
+            <span className="rule-info">
+              {item.traces.length}개 룰
+            </span>
+          </div>
+
+          {item.traces.map(
+            (trace, traceIndex) => (
+              <details
+                key={`${trace.ruleId}-${traceIndex}`}
+                style={{
+                  border:
+                    "1px solid var(--color-border)",
+                  borderRadius:
+                    "var(--radius-sm)",
+                  background: "#ffffff",
+                  overflow: "hidden",
+                }}
+              >
+                <summary
+                  style={{
+                    cursor: "pointer",
+                    listStyle: "none",
+                    padding: "15px 16px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent:
+                      "space-between",
+                    gap: "12px",
+                    flexWrap: "wrap",
+                    fontWeight: 800,
+                  }}
+                >
+                  <span>
+                    {trace.displayText ??
+                      trace.ruleId}
+                  </span>
+
+                  <span
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      flexWrap: "wrap",
+                      justifyContent: "flex-end",
+                    }}
+                  >
+                    <span
+                      className={
+                        trace.verificationStatus ===
+                        "VERIFIED"
+                          ? "status-badge success"
+                          : "status-badge warning"
+                      }
+                    >
+                      {trace.verificationStatus ===
+                      "VERIFIED"
+                        ? "검증 완료"
+                        : "보험사 확인 필요"}
+                    </span>
+
+                    <span
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "5px",
+                        color:
+                          "var(--color-primary-700, #1f5f99)",
+                        fontSize: "0.82rem",
+                        fontWeight: 800,
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      근거 상세 보기
+                      <span
+                        aria-hidden="true"
+                        style={{
+                          fontSize: "0.95rem",
+                          lineHeight: 1,
+                        }}
+                      >
+                        ▾
+                      </span>
+                    </span>
+                  </span>
+                </summary>
+
+                <div
+                  style={{
+                    padding:
+                      "0 16px 16px",
+                    borderTop:
+                      "1px solid var(--color-border)",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns:
+                        "repeat(auto-fit, minmax(min(100%, 190px), 1fr))",
+                      gap: "12px",
+                      marginTop: "16px",
+                    }}
+                  >
+                    <div>
+                      <p className="amount-label">
+                        Rule ID
+                      </p>
+                      <strong>
+                        {trace.ruleId}
+                      </strong>
+                    </div>
+
+                    <div>
+                      <p className="amount-label">
+                        적용 조건
+                      </p>
+                      <strong>
+                        {trace.condition}
+                      </strong>
+                    </div>
+
+                    <div>
+                      <p className="amount-label">
+                        계산식
+                      </p>
+                      <strong>
+                        {trace.calculation}
+                      </strong>
+                    </div>
+
+                    <div>
+                      <p className="amount-label">
+                        근거 문서
+                      </p>
+                      <strong>
+                        {trace.sourceDocument ??
+                          "확인 필요"}
+                      </strong>
+                    </div>
+
+                    <div>
+                      <p className="amount-label">
+                        문서 버전
+                      </p>
+                      <strong>
+                        {trace.documentVersion ??
+                          "확인 필요"}
+                      </strong>
+                    </div>
+
+                    <div>
+                      <p className="amount-label">
+                        시행일
+                      </p>
+                      <strong>
+                        {trace.effectiveDate ??
+                          "확인 필요"}
+                      </strong>
+                    </div>
+                  </div>
+
+                  {(trace.articleNumber ||
+                    trace.articleParagraph) && (
+                    <div
+                      className="notice-box"
+                      style={{
+                        marginTop: "14px",
+                      }}
+                    >
+                      약관 위치: {
+                        trace.articleNumber ??
+                        "조문 확인 필요"
+                      }
+                      {trace.articleParagraph
+                        ? ` · ${trace.articleParagraph}`
+                        : ""}
+                    </div>
+                  )}
+
+                  {trace.exception && (
+                    <div
+                      className="notice-box warning"
+                      style={{
+                        marginTop: "14px",
+                      }}
+                    >
+                      예외/주의: {trace.exception}
+                    </div>
+                  )}
+
+                  <div
+                    style={{
+                      marginTop: "16px",
+                      display: "grid",
+                      gridTemplateColumns:
+                        "repeat(auto-fit, minmax(min(100%, 150px), 1fr))",
+                      gap: "10px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        padding: "13px",
+                        border:
+                          "1px solid var(--color-border)",
+                        borderRadius:
+                          "var(--radius-sm)",
+                        background:
+                          "var(--color-surface-soft)",
+                      }}
+                    >
+                      <span className="status-badge success">
+                        1
+                      </span>
+                      <p
+                        className="amount-label"
+                        style={{
+                          marginTop: "9px",
+                          marginBottom: "3px",
+                        }}
+                      >
+                        입력 확인
+                      </p>
+                      <strong>
+                        치료·계약 조건 확인
+                      </strong>
+                    </div>
+
+                    <div
+                      style={{
+                        padding: "13px",
+                        border:
+                          "1px solid var(--color-border)",
+                        borderRadius:
+                          "var(--radius-sm)",
+                        background:
+                          "var(--color-surface-soft)",
+                      }}
+                    >
+                      <span className="status-badge primary">
+                        2
+                      </span>
+                      <p
+                        className="amount-label"
+                        style={{
+                          marginTop: "9px",
+                          marginBottom: "3px",
+                        }}
+                      >
+                        룰 확인
+                      </p>
+                      <strong>
+                        적용 조건·계산식 확인
+                      </strong>
+                    </div>
+
+                    <div
+                      style={{
+                        padding: "13px",
+                        border:
+                          "1px solid var(--color-border)",
+                        borderRadius:
+                          "var(--radius-sm)",
+                        background:
+                          "var(--color-surface-soft)",
+                      }}
+                    >
+                      <span className="status-badge warning">
+                        3
+                      </span>
+                      <p
+                        className="amount-label"
+                        style={{
+                          marginTop: "9px",
+                          marginBottom: "3px",
+                        }}
+                      >
+                        원문 확인
+                      </p>
+                      <strong>
+                        실제 약관은 보험사 최종 확인
+                      </strong>
+                    </div>
+                  </div>
+                </div>
+              </details>
+            )
+          )}
+        </div>
+      )}
+
+      {item.warnings.length > 0 && (
+        <div className="notice-box warning">
+          {item.warnings.map(
+            (warning) => (
+              <p key={warning}>
+                {warning}
+              </p>
+            )
+          )}
+        </div>
+      )}
+    </article>
+  );
+}
+
+function ScenarioCard({
+  title,
+  subtitle,
+  result,
+}: {
+  title: string;
+  subtitle: string;
+  result: AnnualCalculationResult;
+}) {
+  return (
+    <section
+      className="form-card"
+      style={{
+        width: "100%",
+        minWidth: 0,
+        boxSizing: "border-box",
+        padding: "clamp(20px, 3vw, 28px)",
+        borderRadius: "22px",
+        boxShadow: "0 14px 34px rgba(18, 54, 89, 0.06)",
+      }}
+    >
+      <span
+        className={
+          result.status === "CALCULATED"
+            ? "status-badge success"
+            : "status-badge warning"
+        }
+      >
+        {getStatusLabel(result.status)}
+      </span>
+
+      <h2 className="card-title">
+        {title}
+      </h2>
+
+      <p className="card-description">
+        {subtitle}
+      </p>
+
+      <div
+        className="comparison-summary"
+        style={{
+          width: "100%",
+          minWidth: 0,
+          boxSizing: "border-box",
+          padding: "20px",
+          borderRadius: "18px",
+          background:
+            "linear-gradient(135deg, var(--color-primary-050) 0%, #ffffff 88%)",
+          border: "1px solid var(--color-primary-100)",
+        }}
+      >
+        <p className="amount-label">
+          연간 총부담 T
+        </p>
+        <p className="amount">
+          {formatMoney(
+            result.totalBurden
+          )}
+        </p>
+      </div>
+
+      <div
+        className="form-grid"
+        style={{
+          display: "grid",
+          gridTemplateColumns:
+            "repeat(auto-fit, minmax(min(100%, 150px), 1fr))",
+          gap: "16px",
+          width: "100%",
+          minWidth: 0,
+        }}
+      >
+        <div style={{ padding: "12px", borderRadius: "12px", background: "var(--color-surface-soft)" }}>
+          <p className="amount-label">
+            연 보험료
+          </p>
+          <strong>
+            {formatMoney(
+              result.annualPremium
+            )}
+          </strong>
+        </div>
+
+        <div style={{ padding: "12px", borderRadius: "12px", background: "var(--color-surface-soft)" }}>
+          <p className="amount-label">
+            총 의료비 ΣM
+          </p>
+          <strong>
+            {formatMoney(
+              result.totalMedicalCost
+            )}
+          </strong>
+        </div>
+
+        <div style={{ padding: "12px", borderRadius: "12px", background: "var(--color-surface-soft)" }}>
+          <p className="amount-label">
+            총 보험금 ΣI
+          </p>
+          <strong>
+            {formatMoney(
+              result.totalInsuranceBenefit
+            )}
+          </strong>
+        </div>
+
+        <div style={{ padding: "12px", borderRadius: "12px", background: "var(--color-surface-soft)" }}>
+          <p className="amount-label">
+            최종 의료비 부담
+          </p>
+          <strong>
+            {formatMoney(
+              result.totalFinalMedicalBurden
+            )}
+          </strong>
+        </div>
+
+        <div style={{ padding: "12px", borderRadius: "12px", background: "var(--color-surface-soft)" }}>
+          <p className="amount-label">
+            보장 제외 ΣE
+          </p>
+          <strong>
+            {formatMoney(
+              result.totalExcludedAmount
+            )}
+          </strong>
+        </div>
+
+        <div style={{ padding: "12px", borderRadius: "12px", background: "var(--color-surface-soft)" }}>
+          <p className="amount-label">
+            조정 자기부담 Σd*
+          </p>
+          <strong>
+            {formatMoney(
+              result.totalAdjustedDeductible
+            )}
+          </strong>
+        </div>
+
+        <div style={{ padding: "12px", borderRadius: "12px", background: "var(--color-surface-soft)" }}>
+          <p className="amount-label">
+            한도초과 ΣU
+          </p>
+          <strong>
+            {formatMoney(
+              result.totalLimitExceededAmount
+            )}
+          </strong>
+        </div>
+      </div>
+
+      <div className="notice-box">
+        총부담 공식은 연 보험료 + ΣM - ΣI 입니다.
+        E, d*, U는 M-I의 분해값이므로 다시 더하지 않습니다.
+      </div>
+
+      <h3>치료별 계산</h3>
+
+      {result.items.map((item) => (
+        <ClaimDetail
+          key={item.usageId}
+          item={item}
+        />
+      ))}
+    </section>
+  );
+}
 
 function M04ResultPage() {
   const navigate = useNavigate();
@@ -52,6 +759,12 @@ function M04ResultPage() {
     (state) => state.usages
   );
 
+  const calculationAssumptions =
+    useAnalysisStore(
+      (state) =>
+        state.calculationAssumptions
+    );
+
   const resetAnalysis =
     useAnalysisStore(
       (state) => state.resetAnalysis
@@ -68,16 +781,7 @@ function M04ResultPage() {
   const [
     ruleLoadError,
     setRuleLoadError,
-  ] = useState<string | null>(
-    null
-  );
-
-  const [
-    expandedRuleId,
-    setExpandedRuleId,
-  ] = useState<string | null>(
-    null
-  );
+  ] = useState<string | null>(null);
 
   const [
     isResetModalOpen,
@@ -85,57 +789,53 @@ function M04ResultPage() {
   ] = useState(false);
 
   useEffect(() => {
-    const fetchRuleSet =
-      async () => {
-        try {
-          setIsRuleLoading(true);
-          setRuleLoadError(null);
+    const fetchRuleSet = async () => {
+      try {
+        setIsRuleLoading(true);
+        setRuleLoadError(null);
 
-          const loadedRuleSet =
-            await loadRuleSet(
-              "mvp-v1"
-            );
-
-          setRuleSet(
-            loadedRuleSet
+        const loadedRuleSet =
+          await loadRuleSet(
+            "mvp-v2"
           );
-        } catch (error) {
-          if (
-            error instanceof Error
-          ) {
-            setRuleLoadError(
-              error.message
-            );
-          } else {
-            setRuleLoadError(
-              "룰셋을 불러오는 중 오류가 발생했습니다."
-            );
-          }
-        } finally {
-          setIsRuleLoading(
-            false
+
+        setRuleSet(loadedRuleSet);
+      } catch (error) {
+        if (
+          error instanceof Error
+        ) {
+          setRuleLoadError(
+            error.message
+          );
+        } else {
+          setRuleLoadError(
+            "룰셋을 불러오는 중 오류가 발생했습니다."
           );
         }
-      };
+      } finally {
+        setIsRuleLoading(false);
+      }
+    };
 
     fetchRuleSet();
   }, []);
 
-  if (!contract) {
+  if (
+    !contract ||
+    target5GMonthlyPremium === null ||
+    usages.length === 0
+  ) {
     return (
       <main>
         <header className="page-header">
           <span className="page-brand">
             AI 실손 닥터
           </span>
-
           <h1>
             계산할 정보가 없습니다.
           </h1>
-
           <p className="page-description">
-            먼저 보험과 예정 치료
-            정보를 입력해주세요.
+            보험 정보와 예정 치료를 먼저 입력해주세요.
           </p>
         </header>
 
@@ -161,14 +861,9 @@ function M04ResultPage() {
           <span className="page-brand">
             AI 실손 닥터
           </span>
-
-          <h1>
-            보험 비교 결과
-          </h1>
-
+          <h1>보험 비교 결과</h1>
           <p className="page-description">
-            계산 룰을 불러오는
-            중입니다.
+            mvp-v2 계산 룰을 불러오는 중입니다.
           </p>
         </header>
       </main>
@@ -185,15 +880,11 @@ function M04ResultPage() {
           <span className="page-brand">
             AI 실손 닥터
           </span>
-
-          <h1>
-            보험 비교 결과
-          </h1>
+          <h1>보험 비교 결과</h1>
         </header>
 
         <div className="notice-box error">
-          계산 룰을 불러오지
-          못했습니다.
+          계산 룰을 불러오지 못했습니다.
           <br />
           {ruleLoadError}
         </div>
@@ -213,86 +904,46 @@ function M04ResultPage() {
     );
   }
 
-  if (
-    target5GMonthlyPremium ===
-      null ||
-    usages.length === 0
-  ) {
-    return (
-      <main>
-        <header className="page-header">
-          <span className="page-brand">
-            AI 실손 닥터
-          </span>
-
-          <h1>
-            비교 계산에 필요한 정보가 없습니다.
-          </h1>
-
-          <p className="page-description">
-            5세대 비교용 보험료와
-            예정 치료를 다시 확인해주세요.
-          </p>
-        </header>
-
-        <div className="button-group">
-          <button
-            type="button"
-            className="primary-button"
-            onClick={() =>
-              navigate("/input")
-            }
-          >
-            입력 화면으로
-          </button>
-        </div>
-      </main>
-    );
-  }
-
-  // ========================================
-  // CalculationService
-  //
-  // M04 화면은 숫자를 직접 계산하지 않고,
-  // 순수 TypeScript 계산 서비스의 결과를
-  // 화면에 표시한다.
-  // ========================================
-
+  /**
+   * mvp-v2 계산 가정은 M02에서 사용자가 직접 선택하고
+   * Zustand에 저장한 값만 사용한다.
+   *
+   * 체크하지 않은 가정은 false로 유지되며,
+   * 엔진이 임의로 C·기존 한도 사용량·계산 단위를 추정하지 않는다.
+   */
   const calculationInput:
-    CalculationInput = {
+    CalculationV2Input = {
     contract,
-
     target5GMonthlyPremium,
-
     target5GCoverages,
-
     usages,
-
     ruleSet,
+
+    assumptions:
+      calculationAssumptions,
+
+    year: 1,
   };
 
-  const calculationValidation =
+  const validation =
     calculationService.validate(
       calculationInput
     );
 
-  if (
-    !calculationValidation.valid
-  ) {
+  if (!validation.valid) {
     return (
       <main>
         <header className="page-header">
           <span className="page-brand">
             AI 실손 닥터
           </span>
-
           <h1>
             입력 정보를 확인해주세요.
           </h1>
         </header>
 
         <div className="notice-box error">
-          {calculationValidation.errors.map(
+          {validation.errors.map(
             (error) => (
               <p key={error}>
                 {error}
@@ -316,364 +967,72 @@ function M04ResultPage() {
     );
   }
 
-  const calculationResult =
-    calculationService.calculate(
+  const result =
+    calculationService.calculateV2(
       calculationInput
     );
 
-  const currentResult =
-    calculationResult.current;
+  const current = result.current;
+  const target5G = result.target5G;
 
-  const targetResult =
-    calculationResult.target5G;
-
-  const currentAnnualPremium =
-    currentResult.annualPremium;
-
-  const targetAnnualPremium =
-    targetResult.annualPremium;
-
-  // ========================================
-  // 보장 제외 공백
-  // ========================================
-
-  const excludedCoverageItems =
-    targetResult === null
-      ? []
-      : usages
-          .map(
-            (usage, index) => ({
-              usage,
-
-              currentItem:
-                currentResult
-                  .items[index],
-
-              targetItem:
-                targetResult
-                  .items[index],
-            })
-          )
-          .filter(
-            ({
-              currentItem,
-              targetItem,
-            }) =>
-              currentItem
-                .excludedExpenseResult
-                .status ===
-                "EXCLUDED" ||
-              targetItem
-                .excludedExpenseResult
-                .status ===
-                "EXCLUDED"
-          );
-
-  // ========================================
-  // 자기부담/확인 필요 공백
-  //
-  // 보장 제외로 이미 판정된 항목은
-  // 자기부담 공백 분석에서 중복 제외
-  // ========================================
-
-  const selfPaymentCoverageGapResults =
-    targetResult === null
-      ? []
-      : analyzeCoverageGaps(
-          usages
-            .map(
-              (usage, index) => ({
-                usage,
-
-                currentItem:
-                  currentResult
-                    .items[index],
-
-                targetItem:
-                  targetResult
-                    .items[index],
-              })
-            )
-            .filter(
-              ({
-                currentItem,
-                targetItem,
-              }) =>
-                currentItem
-                  .excludedExpenseResult
-                  .status !==
-                  "EXCLUDED" &&
-                targetItem
-                  .excludedExpenseResult
-                  .status !==
-                  "EXCLUDED"
-            )
-            .map(
-              ({
-                usage,
-                currentItem,
-                targetItem,
-              }) => ({
-                usage,
-
-                treatmentCost:
-                  currentItem
-                    .treatmentCost,
-
-                currentSelfPaymentResult:
-                  currentItem
-                    .selfPaymentResult,
-
-                targetSelfPaymentResult:
-                  targetItem
-                    .selfPaymentResult,
-              })
-            )
-        );
-
-  const selfPaymentGapIssueCount =
-    selfPaymentCoverageGapResults.filter(
-      (gap) =>
-        gap.type !== "NONE"
-    ).length;
-
-  const coverageGapIssueCount =
-    excludedCoverageItems.length +
-    selfPaymentGapIssueCount;
-
-  // ========================================
-  // 손익분기점
-  // ========================================
-
-  const breakEvenResults =
-    usages.flatMap(
-      (usage) => {
-        const result =
-          calculationService.calculateBreakEven(
-            calculationInput,
-            usage.id
-          );
-
-        if (!result) {
-          return [];
-        }
-
-        return [
-          {
-            usage,
-            result,
-          },
-        ];
-      }
-    );
-
-  const availableBreakEvenCount =
-    breakEvenResults.filter(
-      (item) =>
-        item.result.status ===
-        "AVAILABLE"
-    ).length;
-
-  const totalTreatmentCost =
-    usages.reduce(
-      (sum, usage) =>
-        sum +
-        usage.frequency *
-          usage.unitCost,
-      0
-    );
-
-  const annualPremiumDifference =
-    targetAnnualPremium ===
-    null
-      ? null
-      : Math.abs(
-          currentAnnualPremium -
-            targetAnnualPremium
-        );
-
-  const isFullComparisonAvailable =
-    currentResult
-      .totalAnnualCost !== null &&
-    targetResult !== null &&
-    targetResult
-      .totalAnnualCost !== null;
+  const isComparisonAvailable =
+    current.totalBurden !== null &&
+    target5G.totalBurden !== null;
 
   let comparisonMessage =
-    "현재 계약의 일부 계산 룰 또는 보장 제외 조건이 확인되지 않아 최종 부담액 비교를 확정할 수 없습니다.";
+    "확인되지 않은 계약 조건 또는 계산 입력이 있어 두 선택지의 총부담 차이를 확정하지 않습니다.";
 
-  if (
-    isFullComparisonAvailable &&
-    targetResult
-  ) {
-    const currentCost =
-      currentResult
-        .totalAnnualCost!;
-
-    const targetCost =
-      targetResult
-        .totalAnnualCost!;
-
-    const difference =
-      Math.abs(
-        currentCost -
-          targetCost
-      );
-
+  if (isComparisonAvailable) {
     if (
-      currentCost <
-      targetCost
+      result.target5GSaving !==
+      null
     ) {
-      comparisonMessage =
-        `현재 계약 유지의 예상 연간 부담이 ${difference.toLocaleString()}원 낮습니다.`;
-    } else if (
-      targetCost <
-      currentCost
-    ) {
-      comparisonMessage =
-        `5세대 전환의 예상 연간 부담이 ${difference.toLocaleString()}원 낮습니다.`;
-    } else {
-      comparisonMessage =
-        "두 선택지의 예상 연간 총 부담액이 같습니다.";
-    }
-  }
-
-  // ========================================
-  // 보험사 확인 질문
-  // ========================================
-
-  const insurerQuestions:
-    string[] = [];
-
-  if (
-    currentResult
-      .hasUnsupportedCalculation
-  ) {
-    insurerQuestions.push(
-      "현재 계약에서 입력한 치료가 실제로 보장되는지, 치료별 자기부담률과 보장 제외 조건을 확인해주세요."
-    );
-  }
-
-  if (
-    !contract.coverages.includes(
-      "SPECIAL_RIDER_2"
-    )
-  ) {
-    insurerQuestions.push(
-      "현재 계약에 비급여 관련 특약이 가입되어 있는지, 가입되어 있다면 정확한 특약명과 보장 조건을 확인해주세요."
-    );
-  }
-
-  usages.forEach(
-    (usage) => {
       if (
-        usage.benefitClass ===
-        "UNKNOWN"
+        result.target5GSaving > 0
       ) {
-        insurerQuestions.push(
-          `${usage.treatmentName}: 해당 치료가 급여인지 비급여인지 확인해주세요.`
-        );
-      }
-
-      if (
-        usage.severityClass ===
-        "UNKNOWN"
+        comparisonMessage =
+          `5세대 비교안의 연간 총부담이 현재 계약보다 ${result.target5GSaving.toLocaleString()}원 낮습니다.`;
+      } else if (
+        result.target5GSaving < 0
       ) {
-        insurerQuestions.push(
-          `${usage.treatmentName}: 약관 계산에 필요한 중증/비중증 구분 기준을 확인해주세요.`
-        );
+        comparisonMessage =
+          `현재 계약의 연간 총부담이 5세대 비교안보다 ${Math.abs(
+            result.target5GSaving
+          ).toLocaleString()}원 낮습니다.`;
+      } else {
+        comparisonMessage =
+          "두 선택지의 연간 총부담이 같습니다.";
       }
     }
-  );
+  }
 
-  insurerQuestions.push(
-    "5세대 전환 시 실제 적용되는 월 보험료와 가입 가능 조건은 보험사에 별도로 확인해주세요."
-  );
+  const breakEvenResults =
+    usages.map((usage) => ({
+      usage,
+      result:
+        calculationService.calculateBreakEvenV2(
+          calculationInput,
+          usage.id,
+          {
+            minFrequency: 0,
+            maxFrequency: 50,
+          }
+        ),
+    }));
 
-  const uniqueInsurerQuestions =
-    Array.from(
-      new Set(
-        insurerQuestions
-      )
-    );
-
-  // ========================================
-  // 결과 해설 템플릿
-  //
-  // 외부 LLM을 호출하지 않고
-  // 이미 계산된 결과만 문장으로 설명
-  // ========================================
-
-  const explanationResult =
-    explanationService.create({
-      currentTotalAnnualCost:
-        currentResult.totalAnnualCost,
-
-      targetTotalAnnualCost:
-        targetResult?.totalAnnualCost ??
-        null,
-
-      currentTotalSelfPayment:
-        currentResult.totalSelfPayment,
-
-      targetTotalSelfPayment:
-        targetResult === null ||
-        currentResult
-          .hasUnsupportedCalculation ||
-        targetResult
-          .hasUnsupportedCalculation
-          ? null
-          : targetResult.totalSelfPayment,
-
-      currentExcludedExpense:
-        currentResult
-          .totalExcludedExpense,
-
-      targetExcludedExpense:
-        targetResult
-          ?.totalExcludedExpense ??
-        null,
-
-      coverageGapCount:
-        coverageGapIssueCount,
-
-      hasUnsupportedCalculation:
-        currentResult
-          .hasUnsupportedCalculation ||
-        targetResult === null ||
-        targetResult
-          .hasUnsupportedCalculation,
-    });
-
-  const handleToggleRuleDetail = (
-    ruleId: string
-  ) => {
-    setExpandedRuleId(
-      (current) =>
-        current === ruleId
-          ? null
-          : ruleId
-    );
+  const handleStartOver = () => {
+    setIsResetModalOpen(true);
   };
 
-  const handleStartOver =
-    () => {
-      setIsResetModalOpen(true);
-    };
+  const handleCancelStartOver = () => {
+    setIsResetModalOpen(false);
+  };
 
-  const handleConfirmStartOver =
-    () => {
-      setIsResetModalOpen(false);
-
-      resetAnalysis();
-
-      navigate("/");
-    };
-
-  const handleCancelStartOver =
-    () => {
-      setIsResetModalOpen(false);
-    };
+  const handleConfirmStartOver = () => {
+    setIsResetModalOpen(false);
+    resetAnalysis();
+    navigate("/");
+  };
 
   return (
     <main>
@@ -681,2514 +1040,326 @@ function M04ResultPage() {
         className="page-header"
         style={{
           position: "relative",
-          maxWidth: "none",
-          padding: "clamp(22px, 4vw, 36px)",
-          border: "1px solid var(--color-border)",
-          borderRadius: "var(--radius-lg)",
-          background:
-            "linear-gradient(135deg, var(--color-primary-050) 0%, #ffffff 72%)",
           overflow: "hidden",
+          padding: "clamp(26px, 5vw, 46px)",
+          border: "1px solid var(--color-border)",
+          borderRadius: "26px",
+          background:
+            "linear-gradient(135deg, #f7fbff 0%, #ffffff 62%, #edf6ff 100%)",
+          boxShadow: "0 18px 48px rgba(18, 54, 89, 0.08)",
         }}
       >
         <div
           style={{
-            display: "flex",
+            display: "grid",
+            gridTemplateColumns:
+              "minmax(0, 1.4fr) minmax(220px, 0.6fr)",
+            gap: "clamp(22px, 5vw, 48px)",
             alignItems: "center",
-            justifyContent: "space-between",
-            gap: "clamp(18px, 4vw, 42px)",
-            flexWrap: "wrap",
           }}
         >
-          <div
-            style={{
-              flex: "1 1 480px",
-              minWidth: 0,
-              position: "relative",
-              zIndex: 1,
-            }}
-          >
-            <span className="page-brand">
-              AI 실손 닥터
-            </span>
-
-            <h1
+          <div style={{ minWidth: 0 }}>
+            <div
               style={{
-                marginTop: "18px",
-                maxWidth: "680px",
+                display: "flex",
+                gap: "8px",
+                alignItems: "center",
+                flexWrap: "wrap",
+                marginBottom: "14px",
               }}
             >
+              <span className="page-brand">
+                AI 실손 닥터
+              </span>
+              <span className="step-badge">
+                RESULT
+              </span>
+            </div>
+
+            <h1 style={{ marginBottom: "12px" }}>
               보험 비교 결과
             </h1>
 
             <p
               className="page-description"
-              style={{
-                maxWidth: "640px",
-                marginBottom: "18px",
-              }}
+              style={{ maxWidth: "650px", marginBottom: "16px" }}
             >
-              입력한 의료이용 조건을
-              기준으로 현재 계약 유지와
-              5세대 전환의 1년 예상 부담을
-              비교합니다.
+              같은 의료이용 조건에서 현재 계약 유지와 5세대 비교안의
+              연간 부담을 한눈에 비교했습니다.
             </p>
 
-            <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: "8px",
-              }}
-            >
-              <span className="rule-info">
-                1년 총부담 비교
-              </span>
-
-              <span className="rule-info">
-                보장 공백 확인
-              </span>
-
-              <span className="rule-info">
-                룰셋{" "}
-                {ruleSet.rulesetVersion}
-              </span>
-            </div>
+            <span className="rule-info">
+              엔진 {result.engineVersion} · 룰셋 {result.rulesetVersion}
+            </span>
           </div>
 
           <div
             style={{
-              flex: "0 1 320px",
-              width: "min(100%, 320px)",
-              marginLeft: "auto",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
+              display: "grid",
+              placeItems: "center",
+              minHeight: "180px",
             }}
           >
             <img
               src="/ai-insurance-result.png"
-              alt="보험 비교 결과 리포트를 보여주는 AI 도우미 일러스트"
+              alt="AI 실손 닥터 보험 비교 결과 안내"
               style={{
-                width: "100%",
-                maxWidth: "320px",
-                height: "auto",
+                width: "min(100%, 260px)",
+                maxHeight: "210px",
                 objectFit: "contain",
-                filter:
-                  "drop-shadow(0 16px 28px rgba(21, 55, 91, 0.14))",
+                filter: "drop-shadow(0 16px 24px rgba(31, 95, 153, 0.15))",
               }}
             />
           </div>
         </div>
       </header>
 
-      {/* RESULT 1 */}
-      <section>
-        <span className="step-badge">
-          RESULT 1
-        </span>
-
-        <h2>
-          1년 예상 부담 비교
-        </h2>
-
-        <div className="card-grid">
-          {/* 현재 계약 */}
-          <article className="result-card">
-            <span className="status-badge">
-              현재 계약 유지
-            </span>
-
-            <h3>
-              {contract.generation}
-              세대 실손
-            </h3>
-
-            <p className="amount-label">
-              월 보험료
+      <section
+        className="app-card"
+        style={{
+          padding: "clamp(22px, 4vw, 34px)",
+          borderRadius: "24px",
+          background:
+            "linear-gradient(135deg, #0f4778 0%, #1f659f 58%, #2f77b0 100%)",
+          color: "#ffffff",
+          boxShadow: "0 18px 44px rgba(18, 72, 120, 0.18)",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            gap: "18px",
+            flexWrap: "wrap",
+            marginBottom: "22px",
+          }}
+        >
+          <div style={{ flex: "1 1 420px" }}>
+            <p
+              style={{
+                margin: "0 0 8px",
+                fontSize: "0.82rem",
+                fontWeight: 800,
+                opacity: 0.78,
+                letterSpacing: "0.02em",
+              }}
+            >
+              1년 예상 비교 결론
             </p>
-
-            <p>
-              <strong>
-                {contract.monthlyPremium.toLocaleString()}
-                원
-              </strong>
-            </p>
-
-            <p className="amount-label">
-              연 보험료
-            </p>
-
-            <p className="amount">
-              {currentAnnualPremium.toLocaleString()}
-              원
-            </p>
-
-            <hr />
-
-            <p className="amount-label">
-              예상 자기부담금
-            </p>
-
-            {currentResult
-              .hasUnsupportedCalculation ? (
-              <p>
-                <span className="status-badge warning">
-                  계산 확인 필요
-                </span>
-              </p>
-            ) : (
-              <p className="amount">
-                {currentResult.totalSelfPayment.toLocaleString()}
-                원
-              </p>
-            )}
-
-            <p className="amount-label">
-              보장 제외 의료비
-            </p>
-
-            {currentResult
-              .totalExcludedExpense ===
-            null ? (
-              <p>
-                <span className="status-badge warning">
-                  확인 필요
-                </span>
-              </p>
-            ) : (
-              <p className="amount">
-                {currentResult.totalExcludedExpense.toLocaleString()}
-                원
-              </p>
-            )}
-
-            <p className="amount-label">
-              예상 총 부담액
-            </p>
-
-            {currentResult
-              .totalAnnualCost ===
-            null ? (
-              <p>
-                <span className="status-badge warning">
-                  계산 불가
-                </span>
-              </p>
-            ) : (
-              <p className="amount">
-                {currentResult.totalAnnualCost.toLocaleString()}
-                원
-              </p>
-            )}
-          </article>
-
-          {/* 5세대 */}
-          <article className="compare-card">
-            <span className="status-badge primary">
-              5세대 전환
-            </span>
-
-            <h3>
-              5세대 실손
-            </h3>
-
-            <p className="amount-label">
-              비교용 월 보험료
-            </p>
-
-            <p>
-              <strong>
-                {target5GMonthlyPremium ===
-                null
-                  ? "입력되지 않음"
-                  : `${target5GMonthlyPremium.toLocaleString()}원`}
-              </strong>
-            </p>
-
-            <p className="amount-label">
-              연 보험료
-            </p>
-
-            <p className="amount primary">
-              {targetAnnualPremium ===
-              null
-                ? "계산 불가"
-                : `${targetAnnualPremium.toLocaleString()}원`}
-            </p>
-
-            <hr />
-
-            <p className="amount-label">
-              예상 자기부담금
-            </p>
-
-            {targetResult ===
-            null ? (
-              <p>
-                <span className="status-badge warning">
-                  계산 불가
-                </span>
-              </p>
-            ) : targetResult
-                .hasUnsupportedCalculation ? (
-              <p>
-                <span className="status-badge warning">
-                  계산 확인 필요
-                </span>
-              </p>
-            ) : (
-              <p className="amount primary">
-                {targetResult.totalSelfPayment.toLocaleString()}
-                원
-              </p>
-            )}
-
-            <p className="amount-label">
-              보장 제외 의료비
-            </p>
-
-            {targetResult ===
-              null ||
-            targetResult
-              .totalExcludedExpense ===
-              null ? (
-              <p>
-                <span className="status-badge warning">
-                  확인 필요
-                </span>
-              </p>
-            ) : (
-              <p className="amount primary">
-                {targetResult.totalExcludedExpense.toLocaleString()}
-                원
-              </p>
-            )}
-
-            <p className="amount-label">
-              예상 총 부담액
-            </p>
-
-            {targetResult ===
-              null ||
-            targetResult
-              .totalAnnualCost ===
-              null ? (
-              <p>
-                <span className="status-badge warning">
-                  계산 불가
-                </span>
-              </p>
-            ) : (
-              <p className="amount primary">
-                {targetResult.totalAnnualCost.toLocaleString()}
-                원
-              </p>
-            )}
-          </article>
-        </div>
-      </section>
-
-      {/* 보험료 차이 */}
-      {annualPremiumDifference !==
-        null && (
-        <section>
-          <div className="comparison-summary">
-            <p className="amount-label">
-              연 보험료 차이
-            </p>
-
-            <p className="amount">
-              {annualPremiumDifference.toLocaleString()}
-              원
-            </p>
-
-            <p>
-              현재 계약 연 보험료{" "}
-              <strong>
-                {currentAnnualPremium.toLocaleString()}
-                원
-              </strong>
-              과 5세대 비교용
-              연 보험료{" "}
-              <strong>
-                {targetAnnualPremium?.toLocaleString()}
-                원
-              </strong>
-              의 차이입니다.
-            </p>
+            <h2
+              className="card-title"
+              style={{ color: "#ffffff", marginBottom: "8px" }}
+            >
+              {comparisonMessage}
+            </h2>
           </div>
-        </section>
-      )}
 
-      {/* RESULT 2 */}
-      <section>
-        <span className="step-badge">
-          RESULT 2
-        </span>
-
-        <h2>
-          비교 결과
-        </h2>
-
-        <div className="comparison-summary">
-          {isFullComparisonAvailable ? (
-            <span className="status-badge success">
-              비교 가능
-            </span>
-          ) : (
-            <span className="status-badge warning">
-              일부 계산 제한
-            </span>
-          )}
-
-          <h3>
-            {comparisonMessage}
-          </h3>
-
-          {!isFullComparisonAvailable && (
-            <p>
-              확인되지 않은 룰이나
-              보장 조건에 임의의 숫자를
-              적용하지 않았습니다.
-            </p>
+          {isComparisonAvailable && result.target5GSaving !== null && (
+            <div
+              style={{
+                padding: "12px 16px",
+                borderRadius: "999px",
+                background: "rgba(255,255,255,0.14)",
+                border: "1px solid rgba(255,255,255,0.22)",
+                fontWeight: 900,
+                whiteSpace: "nowrap",
+              }}
+            >
+              차이 {Math.abs(result.target5GSaving).toLocaleString()}원
+            </div>
           )}
         </div>
-      </section>
-
-      {/* RESULT 3 */}
-      <section>
-        <span className="step-badge">
-          RESULT 3
-        </span>
-
-        <h2>
-          예정 치료 상세
-        </h2>
-
-        <div className="comparison-summary">
-          <p className="amount-label">
-            전체 예상 치료비
-          </p>
-
-          <p className="amount">
-            {totalTreatmentCost.toLocaleString()}
-            원
-          </p>
-
-          <p>
-            입력한 모든 예정 치료의
-            예상 비용 합계입니다.
-          </p>
-        </div>
-
-        {usages.map(
-          (usage, index) => {
-            const currentItem =
-              currentResult
-                .items[index];
-
-            const targetItem =
-              targetResult
-                ?.items[index];
-
-            const matchedTargetRule =
-              targetItem
-                ?.selfPaymentResult
-                .ruleId
-                ? ruleSet.rules.find(
-                    (rule) =>
-                      rule.ruleId ===
-                      targetItem
-                        .selfPaymentResult
-                        .ruleId
-                  )
-                : undefined;
-
-            const targetTraceRuleId =
-              targetItem
-                ?.excludedExpenseResult
-                .ruleId ??
-              targetItem
-                ?.selfPaymentResult
-                .ruleId ??
-              null;
-
-            const targetRuleTrace =
-              targetItem
-                ? createRuleTrace({
-                    ruleId:
-                      targetTraceRuleId,
-
-                    condition:
-                      [
-                        "5세대",
-                        usage.careSetting ===
-                        "OUTPATIENT"
-                          ? "통원"
-                          : "입원",
-                        usage.benefitClass,
-                        usage.severityClass,
-                        target5GCoverages.length >
-                        0
-                          ? `특약: ${target5GCoverages.join(
-                              ", "
-                            )}`
-                          : "비교용 특약 없음",
-                      ].join(" · "),
-
-                    calculation:
-                      targetItem
-                        .excludedExpenseResult
-                        .status ===
-                      "EXCLUDED"
-                        ? `${targetItem.treatmentCost.toLocaleString()}원 전액을 보장 제외 의료비로 분리`
-                        : matchedTargetRule &&
-                            targetItem
-                              .selfPaymentResult
-                              .amount !==
-                              null
-                          ? `${targetItem.treatmentCost.toLocaleString()}원 × ${Math.round(
-                              matchedTargetRule.selfPaymentRate *
-                                100
-                            )}% = ${targetItem.selfPaymentResult.amount.toLocaleString()}원`
-                          : "현재 MVP에서 계산 근거 확인 필요",
-
-                    rulesetVersion:
-                      ruleSet.rulesetVersion,
-                  })
-                : null;
-
-            return (
-              <article
-                className="treatment-card"
-                key={usage.id}
-              >
-                <div className="treatment-card-header">
-                  <div>
-                    <span className="status-badge">
-                      치료{" "}
-                      {index + 1}
-                    </span>
-
-                    <h3>
-                      {
-                        usage.treatmentName
-                      }
-                    </h3>
-
-                    <p className="treatment-meta">
-                      {usage.careSetting ===
-                      "OUTPATIENT"
-                        ? "통원"
-                        : "입원"}
-                      {" · "}
-                      {usage.frequency}
-                      회 ×{" "}
-                      {usage.unitCost.toLocaleString()}
-                      원
-                    </p>
-                  </div>
-
-                  <div>
-                    <p className="amount-label">
-                      총 치료비
-                    </p>
-
-                    <strong>
-                      {currentItem.treatmentCost.toLocaleString()}
-                      원
-                    </strong>
-                  </div>
-                </div>
-
-                <hr />
-
-                <div className="card-grid">
-                  {/* 현재 계약 */}
-                  <div>
-                    <span className="status-badge">
-                      현재 계약
-                    </span>
-
-                    <p className="amount-label">
-                      예상 자기부담금
-                    </p>
-
-                    {currentItem
-                      .excludedExpenseResult
-                      .status ===
-                    "EXCLUDED" ? (
-                      <p>
-                        보장 제외 항목으로
-                        분리
-                      </p>
-                    ) : currentItem
-                        .selfPaymentResult
-                        .amount ===
-                      null ? (
-                      <>
-                        <p>
-                          <span className="status-badge warning">
-                            계산 불가
-                          </span>
-                        </p>
-
-                        {currentItem
-                          .selfPaymentResult
-                          .warning && (
-                          <p className="treatment-meta">
-                            {
-                              currentItem
-                                .selfPaymentResult
-                                .warning
-                            }
-                          </p>
-                        )}
-                      </>
-                    ) : (
-                      <p className="amount">
-                        {currentItem.selfPaymentResult.amount.toLocaleString()}
-                        원
-                      </p>
-                    )}
-
-                    <p className="amount-label">
-                      보장 제외 의료비
-                    </p>
-
-                    <p>
-                      {currentItem
-                        .excludedExpenseResult
-                        .amount ===
-                      null
-                        ? "확인 필요"
-                        : `${currentItem.excludedExpenseResult.amount.toLocaleString()}원`}
-                    </p>
-
-                    {currentItem
-                      .excludedExpenseResult
-                      .ruleId && (
-                      <p>
-                        <span className="rule-info">
-                          {
-                            currentItem
-                              .excludedExpenseResult
-                              .ruleId
-                          }
-                        </span>
-                      </p>
-                    )}
-                  </div>
-
-                  {/* 5세대 */}
-                  <div>
-                    <span className="status-badge primary">
-                      5세대 전환
-                    </span>
-
-                    {targetItem ? (
-                      <>
-                        <p className="amount-label">
-                          예상 자기부담금
-                        </p>
-
-                        {targetItem
-                          .excludedExpenseResult
-                          .status ===
-                        "EXCLUDED" ? (
-                          <p>
-                            보장 제외 항목으로
-                            분리
-                          </p>
-                        ) : targetItem
-                            .selfPaymentResult
-                            .amount ===
-                          null ? (
-                          <>
-                            <p>
-                              <span className="status-badge warning">
-                                계산 불가
-                              </span>
-                            </p>
-
-                            {targetItem
-                              .selfPaymentResult
-                              .warning && (
-                              <p className="treatment-meta">
-                                {
-                                  targetItem
-                                    .selfPaymentResult
-                                    .warning
-                                }
-                              </p>
-                            )}
-                          </>
-                        ) : (
-                          <p className="amount primary">
-                            {targetItem.selfPaymentResult.amount.toLocaleString()}
-                            원
-                          </p>
-                        )}
-
-                        <p className="amount-label">
-                          보장 제외 의료비
-                        </p>
-
-                        <p>
-                          {targetItem
-                            .excludedExpenseResult
-                            .amount ===
-                          null
-                            ? "확인 필요"
-                            : `${targetItem.excludedExpenseResult.amount.toLocaleString()}원`}
-                        </p>
-
-                        {targetItem
-                          .excludedExpenseResult
-                          .ruleId && (
-                          <p>
-                            <span className="rule-info">
-                              {
-                                targetItem
-                                  .excludedExpenseResult
-                                  .ruleId
-                              }
-                            </span>
-                          </p>
-                        )}
-
-                        {targetItem
-                          .selfPaymentResult
-                          .ruleId && (
-                          <div>
-                            <button
-                              type="button"
-                              className="secondary-button"
-                              onClick={() =>
-                                handleToggleRuleDetail(
-                                  targetItem
-                                    .selfPaymentResult
-                                    .ruleId!
-                                )
-                              }
-                            >
-                              {expandedRuleId ===
-                              targetItem
-                                .selfPaymentResult
-                                .ruleId
-                                ? "적용 룰 닫기"
-                                : "적용 룰 상세 보기"}
-                            </button>
-
-                            <p>
-                              <span className="rule-info">
-                                {
-                                  targetItem
-                                    .selfPaymentResult
-                                    .ruleId
-                                }
-                              </span>
-                            </p>
-                          </div>
-                        )}
-
-                        {matchedTargetRule &&
-                          expandedRuleId ===
-                            matchedTargetRule.ruleId && (
-                            <div className="app-card">
-                              <span className="status-badge primary">
-                                요약
-                              </span>
-
-                              <h3>
-                                적용 룰
-                              </h3>
-
-                              <p>
-                                {
-                                  matchedTargetRule.description
-                                }
-                              </p>
-
-                              <hr />
-
-                              <div className="form-grid">
-                                <div>
-                                  <p className="amount-label">
-                                    적용 세대
-                                  </p>
-
-                                  <strong>
-                                    {
-                                      matchedTargetRule.generation
-                                    }
-                                    세대
-                                  </strong>
-                                </div>
-
-                                <div>
-                                  <p className="amount-label">
-                                    입원/통원
-                                  </p>
-
-                                  <strong>
-                                    {matchedTargetRule.careSetting ===
-                                    "OUTPATIENT"
-                                      ? "통원"
-                                      : "입원"}
-                                  </strong>
-                                </div>
-
-                                <div>
-                                  <p className="amount-label">
-                                    급여 구분
-                                  </p>
-
-                                  <strong>
-                                    {
-                                      matchedTargetRule.benefitClass
-                                    }
-                                  </strong>
-                                </div>
-
-                                <div>
-                                  <p className="amount-label">
-                                    중증 구분
-                                  </p>
-
-                                  <strong>
-                                    {
-                                      matchedTargetRule.severityClass
-                                    }
-                                  </strong>
-                                </div>
-
-                                <div>
-                                  <p className="amount-label">
-                                    필요 특약
-                                  </p>
-
-                                  <strong>
-                                    {
-                                      matchedTargetRule.requiredCoverage
-                                    }
-                                  </strong>
-                                </div>
-
-                                <div>
-                                  <p className="amount-label">
-                                    자기부담률
-                                  </p>
-
-                                  <strong>
-                                    {Math.round(
-                                      matchedTargetRule.selfPaymentRate *
-                                        100
-                                    )}
-                                    %
-                                  </strong>
-                                </div>
-
-                                <div>
-                                  <p className="amount-label">
-                                    RULE ID
-                                  </p>
-
-                                  <strong>
-                                    {
-                                      matchedTargetRule.ruleId
-                                    }
-                                  </strong>
-                                </div>
-                              </div>
-
-                              {targetRuleTrace && (
-                                <>
-                                  <hr />
-
-                                  <h3>
-                                    Rule Trace
-                                  </h3>
-
-                                  <div className="form-grid">
-                                    <div>
-                                      <p className="amount-label">
-                                        Rule ID
-                                      </p>
-
-                                      <strong>
-                                        {
-                                          targetRuleTrace.ruleId
-                                        }
-                                      </strong>
-                                    </div>
-
-                                    <div>
-                                      <p className="amount-label">
-                                        적용 조건
-                                      </p>
-
-                                      <strong>
-                                        {
-                                          targetRuleTrace.condition
-                                        }
-                                      </strong>
-                                    </div>
-
-                                    <div>
-                                      <p className="amount-label">
-                                        계산식
-                                      </p>
-
-                                      <strong>
-                                        {
-                                          targetRuleTrace.calculation
-                                        }
-                                      </strong>
-                                    </div>
-
-                                    <div>
-                                      <p className="amount-label">
-                                        근거 문서
-                                      </p>
-
-                                      <strong>
-                                        {
-                                          targetRuleTrace.sourceDocument
-                                        }
-                                      </strong>
-                                    </div>
-
-                                    <div>
-                                      <p className="amount-label">
-                                        문서 버전
-                                      </p>
-
-                                      <strong>
-                                        {
-                                          targetRuleTrace.documentVersion
-                                        }
-                                      </strong>
-                                    </div>
-
-                                    <div>
-                                      <p className="amount-label">
-                                        시행일
-                                      </p>
-
-                                      <strong>
-                                        {
-                                          targetRuleTrace.effectiveDate
-                                        }
-                                      </strong>
-                                    </div>
-
-                                    <div>
-                                      <p className="amount-label">
-                                        검증 상태
-                                      </p>
-
-                                      <strong>
-                                        {targetRuleTrace.verificationStatus ===
-                                        "VERIFIED"
-                                          ? "검증 완료"
-                                          : "보험사 확인 필요"}
-                                      </strong>
-                                    </div>
-                                  </div>
-                                </>
-                              )}
-
-                              <hr />
-
-                              <div
-                                style={{
-                                  display: "grid",
-                                  gap: "12px",
-                                }}
-                              >
-                                <div>
-                                  <p
-                                    className="amount-label"
-                                    style={{
-                                      marginBottom: "4px",
-                                    }}
-                                  >
-                                    근거 확인 3단계
-                                  </p>
-
-                                  <h3
-                                    style={{
-                                      marginBottom: "6px",
-                                    }}
-                                  >
-                                    약관 원문 확인
-                                  </h3>
-
-                                  <p
-                                    className="treatment-meta"
-                                    style={{
-                                      marginBottom: 0,
-                                    }}
-                                  >
-                                    계산에 사용한 룰의 요약과 상세
-                                    근거를 확인한 뒤, 실제 계약
-                                    약관의 원문 조항은 보험사에서
-                                    최종 확인해야 합니다.
-                                  </p>
-                                </div>
-
-                                <div
-                                  style={{
-                                    display: "grid",
-                                    gridTemplateColumns:
-                                      "repeat(3, minmax(0, 1fr))",
-                                    gap: "10px",
-                                  }}
-                                >
-                                  <div
-                                    style={{
-                                      padding: "14px",
-                                      border:
-                                        "1px solid var(--color-border)",
-                                      borderRadius:
-                                        "var(--radius-sm)",
-                                      background: "#ffffff",
-                                    }}
-                                  >
-                                    <span className="status-badge success">
-                                      1
-                                    </span>
-
-                                    <p
-                                      className="amount-label"
-                                      style={{
-                                        marginTop: "10px",
-                                      }}
-                                    >
-                                      요약
-                                    </p>
-
-                                    <strong>
-                                      적용 룰 확인 완료
-                                    </strong>
-                                  </div>
-
-                                  <div
-                                    style={{
-                                      padding: "14px",
-                                      border:
-                                        "1px solid var(--color-border)",
-                                      borderRadius:
-                                        "var(--radius-sm)",
-                                      background: "#ffffff",
-                                    }}
-                                  >
-                                    <span className="status-badge success">
-                                      2
-                                    </span>
-
-                                    <p
-                                      className="amount-label"
-                                      style={{
-                                        marginTop: "10px",
-                                      }}
-                                    >
-                                      상세
-                                    </p>
-
-                                    <strong>
-                                      Rule Trace 확인 가능
-                                    </strong>
-                                  </div>
-
-                                  <div
-                                    style={{
-                                      padding: "14px",
-                                      border:
-                                        "1px solid var(--color-border)",
-                                      borderRadius:
-                                        "var(--radius-sm)",
-                                      background: "#ffffff",
-                                    }}
-                                  >
-                                    <span className="status-badge warning">
-                                      3
-                                    </span>
-
-                                    <p
-                                      className="amount-label"
-                                      style={{
-                                        marginTop: "10px",
-                                      }}
-                                    >
-                                      원문
-                                    </p>
-
-                                    <strong>
-                                      보험사 확인 필요
-                                    </strong>
-                                  </div>
-                                </div>
-
-                                <div className="notice-box warning">
-                                  <strong>
-                                    실제 약관 원문은 현재 MVP에
-                                    연결되어 있지 않습니다.
-                                  </strong>
-
-                                  <p
-                                    style={{
-                                      margin:
-                                        "7px 0 0",
-                                    }}
-                                  >
-                                    보험사·상품별 약관 조문이
-                                    검증되지 않은 상태에서 임의의
-                                    조문번호나 원문을 표시하지
-                                    않습니다. 실제 계약 약관에서
-                                    적용 특약, 자기부담 기준,
-                                    보장 제외, 한도·횟수를 확인해
-                                    주세요.
-                                  </p>
-                                </div>
-
-                                <div
-                                  style={{
-                                    padding: "15px 16px",
-                                    border:
-                                      "1px dashed var(--color-border-strong)",
-                                    borderRadius:
-                                      "var(--radius-sm)",
-                                    background:
-                                      "var(--color-surface-soft)",
-                                  }}
-                                >
-                                  <p
-                                    className="amount-label"
-                                    style={{
-                                      marginBottom: "8px",
-                                    }}
-                                  >
-                                    보험사에 이렇게 확인하세요
-                                  </p>
-
-                                  <p
-                                    style={{
-                                      margin: 0,
-                                      lineHeight: 1.7,
-                                    }}
-                                  >
-                                    “제 계약에서 이 치료에 적용되는
-                                    특약과 자기부담 기준, 보장 제외
-                                    여부, 연간 한도·횟수, 해당 약관
-                                    조문을 확인해 주세요.”
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-                      </>
-                    ) : (
-                      <p>
-                        <span className="status-badge warning">
-                          계산 불가
-                        </span>
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </article>
-            );
-          }
-        )}
-      </section>
-
-      {/* RESULT 4 */}
-      <section>
-        <span className="step-badge">
-          RESULT 4
-        </span>
-
-        <h2>
-          보장 공백 분석
-        </h2>
 
         <div
-          className="comparison-summary"
           style={{
-            padding:
-              "clamp(22px, 4vw, 32px)",
-            background:
-              "linear-gradient(135deg, var(--color-primary-050) 0%, #ffffff 78%)",
+            display: "grid",
+            gridTemplateColumns:
+              "repeat(auto-fit, minmax(min(100%, 230px), 1fr))",
+            gap: "12px",
           }}
         >
-          {targetResult ===
-          null ? (
-            <>
-              <span className="status-badge warning">
-                분석 불가
-              </span>
+          <div
+            style={{
+              padding: "18px",
+              borderRadius: "16px",
+              background: "rgba(255,255,255,0.10)",
+              border: "1px solid rgba(255,255,255,0.18)",
+            }}
+          >
+            <p style={{ margin: "0 0 6px", opacity: 0.75, fontWeight: 700 }}>
+              현재 계약 유지
+            </p>
+            <strong style={{ fontSize: "1.35rem" }}>
+              {formatMoney(current.totalBurden)}
+            </strong>
+          </div>
 
-              <h3
-                style={{
-                  margin:
-                    "14px 0 6px",
-                }}
-              >
-                비교 결과가 없어 보장 변화를
-                확인할 수 없습니다.
-              </h3>
-            </>
-          ) : coverageGapIssueCount >
-            0 ? (
-            <>
-              <span className="status-badge warning">
-                확인할 변화{" "}
-                {coverageGapIssueCount}
-                건
-              </span>
-
-              <h3
-                style={{
-                  margin:
-                    "14px 0 6px",
-                }}
-              >
-                보험료 차이와 별개로 확인해야
-                할 보장 변화가 있습니다.
-              </h3>
-
-              <p
-                className="card-description"
-                style={{
-                  marginBottom: 0,
-                }}
-              >
-                자기부담 증가와 보장 제외 여부를
-                치료별로 나눠서 보여드립니다.
-              </p>
-            </>
-          ) : (
-            <>
-              <span className="status-badge success">
-                확인된 공백 없음
-              </span>
-
-              <h3
-                style={{
-                  margin:
-                    "14px 0 6px",
-                }}
-              >
-                현재 구현된 룰 범위에서는
-                추가로 확인된 보장 공백이 없습니다.
-              </h3>
-
-              <p
-                className="card-description"
-                style={{
-                  marginBottom: 0,
-                }}
-              >
-                실제 보장 여부는 보험사 약관과
-                가입 조건을 함께 확인해주세요.
-              </p>
-            </>
-          )}
+          <div
+            style={{
+              padding: "18px",
+              borderRadius: "16px",
+              background: "#ffffff",
+              color: "var(--color-primary-900, #123f69)",
+              border: "1px solid rgba(255,255,255,0.9)",
+            }}
+          >
+            <p style={{ margin: "0 0 6px", color: "var(--color-text-sub)", fontWeight: 700 }}>
+              5세대 비교안
+            </p>
+            <strong style={{ fontSize: "1.35rem" }}>
+              {formatMoney(target5G.totalBurden)}
+            </strong>
+          </div>
         </div>
 
-        {/* 한도 초과 여부 */}
-        <article
-          className="treatment-card"
-          style={{
-            marginTop: "16px",
-            borderStyle: "dashed",
-          }}
-        >
-          <div className="treatment-card-header">
-            <div>
-              <span className="status-badge warning">
-                한도 확인 필요
-              </span>
-
-              <h3
-                style={{
-                  margin:
-                    "10px 0 4px",
-                }}
-              >
-                보장 한도·횟수 초과 여부
-              </h3>
-
-              <p
-                className="treatment-meta"
-                style={{
-                  marginBottom: 0,
-                  maxWidth: "720px",
-                }}
-              >
-                현재 MVP 룰셋에는 보험사별
-                보장 한도와 연간 횟수 한도의
-                검증된 값이 포함되어 있지 않아
-                초과 여부를 임의로 판정하지 않습니다.
-              </p>
-            </div>
-
-            <span className="rule-info">
-              보험사 확인
-            </span>
-          </div>
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns:
-                "repeat(auto-fit, minmax(220px, 1fr))",
-              gap: "10px",
-              marginTop: "18px",
-            }}
-          >
-            <div
-              style={{
-                padding: "15px 16px",
-                border:
-                  "1px solid var(--color-border)",
-                borderRadius:
-                  "var(--radius-sm)",
-                background:
-                  "var(--color-surface-soft)",
-              }}
-            >
-              <p
-                className="amount-label"
-                style={{
-                  marginBottom: "6px",
-                }}
-              >
-                금액 한도
-              </p>
-
-              <strong>
-                확인 필요
-              </strong>
-            </div>
-
-            <div
-              style={{
-                padding: "15px 16px",
-                border:
-                  "1px solid var(--color-border)",
-                borderRadius:
-                  "var(--radius-sm)",
-                background:
-                  "var(--color-surface-soft)",
-              }}
-            >
-              <p
-                className="amount-label"
-                style={{
-                  marginBottom: "6px",
-                }}
-              >
-                연간 횟수 한도
-              </p>
-
-              <strong>
-                확인 필요
-              </strong>
-            </div>
-          </div>
-
+        {!isComparisonAvailable && (
           <div
             className="notice-box warning"
-            style={{
-              marginTop: "16px",
-            }}
+            style={{ marginTop: "16px" }}
           >
-            실제 보험사 약관에서 해당 치료의
-            보장 한도와 연간 횟수 제한을 확인해 주세요.
-            확인되지 않은 한도값은 총부담 계산에
-            임의 반영하지 않습니다.
+            숫자가 확인되지 않은 항목을 0원이나 대표값으로 임의 보정하지 않았습니다. 아래 치료별 경고를 확인해주세요.
           </div>
-        </article>
-
-        {/* 보장 제외 */}
-        {excludedCoverageItems.map(
-          (
-            {
-              usage,
-              currentItem,
-              targetItem,
-            },
-            index
-          ) => {
-            const currentExcluded =
-              currentItem
-                .excludedExpenseResult
-                .amount;
-
-            const targetExcluded =
-              targetItem
-                .excludedExpenseResult
-                .amount;
-
-            const highlightedAmount =
-              targetItem
-                .excludedExpenseResult
-                .status ===
-                "EXCLUDED"
-                ? targetExcluded
-                : currentExcluded;
-
-            return (
-              <article
-                className="treatment-card"
-                key={`excluded-${usage.id}`}
-                style={{
-                  marginTop: "16px",
-                }}
-              >
-                <div className="treatment-card-header">
-                  <div>
-                    <span className="status-badge warning">
-                      보장 제외
-                    </span>
-
-                    <h3
-                      style={{
-                        margin:
-                          "10px 0 4px",
-                      }}
-                    >
-                      {
-                        usage.treatmentName
-                      }
-                    </h3>
-
-                    <p
-                      className="treatment-meta"
-                      style={{
-                        marginBottom: 0,
-                      }}
-                    >
-                      이 치료는 한쪽 조건에서
-                      보장 제외로 분류되었습니다.
-                    </p>
-                  </div>
-
-                  <span className="rule-info">
-                    G5_EXCLUSION
-                  </span>
-                </div>
-
-                {highlightedAmount !==
-                  null && (
-                  <div
-                    style={{
-                      margin:
-                        "22px 0 18px",
-                      padding:
-                        "18px",
-                      border:
-                        "1px solid var(--color-border)",
-                      borderRadius:
-                        "var(--radius-sm)",
-                      background:
-                        "var(--color-warning-bg)",
-                    }}
-                  >
-                    <p
-                      className="amount-label"
-                      style={{
-                        color:
-                          "var(--color-warning)",
-                      }}
-                    >
-                      보장 제외로 분리된 금액
-                    </p>
-
-                    <strong
-                      style={{
-                        display:
-                          "block",
-                        marginTop:
-                          "4px",
-                        color:
-                          "var(--color-text)",
-                        fontSize:
-                          "clamp(1.5rem, 4vw, 2rem)",
-                        letterSpacing:
-                          "-0.04em",
-                      }}
-                    >
-                      {highlightedAmount.toLocaleString()}
-                      원
-                    </strong>
-                  </div>
-                )}
-
-                <div className="card-grid">
-                  <div
-                    style={{
-                      padding:
-                        "16px",
-                      border:
-                        "1px solid var(--color-border)",
-                      borderRadius:
-                        "var(--radius-sm)",
-                      background:
-                        "var(--color-surface-soft)",
-                    }}
-                  >
-                    <p className="amount-label">
-                      현재 계약
-                    </p>
-
-                    <strong>
-                      {currentExcluded ===
-                      null
-                        ? "확인 필요"
-                        : `${currentExcluded.toLocaleString()}원`}
-                    </strong>
-
-                    {currentItem
-                      .excludedExpenseResult
-                      .warning && (
-                      <p
-                        className="treatment-meta"
-                        style={{
-                          margin:
-                            "10px 0 0",
-                        }}
-                      >
-                        {
-                          currentItem
-                            .excludedExpenseResult
-                            .warning
-                        }
-                      </p>
-                    )}
-                  </div>
-
-                  <div
-                    style={{
-                      padding:
-                        "16px",
-                      border:
-                        "1px solid var(--color-border)",
-                      borderRadius:
-                        "var(--radius-sm)",
-                      background:
-                        "var(--color-primary-050)",
-                    }}
-                  >
-                    <p className="amount-label">
-                      5세대 비교
-                    </p>
-
-                    <strong>
-                      {targetExcluded ===
-                      null
-                        ? "확인 필요"
-                        : `${targetExcluded.toLocaleString()}원`}
-                    </strong>
-
-                    {targetItem
-                      .excludedExpenseResult
-                      .warning && (
-                      <p
-                        className="treatment-meta"
-                        style={{
-                          margin:
-                            "10px 0 0",
-                        }}
-                      >
-                        {
-                          targetItem
-                            .excludedExpenseResult
-                            .warning
-                        }
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                <p
-                  className="treatment-meta"
-                  style={{
-                    margin:
-                      "16px 0 0",
-                  }}
-                >
-                  확인 항목{" "}
-                  {index + 1}
-                </p>
-              </article>
-            );
-          }
         )}
+      </section>
 
-        {/* 자기부담/입력 확인 */}
-        {selfPaymentCoverageGapResults.map(
-          (gap, index) => {
-            const isIncrease =
-              gap.type ===
-              "SELF_PAYMENT_INCREASE";
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns:
+            "repeat(auto-fit, minmax(min(100%, 380px), 1fr))",
+          gap: "22px",
+          width: "100%",
+          alignItems: "stretch",
+        }}
+      >
+        <ScenarioCard
+          title="현재 계약 유지"
+          subtitle={`${contract.generation}세대 현재 계약 기준`}
+          result={current}
+        />
 
-            return (
-              <article
-                className="treatment-card"
-                key={`gap-${gap.usageId}`}
-                style={{
-                  marginTop: "16px",
-                }}
-              >
-                <div className="treatment-card-header">
-                  <div>
+        <ScenarioCard
+          title="5세대 비교안"
+          subtitle="입력한 5세대 보험료와 특약 조건 기준"
+          result={target5G}
+        />
+      </div>
+
+      <section
+        className="form-card"
+        style={{
+          padding: "clamp(22px, 4vw, 32px)",
+          borderRadius: "22px",
+          background:
+            "linear-gradient(135deg, #ffffff 0%, #f7fbff 100%)",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "flex-end",
+            justifyContent: "space-between",
+            gap: "16px",
+            flexWrap: "wrap",
+            marginBottom: "18px",
+          }}
+        >
+          <div>
+            <span className="step-badge">BREAK-EVEN</span>
+            <h2 className="card-title" style={{ marginTop: "10px" }}>
+              손익분기 탐색
+            </h2>
+            <p className="card-description" style={{ marginBottom: 0 }}>
+              치료 횟수를 0~50회로 바꾸며 전체 계산 엔진을 다시 실행해
+              유리한 선택지가 바뀌는 구간을 찾습니다.
+            </p>
+          </div>
+        </div>
+
+        <div style={{ display: "grid", gap: "12px" }}>
+          {breakEvenResults.map(({ usage, result: breakEven }) => (
+            <article
+              key={usage.id}
+              style={{
+                display: "grid",
+                gridTemplateColumns:
+                  "minmax(0, 1fr) minmax(140px, auto)",
+                gap: "18px",
+                alignItems: "center",
+                padding: "20px",
+                border: "1px solid var(--color-border)",
+                borderRadius: "16px",
+                background: "#ffffff",
+              }}
+            >
+              <div style={{ minWidth: 0 }}>
+                <p className="amount-label" style={{ marginBottom: "4px" }}>
+                  치료 항목
+                </p>
+                <h3 style={{ margin: "0 0 8px" }}>{usage.treatmentName}</h3>
+
+                {!breakEven ? (
+                  <p className="treatment-meta" style={{ marginBottom: 0 }}>
+                    손익분기 탐색을 실행할 수 없습니다.
+                  </p>
+                ) : (
+                  <>
+                    <p style={{ margin: "0 0 6px", fontWeight: 700 }}>
+                      {breakEven.message}
+                    </p>
                     <span
                       className={
-                        gap.type ===
-                        "NONE"
+                        breakEven.status === "AVAILABLE"
                           ? "status-badge success"
                           : "status-badge warning"
                       }
                     >
-                      {isIncrease
-                        ? "자기부담 증가"
-                        : gap.type ===
-                          "NONE"
-                        ? "추가 변화 없음"
-                        : "확인 필요"}
+                      {breakEven.status === "AVAILABLE"
+                        ? "변곡점 확인"
+                        : breakEven.status}
                     </span>
-
-                    <h3
-                      style={{
-                        margin:
-                          "10px 0 4px",
-                      }}
-                    >
-                      {
-                        gap.treatmentName
-                      }
-                    </h3>
-
-                    <p
-                      className="treatment-meta"
-                      style={{
-                        marginBottom: 0,
-                      }}
-                    >
-                      {gap.message}
-                    </p>
-                  </div>
-
-                  <span className="rule-info">
-                    확인 항목{" "}
-                    {index + 1}
-                  </span>
-                </div>
-
-                {isIncrease &&
-                  gap.differenceAmount !==
-                    null && (
-                  <div
-                    style={{
-                      margin:
-                        "22px 0 18px",
-                      padding:
-                        "18px",
-                      border:
-                        "1px solid var(--color-border)",
-                      borderRadius:
-                        "var(--radius-sm)",
-                      background:
-                        "var(--color-warning-bg)",
-                    }}
-                  >
-                    <p
-                      className="amount-label"
-                      style={{
-                        color:
-                          "var(--color-warning)",
-                      }}
-                    >
-                      5세대 자기부담 증가분
-                    </p>
-
-                    <strong
-                      style={{
-                        display:
-                          "block",
-                        marginTop:
-                          "4px",
-                        color:
-                          "var(--color-text)",
-                        fontSize:
-                          "clamp(1.5rem, 4vw, 2rem)",
-                        letterSpacing:
-                          "-0.04em",
-                      }}
-                    >
-                      +
-                      {gap.differenceAmount.toLocaleString()}
-                      원
-                    </strong>
-                  </div>
-                )}
-
-                <div className="card-grid">
-                  <div
-                    style={{
-                      padding:
-                        "16px",
-                      border:
-                        "1px solid var(--color-border)",
-                      borderRadius:
-                        "var(--radius-sm)",
-                      background:
-                        "var(--color-surface-soft)",
-                    }}
-                  >
-                    <p className="amount-label">
-                      현재 계약 자기부담
-                    </p>
-
-                    <strong
-                      style={{
-                        fontSize:
-                          "1.08rem",
-                      }}
-                    >
-                      {gap.currentSelfPayment ===
-                      null
-                        ? "계산 불가"
-                        : `${gap.currentSelfPayment.toLocaleString()}원`}
-                    </strong>
-                  </div>
-
-                  <div
-                    style={{
-                      padding:
-                        "16px",
-                      border:
-                        "1px solid var(--color-border)",
-                      borderRadius:
-                        "var(--radius-sm)",
-                      background:
-                        "var(--color-primary-050)",
-                    }}
-                  >
-                    <p className="amount-label">
-                      5세대 자기부담
-                    </p>
-
-                    <strong
-                      style={{
-                        fontSize:
-                          "1.08rem",
-                        color:
-                          isIncrease
-                            ? "var(--color-warning)"
-                            : "var(--color-text)",
-                      }}
-                    >
-                      {gap.targetSelfPayment ===
-                      null
-                        ? "계산 불가"
-                        : `${gap.targetSelfPayment.toLocaleString()}원`}
-                    </strong>
-                  </div>
-                </div>
-
-                <div
-                  style={{
-                    display:
-                      "flex",
-                    flexWrap:
-                      "wrap",
-                    gap:
-                      "10px 22px",
-                    marginTop:
-                      "16px",
-                    paddingTop:
-                      "16px",
-                    borderTop:
-                      "1px solid var(--color-border)",
-                  }}
-                >
-                  <div>
-                    <p className="amount-label">
-                      총 치료비
-                    </p>
-
-                    <strong>
-                      {gap.treatmentCost.toLocaleString()}
-                      원
-                    </strong>
-                  </div>
-
-                  {gap.differenceAmount !==
-                    null && (
-                    <div>
-                      <p className="amount-label">
-                        자기부담 차이
-                      </p>
-
-                      <strong>
-                        {gap.differenceAmount.toLocaleString()}
-                        원
-                      </strong>
-                    </div>
-                  )}
-                </div>
-
-                {gap.reasons.length >
-                  0 && (
-                  <div
-                    style={{
-                      marginTop:
-                        "18px",
-                      padding:
-                        "16px",
-                      borderRadius:
-                        "var(--radius-sm)",
-                      background:
-                        "var(--color-surface-soft)",
-                    }}
-                  >
-                    <p
-                      className="amount-label"
-                      style={{
-                        marginBottom:
-                          "8px",
-                      }}
-                    >
-                      판단 근거
-                    </p>
-
-                    {gap.reasons.map(
-                      (
-                        reason,
-                        reasonIndex
-                      ) => (
-                        <p
-                          className="treatment-meta"
-                          key={`${gap.usageId}-${reasonIndex}`}
-                          style={{
-                            margin:
-                              reasonIndex ===
-                              0
-                                ? 0
-                                : "6px 0 0",
-                          }}
-                        >
-                          · {reason}
-                        </p>
-                      )
-                    )}
-                  </div>
-                )}
-              </article>
-            );
-          }
-        )}
-      </section>
-
-      {/* RESULT 5 */}
-      <section>
-        <span className="step-badge">
-          RESULT 5
-        </span>
-
-        <h2>
-          손익분기점
-        </h2>
-
-        <div
-          className="comparison-summary"
-          style={{
-            padding:
-              "clamp(22px, 4vw, 32px)",
-            background:
-              "linear-gradient(135deg, var(--color-primary-050) 0%, #ffffff 78%)",
-          }}
-        >
-          {breakEvenResults.length ===
-          0 ? (
-            <>
-              <span className="status-badge warning">
-                계산 확인 필요
-              </span>
-
-              <h3
-                style={{
-                  margin:
-                    "14px 0 6px",
-                }}
-              >
-                비교할 수 있는 치료 조건이
-                없습니다.
-              </h3>
-
-              <p
-                className="card-description"
-                style={{
-                  marginBottom: 0,
-                }}
-              >
-                치료비와 자기부담 조건이
-                확인되면 어느 시점에서 두
-                선택지의 부담이 비슷해지는지
-                보여드립니다.
-              </p>
-            </>
-          ) : availableBreakEvenCount >
-            0 ? (
-            <>
-              <span className="status-badge success">
-                손익분기점 확인 가능
-              </span>
-
-              <h3
-                style={{
-                  margin:
-                    "14px 0 6px",
-                }}
-              >
-                의료이용이 늘어날 때 부담이
-                바뀌는 지점을 확인해보세요.
-              </h3>
-
-              <p
-                className="card-description"
-                style={{
-                  marginBottom: 0,
-                }}
-              >
-                현재 입력한 회당 비용과
-                자기부담 조건이 유지된다는
-                가정으로 계산한 기준입니다.
-              </p>
-            </>
-          ) : (
-            <>
-              <span className="status-badge warning">
-                단일 기준 없음
-              </span>
-
-              <h3
-                style={{
-                  margin:
-                    "14px 0 6px",
-                }}
-              >
-                현재 조건에서는 하나의
-                손익분기점으로 정리하기
-                어렵습니다.
-              </h3>
-
-              <p
-                className="card-description"
-                style={{
-                  marginBottom: 0,
-                }}
-              >
-                보장 제외나 확인되지 않은
-                자기부담 조건은 임의의
-                숫자로 만들지 않습니다.
-              </p>
-            </>
-          )}
-        </div>
-
-        {breakEvenResults.map(
-          (
-            {
-              usage,
-              result,
-            },
-            index
-          ) => {
-            const threshold =
-              result.breakEvenFrequency;
-
-            const progress =
-              result.status ===
-                "AVAILABLE" &&
-              threshold !== null &&
-              threshold > 0
-                ? Math.min(
-                    100,
-                    Math.max(
-                      0,
-                      (usage.frequency /
-                        threshold) *
-                        100
-                    )
-                  )
-                : 0;
-
-            return (
-              <article
-                className="treatment-card"
-                key={`break-even-${usage.id}`}
-                style={{
-                  marginTop: "16px",
-                }}
-              >
-                <div className="treatment-card-header">
-                  <div>
-                    <span className="status-badge">
-                      치료 {index + 1}
-                    </span>
-
-                    <h3
-                      style={{
-                        margin:
-                          "10px 0 4px",
-                      }}
-                    >
-                      {
-                        usage.treatmentName
-                      }
-                    </h3>
-
-                    <p
-                      className="treatment-meta"
-                      style={{
-                        marginBottom: 0,
-                      }}
-                    >
-                      현재 입력{" "}
-                      <strong>
-                        {usage.frequency}
-                        회
-                      </strong>
-                      {" · "}
-                      회당{" "}
-                      <strong>
-                        {usage.unitCost.toLocaleString()}
-                        원
-                      </strong>
-                    </p>
-                  </div>
-
-                  <span
-                    className={
-                      result.status ===
-                      "AVAILABLE"
-                        ? "status-badge success"
-                        : "status-badge warning"
-                    }
-                  >
-                    {result.status ===
-                    "AVAILABLE"
-                      ? "기준 산출"
-                      : "확인 필요"}
-                  </span>
-                </div>
-
-                {result.status ===
-                "AVAILABLE" ? (
-                  <>
-                    <div
-                      style={{
-                        margin:
-                          "24px 0 20px",
-                        padding:
-                          "18px",
-                        border:
-                          "1px solid var(--color-border)",
-                        borderRadius:
-                          "var(--radius-sm)",
-                        background:
-                          "var(--color-surface-soft)",
-                      }}
-                    >
-                      <p
-                        className="amount-label"
-                        style={{
-                          marginBottom:
-                            "8px",
-                        }}
-                      >
-                        이용 횟수 기준
-                      </p>
-
-                      <div
-                        style={{
-                          display:
-                            "flex",
-                          alignItems:
-                            "baseline",
-                          flexWrap:
-                            "wrap",
-                          gap:
-                            "6px 10px",
-                        }}
-                      >
-                        <strong
-                          style={{
-                            color:
-                              "var(--color-primary-800)",
-                            fontSize:
-                              "clamp(1.55rem, 4vw, 2.15rem)",
-                            letterSpacing:
-                              "-0.045em",
-                          }}
-                        >
-                          {result.breakEvenFrequency ===
-                          null
-                            ? "-"
-                            : result.breakEvenFrequency.toFixed(
-                                2
-                              )}
-                          회
-                        </strong>
-
-                        <span
-                          className="treatment-meta"
-                          style={{
-                            margin: 0,
-                          }}
-                        >
-                          부근에서 두 선택지의
-                          예상 부담이 비슷해집니다.
-                        </span>
-                      </div>
-
-                      <div
-                        style={{
-                          position:
-                            "relative",
-                          height:
-                            "8px",
-                          margin:
-                            "24px 2px 10px",
-                          borderRadius:
-                            "999px",
-                          background:
-                            "var(--color-primary-100)",
-                          overflow:
-                            "hidden",
-                        }}
-                        aria-hidden="true"
-                      >
-                        <div
-                          style={{
-                            width:
-                              `${progress}%`,
-                            height:
-                              "100%",
-                            borderRadius:
-                              "999px",
-                            background:
-                              "var(--color-primary-700)",
-                            transition:
-                              "width 420ms var(--ease-standard)",
-                          }}
-                        />
-                      </div>
-
-                      <div
-                        style={{
-                          display:
-                            "flex",
-                          justifyContent:
-                            "space-between",
-                          gap: "12px",
-                          color:
-                            "var(--color-text-sub)",
-                          fontSize:
-                            "0.82rem",
-                          fontWeight:
-                            700,
-                        }}
-                      >
-                        <span>
-                          현재{" "}
-                          {usage.frequency}
-                          회
-                        </span>
-
-                        <span>
-                          정수 기준{" "}
-                          {result.firstWholeFrequency ===
-                          null
-                            ? "-"
-                            : `${result.firstWholeFrequency}회`}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div
-                      className="card-grid"
-                      style={{
-                        marginTop: 0,
-                      }}
-                    >
-                      <div
-                        style={{
-                          padding:
-                            "16px",
-                          borderRadius:
-                            "var(--radius-sm)",
-                          background:
-                            "var(--color-primary-050)",
-                        }}
-                      >
-                        <p className="amount-label">
-                          기준 치료비
-                        </p>
-
-                        <strong
-                          style={{
-                            fontSize:
-                              "1.08rem",
-                          }}
-                        >
-                          {result.breakEvenTreatmentCost?.toLocaleString()}
-                          원
-                        </strong>
-                      </div>
-
-                      <div
-                        style={{
-                          padding:
-                            "16px",
-                          borderRadius:
-                            "var(--radius-sm)",
-                          background:
-                            "var(--color-primary-050)",
-                        }}
-                      >
-                        <p className="amount-label">
-                          실제 적용 판단
-                        </p>
-
-                        <strong
-                          style={{
-                            fontSize:
-                              "1.08rem",
-                          }}
-                        >
-                          {result.firstWholeFrequency ===
-                          null
-                            ? "확인 필요"
-                            : `${result.firstWholeFrequency}회부터 비교`}
-                        </strong>
-                      </div>
-                    </div>
-
-                    <p
-                      style={{
-                        margin:
-                          "18px 0 0",
-                        paddingTop:
-                          "16px",
-                        borderTop:
-                          "1px solid var(--color-border)",
-                        color:
-                          "var(--color-text-sub)",
-                        fontSize:
-                          "0.9rem",
-                        lineHeight:
-                          1.65,
-                      }}
-                    >
-                      {result.message}
-                    </p>
                   </>
-                ) : (
-                  <div
-                    className="notice-box warning"
-                    style={{
-                      marginTop:
-                        "20px",
-                    }}
-                  >
-                    <strong>
-                      계산하지 않은 이유
-                    </strong>
-
-                    <p
-                      className="treatment-meta"
-                      style={{
-                        margin:
-                          "8px 0 0",
-                      }}
-                    >
-                      {result.reason ??
-                        "현재 조건에서는 단일 손익분기점을 정할 수 없습니다."}
-                    </p>
-                  </div>
                 )}
-              </article>
-            );
-          }
-        )}
-      </section>
+              </div>
 
-      {/* RESULT 6 */}
-      <section>
-        <span className="step-badge">
-          RESULT 6
-        </span>
-
-        <h2>
-          결과 해설
-        </h2>
-
-        <div
-          className="comparison-summary"
-          style={{
-            padding: "clamp(22px, 4vw, 34px)",
-            background:
-              "linear-gradient(135deg, var(--color-primary-050) 0%, #ffffff 72%)",
-            borderColor:
-              "var(--color-primary-100)",
-          }}
-        >
-          <span className="status-badge primary">
-            핵심 요약
-          </span>
-
-          <p
-            style={{
-              margin:
-                "16px 0 0",
-              color:
-                "var(--color-text)",
-              fontSize:
-                "clamp(1.08rem, 2.2vw, 1.32rem)",
-              fontWeight: 800,
-              lineHeight: 1.55,
-              letterSpacing:
-                "-0.025em",
-            }}
-          >
-            {explanationResult.summary}
-          </p>
-
-          <p
-            className="card-description"
-            style={{
-              margin:
-                "12px 0 0",
-              fontSize:
-                "0.9rem",
-            }}
-          >
-            입력한 조건과 현재 룰셋을
-            기준으로 정리한 모의 계산
-            결과입니다.
-          </p>
-        </div>
-
-        <div
-          className="app-card"
-          style={{
-            marginTop: "16px",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems:
-                "center",
-              justifyContent:
-                "space-between",
-              gap: "12px",
-              marginBottom:
-                "18px",
-            }}
-          >
-            <div>
-              <p
-                className="amount-label"
-                style={{
-                  marginBottom:
-                    "4px",
-                }}
-              >
-                비교 포인트
-              </p>
-
-              <h3
-                style={{
-                  marginBottom: 0,
-                }}
-              >
-                무엇이 달라졌는지 확인해보세요
-              </h3>
-            </div>
-
-            <span className="rule-info">
-              {explanationResult.details.length}
-              개 항목
-            </span>
-          </div>
-
-          <div
-            style={{
-              display: "grid",
-              gap: "10px",
-            }}
-          >
-            {explanationResult.details.map(
-              (detail, index) => (
+              {breakEven?.threshold !== null && breakEven?.threshold !== undefined && (
                 <div
-                  key={`explanation-detail-${index}`}
                   style={{
-                    display:
-                      "grid",
-                    gridTemplateColumns:
-                      "34px minmax(0, 1fr)",
-                    alignItems:
-                      "start",
-                    gap: "12px",
-                    padding:
-                      "15px 16px",
-                    border:
-                      "1px solid var(--color-border)",
-                    borderRadius:
-                      "var(--radius-sm)",
-                    background:
-                      "var(--color-surface-soft)",
+                    textAlign: "center",
+                    padding: "14px 16px",
+                    borderRadius: "14px",
+                    background: "var(--color-primary-050)",
+                    border: "1px solid var(--color-primary-100)",
                   }}
                 >
-                  <span
-                    aria-hidden="true"
-                    style={{
-                      display:
-                        "grid",
-                      placeItems:
-                        "center",
-                      width: "30px",
-                      height: "30px",
-                      borderRadius:
-                        "50%",
-                      background:
-                        "var(--color-primary-100)",
-                      color:
-                        "var(--color-primary-800)",
-                      fontSize:
-                        "0.8rem",
-                      fontWeight:
-                        900,
-                    }}
-                  >
-                    {index + 1}
-                  </span>
-
-                  <p
-                    style={{
-                      margin: 0,
-                      color:
-                        "var(--color-text)",
-                      fontSize:
-                        "0.94rem",
-                      fontWeight:
-                        650,
-                      lineHeight:
-                        1.65,
-                    }}
-                  >
-                    {detail}
+                  <p className="amount-label" style={{ marginBottom: "4px" }}>
+                    기준 횟수
                   </p>
+                  <strong
+                    style={{
+                      display: "block",
+                      color: "var(--color-primary-800)",
+                      fontSize: "1.5rem",
+                    }}
+                  >
+                    {breakEven.threshold}회
+                  </strong>
                 </div>
-              )
-            )}
-          </div>
+              )}
 
-          {explanationResult.warnings.length >
-            0 && (
-            <div
-              style={{
-                marginTop:
-                  "20px",
-                paddingTop:
-                  "18px",
-                borderTop:
-                  "1px solid var(--color-border)",
-              }}
-            >
-              <p
-                className="amount-label"
-                style={{
-                  marginBottom:
-                    "10px",
-                  color:
-                    "var(--color-warning)",
-                }}
-              >
-                확인해 주세요
-              </p>
-
-              <div
-                style={{
-                  display:
-                    "grid",
-                  gap: "10px",
-                }}
-              >
-                {explanationResult.warnings.map(
-                  (
-                    warning,
-                    index
-                  ) => (
-                    <div
-                      className="notice-box warning"
-                      key={`explanation-warning-${index}`}
-                      style={{
-                        marginTop:
-                          0,
-                      }}
-                    >
-                      {warning}
-                    </div>
-                  )
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* RESULT 7 */}
-      <section>
-        <span className="step-badge">
-          RESULT 7
-        </span>
-
-        <h2>
-          보험사에 확인할 질문
-        </h2>
-
-        <div className="app-card">
-          <p className="card-description">
-            현재 MVP에서 확정할 수 없는
-            항목을 중심으로 실제 보험사에
-            확인하면 좋은 질문입니다.
-          </p>
-
-          {uniqueInsurerQuestions.map(
-            (
-              question,
-              index
-            ) => (
-              <div
-                key={`${question}-${index}`}
-                className="notice-box"
-              >
-                <strong>
-                  Q{index + 1}.
-                </strong>{" "}
-                {question}
-              </div>
-            )
-          )}
+              {breakEven && breakEven.warnings.length > 0 && (
+                <div
+                  className="notice-box warning"
+                  style={{ gridColumn: "1 / -1", margin: 0 }}
+                >
+                  {breakEven.warnings.map((warning) => (
+                    <p key={warning}>{warning}</p>
+                  ))}
+                </div>
+              )}
+            </article>
+          ))}
         </div>
       </section>
 
@@ -3205,6 +1376,9 @@ function M04ResultPage() {
         <div
           className="comparison-summary"
           style={{
+            width: "100%",
+            minWidth: 0,
+            boxSizing: "border-box",
             padding:
               "clamp(22px, 4vw, 32px)",
             background:
@@ -3215,13 +1389,19 @@ function M04ResultPage() {
             style={{
               display: "flex",
               alignItems: "flex-start",
-              justifyContent: "space-between",
+              justifyContent:
+                "space-between",
               gap: "16px",
               flexWrap: "wrap",
               marginBottom: "22px",
             }}
           >
-            <div>
+            <div
+              style={{
+                flex: "1 1 420px",
+                minWidth: 0,
+              }}
+            >
               <p
                 className="amount-label"
                 style={{
@@ -3264,7 +1444,8 @@ function M04ResultPage() {
             style={{
               overflowX: "auto",
               paddingBottom: "8px",
-              WebkitOverflowScrolling: "touch",
+              WebkitOverflowScrolling:
+                "touch",
             }}
           >
             <div
@@ -3301,30 +1482,36 @@ function M04ResultPage() {
                     generation === 5;
 
                   const isHighlighted =
-                    isCurrent || isTarget;
+                    isCurrent ||
+                    isTarget;
 
                   return (
                     <div
                       key={`generation-${generation}`}
                       style={{
-                        position: "relative",
+                        position:
+                          "relative",
                         zIndex: 1,
                         padding: "0 6px",
-                        textAlign: "center",
+                        textAlign:
+                          "center",
                       }}
                     >
                       <div
                         style={{
                           display: "grid",
-                          placeItems: "center",
+                          placeItems:
+                            "center",
                           width: "62px",
                           height: "62px",
-                          margin: "0 auto 12px",
+                          margin:
+                            "0 auto 12px",
                           border:
                             isHighlighted
                               ? "2px solid var(--color-primary-700)"
                               : "2px solid var(--color-primary-100)",
-                          borderRadius: "50%",
+                          borderRadius:
+                            "50%",
                           background:
                             isHighlighted
                               ? "var(--color-primary-700)"
@@ -3333,7 +1520,8 @@ function M04ResultPage() {
                             isHighlighted
                               ? "#ffffff"
                               : "var(--color-primary-800)",
-                          fontSize: "1.05rem",
+                          fontSize:
+                            "1.05rem",
                           fontWeight: 900,
                           boxShadow:
                             isHighlighted
@@ -3346,8 +1534,10 @@ function M04ResultPage() {
 
                       <strong
                         style={{
-                          display: "block",
-                          marginBottom: "7px",
+                          display:
+                            "block",
+                          marginBottom:
+                            "7px",
                           color:
                             "var(--color-text)",
                         }}
@@ -3357,7 +1547,8 @@ function M04ResultPage() {
 
                       <div
                         style={{
-                          minHeight: "28px",
+                          minHeight:
+                            "28px",
                         }}
                       >
                         {isCurrent && (
@@ -3391,7 +1582,7 @@ function M04ResultPage() {
             style={{
               display: "grid",
               gridTemplateColumns:
-                "repeat(auto-fit, minmax(210px, 1fr))",
+                "repeat(auto-fit, minmax(min(100%, 210px), 1fr))",
               gap: "10px",
               marginTop: "22px",
             }}
@@ -3451,8 +1642,7 @@ function M04ResultPage() {
           <p
             className="treatment-meta"
             style={{
-              margin:
-                "18px 0 0",
+              margin: "18px 0 0",
               paddingTop: "16px",
               borderTop:
                 "1px solid var(--color-border)",
@@ -3461,248 +1651,210 @@ function M04ResultPage() {
             세대 구분만으로 실제 보장 내용을
             확정할 수는 없습니다. 가입 시기,
             상품, 특약과 약관에 따라 세부
-            조건이 달라질 수 있으므로 결과의
-            Rule ID와 보험사 확인 질문을 함께
-            확인해 주세요.
+            조건이 달라질 수 있으므로 계산 결과와
+            확인 필요 항목을 함께 확인해 주세요.
           </p>
         </div>
       </section>
 
-      {/* 계산 구성 */}
-      <section>
-        <h2>
-          계산 구성
+      <section className="form-card">
+        <h2 className="card-title">
+          계산 가정 및 확인 필요 사항
         </h2>
 
-        <div className="app-card">
-          <div className="form-grid">
-            <div>
-              <p className="amount-label">
-                보험료
-              </p>
-
-              <strong>
-                월 보험료 × 12개월
-              </strong>
-            </div>
-
-            <div>
-              <p className="amount-label">
-                의료비
-              </p>
-
-              <strong>
-                횟수 × 회당 비용
-              </strong>
-            </div>
-
-            <div>
-              <p className="amount-label">
-                1년 총 부담
-              </p>
-
-              <strong>
-                연 보험료 +
-                자기부담금 +
-                보장 제외 의료비
-              </strong>
-            </div>
+        <div className="form-grid">
+          <div>
+            <p className="amount-label">
+              C 미입력 시 M 전체 보장대상
+            </p>
+            <strong>
+              {calculationAssumptions
+                .assumeEntireMedicalCostCovered
+                ? "적용"
+                : "적용 안 함"}
+            </strong>
           </div>
 
-          <div className="notice-box">
-            실제 적용이 확인된 공식
-            할인이 있는 경우에만
-            총부담에서 차감해야 합니다.
-            현재 MVP에는 확인된 할인
-            입력값이 없어 임의로
-            차감하지 않습니다.
+          <div>
+            <p className="amount-label">
+              기존 한도·상한 사용량 0
+            </p>
+            <strong>
+              {calculationAssumptions
+                .assumeNoPriorLimitUsage
+                ? "적용"
+                : "적용 안 함"}
+            </strong>
+          </div>
+
+          <div>
+            <p className="amount-label">
+              여러 회 치료를 서로 다른 계산 단위로 처리
+            </p>
+            <strong>
+              {calculationAssumptions
+                .assumeEachOccurrenceSeparate
+                ? "적용"
+                : "적용 안 함"}
+            </strong>
           </div>
         </div>
+
+        {!calculationAssumptions
+          .assumeEntireMedicalCostCovered && (
+          <div className="notice-box">
+            C를 입력하지 않은 치료는 M 전체를 자동으로 보장대상으로 간주하지 않습니다.
+          </div>
+        )}
+
+        {!calculationAssumptions
+          .assumeNoPriorLimitUsage && (
+          <div className="notice-box">
+            기존 지급한도 사용액과 자기부담상한 누적액을 확인하지 않은 경우 0원으로 자동 처리하지 않습니다.
+          </div>
+        )}
+
+        {!calculationAssumptions
+          .assumeEachOccurrenceSeparate && (
+          <div className="notice-box">
+            날짜·입원건 정보가 없는 여러 회 치료를 서로 다른 계산 단위로 자동 처리하지 않습니다.
+          </div>
+        )}
+
+        <div className="notice-box">
+          선택형 할인특약(C안)은 실제 시행 여부, 대상 상품, 보험료 견적이 확인되기 전까지 정보성 옵션으로만 표시하며 현재 총부담 계산에는 반영하지 않습니다.
+        </div>
+
+        {result.warnings.filter(
+          (warning) =>
+            !warning.includes(
+              "선택형 할인특약(C안)"
+            )
+        ).length > 0 && (
+          <div className="notice-box warning">
+            {result.warnings
+              .filter(
+                (warning) =>
+                  !warning.includes(
+                    "선택형 할인특약(C안)"
+                  )
+              )
+              .map((warning) => (
+                <p key={warning}>
+                  {warning}
+                </p>
+              ))}
+          </div>
+        )}
       </section>
 
-      <section>
-        <h2>
-          계산 정보
-        </h2>
-
-        <div
-          className="app-card"
+      <details
+        style={{
+          border: "1px solid var(--color-border)",
+          borderRadius: "18px",
+          background: "#ffffff",
+          overflow: "hidden",
+        }}
+      >
+        <summary
           style={{
-            background:
-              "var(--color-surface-soft)",
+            cursor: "pointer",
+            padding: "18px 20px",
+            fontWeight: 900,
+            color: "var(--color-text)",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: "12px",
           }}
         >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "flex-start",
-              justifyContent: "space-between",
-              gap: "12px",
-              flexWrap: "wrap",
-              marginBottom: "18px",
-            }}
-          >
-            <div>
-              <p
-                className="amount-label"
-                style={{
-                  marginBottom: "4px",
-                }}
-              >
-                결과 재현 정보
-              </p>
+          <span>기술 정보 · 재현 정보</span>
+          <span className="rule-info">필요할 때 펼치기</span>
+        </summary>
 
-              <h3
-                style={{
-                  marginBottom: "6px",
-                }}
-              >
-                같은 입력과 룰셋은 같은 결과를 냅니다
-              </h3>
-
-              <p
-                className="treatment-meta"
-                style={{
-                  marginBottom: 0,
-                  maxWidth: "700px",
-                }}
-              >
-                아래 식별값은 보험정보 저장용이
-                아니라 동일한 계산 조건을 다시
-                확인하기 위한 MVP 추적 정보입니다.
-              </p>
-            </div>
-
-            <span className="status-badge success">
-              결정론적 계산
-            </span>
+        <div
+          style={{
+            padding: "0 20px 20px",
+            display: "grid",
+            gridTemplateColumns:
+              "repeat(auto-fit, minmax(min(100%, 180px), 1fr))",
+            gap: "12px",
+          }}
+        >
+          <div style={{ padding: "14px", borderRadius: "12px", background: "var(--color-surface-soft)" }}>
+            <p className="amount-label">엔진 버전</p>
+            <strong>{result.engineVersion}</strong>
           </div>
-
-          <div className="form-grid">
-            <div
-              style={{
-                padding: "15px 16px",
-                border:
-                  "1px solid var(--color-border)",
-                borderRadius:
-                  "var(--radius-sm)",
-                background: "#ffffff",
-              }}
-            >
-              <p className="amount-label">
-                계산 엔진
-              </p>
-
-              <strong>
-                {
-                  calculationResult.engineVersion
-                }
-              </strong>
-            </div>
-
-            <div
-              style={{
-                padding: "15px 16px",
-                border:
-                  "1px solid var(--color-border)",
-                borderRadius:
-                  "var(--radius-sm)",
-                background: "#ffffff",
-              }}
-            >
-              <p className="amount-label">
-                룰셋 버전
-              </p>
-
-              <strong>
-                {
-                  calculationResult.rulesetVersion
-                }
-              </strong>
-            </div>
-
-            <div
-              style={{
-                minWidth: 0,
-                padding: "15px 16px",
-                border:
-                  "1px solid var(--color-border)",
-                borderRadius:
-                  "var(--radius-sm)",
-                background: "#ffffff",
-              }}
-            >
-              <p className="amount-label">
-                입력 식별값
-              </p>
-
-              <strong
-                style={{
-                  display: "block",
-                  overflowWrap: "anywhere",
-                  fontFamily:
-                    "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
-                  fontSize: "0.9rem",
-                }}
-              >
-                {
-                  calculationResult.inputHash
-                }
-              </strong>
-            </div>
+          <div style={{ padding: "14px", borderRadius: "12px", background: "var(--color-surface-soft)" }}>
+            <p className="amount-label">룰셋 버전</p>
+            <strong>{result.rulesetVersion}</strong>
           </div>
-
-          <div
-            className="notice-box"
-            style={{
-              marginTop: "16px",
-            }}
-          >
-            입력 식별값은 주민번호·증권번호 같은
-            개인정보가 아니며, 현재 입력 조건이
-            바뀌면 다른 값으로 생성됩니다.
+          <div style={{ padding: "14px", borderRadius: "12px", background: "var(--color-surface-soft)" }}>
+            <p className="amount-label">입력 해시</p>
+            <strong>{result.inputHash}</strong>
           </div>
         </div>
-      </section>
+      </details>
 
       <div className="notice-box warning">
-        본 결과는 사용자가 입력한 정보와
-        현재 MVP 룰셋을 기반으로 한
-        모의 계산이며 보험상품 전환을
-        권유하지 않습니다. 실제 보험금,
-        가입 가능 여부, 전환 보험료는
-        보험사 확인이 필요합니다.
+        본 결과는 입력값과 현재 룰셋을 이용한 모의 계산입니다. 실제 보험금, 전환 가능 여부, 보험료를 확정하거나 보험상품 전환을 권유하지 않습니다.
       </div>
 
-      <div className="button-group">
+      <div
+        className="button-group"
+        style={{
+          display: "grid",
+          gridTemplateColumns:
+            "repeat(auto-fit, minmax(min(100%, 180px), 1fr))",
+          gap: "10px",
+          marginTop: "18px",
+        }}
+      >
         <button
           type="button"
-          className="secondary-button"
-          onClick={() =>
-            navigate("/confirm")
-          }
+          onClick={() => navigate("/confirm")}
+          style={{
+            minHeight: "48px",
+            border: "1px solid var(--color-border)",
+            borderRadius: "12px",
+            background: "#ffffff",
+            color: "var(--color-text)",
+            fontWeight: 800,
+            cursor: "pointer",
+          }}
         >
-          이전
+          ← 이전
+        </button>
+
+        <button
+          type="button"
+          onClick={() => navigate("/input")}
+          style={{
+            minHeight: "48px",
+            border: "1px solid var(--color-primary-200, #b9d1ea)",
+            borderRadius: "12px",
+            background: "var(--color-primary-050)",
+            color: "var(--color-primary-800)",
+            fontWeight: 800,
+            cursor: "pointer",
+          }}
+        >
+          입력 수정
         </button>
 
         <button
           type="button"
           className="primary-button"
-          onClick={
-            handleStartOver
-          }
+          onClick={handleStartOver}
+          style={{ minHeight: "48px", borderRadius: "12px" }}
         >
-          새 비교 시작하기
+          새 비교 시작
         </button>
       </div>
 
       {isResetModalOpen && (
         <div
-          className="calculation-modal-backdrop"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="reset-modal-title"
-          aria-describedby="reset-modal-description"
+          role="presentation"
           onMouseDown={(event) => {
             if (
               event.target ===
@@ -3711,125 +1863,63 @@ function M04ResultPage() {
               handleCancelStartOver();
             }
           }}
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 9999,
+            display: "grid",
+            placeItems: "center",
+            padding: "20px",
+            background:
+              "rgba(15, 23, 42, 0.48)",
+            backdropFilter:
+              "blur(4px)",
+          }}
         >
-          <div
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="reset-dialog-title"
+            aria-describedby="reset-dialog-description"
+            className="app-card"
             style={{
-              width: "min(92vw, 440px)",
+              width:
+                "min(100%, 460px)",
+              margin: 0,
               padding:
-                "clamp(24px, 5vw, 34px)",
-              border:
-                "1px solid rgba(255,255,255,0.75)",
-              borderRadius:
-                "24px",
-              background:
-                "#ffffff",
+                "clamp(22px, 5vw, 30px)",
+              boxSizing:
+                "border-box",
               boxShadow:
-                "var(--shadow-modal)",
-              animation:
-                "modalPop 240ms var(--ease-standard) both",
+                "0 24px 70px rgba(15, 23, 42, 0.24)",
             }}
           >
-            <div
-              style={{
-                display: "grid",
-                placeItems: "center",
-                width: "54px",
-                height: "54px",
-                marginBottom: "18px",
-                borderRadius: "16px",
-                background:
-                  "var(--color-warning-bg)",
-                color:
-                  "var(--color-warning)",
-              }}
-              aria-hidden="true"
-            >
-              <svg
-                width="27"
-                height="27"
-                viewBox="0 0 24 24"
-                fill="none"
-              >
-                <path
-                  d="M12 9v4"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M12 17h.01"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M10.3 3.8 2.4 17.5A2 2 0 0 0 4.1 20h15.8a2 2 0 0 0 1.7-2.5L13.7 3.8a2 2 0 0 0-3.4 0Z"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-
-            <p
-              className="amount-label"
-              style={{
-                marginBottom: "6px",
-              }}
-            >
-              새 비교 시작
-            </p>
+            <span className="step-badge">
+              다시 시작
+            </span>
 
             <h2
-              id="reset-modal-title"
+              id="reset-dialog-title"
+              className="card-title"
               style={{
-                marginBottom: "10px",
-                fontSize:
-                  "clamp(1.35rem, 4vw, 1.65rem)",
+                marginTop: "10px",
               }}
             >
-              지금 입력한 내용을
-              초기화할까요?
+              새 비교를 시작할까요?
             </h2>
 
             <p
-              id="reset-modal-description"
+              id="reset-dialog-description"
               className="card-description"
-              style={{
-                marginBottom: 0,
-                lineHeight: 1.65,
-              }}
             >
-              현재 비교 결과와 보험·예정 치료
-              입력값이 모두 지워지고 시작
-              화면으로 돌아갑니다.
+              현재 입력 정보와 계산 결과가 모두 초기화됩니다.
+              이 작업은 되돌릴 수 없습니다.
             </p>
 
             <div
+              className="button-group"
               style={{
-                marginTop: "18px",
-                padding: "14px 15px",
-                borderRadius:
-                  "var(--radius-sm)",
-                background:
-                  "var(--color-surface-soft)",
-                color:
-                  "var(--color-text-sub)",
-                fontSize: "0.88rem",
-                lineHeight: 1.55,
-              }}
-            >
-              필요한 결과는 먼저 확인한 뒤
-              새 비교를 시작해 주세요.
-            </div>
-
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns:
-                  "minmax(0, 1fr) minmax(0, 1.2fr)",
-                gap: "10px",
-                marginTop: "24px",
+                marginTop: "22px",
               }}
             >
               <button
@@ -3840,34 +1930,20 @@ function M04ResultPage() {
                 }
                 autoFocus
               >
-                계속 보기
+                취소
               </button>
 
               <button
                 type="button"
+                className="primary-button"
                 onClick={
                   handleConfirmStartOver
                 }
-                style={{
-                  minHeight: "48px",
-                  padding:
-                    "12px 16px",
-                  border:
-                    "1px solid var(--color-primary-700)",
-                  borderRadius:
-                    "var(--radius-sm)",
-                  background:
-                    "var(--color-primary-700)",
-                  color: "#ffffff",
-                  fontWeight: 800,
-                  boxShadow:
-                    "0 8px 18px rgba(29, 86, 143, 0.18)",
-                }}
               >
                 초기화하고 새 비교
               </button>
             </div>
-          </div>
+          </section>
         </div>
       )}
     </main>
