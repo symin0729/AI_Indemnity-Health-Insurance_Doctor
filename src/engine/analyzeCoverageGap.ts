@@ -1,13 +1,21 @@
 import type {
-  ScenarioItemResult,
-} from "./calculateScenario";
+  MedicalUsage,
+} from "../domain/medical";
+
+import type {
+  SelfPaymentResult,
+} from "./calculateSelfPayment";
 
 export type CoverageGapType =
   | "NONE"
-  | "COVERAGE_EXCLUDED"
-  | "SELF_PAYMENT_INCREASE"
   | "INPUT_CONFIRMATION_REQUIRED"
-  | "CALCULATION_CONFIRMATION_REQUIRED";
+  | "CALCULATION_UNAVAILABLE"
+  | "SELF_PAYMENT_INCREASE";
+
+export type CoverageGapLevel =
+  | "INFO"
+  | "WARNING"
+  | "RISK";
 
 export interface CoverageGapResult {
   usageId: string;
@@ -16,365 +24,283 @@ export interface CoverageGapResult {
 
   type: CoverageGapType;
 
+  level: CoverageGapLevel;
+
   title: string;
 
   message: string;
 
   treatmentCost: number;
 
-  currentSelfPayment:
-    number | null;
+  currentSelfPayment: number | null;
 
-  targetSelfPayment:
-    number | null;
+  targetSelfPayment: number | null;
 
-  currentExcluded:
-    number | null;
+  differenceAmount: number | null;
 
-  targetExcluded:
-    number | null;
+  currentRuleId: string | null;
 
-  differenceAmount:
-    number | null;
+  targetRuleId: string | null;
+
+  requiresConfirmation: boolean;
 
   reasons: string[];
-
-  currentRuleId:
-    string | null;
-
-  targetRuleId:
-    string | null;
 }
 
-interface AnalyzeCoverageGapItem {
-  currentItem: ScenarioItemResult;
+export interface AnalyzeCoverageGapItem {
+  usage: MedicalUsage;
 
-  targetItem: ScenarioItemResult;
+  treatmentCost: number;
+
+  currentSelfPaymentResult:
+    SelfPaymentResult;
+
+  targetSelfPaymentResult:
+    SelfPaymentResult;
+}
+
+export function analyzeCoverageGap({
+  usage,
+  treatmentCost,
+  currentSelfPaymentResult,
+  targetSelfPaymentResult,
+}: AnalyzeCoverageGapItem): CoverageGapResult {
+  const baseResult = {
+    usageId: usage.id,
+
+    treatmentName:
+      usage.treatmentName,
+
+    treatmentCost,
+
+    currentSelfPayment:
+      currentSelfPaymentResult.amount,
+
+    targetSelfPayment:
+      targetSelfPaymentResult.amount,
+
+    currentRuleId:
+      currentSelfPaymentResult.ruleId,
+
+    targetRuleId:
+      targetSelfPaymentResult.ruleId,
+  };
+
+  // ========================================
+  // 1. 사용자 확인이 필요한 입력
+  // ========================================
+
+  if (
+    usage.benefitClass ===
+      "UNKNOWN" ||
+    usage.severityClass ===
+      "UNKNOWN"
+  ) {
+    const reasons: string[] =
+      [];
+
+    if (
+      usage.benefitClass ===
+      "UNKNOWN"
+    ) {
+      reasons.push(
+        "급여/비급여 여부 확인이 필요합니다."
+      );
+    }
+
+    if (
+      usage.severityClass ===
+      "UNKNOWN"
+    ) {
+      reasons.push(
+        "중증/비중증 여부 확인이 필요합니다."
+      );
+    }
+
+    return {
+      ...baseResult,
+
+      type:
+        "INPUT_CONFIRMATION_REQUIRED",
+
+      level: "WARNING",
+
+      title:
+        "입력 정보 확인 필요",
+
+      message:
+        "미확인 분류가 있어 현재 계약과 5세대의 자기부담 차이를 확정하지 않습니다.",
+
+      differenceAmount: null,
+
+      requiresConfirmation: true,
+
+      reasons,
+    };
+  }
+
+  // ========================================
+  // 2. 현재 계약 계산 불가
+  // ========================================
+
+  if (
+    currentSelfPaymentResult.amount ===
+    null
+  ) {
+    return {
+      ...baseResult,
+
+      type:
+        "CALCULATION_UNAVAILABLE",
+
+      level: "WARNING",
+
+      title:
+        "현재 계약 계산 확인 필요",
+
+      message:
+        "현재 계약에 적용할 계산 룰이 충분하지 않아 보장 공백이나 자기부담 증가를 확정하지 않습니다.",
+
+      differenceAmount: null,
+
+      requiresConfirmation: true,
+
+      reasons: [
+        currentSelfPaymentResult.warning ??
+          "현재 계약 계산 룰 확인이 필요합니다.",
+      ],
+    };
+  }
+
+  // ========================================
+  // 3. 5세대 계산 불가
+  // ========================================
+
+  if (
+    targetSelfPaymentResult.amount ===
+    null
+  ) {
+    return {
+      ...baseResult,
+
+      type:
+        "CALCULATION_UNAVAILABLE",
+
+      level: "WARNING",
+
+      title:
+        "5세대 계산 확인 필요",
+
+      message:
+        "5세대 비교 조건에 적용할 계산 룰이 충분하지 않아 자기부담 차이를 확정하지 않습니다.",
+
+      differenceAmount: null,
+
+      requiresConfirmation: true,
+
+      reasons: [
+        targetSelfPaymentResult.warning ??
+          "5세대 계산 룰 확인이 필요합니다.",
+      ],
+    };
+  }
+
+  // ========================================
+  // 4. 자기부담 차이
+  // ========================================
+
+  const differenceAmount =
+    targetSelfPaymentResult.amount -
+    currentSelfPaymentResult.amount;
+
+  if (differenceAmount > 0) {
+    return {
+      ...baseResult,
+
+      type:
+        "SELF_PAYMENT_INCREASE",
+
+      level: "RISK",
+
+      title:
+        "5세대 자기부담 증가",
+
+      message:
+        `동일한 치료 조건에서 5세대 예상 자기부담금이 현재 계약보다 ${differenceAmount.toLocaleString()}원 높습니다.`,
+
+      differenceAmount,
+
+      requiresConfirmation: false,
+
+      reasons: [
+        `현재 계약 예상 자기부담금: ${currentSelfPaymentResult.amount.toLocaleString()}원`,
+        `5세대 예상 자기부담금: ${targetSelfPaymentResult.amount.toLocaleString()}원`,
+        currentSelfPaymentResult.ruleId
+          ? `현재 적용 Rule ID: ${currentSelfPaymentResult.ruleId}`
+          : "현재 계약 Rule ID 확인 필요",
+        targetSelfPaymentResult.ruleId
+          ? `5세대 적용 Rule ID: ${targetSelfPaymentResult.ruleId}`
+          : "5세대 Rule ID 확인 필요",
+      ],
+    };
+  }
+
+  if (differenceAmount < 0) {
+    return {
+      ...baseResult,
+
+      type: "NONE",
+
+      level: "INFO",
+
+      title:
+        "확인된 자기부담 증가 없음",
+
+      message:
+        `동일한 치료 조건에서 5세대 예상 자기부담금이 현재 계약보다 ${Math.abs(
+          differenceAmount
+        ).toLocaleString()}원 낮습니다.`,
+
+      differenceAmount,
+
+      requiresConfirmation: false,
+
+      reasons: [
+        `현재 계약 예상 자기부담금: ${currentSelfPaymentResult.amount.toLocaleString()}원`,
+        `5세대 예상 자기부담금: ${targetSelfPaymentResult.amount.toLocaleString()}원`,
+      ],
+    };
+  }
+
+  return {
+    ...baseResult,
+
+    type: "NONE",
+
+    level: "INFO",
+
+    title:
+      "자기부담 차이 없음",
+
+    message:
+      "현재 입력 조건에서는 현재 계약과 5세대의 예상 자기부담금이 같습니다.",
+
+    differenceAmount: 0,
+
+    requiresConfirmation: false,
+
+    reasons: [
+      `현재 계약 예상 자기부담금: ${currentSelfPaymentResult.amount.toLocaleString()}원`,
+      `5세대 예상 자기부담금: ${targetSelfPaymentResult.amount.toLocaleString()}원`,
+    ],
+  };
 }
 
 export function analyzeCoverageGaps(
   items: AnalyzeCoverageGapItem[]
 ): CoverageGapResult[] {
   return items.map(
-    ({
-      currentItem,
-      targetItem,
-    }) => {
-      const usage =
-        currentItem.usage;
-
-      const currentSelfPayment =
-        currentItem.selfPaymentAmount;
-
-      const targetSelfPayment =
-        targetItem.selfPaymentAmount;
-
-      const currentExcluded =
-        currentItem.excludedAmount;
-
-      const targetExcluded =
-        targetItem.excludedAmount;
-
-      const currentRuleId =
-        currentItem.selfPaymentResult
-          .ruleId ?? null;
-
-      const targetRuleId =
-        targetItem.selfPaymentResult
-          .ruleId ?? null;
-
-      const reasons: string[] = [];
-
-      /*
-       * 입력값 UNKNOWN
-       */
-      if (
-        usage.benefitClass ===
-          "UNKNOWN" ||
-        usage.severityClass ===
-          "UNKNOWN"
-      ) {
-        if (
-          usage.benefitClass ===
-          "UNKNOWN"
-        ) {
-          reasons.push(
-            "급여/비급여 구분이 확인되지 않았습니다."
-          );
-        }
-
-        if (
-          usage.severityClass ===
-          "UNKNOWN"
-        ) {
-          reasons.push(
-            "중증/비중증 구분이 확인되지 않았습니다."
-          );
-        }
-
-        return {
-          usageId:
-            usage.id,
-
-          treatmentName:
-            usage.treatmentName,
-
-          type:
-            "INPUT_CONFIRMATION_REQUIRED",
-
-          title:
-            "입력값 확인이 필요합니다.",
-
-          message:
-            "확인되지 않은 항목을 임의로 분류하지 않았습니다.",
-
-          treatmentCost:
-            currentItem.treatmentCost,
-
-          currentSelfPayment,
-
-          targetSelfPayment,
-
-          currentExcluded,
-
-          targetExcluded,
-
-          differenceAmount: null,
-
-          reasons,
-
-          currentRuleId,
-
-          targetRuleId,
-        };
-      }
-
-      /*
-       * 5세대에서 보장 제외 발생
-       */
-      if (
-        targetItem
-          .excludedExpenseResult
-          .status === "EXCLUDED"
-      ) {
-        reasons.push(
-          targetItem
-            .excludedExpenseResult
-            .reason
-        );
-
-        return {
-          usageId:
-            usage.id,
-
-          treatmentName:
-            usage.treatmentName,
-
-          type:
-            "COVERAGE_EXCLUDED",
-
-          title:
-            "5세대 전환 시 보장 제외 의료비가 발생합니다.",
-
-          message:
-            `${(
-              targetExcluded ?? 0
-            ).toLocaleString()}원이 보장 제외 의료비로 계산되었습니다.`,
-
-          treatmentCost:
-            currentItem.treatmentCost,
-
-          currentSelfPayment,
-
-          targetSelfPayment,
-
-          currentExcluded,
-
-          targetExcluded,
-
-          differenceAmount:
-            targetExcluded,
-
-          reasons,
-
-          currentRuleId,
-
-          targetRuleId,
-        };
-      }
-
-      /*
-       * 계산 불가
-       */
-      if (
-        currentItem
-          .totalMedicalBurden ===
-          null ||
-        targetItem
-          .totalMedicalBurden ===
-          null
-      ) {
-        if (
-          currentItem
-            .excludedExpenseResult
-            .reason
-        ) {
-          reasons.push(
-            currentItem
-              .excludedExpenseResult
-              .reason
-          );
-        }
-
-        if (
-          currentItem
-            .selfPaymentResult
-            .warning
-        ) {
-          reasons.push(
-            currentItem
-              .selfPaymentResult
-              .warning
-          );
-        }
-
-        if (
-          targetItem
-            .selfPaymentResult
-            .warning
-        ) {
-          reasons.push(
-            targetItem
-              .selfPaymentResult
-              .warning
-          );
-        }
-
-        return {
-          usageId:
-            usage.id,
-
-          treatmentName:
-            usage.treatmentName,
-
-          type:
-            "CALCULATION_CONFIRMATION_REQUIRED",
-
-          title:
-            "계산 근거 확인이 필요합니다.",
-
-          message:
-            "지원되지 않는 약관 룰이 있어 보장 공백을 확정하지 않았습니다.",
-
-          treatmentCost:
-            currentItem.treatmentCost,
-
-          currentSelfPayment,
-
-          targetSelfPayment,
-
-          currentExcluded,
-
-          targetExcluded,
-
-          differenceAmount: null,
-
-          reasons,
-
-          currentRuleId,
-
-          targetRuleId,
-        };
-      }
-
-      /*
-       * 자기부담 증가
-       */
-      if (
-        currentSelfPayment !== null &&
-        targetSelfPayment !== null &&
-        targetSelfPayment >
-          currentSelfPayment
-      ) {
-        const differenceAmount =
-          targetSelfPayment -
-          currentSelfPayment;
-
-        reasons.push(
-          `현재 계약 대비 5세대 자기부담금이 ${differenceAmount.toLocaleString()}원 증가합니다.`
-        );
-
-        return {
-          usageId:
-            usage.id,
-
-          treatmentName:
-            usage.treatmentName,
-
-          type:
-            "SELF_PAYMENT_INCREASE",
-
-          title:
-            "5세대 전환 시 자기부담금이 증가합니다.",
-
-          message:
-            `예상 자기부담금이 ${differenceAmount.toLocaleString()}원 증가합니다.`,
-
-          treatmentCost:
-            currentItem.treatmentCost,
-
-          currentSelfPayment,
-
-          targetSelfPayment,
-
-          currentExcluded,
-
-          targetExcluded,
-
-          differenceAmount,
-
-          reasons,
-
-          currentRuleId,
-
-          targetRuleId,
-        };
-      }
-
-      return {
-        usageId:
-          usage.id,
-
-        treatmentName:
-          usage.treatmentName,
-
-        type: "NONE",
-
-        title:
-          "현재 계산 범위에서 확인된 보장 공백이 없습니다.",
-
-        message:
-          "현재 입력 조건과 구현된 룰 범위에서 추가적인 자기부담 증가 또는 보장 제외가 확인되지 않았습니다.",
-
-        treatmentCost:
-          currentItem.treatmentCost,
-
-        currentSelfPayment,
-
-        targetSelfPayment,
-
-        currentExcluded,
-
-        targetExcluded,
-
-        differenceAmount: 0,
-
-        reasons,
-
-        currentRuleId,
-
-        targetRuleId,
-      };
-    }
+    (item) =>
+      analyzeCoverageGap(item)
   );
 }

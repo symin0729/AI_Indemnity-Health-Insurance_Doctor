@@ -1,38 +1,20 @@
-import {
-  useEffect,
-  useState,
-} from "react";
+import { useState } from "react";
 
-import {
-  useNavigate,
-} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-import {
-  useAnalysisStore,
-} from "../../store/useAnalysisStore";
-
-import {
-  calculateAnnualPremium,
-} from "../../engine/calculateAnnualPremium";
-
-import {
-  loadRuleSet,
-  type RuleSet,
-} from "../../engine/loadRuleSet";
+import { useAnalysisStore } from "../../store/useAnalysisStore";
 
 function M03ConfirmPage() {
-  const navigate =
-    useNavigate();
+  const navigate = useNavigate();
 
-  // ========================================
-  // Store 데이터
-  // ========================================
+  const [
+    isCalculating,
+    setIsCalculating,
+  ] = useState(false);
 
-  const contract =
-    useAnalysisStore(
-      (state) =>
-        state.contract
-    );
+  const contract = useAnalysisStore(
+    (state) => state.contract
+  );
 
   const target5GMonthlyPremium =
     useAnalysisStore(
@@ -46,181 +28,13 @@ function M03ConfirmPage() {
         state.target5GCoverages
     );
 
-  const usages =
-    useAnalysisStore(
-      (state) =>
-        state.usages
-    );
-
-  // ========================================
-  // 룰셋
-  // ========================================
-
-  const [
-    ruleSet,
-    setRuleSet,
-  ] =
-    useState<RuleSet | null>(
-      null
-    );
-
-  const [
-    isRuleLoading,
-    setIsRuleLoading,
-  ] =
-    useState(true);
-
-  const [
-    ruleLoadError,
-    setRuleLoadError,
-  ] =
-    useState<string | null>(
-      null
-    );
-
-  // ========================================
-  // 최종 확인
-  // ========================================
-
-  const [
-    isConfirmed,
-    setIsConfirmed,
-  ] =
-    useState(false);
-
-  // ========================================
-  // 룰셋 불러오기
-  // ========================================
-
-  useEffect(() => {
-    const fetchRuleSet =
-      async () => {
-        try {
-          setIsRuleLoading(
-            true
-          );
-
-          setRuleLoadError(
-            null
-          );
-
-          const loadedRuleSet =
-            await loadRuleSet(
-              "mvp-v1"
-            );
-
-          setRuleSet(
-            loadedRuleSet
-          );
-        } catch (error) {
-          if (
-            error instanceof
-            Error
-          ) {
-            setRuleLoadError(
-              error.message
-            );
-          } else {
-            setRuleLoadError(
-              "룰셋을 불러오는 중 오류가 발생했습니다."
-            );
-          }
-        } finally {
-          setIsRuleLoading(
-            false
-          );
-        }
-      };
-
-    fetchRuleSet();
-  }, []);
-
-  // ========================================
-  // 현재 계약이 없는 경우
-  // ========================================
-
-  if (!contract) {
-    return (
-      <main>
-        <header className="page-header">
-          <span className="page-brand">
-            AI 실손 닥터
-          </span>
-
-          <h1>
-            확인할 보험 정보가 없습니다.
-          </h1>
-
-          <p className="page-description">
-            현재 계약과 예정 치료를
-            먼저 입력해주세요.
-          </p>
-        </header>
-
-        <div className="button-group">
-          <button
-            type="button"
-            className="primary-button"
-            onClick={() =>
-              navigate(
-                "/input"
-              )
-            }
-          >
-            입력 화면으로
-          </button>
-        </div>
-      </main>
-    );
-  }
-
-  // ========================================
-  // 5세대 보험료 없는 경우
-  // ========================================
+  const usages = useAnalysisStore(
+    (state) => state.usages
+  );
 
   if (
-    target5GMonthlyPremium ===
-    null
-  ) {
-    return (
-      <main>
-        <header className="page-header">
-          <span className="page-brand">
-            AI 실손 닥터
-          </span>
-
-          <h1>
-            5세대 비교 조건이 없습니다.
-          </h1>
-
-          <p className="page-description">
-            5세대 비교용 보험료를
-            입력해주세요.
-          </p>
-        </header>
-
-        <div className="button-group">
-          <button
-            type="button"
-            className="primary-button"
-            onClick={() =>
-              navigate(
-                "/input"
-              )
-            }
-          >
-            입력 화면으로
-          </button>
-        </div>
-      </main>
-    );
-  }
-
-  // ========================================
-  // 치료가 없는 경우
-  // ========================================
-
-  if (
+    !contract ||
+    target5GMonthlyPremium === null ||
     usages.length === 0
   ) {
     return (
@@ -231,12 +45,12 @@ function M03ConfirmPage() {
           </span>
 
           <h1>
-            예정 치료가 없습니다.
+            확인할 입력 정보가 없습니다.
           </h1>
 
           <p className="page-description">
-            예정 치료를 1건 이상
-            입력해주세요.
+            먼저 현재 보험과 5세대 비교 조건,
+            예정 치료를 입력해주세요.
           </p>
         </header>
 
@@ -245,9 +59,7 @@ function M03ConfirmPage() {
             type="button"
             className="primary-button"
             onClick={() =>
-              navigate(
-                "/input"
-              )
+              navigate("/input")
             }
           >
             입력 화면으로
@@ -256,107 +68,16 @@ function M03ConfirmPage() {
       </main>
     );
   }
-
-  // ========================================
-  // 룰셋 로딩
-  // ========================================
-
-  if (isRuleLoading) {
-    return (
-      <main>
-        <header className="page-header">
-          <span className="page-brand">
-            AI 실손 닥터
-          </span>
-
-          <h1>
-            계산 전 확인
-          </h1>
-
-          <p className="page-description">
-            적용할 계산 룰을
-            불러오는 중입니다.
-          </p>
-        </header>
-      </main>
-    );
-  }
-
-  // ========================================
-  // 룰셋 오류
-  // ========================================
-
-  if (
-    ruleLoadError ||
-    !ruleSet
-  ) {
-    return (
-      <main>
-        <header className="page-header">
-          <span className="page-brand">
-            AI 실손 닥터
-          </span>
-
-          <h1>
-            계산 전 확인
-          </h1>
-        </header>
-
-        <div
-          className="notice-box error"
-          role="alert"
-        >
-          <strong>
-            계산 룰을 불러오지
-            못했습니다.
-          </strong>
-
-          {ruleLoadError && (
-            <p>
-              {
-                ruleLoadError
-              }
-            </p>
-          )}
-        </div>
-
-        <div className="button-group">
-          <button
-            type="button"
-            className="secondary-button"
-            onClick={() =>
-              navigate(
-                "/input"
-              )
-            }
-          >
-            입력 화면으로
-          </button>
-        </div>
-      </main>
-    );
-  }
-
-  // ========================================
-  // 계산용 표시 값
-  // ========================================
 
   const currentAnnualPremium =
-    calculateAnnualPremium(
-      contract.monthlyPremium
-    );
+    contract.monthlyPremium * 12;
 
   const targetAnnualPremium =
-    calculateAnnualPremium(
-      target5GMonthlyPremium
-    );
+    target5GMonthlyPremium * 12;
 
   const totalTreatmentCost =
     usages.reduce(
-      (
-        sum,
-        usage
-      ) =>
+      (sum, usage) =>
         sum +
         usage.frequency *
           usage.unitCost,
@@ -372,116 +93,130 @@ function M03ConfirmPage() {
           "UNKNOWN"
     );
 
-  // ========================================
-  // 표시용 변환 함수
-  // ========================================
-
-  const getCareSettingLabel = (
-    value: string
-  ) => {
-    if (
-      value === "INPATIENT"
-    ) {
-      return "입원";
+  const handleCalculate = () => {
+    if (isCalculating) {
+      return;
     }
 
-    return "통원";
+    setIsCalculating(true);
+
+    window.setTimeout(() => {
+      navigate("/result");
+    }, 900);
   };
-
-  const getBenefitLabel = (
-    value: string
-  ) => {
-    if (
-      value === "COVERED"
-    ) {
-      return "급여";
-    }
-
-    if (
-      value ===
-      "NON_COVERED"
-    ) {
-      return "비급여";
-    }
-
-    return "모름";
-  };
-
-  const getSeverityLabel = (
-    value: string
-  ) => {
-    if (
-      value === "CRITICAL"
-    ) {
-      return "중증";
-    }
-
-    if (
-      value ===
-      "NON_CRITICAL"
-    ) {
-      return "비중증";
-    }
-
-    return "모름";
-  };
-
-  // ========================================
-  // 계산 시작
-  // ========================================
-
-  const handleCalculate =
-    () => {
-      if (
-        !isConfirmed
-      ) {
-        return;
-      }
-
-      navigate(
-        "/result"
-      );
-    };
 
   return (
     <main>
-      {/* ======================================
-          HEADER
-      ====================================== */}
+      <header
+        className="page-header"
+        style={{
+          position: "relative",
+          maxWidth: "none",
+          padding: "clamp(22px, 4vw, 36px)",
+          border: "1px solid var(--color-border)",
+          borderRadius: "var(--radius-lg)",
+          background:
+            "linear-gradient(135deg, var(--color-primary-050) 0%, #ffffff 72%)",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "clamp(18px, 4vw, 42px)",
+            flexWrap: "wrap",
+          }}
+        >
+          <div
+            style={{
+              flex: "1 1 480px",
+              minWidth: 0,
+              position: "relative",
+              zIndex: 1,
+            }}
+          >
+            <span className="page-brand">
+              AI 실손 닥터
+            </span>
 
-      <header className="page-header">
-        <span className="page-brand">
-          AI 실손 닥터
-        </span>
+            <h1
+              style={{
+                marginTop: "18px",
+                maxWidth: "680px",
+              }}
+            >
+              입력값과 계산 가정을 확인해 주세요
+            </h1>
 
-        <span className="step-badge">
-          STEP 4
-        </span>
+            <p
+              className="page-description"
+              style={{
+                maxWidth: "640px",
+                marginBottom: "18px",
+              }}
+            >
+              아래 입력값과 가정을 기준으로
+              현재 계약 유지와 5세대 비교안의
+              1년 예상 부담을 계산합니다.
+            </p>
 
-        <h1>
-          계산 전 확인
-        </h1>
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "8px",
+              }}
+            >
+              <span className="rule-info">
+                계약 정보 확인
+              </span>
 
-        <p className="page-description">
-          입력한 현재 보험,
-          5세대 비교 조건,
-          예정 치료 정보를
-          다시 확인해주세요.
-        </p>
+              <span className="rule-info">
+                예정 치료 확인
+              </span>
+
+              <span className="rule-info">
+                계산 가정 확인
+              </span>
+            </div>
+          </div>
+
+          <div
+            style={{
+              flex: "0 1 320px",
+              width: "min(100%, 320px)",
+              marginLeft: "auto",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <img
+              src="/ai-insurance-confirm.png"
+              alt="보험 입력 정보와 계산 조건을 확인하는 AI 도우미 일러스트"
+              style={{
+                width: "100%",
+                maxWidth: "320px",
+                height: "auto",
+                objectFit: "contain",
+                filter:
+                  "drop-shadow(0 16px 28px rgba(21, 55, 91, 0.14))",
+              }}
+            />
+          </div>
+        </div>
       </header>
 
-      {/* ======================================
-          현재 계약
-      ====================================== */}
-
-      <section className="result-card">
-        <span className="status-badge">
-          현재 계약
+      {/* STEP 1 */}
+      <section className="form-card">
+        <span className="step-badge">
+          STEP 1
         </span>
 
         <h2 className="card-title">
-          {contract.generation}
-          세대 실손보험
+          현재 계약 확인
         </h2>
 
         <div className="form-grid">
@@ -491,9 +226,7 @@ function M03ConfirmPage() {
             </p>
 
             <strong>
-              {
-                contract.insurer
-              }
+              {contract.insurer}
             </strong>
           </div>
 
@@ -503,9 +236,7 @@ function M03ConfirmPage() {
             </p>
 
             <strong>
-              {
-                contract.productName
-              }
+              {contract.productName}
             </strong>
           </div>
 
@@ -515,9 +246,7 @@ function M03ConfirmPage() {
             </p>
 
             <strong>
-              {
-                contract.inceptionDate
-              }
+              {contract.inceptionDate}
             </strong>
           </div>
 
@@ -527,9 +256,7 @@ function M03ConfirmPage() {
             </p>
 
             <strong>
-              {
-                contract.generation
-              }
+              {contract.generation}
               세대
             </strong>
           </div>
@@ -558,81 +285,84 @@ function M03ConfirmPage() {
 
           <div>
             <p className="amount-label">
-              갱신주기
+              갱신 주기
             </p>
 
             <strong>
-              {
-                contract.renewalCycleMonths
-              }
-              개월
+              {contract.renewalCycleMonths ===
+              null
+                ? "모름"
+                : `${contract.renewalCycleMonths}개월`}
             </strong>
           </div>
 
           <div>
             <p className="amount-label">
-              재가입주기
+              재가입 주기
             </p>
 
             <strong>
-              {
-                contract.reentryCycleMonths
-              }
-              개월
+              {contract.reentryCycleMonths ===
+              null
+                ? "모름"
+                : `${contract.reentryCycleMonths}개월`}
+            </strong>
+          </div>
+
+          <div>
+            <p className="amount-label">
+              비급여 특약
+            </p>
+
+            <strong>
+              {contract.coverages.includes(
+                "NON_COVERED"
+              )
+                ? "가입으로 입력"
+                : "미가입으로 입력"}
+            </strong>
+          </div>
+
+          <div>
+            <p className="amount-label">
+              비급여 특약2
+            </p>
+
+            <strong>
+              {contract.coverages.includes(
+                "SPECIAL_RIDER_2"
+              )
+                ? "가입으로 입력"
+                : "미가입으로 입력"}
             </strong>
           </div>
         </div>
-
-        <hr />
-
-        <p className="amount-label">
-          현재 계약 비급여 특약2
-        </p>
-
-        <span
-          className={
-            contract.coverages.includes(
-              "SPECIAL_RIDER_2"
-            )
-              ? "status-badge success"
-              : "status-badge warning"
-          }
-        >
-          {contract.coverages.includes(
-            "SPECIAL_RIDER_2"
-          )
-            ? "가입 입력"
-            : "미가입 입력"}
-        </span>
       </section>
 
-      {/* ======================================
-          5세대 비교 조건
-      ====================================== */}
-
+      {/* STEP 2 */}
       <section className="compare-card">
-        <span className="status-badge primary">
-          5세대 전환 비교
+        <span className="step-badge">
+          STEP 2
         </span>
 
         <h2 className="card-title">
-          5세대 비교 조건
+          5세대 비교 조건 확인
         </h2>
 
         <div className="form-grid">
           <div>
             <p className="amount-label">
-              비교 세대
+              비교 대상
             </p>
 
             <strong>
-              5세대
+              5세대 실손
             </strong>
           </div>
 
           <div>
             <p className="amount-label">
-              월 보험료
+              비교용 월 보험료
             </p>
 
             <strong>
@@ -643,7 +373,7 @@ function M03ConfirmPage() {
 
           <div>
             <p className="amount-label">
-              연 보험료
+              비교용 연 보험료
             </p>
 
             <strong>
@@ -657,47 +387,43 @@ function M03ConfirmPage() {
               비급여 특약2
             </p>
 
-            <span
-              className={
-                target5GCoverages.includes(
-                  "SPECIAL_RIDER_2"
-                )
-                  ? "status-badge success"
-                  : "status-badge warning"
-              }
-            >
+            <strong>
               {target5GCoverages.includes(
                 "SPECIAL_RIDER_2"
               )
-                ? "가입 입력"
-                : "미가입 입력"}
-            </span>
+                ? "가입으로 입력"
+                : "미가입으로 입력"}
+            </strong>
           </div>
         </div>
 
-        <div className="notice-box">
-          비교용 5세대 월 보험료는
-          사용자가 직접 입력한
-          비교 가정값입니다.
-          실제 전환 보험료를
-          확정하지 않습니다.
+        <div className="notice-box warning">
+          5세대 월 보험료는 실제 보험사가
+          산출한 확정 보험료가 아니라
+          사용자가 비교를 위해 입력한
+          가정값입니다.
         </div>
       </section>
 
-      {/* ======================================
-          예정 치료
-      ====================================== */}
-
+      {/* STEP 3 */}
       <section className="form-card">
-        <span className="status-badge">
-          예정 치료
+        <span className="step-badge">
+          STEP 3
         </span>
 
         <h2 className="card-title">
-          향후 의료이용
+          예정 치료 확인
         </h2>
 
         <div className="comparison-summary">
+          <p className="amount-label">
+            입력한 예정 치료
+          </p>
+
+          <p className="amount">
+            {usages.length}건
+          </p>
+
           <p className="amount-label">
             전체 예상 치료비
           </p>
@@ -706,55 +432,27 @@ function M03ConfirmPage() {
             {totalTreatmentCost.toLocaleString()}
             원
           </p>
-
-          <p>
-            총 {usages.length}건의
-            예정 치료가 등록되어 있습니다.
-          </p>
         </div>
 
         {usages.map(
-          (
-            usage,
-            index
-          ) => {
+          (usage, index) => {
             const treatmentCost =
               usage.frequency *
               usage.unitCost;
 
-            const isUnknown =
-              usage.benefitClass ===
-                "UNKNOWN" ||
-              usage.severityClass ===
-                "UNKNOWN";
-
             return (
               <article
                 className="treatment-card"
-                key={
-                  usage.id
-                }
+                key={usage.id}
               >
                 <div className="treatment-card-header">
                   <div>
-                    <span
-                      className={
-                        isUnknown
-                          ? "status-badge warning"
-                          : "status-badge success"
-                      }
-                    >
-                      치료{" "}
-                      {
-                        index +
-                        1
-                      }
+                    <span className="status-badge">
+                      치료 {index + 1}
                     </span>
 
                     <h3>
-                      {
-                        usage.treatmentName
-                      }
+                      {usage.treatmentName}
                     </h3>
                   </div>
 
@@ -764,105 +462,59 @@ function M03ConfirmPage() {
                   </strong>
                 </div>
 
-                <div className="form-grid">
-                  <div>
-                    <p className="amount-label">
-                      입원 / 통원
-                    </p>
+                <p className="treatment-meta">
+                  {usage.careSetting ===
+                  "OUTPATIENT"
+                    ? "통원"
+                    : "입원"}
+                  {" · "}
+                  {usage.benefitClass ===
+                  "COVERED"
+                    ? "급여"
+                    : usage.benefitClass ===
+                        "NON_COVERED"
+                      ? "비급여"
+                      : "급여 여부 모름"}
+                  {" · "}
+                  {usage.severityClass ===
+                  "SEVERE"
+                    ? "중증"
+                    : usage.severityClass ===
+                        "NON_SEVERE"
+                      ? "비중증"
+                      : "중증 여부 모름"}
+                </p>
 
-                    <strong>
-                      {getCareSettingLabel(
-                        usage.careSetting
-                      )}
-                    </strong>
-                  </div>
-
-                  <div>
-                    <p className="amount-label">
-                      급여 여부
-                    </p>
-
-                    <strong>
-                      {getBenefitLabel(
-                        usage.benefitClass
-                      )}
-                    </strong>
-                  </div>
-
-                  <div>
-                    <p className="amount-label">
-                      중증 여부
-                    </p>
-
-                    <strong>
-                      {getSeverityLabel(
-                        usage.severityClass
-                      )}
-                    </strong>
-                  </div>
-
-                  <div>
-                    <p className="amount-label">
-                      예상 횟수
-                    </p>
-
-                    <strong>
-                      {
-                        usage.frequency
-                      }
-                      회
-                    </strong>
-                  </div>
-
-                  <div>
-                    <p className="amount-label">
-                      회당 비용
-                    </p>
-
-                    <strong>
-                      {usage.unitCost.toLocaleString()}
-                      원
-                    </strong>
-                  </div>
-
-                  <div>
-                    <p className="amount-label">
-                      예상 총 치료비
-                    </p>
-
-                    <strong>
-                      {treatmentCost.toLocaleString()}
-                      원
-                    </strong>
-                  </div>
-                </div>
-
-                {isUnknown && (
-                  <div className="notice-box warning">
-                    급여 여부 또는 중증 여부 중
-                    확인되지 않은 값이 있습니다.
-                    결과 계산에서는 임의로
-                    추정하지 않고 확인 필요로
-                    처리합니다.
-                  </div>
-                )}
+                <p className="treatment-meta">
+                  {usage.frequency}
+                  회 ×{" "}
+                  {usage.unitCost.toLocaleString()}
+                  원
+                </p>
               </article>
             );
           }
         )}
+
+        {hasUnknownUsage && (
+          <div className="notice-box warning">
+            급여 여부 또는 중증 여부가
+            '모름'인 치료가 있습니다.
+            결과에서는 이를 임의 분류하지 않고
+            확인 필요 또는 계산 불가로
+            표시합니다.
+          </div>
+        )}
       </section>
 
-      {/* ======================================
-          계산 가정
-      ====================================== */}
-
+      {/* STEP 4 */}
       <section className="app-card">
         <span className="step-badge">
-          계산 가정
+          STEP 4
         </span>
 
         <h2 className="card-title">
-          이번 비교 기준
+          계산 가정
         </h2>
 
         <div className="form-grid">
@@ -882,135 +534,82 @@ function M03ConfirmPage() {
             </p>
 
             <strong>
-              유지 ±0%
+              유지(BASE, 100%)
             </strong>
           </div>
 
           <div>
             <p className="amount-label">
-              계산 룰셋
+              룰셋 버전
             </p>
 
             <strong>
-              {
-                ruleSet.rulesetVersion
-              }
+              mvp-v1
             </strong>
           </div>
 
           <div>
             <p className="amount-label">
-              계산 기준
+              보험료 계산
             </p>
 
             <strong>
-              입력한 횟수·비용 유지
+              월 보험료 × 12개월
+            </strong>
+          </div>
+
+          <div>
+            <p className="amount-label">
+              치료비 계산
+            </p>
+
+            <strong>
+              연간 횟수 × 회당 비용
+            </strong>
+          </div>
+
+          <div>
+            <p className="amount-label">
+              총부담 계산
+            </p>
+
+            <strong>
+              보험료 + 자기부담금 +
+              보장 제외 의료비
             </strong>
           </div>
         </div>
 
         <div className="notice-box">
-          현재 MVP에서는 입력한
-          예정 치료 횟수와 비용을
-          그대로 사용해 1년 기준으로
-          현재 계약 유지와 5세대 전환을
-          비교합니다.
+          공식 할인은 실제 적용이 확인된
+          값이 있을 때만 총부담에서
+          차감합니다. 현재 MVP에는
+          확인된 공식 할인 입력값이 없어
+          임의로 차감하지 않습니다.
         </div>
 
         <div className="notice-box">
-          3년 비교와 의료이용 감소·증가
-          시나리오는 이번 MVP 계산에서
-          사용하지 않습니다.
+          감소·증가 의료이용 시나리오와
+          3년 상세 비교는 이번 2일 MVP에서
+          계산하지 않습니다.
         </div>
-
-        {hasUnknownUsage && (
-          <div className="notice-box warning">
-            UNKNOWN 항목이 포함되어 있습니다.
-            확인되지 않은 급여 여부 또는
-            중증 여부는 임의로 분류하지 않습니다.
-          </div>
-        )}
       </section>
-
-      {/* ======================================
-          최종 확인
-      ====================================== */}
-
-      <section className="app-card">
-        <span className="step-badge">
-          최종 확인
-        </span>
-
-        <h2 className="card-title">
-          입력 정보 확인
-        </h2>
-
-        <label>
-          <input
-            type="checkbox"
-            checked={
-              isConfirmed
-            }
-            onChange={(e) =>
-              setIsConfirmed(
-                e.target.checked
-              )
-            }
-          />{" "}
-          <strong>
-            위의 현재 계약,
-            5세대 비교 조건,
-            예정 치료와 계산 가정을
-            모두 확인했습니다.
-          </strong>
-        </label>
-
-        {!isConfirmed && (
-          <div className="notice-box warning">
-            비교 계산을 시작하려면
-            위 입력 정보를 확인한 후
-            체크해주세요.
-          </div>
-        )}
-
-        {isConfirmed && (
-          <div className="notice-box">
-            <strong>
-              입력 정보 확인이 완료되었습니다.
-            </strong>
-
-            <p>
-              이제 비교 계산을 시작할 수 있습니다.
-            </p>
-          </div>
-        )}
-      </section>
-
-      {/* ======================================
-          안내
-      ====================================== */}
 
       <div className="notice-box warning">
-        본 서비스의 결과는 사용자가 입력한
-        정보와 현재 MVP 룰셋을 이용한
-        모의 계산입니다. 실제 보험금,
-        보험상품 가입 가능 여부,
-        전환 보험료를 확정하거나
+        본 비교는 사용자가 확인한 입력값과
+        현재 MVP 룰셋을 이용한 모의 계산입니다.
+        실제 보험금, 가입 가능 여부,
+        전환 보험료를 확정하지 않으며
         보험상품 전환을 권유하지 않습니다.
       </div>
-
-      {/* ======================================
-          버튼
-      ====================================== */}
 
       <div className="button-group">
         <button
           type="button"
           className="secondary-button"
+          disabled={isCalculating}
           onClick={() =>
-            navigate(
-              "/input"
-            )
+            navigate("/input")
           }
         >
           입력 수정
@@ -1019,16 +618,44 @@ function M03ConfirmPage() {
         <button
           type="button"
           className="primary-button"
-          disabled={
-            !isConfirmed
-          }
-          onClick={
-            handleCalculate
-          }
+          disabled={isCalculating}
+          onClick={handleCalculate}
         >
-          비교 계산하기
+          {isCalculating
+            ? "계산 준비 중..."
+            : "이 조건으로 비교 계산하기"}
         </button>
       </div>
+
+      {isCalculating && (
+        <div
+          className="calculation-modal-backdrop"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="calculation-modal-title"
+          aria-describedby="calculation-modal-description"
+        >
+          <div className="calculation-modal">
+            <div
+              className="calculation-spinner"
+              aria-hidden="true"
+            />
+
+            <h2 id="calculation-modal-title">
+              예상 부담을 계산하고 있어요
+            </h2>
+
+            <p
+              id="calculation-modal-description"
+              aria-live="polite"
+            >
+              입력한 보험료와 예정 치료 조건을
+              기준으로 현재 계약과 5세대 비교
+              결과를 준비하고 있습니다.
+            </p>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

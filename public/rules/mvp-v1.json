@@ -2,13 +2,32 @@
   "rulesetVersion": "mvp-v1",
   "rules": [
     {
-      "ruleId": "RULE-5G-NONCRIT-DED-001",
+      "ruleId": "G3_MRI_OUTPATIENT",
+      "generation": 3,
+      "careSetting": "OUTPATIENT",
+      "benefitClass": "NON_COVERED",
+      "severityClass": "NON_SEVERE",
+      "requiredCoverage": "NON_COVERED",
+      "selfPaymentRate": 0.3,
+      "minimumSelfPayment": 20000,
+      "description": "2017년 4월 이후 판매된 기본형+특약 구조의 실손에서 비급여 MRI 특약은 보장대상의료비의 30%와 2만원 중 큰 금액을 자기부담금으로 적용하는 공식 제도 안내를 반영한 MVP 시연 룰",
+      "sourceDocument": "금융위원회 2017-03-30 보도자료 - 착한 실손의료보험",
+      "documentVersion": "2017-03-30",
+      "effectiveDate": "2017-04-01",
+      "verificationStatus": "INSURER_CONFIRMATION_REQUIRED"
+    },
+    {
+      "ruleId": "G5_SP2_OUTPATIENT",
       "generation": 5,
+      "careSetting": "OUTPATIENT",
       "benefitClass": "NON_COVERED",
       "severityClass": "NON_SEVERE",
       "requiredCoverage": "SPECIAL_RIDER_2",
       "selfPaymentRate": 0.5,
-      "description": "5세대 비급여 특약2 가입 및 비중증 비급여 치료의 자기부담률 50%"
+      "description": "5세대 비중증 비급여 통원 치료에서 비급여 특약2 가입 조건을 만족하는 경우 자기부담률 50%를 적용하는 MVP 시연 룰",
+      "sourceDocument": "MVP 시연용 룰셋",
+      "documentVersion": "mvp-v1",
+      "verificationStatus": "INSURER_CONFIRMATION_REQUIRED"
     }
   ]
 }

@@ -1,11 +1,12 @@
 import type {
-  BenefitClass,
-  SeverityClass,
-} from "../domain/medical";
-
-import type {
   InsuranceGeneration,
 } from "../domain/insurance";
+
+import type {
+  BenefitClass,
+  CareSetting,
+  SeverityClass,
+} from "../domain/medical";
 
 import type {
   SelfPaymentRule,
@@ -13,95 +14,150 @@ import type {
 
 export interface SelfPaymentResult {
   amount: number | null;
+
   ruleId: string | null;
+
   warning: string | null;
 }
 
 interface CalculateSelfPaymentParams {
   treatmentCost: number;
+
   generation: InsuranceGeneration;
+
+  careSetting: CareSetting;
+
   benefitClass: BenefitClass;
+
   severityClass: SeverityClass;
+
   coverages: string[];
 
-  // JSON에서 불러온 계산 룰
-  rules?: SelfPaymentRule[];
+  rules: SelfPaymentRule[];
 }
 
 export function calculateSelfPayment({
   treatmentCost,
   generation,
+  careSetting,
   benefitClass,
   severityClass,
   coverages,
   rules,
 }: CalculateSelfPaymentParams): SelfPaymentResult {
-  // 치료비 검증
-  if (treatmentCost < 0) {
+  if (
+    !Number.isFinite(treatmentCost) ||
+    treatmentCost <= 0
+  ) {
     return {
       amount: null,
+
       ruleId: null,
-      warning: "치료비를 확인해주세요.",
+
+      warning:
+        "치료비를 확인해주세요.",
     };
   }
 
-  // 급여 여부를 모르는 경우
-  if (benefitClass === "UNKNOWN") {
+  /*
+   * UNKNOWN은 임의 분류하지 않는다.
+   */
+  if (
+    benefitClass === "UNKNOWN"
+  ) {
     return {
       amount: null,
+
       ruleId: null,
-      warning: "급여 여부 확인이 필요합니다.",
+
+      warning:
+        "급여 여부 확인이 필요합니다.",
     };
   }
 
-  // 중증 여부를 모르는 경우
-  if (severityClass === "UNKNOWN") {
+  if (
+    severityClass === "UNKNOWN"
+  ) {
     return {
       amount: null,
+
       ruleId: null,
-      warning: "중증 여부 확인이 필요합니다.",
+
+      warning:
+        "중증 여부 확인이 필요합니다.",
     };
   }
 
-  // 아직 룰 파일이 전달되지 않은 경우
-  if (!rules) {
-    return {
-      amount: null,
-      ruleId: null,
-      warning: "계산 룰셋이 로드되지 않았습니다.",
-    };
-  }
+  const matchedRule =
+    rules.find((rule) => {
+      const coverageMatched =
+        !rule.requiredCoverage ||
+        coverages.includes(
+          rule.requiredCoverage
+        );
 
-  // 입력 조건과 일치하는 룰 찾기
-  const matchedRule = rules.find(
-    (rule) =>
-      rule.generation === generation &&
-      rule.benefitClass === benefitClass &&
-      rule.severityClass === severityClass &&
-      coverages.includes(
-        rule.requiredCoverage
-      )
-  );
+      return (
+        rule.generation ===
+          generation &&
+        rule.careSetting ===
+          careSetting &&
+        rule.benefitClass ===
+          benefitClass &&
+        rule.severityClass ===
+          severityClass &&
+        coverageMatched
+      );
+    });
 
-  // 일치하는 룰이 없는 경우
   if (!matchedRule) {
     return {
       amount: null,
+
       ruleId: null,
+
       warning:
-        "현재 MVP에서 지원하지 않는 계산 조건입니다.",
+        "현재 MVP 룰셋에서 해당 조건의 자기부담 계산을 지원하지 않습니다.",
     };
   }
 
-  // 룰에 정의된 자기부담률로 계산
-  const amount = Math.round(
+  const proportionalAmount =
     treatmentCost *
-      matchedRule.selfPaymentRate
+    matchedRule.selfPaymentRate;
+
+  /*
+   * 일부 룰은
+   * 정률 자기부담금과 최소 자기부담금 중
+   * 큰 금액을 적용한다.
+   *
+   * 예:
+   * max(20,000원, 치료비의 30%)
+   */
+  const calculatedAmount =
+    matchedRule.minimumSelfPayment ===
+    undefined
+      ? proportionalAmount
+      : Math.max(
+          matchedRule.minimumSelfPayment,
+          proportionalAmount
+        );
+
+  /*
+   * 자기부담금이 실제 치료비를
+   * 초과해서 표시되지 않도록 제한한다.
+   */
+  const amount = Math.round(
+    Math.min(
+      treatmentCost,
+      calculatedAmount
+    )
   );
 
   return {
     amount,
-    ruleId: matchedRule.ruleId,
+
+    ruleId:
+      matchedRule.ruleId,
+
     warning: null,
   };
 }

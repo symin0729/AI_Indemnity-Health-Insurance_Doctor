@@ -16,11 +16,17 @@ export interface InsuranceContract {
 
   monthlyPremium: number;
 
-  // 갱신주기: 개월 단위
-  renewalCycleMonths: number;
+  /**
+   * 갱신 주기(개월)
+   * 사용자가 모를 수 있으므로 null 허용
+   */
+  renewalCycleMonths: number | null;
 
-  // 재가입주기: 개월 단위
-  reentryCycleMonths: number;
+  /**
+   * 재가입 주기(개월)
+   * 사용자가 모를 수 있으므로 null 허용
+   */
+  reentryCycleMonths: number | null;
 
   coverages: string[];
 }

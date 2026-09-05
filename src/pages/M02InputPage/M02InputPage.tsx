@@ -1,10 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import {
-  SAMPLE_POLICY,
-} from "../../samples/samplePolicy";
-
 import type {
   BenefitClass,
   CareSetting,
@@ -12,14 +8,24 @@ import type {
   SeverityClass,
 } from "../../domain/medical";
 
-import type { InsuranceGeneration } from "../../domain/insurance";
+import type {
+  InsuranceGeneration,
+} from "../../domain/insurance";
+
+import {
+  SAMPLE_POLICY_OPTIONS,
+  samplePolicyService,
+  type SampleId,
+} from "../../services/samplePolicyService";
+
+import {
+  sampleScenarioService,
+} from "../../services/sampleScenarioService";
 
 import { useAnalysisStore } from "../../store/useAnalysisStore";
 
 function M02InputPage() {
   const navigate = useNavigate();
-
-  const MAX_TREATMENTS = 3;
 
   // ========================================
   // Store 기존 데이터
@@ -110,7 +116,7 @@ function M02InputPage() {
     renewalCycleMonths,
     setRenewalCycleMonths,
   ] = useState(
-    savedContract?.renewalCycleMonths
+    savedContract?.renewalCycleMonths != null
       ? String(
           savedContract.renewalCycleMonths
         )
@@ -121,11 +127,20 @@ function M02InputPage() {
     reentryCycleMonths,
     setReentryCycleMonths,
   ] = useState(
-    savedContract?.reentryCycleMonths
+    savedContract?.reentryCycleMonths != null
       ? String(
           savedContract.reentryCycleMonths
         )
       : ""
+  );
+
+  const [
+    hasCurrentNonCoveredCoverage,
+    setHasCurrentNonCoveredCoverage,
+  ] = useState(
+    savedContract?.coverages.includes(
+      "NON_COVERED"
+    ) ?? false
   );
 
   const [
@@ -136,6 +151,25 @@ function M02InputPage() {
       "SPECIAL_RIDER_2"
     ) ?? false
   );
+
+  // ========================================
+  // 샘플 보험증권
+  // ========================================
+
+  const [
+    selectedSampleId,
+    setSelectedSampleId,
+  ] = useState<SampleId | null>(null);
+
+  const [
+    isSampleConfirmed,
+    setIsSampleConfirmed,
+  ] = useState(false);
+
+  const [
+    sampleScenarioNotice,
+    setSampleScenarioNotice,
+  ] = useState("");
 
   // ========================================
   // 5세대 비교
@@ -213,9 +247,126 @@ function M02InputPage() {
   ] = useState("");
 
   const [
-    isSampleContractLoaded,
-    setIsSampleContractLoaded,
+    isResetModalOpen,
+    setIsResetModalOpen,
   ] = useState(false);
+
+  // ========================================
+  // 샘플 보험증권 불러오기
+  // ========================================
+
+  const handleLoadSamplePolicy = (
+    sampleId: SampleId
+  ) => {
+    try {
+      const sample =
+        samplePolicyService.load(
+          sampleId
+        );
+
+      const scenario =
+        sampleScenarioService.load(
+          sampleId
+        );
+
+      // 현재 계약 샘플값
+      setInsurer(sample.insurer);
+
+      setProductName(
+        sample.productName
+      );
+
+      setInceptionDate(
+        sample.inceptionDate
+      );
+
+      setGeneration(
+        sample.generation
+      );
+
+      setMonthlyPremium(
+        String(
+          sample.monthlyPremium
+        )
+      );
+
+      setRenewalCycleMonths(
+        sample.renewalCycleMonths != null
+          ? String(
+              sample.renewalCycleMonths
+            )
+          : ""
+      );
+
+      setReentryCycleMonths(
+        sample.reentryCycleMonths != null
+          ? String(
+              sample.reentryCycleMonths
+            )
+          : ""
+      );
+
+      setHasCurrentNonCoveredCoverage(
+        sample.coverages.includes(
+          "NON_COVERED"
+        )
+      );
+
+      setHasCurrentSpecialRider2(
+        sample.coverages.includes(
+          "SPECIAL_RIDER_2"
+        )
+      );
+
+      // 시연용 예정 치료
+      setPlannedUsages(
+        scenario.plannedUsages.map(
+          (usage) => ({
+            ...usage,
+          })
+        )
+      );
+
+      // 시연 시나리오에서 문서 근거가 있는 경우에만
+      // 비교용 특약2 상태를 자동 설정
+      if (
+        scenario.target5GSpecialRider2 !==
+        null
+      ) {
+        setHasTarget5GSpecialRider2(
+          scenario.target5GSpecialRider2
+        );
+      }
+
+      // 기존 작성 중이던 치료 draft 제거
+      setTreatmentName("");
+      setCareSetting("OUTPATIENT");
+      setBenefitClass("UNKNOWN");
+      setSeverityClass("UNKNOWN");
+      setFrequency("1");
+      setUnitCost("");
+      setEditingUsageId(null);
+
+      setSelectedSampleId(
+        sampleId
+      );
+
+      setSampleScenarioNotice(
+        scenario.notice
+      );
+
+      // 사용자가 불러온 값을 확인해야 다음 단계 진행
+      setIsSampleConfirmed(false);
+
+      setErrorMessage("");
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "샘플 보험증권을 불러오지 못했습니다."
+      );
+    }
+  };
 
   // ========================================
   // 치료 입력칸 초기화
@@ -241,68 +392,35 @@ function M02InputPage() {
     setInceptionDate("");
     setGeneration(3);
     setMonthlyPremium("");
+
     setRenewalCycleMonths("");
     setReentryCycleMonths("");
-    setHasCurrentSpecialRider2(false);
 
-    setTarget5GMonthlyPremiumInput("");
-    setHasTarget5GSpecialRider2(false);
+    setHasCurrentNonCoveredCoverage(
+      false
+    );
+
+    setHasCurrentSpecialRider2(
+      false
+    );
+
+    setSelectedSampleId(null);
+    setIsSampleConfirmed(false);
+    setSampleScenarioNotice("");
+
+    setTarget5GMonthlyPremiumInput(
+      ""
+    );
+
+    setHasTarget5GSpecialRider2(
+      false
+    );
 
     setPlannedUsages([]);
 
     resetTreatmentForm();
 
     setErrorMessage("");
-    setIsSampleContractLoaded(false);
-  };
-
-  // ========================================
-  // 시연용 샘플 보험증권 불러오기
-  // ========================================
-
-  const handleLoadSampleContract = () => {
-    setInsurer(
-      SAMPLE_POLICY.insurer
-    );
-
-    setProductName(
-      SAMPLE_POLICY.productName
-    );
-
-    setInceptionDate(
-      SAMPLE_POLICY.inceptionDate
-    );
-
-    setGeneration(
-      SAMPLE_POLICY.generation
-    );
-
-    setMonthlyPremium(
-      String(
-        SAMPLE_POLICY.monthlyPremium
-      )
-    );
-
-    setRenewalCycleMonths(
-      String(
-        SAMPLE_POLICY.renewalCycleMonths
-      )
-    );
-
-    setReentryCycleMonths(
-      String(
-        SAMPLE_POLICY.reentryCycleMonths
-      )
-    );
-
-    setHasCurrentSpecialRider2(
-      SAMPLE_POLICY.coverages.includes(
-        "SPECIAL_RIDER_2"
-      )
-    );
-
-    setErrorMessage("");
-    setIsSampleContractLoaded(true);
   };
 
   // ========================================
@@ -310,20 +428,21 @@ function M02InputPage() {
   // ========================================
 
   const handleResetAll = () => {
-    const confirmed = window.confirm(
-      "입력한 보험 정보와 예정 치료를 모두 초기화할까요?"
-    );
-
-    if (!confirmed) {
-      return;
-    }
-
-    // Zustand 초기화
-    resetAnalysis();
-
-    // 현재 M02 화면 상태도 초기화
-    resetLocalForm();
+    setIsResetModalOpen(true);
   };
+
+  const handleConfirmResetAll =
+    () => {
+      setIsResetModalOpen(false);
+
+      resetAnalysis();
+      resetLocalForm();
+    };
+
+  const handleCancelResetAll =
+    () => {
+      setIsResetModalOpen(false);
+    };
 
   // ========================================
   // 치료 객체 생성
@@ -401,11 +520,12 @@ function M02InputPage() {
 
     if (
       !editingUsageId &&
-      plannedUsages.length >= MAX_TREATMENTS
+      plannedUsages.length >= 3
     ) {
       setErrorMessage(
-        `예정 치료는 최대 ${MAX_TREATMENTS}건까지 등록할 수 있습니다.`
+        "예정 치료는 최대 3건까지 추가할 수 있습니다."
       );
+
       return;
     }
 
@@ -494,9 +614,10 @@ function M02InputPage() {
   const handleRemoveTreatment = (
     usage: MedicalUsage
   ) => {
-    const confirmed = window.confirm(
-      `"${usage.treatmentName}" 치료를 삭제할까요?`
-    );
+    const confirmed =
+      window.confirm(
+        `"${usage.treatmentName}" 치료를 삭제할까요?`
+      );
 
     if (!confirmed) {
       return;
@@ -533,19 +654,24 @@ function M02InputPage() {
       );
 
     const renewalCycleNumber =
-      Number(
-        renewalCycleMonths
-      );
+      renewalCycleMonths
+        ? Number(
+            renewalCycleMonths
+          )
+        : null;
 
     const reentryCycleNumber =
-      Number(
-        reentryCycleMonths
-      );
+      reentryCycleMonths
+        ? Number(
+            reentryCycleMonths
+          )
+        : null;
 
     if (!insurer.trim()) {
       setErrorMessage(
         "보험사를 입력해주세요."
       );
+
       return;
     }
 
@@ -553,6 +679,7 @@ function M02InputPage() {
       setErrorMessage(
         "보험 상품명을 입력해주세요."
       );
+
       return;
     }
 
@@ -560,6 +687,7 @@ function M02InputPage() {
       setErrorMessage(
         "보험 가입일을 입력해주세요."
       );
+
       return;
     }
 
@@ -570,32 +698,50 @@ function M02InputPage() {
       setErrorMessage(
         "현재 월 보험료를 올바르게 입력해주세요."
       );
+
       return;
     }
 
     if (
-      !renewalCycleMonths ||
-      !Number.isInteger(
-        renewalCycleNumber
-      ) ||
-      renewalCycleNumber <= 0
+      renewalCycleNumber !== null &&
+      (
+        !Number.isInteger(
+          renewalCycleNumber
+        ) ||
+        renewalCycleNumber <= 0
+      )
     ) {
       setErrorMessage(
-        "갱신주기를 1개월 이상의 정수로 입력해주세요."
+        "갱신 주기는 1개월 이상의 정수로 입력하거나 비워주세요."
       );
+
       return;
     }
 
     if (
-      !reentryCycleMonths ||
-      !Number.isInteger(
-        reentryCycleNumber
-      ) ||
-      reentryCycleNumber <= 0
+      reentryCycleNumber !== null &&
+      (
+        !Number.isInteger(
+          reentryCycleNumber
+        ) ||
+        reentryCycleNumber <= 0
+      )
     ) {
       setErrorMessage(
-        "재가입주기를 1개월 이상의 정수로 입력해주세요."
+        "재가입 주기는 1개월 이상의 정수로 입력하거나 비워주세요."
       );
+
+      return;
+    }
+
+    if (
+      selectedSampleId &&
+      !isSampleConfirmed
+    ) {
+      setErrorMessage(
+        "불러온 샘플 보험증권 정보를 확인해주세요."
+      );
+
       return;
     }
 
@@ -606,6 +752,7 @@ function M02InputPage() {
       setErrorMessage(
         "비교용 5세대 월 보험료를 올바르게 입력해주세요."
       );
+
       return;
     }
 
@@ -613,20 +760,11 @@ function M02InputPage() {
       ...plannedUsages,
     ];
 
-    if (
+    const hasDraftTreatment =
       treatmentName.trim() ||
-      unitCost
-    ) {
-      if (
-        !editingUsageId &&
-        finalUsages.length >= MAX_TREATMENTS
-      ) {
-        setErrorMessage(
-          `예정 치료는 최대 ${MAX_TREATMENTS}건까지 등록할 수 있습니다.`
-        );
-        return;
-      }
+      unitCost;
 
+    if (hasDraftTreatment) {
       const currentUsage =
         createCurrentUsage(
           editingUsageId ??
@@ -647,6 +785,16 @@ function M02InputPage() {
                 : usage
           );
       } else {
+        if (
+          finalUsages.length >= 3
+        ) {
+          setErrorMessage(
+            "예정 치료는 최대 3건까지 추가할 수 있습니다."
+          );
+
+          return;
+        }
+
         finalUsages = [
           ...finalUsages,
           currentUsage,
@@ -664,8 +812,26 @@ function M02InputPage() {
       return;
     }
 
+    if (
+      finalUsages.length > 3
+    ) {
+      setErrorMessage(
+        "예정 치료는 최대 3건까지 입력할 수 있습니다."
+      );
+
+      return;
+    }
+
     const currentCoverages: string[] =
       [];
+
+    if (
+      hasCurrentNonCoveredCoverage
+    ) {
+      currentCoverages.push(
+        "NON_COVERED"
+      );
+    }
 
     if (
       hasCurrentSpecialRider2
@@ -724,121 +890,116 @@ function M02InputPage() {
     navigate("/confirm");
   };
 
-  // ========================================
-  // STEP별 입력 완료 상태
-  // ========================================
-
-  const isCurrentContractComplete =
-    insurer.trim().length > 0 &&
-    productName.trim().length > 0 &&
-    inceptionDate.length > 0 &&
-    Number(monthlyPremium) > 0 &&
-    Number(renewalCycleMonths) > 0 &&
-    Number(reentryCycleMonths) > 0;
-
-  const isTargetConditionComplete =
-    Number(target5GMonthlyPremium) > 0;
-
-  const hasDraftTreatment =
-    treatmentName.trim().length > 0 ||
-    unitCost.length > 0;
-
-  const treatmentStatusText =
-    plannedUsages.length >= MAX_TREATMENTS
-      ? `${MAX_TREATMENTS}건 등록 · 최대`
-      : plannedUsages.length > 0
-        ? `${plannedUsages.length}건 등록`
-        : hasDraftTreatment
-          ? "입력 중"
-          : "미입력";
-
-  const isTreatmentLimitReached =
-    plannedUsages.length >= MAX_TREATMENTS &&
-    !editingUsageId;
+  const selectedSample =
+    SAMPLE_POLICY_OPTIONS.find(
+      (option) =>
+        option.id ===
+        selectedSampleId
+    );
 
   return (
     <main>
-      <header className="page-header">
-        <span className="page-brand">
-          AI 실손 닥터
-        </span>
+      <header
+        className="page-header"
+        style={{
+          position: "relative",
+          maxWidth: "none",
+          padding: "clamp(22px, 4vw, 36px)",
+          border: "1px solid var(--color-border)",
+          borderRadius: "var(--radius-lg)",
+          background:
+            "linear-gradient(135deg, var(--color-primary-050) 0%, #ffffff 72%)",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "clamp(18px, 4vw, 42px)",
+            flexWrap: "wrap",
+          }}
+        >
+          <div
+            style={{
+              flex: "1 1 480px",
+              minWidth: 0,
+              position: "relative",
+              zIndex: 1,
+            }}
+          >
+            <span className="page-brand">
+              AI 실손 닥터
+            </span>
 
-        <h1>
-          내 보험 정보
-        </h1>
+            <h1
+              style={{
+                marginTop: "18px",
+                maxWidth: "680px",
+              }}
+            >
+              보험과 예정 치료를 입력해 주세요
+            </h1>
 
-        <p className="page-description">
-          현재 보험과 5세대 비교 조건,
-          앞으로 예상되는 의료이용 정보를
-          입력해주세요.
-        </p>
-      </header>
-
-      <section className="app-card">
-        <h2 className="card-title">
-          입력 진행 상태
-        </h2>
-
-        <p className="card-description">
-          현재 입력된 내용을 기준으로 각 단계의 완료 상태를 표시합니다.
-        </p>
-
-        <div className="form-grid">
-          <div>
-            <p className="amount-label">
-              STEP 1 · 현재 계약
+            <p
+              className="page-description"
+              style={{
+                maxWidth: "640px",
+                marginBottom: "18px",
+              }}
+            >
+              현재 계약과 5세대 비교 조건을 먼저
+              확인한 뒤, 앞으로 예상되는 치료를
+              최대 3건까지 입력합니다.
             </p>
 
-            <span
-              className={
-                isCurrentContractComplete
-                  ? "status-badge success"
-                  : "status-badge warning"
-              }
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "8px",
+              }}
             >
-              {isCurrentContractComplete
-                ? "입력 완료"
-                : "입력 필요"}
-            </span>
+              <span className="rule-info">
+                현재 계약 확인
+              </span>
+
+              <span className="rule-info">
+                5세대 비교 조건
+              </span>
+
+              <span className="rule-info">
+                예정 치료 1~3건
+              </span>
+            </div>
           </div>
 
-          <div>
-            <p className="amount-label">
-              STEP 2 · 5세대 비교
-            </p>
-
-            <span
-              className={
-                isTargetConditionComplete
-                  ? "status-badge success"
-                  : "status-badge warning"
-              }
-            >
-              {isTargetConditionComplete
-                ? "비교 조건 완료"
-                : "보험료 입력 필요"}
-            </span>
-          </div>
-
-          <div>
-            <p className="amount-label">
-              STEP 3 · 예정 치료
-            </p>
-
-            <span
-              className={
-                plannedUsages.length > 0
-                  ? "status-badge success"
-                  : hasDraftTreatment
-                    ? "status-badge primary"
-                    : "status-badge warning"
-              }
-            >
-              {treatmentStatusText}
-            </span>
+          <div
+            style={{
+              flex: "0 1 320px",
+              width: "min(100%, 320px)",
+              marginLeft: "auto",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <img
+              src="/ai-insurance-contract.png"
+              alt="보험 계약서와 보장 항목을 확인하는 AI 도우미 일러스트"
+              style={{
+                width: "100%",
+                maxWidth: "320px",
+                height: "auto",
+                objectFit: "contain",
+                filter:
+                  "drop-shadow(0 16px 28px rgba(21, 55, 91, 0.14))",
+              }}
+            />
           </div>
         </div>
-      </section>
+      </header>
 
       {errorMessage && (
         <div
@@ -860,136 +1021,327 @@ function M02InputPage() {
         </h2>
 
         <p className="card-description">
-          현재 유지하고 있는 실손보험
-          정보를 입력합니다.
+          직접 입력하거나 시연용 샘플
+          보험증권 정보를 불러올 수 있습니다.
         </p>
 
-        <div className="button-group">
-          <button
-            type="button"
-            className="secondary-button"
-            onClick={handleLoadSampleContract}
+        <div
+          style={{
+            marginBottom: "26px",
+            padding: "20px",
+            border: "1px solid var(--color-border)",
+            borderRadius: "var(--radius-md)",
+            background: "var(--color-primary-050)",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "flex-start",
+              justifyContent: "space-between",
+              gap: "16px",
+              flexWrap: "wrap",
+              marginBottom: "16px",
+            }}
           >
-            시연용 샘플 증권 불러오기
-          </button>
+            <div>
+              <p
+                className="amount-label"
+                style={{ marginBottom: "4px" }}
+              >
+                빠른 시작
+              </p>
+
+              <h3 style={{ marginBottom: "6px" }}>
+                샘플 보험증권 불러오기
+              </h3>
+
+              <p
+                className="treatment-meta"
+                style={{ marginBottom: 0 }}
+              >
+                공모전 MVP에서는 사전에 검증한
+                샘플 정보를 사용합니다.
+                샘플을 선택하면 계약 정보와
+                예정 치료가 자동으로 채워지며,
+                불러온 값은 직접 확인한 뒤
+                계산에 사용합니다.
+              </p>
+            </div>
+
+            <span className="rule-info">
+              직접 수정 가능
+            </span>
+          </div>
+
+          <div className="card-grid">
+            {SAMPLE_POLICY_OPTIONS.map(
+              (option) => {
+                const isSelected =
+                  selectedSampleId ===
+                  option.id;
+
+                return (
+                  <button
+                    key={option.id}
+                    type="button"
+                    onClick={() =>
+                      handleLoadSamplePolicy(
+                        option.id
+                      )
+                    }
+                    aria-pressed={isSelected}
+                    style={{
+                      width: "100%",
+                      minHeight: "108px",
+                      padding: "16px",
+                      border:
+                        isSelected
+                          ? "2px solid var(--color-primary-700)"
+                          : "1px solid var(--color-border)",
+                      borderRadius:
+                        "var(--radius-sm)",
+                      background:
+                        isSelected
+                          ? "#ffffff"
+                          : "var(--color-surface)",
+                      color:
+                        "var(--color-text)",
+                      textAlign: "left",
+                      boxShadow:
+                        isSelected
+                          ? "0 8px 20px rgba(29, 86, 143, 0.10)"
+                          : "none",
+                    }}
+                  >
+                    <span
+                      style={{
+                        display: "block",
+                        marginBottom: "7px",
+                        color:
+                          isSelected
+                            ? "var(--color-primary-700)"
+                            : "var(--color-text)",
+                        fontWeight: 900,
+                        fontSize: "1rem",
+                      }}
+                    >
+                      {option.label}
+                    </span>
+
+                    <span
+                      style={{
+                        display: "block",
+                        color:
+                          "var(--color-text-sub)",
+                        fontSize: "0.84rem",
+                        lineHeight: 1.55,
+                      }}
+                    >
+                      {option.description}
+                    </span>
+                  </button>
+                );
+              }
+            )}
+          </div>
+
+          {selectedSample && (
+            <div
+              style={{
+                marginTop: "16px",
+                padding: "16px",
+                borderRadius:
+                  "var(--radius-sm)",
+                background: "#ffffff",
+                border:
+                  "1px solid var(--color-border)",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent:
+                    "space-between",
+                  gap: "12px",
+                  flexWrap: "wrap",
+                  marginBottom: "10px",
+                }}
+              >
+                <strong>
+                  {selectedSample.label} 샘플을
+                  불러왔습니다
+                </strong>
+
+                <span className="status-badge success">
+                  입력 완료
+                </span>
+              </div>
+
+              {sampleScenarioNotice && (
+                <p
+                  className="treatment-meta"
+                  style={{
+                    margin: "0 0 12px",
+                  }}
+                >
+                  {sampleScenarioNotice}
+                </p>
+              )}
+
+              <label
+                style={{
+                  marginBottom: 0,
+                  paddingTop: "12px",
+                  borderTop:
+                    "1px solid var(--color-border)",
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={
+                    isSampleConfirmed
+                  }
+                  onChange={(e) =>
+                    setIsSampleConfirmed(
+                      e.target.checked
+                    )
+                  }
+                />{" "}
+                불러온 계약 정보를 직접
+                확인했습니다.
+              </label>
+            </div>
+          )}
         </div>
 
-        {isSampleContractLoaded && (
-          <div className="notice-box">
-            <strong>시연용 샘플을 불러왔습니다.</strong>
-            <br />
-            실제 OCR 결과가 아니라 사전에 정의된 샘플 계약값입니다.
-            비급여 특약은 현재 MVP의 비급여 특약2와 동일하다고
-            임의 판단하지 않아 자동 체크하지 않았습니다.
-          </div>
-        )}
-
-        <label>
-          보험사
-          <input
-            type="text"
-            value={insurer}
-            onChange={(e) =>
-              setInsurer(
-                e.target.value
-              )
-            }
-            placeholder="예: OO손해보험"
-          />
-        </label>
-
-        <label>
-          상품명
-          <input
-            type="text"
-            value={productName}
-            onChange={(e) =>
-              setProductName(
-                e.target.value
-              )
-            }
-            placeholder="보험 상품명"
-          />
-        </label>
-
-        <label>
-          가입일
-          <input
-            type="date"
-            value={
-              inceptionDate
-            }
-            onChange={(e) =>
-              setInceptionDate(
-                e.target.value
-              )
-            }
-          />
-        </label>
-
-        <label>
-          실손 세대
-          <select
-            value={generation}
-            onChange={(e) =>
-              setGeneration(
-                Number(
-                  e.target.value
-                ) as InsuranceGeneration
-              )
-            }
+        <div
+          style={{
+            marginBottom: "14px",
+          }}
+        >
+          <p
+            className="amount-label"
+            style={{ marginBottom: "4px" }}
           >
-            <option value={1}>
-              1세대
-            </option>
+            계약 기본 정보
+          </p>
 
-            <option value={2}>
-              2세대
-            </option>
-
-            <option value={3}>
-              3세대
-            </option>
-
-            <option value={4}>
-              4세대
-            </option>
-
-            <option value={5}>
-              5세대
-            </option>
-          </select>
-        </label>
-
-        <label>
-          현재 월 보험료
-          <input
-            type="number"
-            onWheel={(e) => e.currentTarget.blur()}
-            min="0"
-            value={
-              monthlyPremium
-            }
-            onChange={(e) =>
-              setMonthlyPremium(
-                e.target.value
-              )
-            }
-            placeholder="예: 60000"
-          />
-          원
-        </label>
+          <h3 style={{ marginBottom: 0 }}>
+            현재 가입 내용을 확인해 주세요
+          </h3>
+        </div>
 
         <div className="form-grid">
           <label>
-            갱신주기
+            보험사
+            <input
+              type="text"
+              value={insurer}
+              onChange={(e) =>
+                setInsurer(
+                  e.target.value
+                )
+              }
+              placeholder="예: OO손해보험"
+            />
+          </label>
+
+          <label>
+            상품명
+            <input
+              type="text"
+              value={productName}
+              onChange={(e) =>
+                setProductName(
+                  e.target.value
+                )
+              }
+              placeholder="보험 상품명"
+            />
+          </label>
+
+          <label>
+            가입일
+            <input
+              type="date"
+              value={
+                inceptionDate
+              }
+              onChange={(e) =>
+                setInceptionDate(
+                  e.target.value
+                )
+              }
+            />
+          </label>
+
+          <label>
+            실손 세대
+            <select
+              value={generation}
+              onChange={(e) =>
+                setGeneration(
+                  Number(
+                    e.target.value
+                  ) as InsuranceGeneration
+                )
+              }
+            >
+              <option value={1}>
+                1세대
+              </option>
+
+              <option value={2}>
+                2세대
+              </option>
+
+              <option value={3}>
+                3세대
+              </option>
+
+              <option value={4}>
+                4세대
+              </option>
+
+              <option value={5}>
+                5세대
+              </option>
+            </select>
+          </label>
+
+          <label>
+            현재 월 보험료
             <input
               type="number"
-              min="1"
-              step="1"
+              inputMode="numeric"
               onWheel={(e) =>
                 e.currentTarget.blur()
               }
+              min="1"
+              value={
+                monthlyPremium
+              }
+              onChange={(e) =>
+                setMonthlyPremium(
+                  e.target.value
+                )
+              }
+              placeholder="예: 60000"
+            />
+            원
+          </label>
+
+          <label>
+            갱신 주기
+            <input
+              type="number"
+              onWheel={(e) =>
+                e.currentTarget.blur()
+              }
+              min="1"
+              step="1"
               value={
                 renewalCycleMonths
               }
@@ -998,20 +1350,20 @@ function M02InputPage() {
                   e.target.value
                 )
               }
-              placeholder="예: 12"
+              placeholder="모르면 비워두기"
             />
             개월
           </label>
 
           <label>
-            재가입주기
+            재가입 주기
             <input
               type="number"
-              min="1"
-              step="1"
               onWheel={(e) =>
                 e.currentTarget.blur()
               }
+              min="1"
+              step="1"
               value={
                 reentryCycleMonths
               }
@@ -1020,33 +1372,86 @@ function M02InputPage() {
                   e.target.value
                 )
               }
-              placeholder="예: 180"
+              placeholder="모르면 비워두기"
             />
             개월
           </label>
         </div>
 
-        <div className="notice-box">
-          갱신주기와 재가입주기는 현재
-          보험증권 또는 보험사 안내에서
-          확인한 값을 입력해주세요.
-          모르는 값을 임의로 추정하지 않습니다.
-        </div>
+        <div
+          style={{
+            marginTop: "8px",
+            padding: "18px",
+            border:
+              "1px solid var(--color-border)",
+            borderRadius:
+              "var(--radius-sm)",
+            background:
+              "var(--color-surface-soft)",
+          }}
+        >
+          <p
+            className="amount-label"
+            style={{ marginBottom: "10px" }}
+          >
+            현재 계약 특약
+          </p>
 
-        <label>
-          <input
-            type="checkbox"
-            checked={
-              hasCurrentSpecialRider2
-            }
-            onChange={(e) =>
-              setHasCurrentSpecialRider2(
-                e.target.checked
-              )
-            }
-          />{" "}
-          현재 계약 비급여 특약2 가입
-        </label>
+          <div
+            style={{
+              display: "grid",
+              gap: "12px",
+            }}
+          >
+            <label
+              style={{ marginBottom: 0 }}
+            >
+              <input
+                type="checkbox"
+                checked={
+                  hasCurrentNonCoveredCoverage
+                }
+                onChange={(e) =>
+                  setHasCurrentNonCoveredCoverage(
+                    e.target.checked
+                  )
+                }
+              />{" "}
+              비급여 특약 가입
+            </label>
+
+            <label
+              style={{ marginBottom: 0 }}
+            >
+              <input
+                type="checkbox"
+                checked={
+                  hasCurrentSpecialRider2
+                }
+                onChange={(e) =>
+                  setHasCurrentSpecialRider2(
+                    e.target.checked
+                  )
+                }
+              />{" "}
+              비급여 특약2 가입
+            </label>
+          </div>
+
+          <p
+            className="treatment-meta"
+            style={{
+              margin: "14px 0 0",
+              paddingTop: "12px",
+              borderTop:
+                "1px solid var(--color-border)",
+            }}
+          >
+            일반 비급여 특약과 비급여 특약2는
+            같은 특약으로 자동 판단하지 않습니다.
+            실제 가입 내용을 확인해 주세요.
+          </p>
+        </div>
       </section>
 
       {/* STEP 2 */}
@@ -1064,44 +1469,79 @@ function M02InputPage() {
           사용할 비교 조건입니다.
         </p>
 
-        <label>
-          비교용 5세대 월 보험료
-          <input
-            type="number"
-            onWheel={(e) => e.currentTarget.blur()}
-            min="0"
-            value={
-              target5GMonthlyPremium
-            }
-            onChange={(e) =>
-              setTarget5GMonthlyPremiumInput(
-                e.target.value
-              )
-            }
-            placeholder="예: 35000"
-          />
-          원
-        </label>
+        <div className="card-grid">
+          <div
+            style={{
+              padding: "18px",
+              border:
+                "1px solid var(--color-border)",
+              borderRadius:
+                "var(--radius-sm)",
+              background: "#ffffff",
+            }}
+          >
+            <label style={{ marginBottom: 0 }}>
+              비교용 5세대 월 보험료
+              <input
+                type="number"
+                inputMode="numeric"
+                onWheel={(e) =>
+                  e.currentTarget.blur()
+                }
+                min="1"
+                value={
+                  target5GMonthlyPremium
+                }
+                onChange={(e) =>
+                  setTarget5GMonthlyPremiumInput(
+                    e.target.value
+                  )
+                }
+                placeholder="예: 35000"
+              />
+              원
+            </label>
+          </div>
 
-        <label>
-          <input
-            type="checkbox"
-            checked={
-              hasTarget5GSpecialRider2
-            }
-            onChange={(e) =>
-              setHasTarget5GSpecialRider2(
-                e.target.checked
-              )
-            }
-          />{" "}
-          5세대 비급여 특약2 가입
-        </label>
+          <div
+            style={{
+              padding: "18px",
+              border:
+                "1px solid var(--color-border)",
+              borderRadius:
+                "var(--radius-sm)",
+              background: "#ffffff",
+            }}
+          >
+            <p
+              className="amount-label"
+              style={{ marginBottom: "12px" }}
+            >
+              비교 대상 특약
+            </p>
 
-        <div className="notice-box">
-          비교용 보험료는 사용자가 직접
-          입력한 가정값입니다. 실제 5세대
-          전환 보험료를 확정하지 않습니다.
+            <label style={{ marginBottom: 0 }}>
+              <input
+                type="checkbox"
+                checked={
+                  hasTarget5GSpecialRider2
+                }
+                onChange={(e) =>
+                  setHasTarget5GSpecialRider2(
+                    e.target.checked
+                  )
+                }
+              />{" "}
+              5세대 비급여 특약2 가입
+            </label>
+          </div>
+        </div>
+
+        <div className="notice-box warning">
+          비교용 보험료는 사용자가 입력하는
+          가정값입니다. 실제 전환 보험료와
+          가입 가능 여부는 보험사 확인이
+          필요합니다.
         </div>
       </section>
 
@@ -1115,16 +1555,40 @@ function M02InputPage() {
           예정 치료
         </h2>
 
-        <p className="card-description">
-          앞으로 예상되는 의료이용을
-          입력합니다. 치료는 최대 3건까지
-          추가하거나 수정할 수 있습니다.
-        </p>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "flex-start",
+            justifyContent: "space-between",
+            gap: "12px",
+            flexWrap: "wrap",
+            marginBottom: "16px",
+          }}
+        >
+          <p
+            className="card-description"
+            style={{ marginBottom: 0 }}
+          >
+            예정 의료이용을 최소 1건,
+            최대 3건까지 입력합니다.
+          </p>
+
+          <span className="rule-info">
+            현재 {plannedUsages.length}/3건
+          </span>
+        </div>
+
+        <div className="notice-box">
+          시연 시 MRI·주사·물리치료 등의
+          예정 의료이용을 입력할 수 있습니다.
+          문서에 수치가 확인되지 않은 치료비나
+          횟수는 자동 생성하지 않습니다.
+        </div>
 
         {editingUsageId && (
           <div className="notice-box">
-            현재 선택한 치료를 수정하고
-            있습니다.
+            현재 선택한 치료를
+            수정하고 있습니다.
           </div>
         )}
 
@@ -1212,11 +1676,11 @@ function M02InputPage() {
                 모름
               </option>
 
-              <option value="CRITICAL">
+              <option value="SEVERE">
                 중증
               </option>
 
-              <option value="NON_CRITICAL">
+              <option value="NON_SEVERE">
                 비중증
               </option>
             </select>
@@ -1228,7 +1692,10 @@ function M02InputPage() {
             예상 횟수
             <input
               type="number"
-              onWheel={(e) => e.currentTarget.blur()}
+              inputMode="numeric"
+              onWheel={(e) =>
+                e.currentTarget.blur()
+              }
               min="1"
               step="1"
               value={frequency}
@@ -1245,8 +1712,11 @@ function M02InputPage() {
             회당 비용
             <input
               type="number"
-              onWheel={(e) => e.currentTarget.blur()}
-              min="0"
+              inputMode="numeric"
+              onWheel={(e) =>
+                e.currentTarget.blur()
+              }
+              min="1"
               value={unitCost}
               onChange={(e) =>
                 setUnitCost(
@@ -1258,13 +1728,6 @@ function M02InputPage() {
             원
           </label>
         </div>
-
-        {isTreatmentLimitReached && (
-          <div className="notice-box">
-            예정 치료 3건이 모두 등록되었습니다.
-            추가하려면 기존 치료를 수정하거나 삭제해주세요.
-          </div>
-        )}
 
         <div className="button-group">
           <button
@@ -1278,13 +1741,14 @@ function M02InputPage() {
               handleAddTreatment
             }
             disabled={
-              isTreatmentLimitReached
+              !editingUsageId &&
+              plannedUsages.length >= 3
             }
           >
             {editingUsageId
               ? "치료 수정 완료"
-              : isTreatmentLimitReached
-                ? "최대 3건 등록 완료"
+              : plannedUsages.length >= 3
+                ? "최대 3건 입력 완료"
                 : "+ 치료 추가"}
           </button>
 
@@ -1305,7 +1769,9 @@ function M02InputPage() {
           0 && (
           <div>
             <h3>
-              추가된 치료
+              추가된 치료 (
+              {plannedUsages.length}
+              /3)
             </h3>
 
             {plannedUsages.map(
@@ -1351,34 +1817,151 @@ function M02InputPage() {
                     </div>
 
                     <p className="treatment-meta">
+                      {usage.careSetting ===
+                      "OUTPATIENT"
+                        ? "통원"
+                        : "입원"}
+                      {" · "}
+                      {usage.benefitClass ===
+                      "COVERED"
+                        ? "급여"
+                        : usage.benefitClass ===
+                            "NON_COVERED"
+                          ? "비급여"
+                          : "급여 여부 모름"}
+                      {" · "}
+                      {usage.severityClass ===
+                      "SEVERE"
+                        ? "중증"
+                        : usage.severityClass ===
+                            "NON_SEVERE"
+                          ? "비중증"
+                          : "중증 여부 모름"}
+                    </p>
+
+                    <p className="treatment-meta">
                       {usage.frequency}
                       회 ×{" "}
                       {usage.unitCost.toLocaleString()}
                       원
                     </p>
 
-                    <div className="button-group">
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        marginTop: "18px",
+                      }}
+                    >
                       <button
                         type="button"
-                        className="secondary-button"
                         onClick={() =>
                           handleEditTreatment(
                             usage
                           )
                         }
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "6px",
+                          minHeight: "38px",
+                          padding: "8px 12px",
+                          border:
+                            "1px solid var(--color-border-strong)",
+                          borderRadius:
+                            "var(--radius-xs)",
+                          background:
+                            "#ffffff",
+                          color:
+                            "var(--color-primary-800)",
+                          fontWeight: 800,
+                        }}
                       >
+                        <svg
+                          width="15"
+                          height="15"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M4 20h4l10.5-10.5a2.12 2.12 0 0 0-3-3L5 17v3Z"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                          <path
+                            d="m14 8 3 3"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                          />
+                        </svg>
+
                         수정
                       </button>
 
                       <button
                         type="button"
-                        className="danger-button"
                         onClick={() =>
                           handleRemoveTreatment(
                             usage
                           )
                         }
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "6px",
+                          minHeight: "38px",
+                          padding: "8px 12px",
+                          border:
+                            "1px solid rgba(180, 35, 24, 0.28)",
+                          borderRadius:
+                            "var(--radius-xs)",
+                          background:
+                            "var(--color-error-bg)",
+                          color:
+                            "var(--color-error)",
+                          fontWeight: 800,
+                        }}
                       >
+                        <svg
+                          width="15"
+                          height="15"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M3 6h18"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                          />
+                          <path
+                            d="M8 6V4h8v2"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                          <path
+                            d="M19 6 18 20H6L5 6"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                          <path
+                            d="M10 11v5M14 11v5"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                          />
+                        </svg>
+
                         삭제
                       </button>
                     </div>
@@ -1426,6 +2009,177 @@ function M02InputPage() {
           입력 정보 확인하기
         </button>
       </div>
+
+      {isResetModalOpen && (
+        <div
+          className="calculation-modal-backdrop"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="input-reset-modal-title"
+          aria-describedby="input-reset-modal-description"
+          onMouseDown={(event) => {
+            if (
+              event.target ===
+              event.currentTarget
+            ) {
+              handleCancelResetAll();
+            }
+          }}
+        >
+          <div
+            style={{
+              width: "min(92vw, 440px)",
+              padding:
+                "clamp(24px, 5vw, 34px)",
+              border:
+                "1px solid rgba(255,255,255,0.75)",
+              borderRadius: "24px",
+              background: "#ffffff",
+              boxShadow:
+                "var(--shadow-modal)",
+              animation:
+                "modalPop 240ms var(--ease-standard) both",
+            }}
+          >
+            <div
+              style={{
+                display: "grid",
+                placeItems: "center",
+                width: "54px",
+                height: "54px",
+                marginBottom: "18px",
+                borderRadius: "16px",
+                background:
+                  "var(--color-warning-bg)",
+                color:
+                  "var(--color-warning)",
+              }}
+              aria-hidden="true"
+            >
+              <svg
+                width="27"
+                height="27"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <path
+                  d="M12 9v4"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M12 17h.01"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M10.3 3.8 2.4 17.5A2 2 0 0 0 4.1 20h15.8a2 2 0 0 0 1.7-2.5L13.7 3.8a2 2 0 0 0-3.4 0Z"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+
+            <p
+              className="amount-label"
+              style={{
+                marginBottom: "6px",
+              }}
+            >
+              입력 내용 초기화
+            </p>
+
+            <h2
+              id="input-reset-modal-title"
+              style={{
+                marginBottom: "10px",
+                fontSize:
+                  "clamp(1.35rem, 4vw, 1.65rem)",
+              }}
+            >
+              입력한 내용을 모두 지울까요?
+            </h2>
+
+            <p
+              id="input-reset-modal-description"
+              className="card-description"
+              style={{
+                marginBottom: 0,
+                lineHeight: 1.65,
+              }}
+            >
+              현재 보험 정보, 5세대 비교 조건,
+              예정 치료 입력값이 모두 초기화됩니다.
+            </p>
+
+            <div
+              style={{
+                marginTop: "18px",
+                padding: "14px 15px",
+                borderRadius:
+                  "var(--radius-sm)",
+                background:
+                  "var(--color-surface-soft)",
+                color:
+                  "var(--color-text-sub)",
+                fontSize: "0.88rem",
+                lineHeight: 1.55,
+              }}
+            >
+              초기화 후에는 입력한 내용을
+              다시 복구할 수 없습니다.
+            </div>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns:
+                  "minmax(0, 1fr) minmax(0, 1.2fr)",
+                gap: "10px",
+                marginTop: "24px",
+              }}
+            >
+              <button
+                type="button"
+                className="secondary-button"
+                onClick={
+                  handleCancelResetAll
+                }
+                autoFocus
+              >
+                계속 입력하기
+              </button>
+
+              <button
+                type="button"
+                onClick={
+                  handleConfirmResetAll
+                }
+                style={{
+                  minHeight: "48px",
+                  padding:
+                    "12px 16px",
+                  border:
+                    "1px solid var(--color-primary-700)",
+                  borderRadius:
+                    "var(--radius-sm)",
+                  background:
+                    "var(--color-primary-700)",
+                  color: "#ffffff",
+                  fontWeight: 800,
+                  boxShadow:
+                    "0 8px 18px rgba(29, 86, 143, 0.18)",
+                }}
+              >
+                전체 초기화
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

@@ -1,17 +1,21 @@
 import { create } from "zustand";
 
-import {
-  createJSONStorage,
-  persist,
-} from "zustand/middleware";
+import type {
+  InsuranceContract,
+} from "../domain/insurance";
 
-import type { InsuranceContract } from "../domain/insurance";
-import type { MedicalUsage } from "../domain/medical";
+import type {
+  MedicalUsage,
+} from "../domain/medical";
 
 interface AnalysisState {
-  contract: InsuranceContract | null;
+  contract:
+    | InsuranceContract
+    | null;
 
-  target5GMonthlyPremium: number | null;
+  target5GMonthlyPremium:
+    | number
+    | null;
 
   target5GCoverages: string[];
 
@@ -38,71 +42,51 @@ interface AnalysisState {
 
 const initialState = {
   contract: null,
-  target5GMonthlyPremium: null,
+
+  target5GMonthlyPremium:
+    null,
+
   target5GCoverages: [],
+
   usages: [],
 };
 
 export const useAnalysisStore =
-  create<AnalysisState>()(
-    persist(
-      (set) => ({
-        ...initialState,
+  create<AnalysisState>(
+    (set) => ({
+      ...initialState,
 
-        setContract: (contract) => {
-          set({
-            contract,
-          });
-        },
+      setContract: (
+        contract
+      ) =>
+        set({
+          contract,
+        }),
 
-        setTarget5GMonthlyPremium: (
-          monthlyPremium
-        ) => {
+      setTarget5GMonthlyPremium:
+        (monthlyPremium) =>
           set({
             target5GMonthlyPremium:
               monthlyPremium,
-          });
-        },
+          }),
 
-        setTarget5GCoverages: (
-          coverages
-        ) => {
+      setTarget5GCoverages:
+        (coverages) =>
           set({
             target5GCoverages:
               coverages,
-          });
-        },
+          }),
 
-        setUsages: (usages) => {
-          set({
-            usages,
-          });
-        },
-
-        resetAnalysis: () => {
-          set({
-            ...initialState,
-          });
-        },
-      }),
-      {
-        name: "ai-indemnity-doctor-analysis",
-
-        storage: createJSONStorage(
-          () => sessionStorage
-        ),
-
-        partialize: (state) => ({
-          contract: state.contract,
-
-          target5GMonthlyPremium:
-            state.target5GMonthlyPremium,
-
-          target5GCoverages:
-            state.target5GCoverages,
-
-          usages: state.usages,
+      setUsages: (
+        usages
+      ) =>
+        set({
+          usages,
         }),
-      }
-    )
+
+      resetAnalysis: () =>
+        set({
+          ...initialState,
+        }),
+    })
   );

@@ -79,38 +79,39 @@ export function calculateScenario({
         usage.frequency *
         usage.unitCost;
 
-  const selfPaymentResult =
-    calculateSelfPayment({
-      treatmentCost,
+      const selfPaymentResult =
+        calculateSelfPayment({
+          treatmentCost,
 
-      generation,
+          generation,
 
-      benefitClass:
-        usage.benefitClass,
+          careSetting:
+            usage.careSetting,
 
-      severityClass:
-        usage.severityClass,
+          benefitClass:
+            usage.benefitClass,
 
-      coverages,
+          severityClass:
+            usage.severityClass,
 
-      rules:
-        ruleSet.rules,
-    });
+          coverages,
 
-  const excludedExpenseResult =
-    calculateExcludedExpense({
-      treatmentCost,
+          rules:
+            ruleSet.rules,
+        });
 
-      generation,
+      const excludedExpenseResult =
+        calculateExcludedExpense({
+          treatmentCost,
 
-      benefitClass:
-        usage.benefitClass,
+          generation,
 
-      coverages,
+          benefitClass:
+            usage.benefitClass,
 
-      hasSupportedSelfPaymentRule:
-        selfPaymentResult.amount !== null,
-    });
+          coverages,
+        });
+
       /*
        * 보장 제외라면
        * 해당 치료비는 자기부담금이 아니라
@@ -170,7 +171,8 @@ export function calculateScenario({
        * 자기부담 룰이 없는 경우
        */
       if (
-        selfPaymentResult.amount === null
+        selfPaymentResult.amount ===
+        null
       ) {
         return {
           usage,
@@ -194,7 +196,8 @@ export function calculateScenario({
         selfPaymentResult.amount;
 
       const excludedAmount =
-        excludedExpenseResult.amount ?? 0;
+        excludedExpenseResult.amount ??
+        0;
 
       return {
         usage,
