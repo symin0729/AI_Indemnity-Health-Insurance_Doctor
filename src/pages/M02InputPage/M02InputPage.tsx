@@ -2461,80 +2461,208 @@ function M02InputPage() {
         </span>
 
         <h2 className="card-title">
-          계산 가정
+          계산을 위한 추가 확인
         </h2>
 
         <p className="card-description">
-          아래 항목은 사실값이 아니라 계산을 진행하기 위한 가정입니다.
-          실제 상황에 맞다고 판단되는 경우에만 직접 선택해주세요.
+          정확한 계산에 필요한 정보가 부족할 때만 아래 항목을 선택해주세요.
+          잘 모르겠다면 체크하지 않아도 됩니다.
         </p>
 
-        <label>
-          <input
-            type="checkbox"
-            checked={
-              assumeEntireMedicalCostCovered
-            }
-            onChange={(e) =>
-              setAssumeEntireMedicalCostCovered(
-                e.target.checked
-              )
-            }
-          />{" "}
-          C를 입력하지 않은 치료는 회당 의료비 M 전체가 보장대상이라고 가정
-        </label>
+        <div
+          style={{
+            display: "grid",
+            gap: "14px",
+            marginTop: "18px",
+          }}
+        >
+          <label
+            style={{
+              display: "grid",
+              gridTemplateColumns: "24px 1fr",
+              gap: "12px",
+              alignItems: "start",
+              padding: "18px",
+              border: assumeEntireMedicalCostCovered
+                ? "1.5px solid var(--color-primary-600, #2d6fa8)"
+                : "1px solid var(--color-border)",
+              borderRadius: "16px",
+              background: assumeEntireMedicalCostCovered
+                ? "var(--color-primary-050, #f4f9fe)"
+                : "#ffffff",
+              cursor: "pointer",
+            }}
+          >
+            <input
+              type="checkbox"
+              checked={
+                assumeEntireMedicalCostCovered
+              }
+              onChange={(e) =>
+                setAssumeEntireMedicalCostCovered(
+                  e.target.checked
+                )
+              }
+              style={{
+                width: "20px",
+                height: "20px",
+                marginTop: "2px",
+              }}
+            />
 
-        <div className="notice-box">
-          선택하지 않으면 보장대상 인정금액 C가 없는 치료는 임의 계산하지 않고
-          결과에서 확인 필요로 표시합니다.
+            <span>
+              <strong
+                style={{
+                  display: "block",
+                  marginBottom: "6px",
+                  fontSize: "1rem",
+                }}
+              >
+                보장되는 금액을 모르겠어요
+              </strong>
+              <span
+                style={{
+                  display: "block",
+                  color: "var(--color-text-sub)",
+                  lineHeight: 1.6,
+                  fontSize: "0.9rem",
+                }}
+              >
+                입력한 회당 치료비 전액이 보험 보장대상이라고 가정해서 계산합니다.
+                실제 보장범위가 다르면 결과도 달라질 수 있습니다.
+              </span>
+            </span>
+          </label>
+
+          <label
+            style={{
+              display: "grid",
+              gridTemplateColumns: "24px 1fr",
+              gap: "12px",
+              alignItems: "start",
+              padding: "18px",
+              border: assumeNoPriorLimitUsage
+                ? "1.5px solid var(--color-primary-600, #2d6fa8)"
+                : "1px solid var(--color-border)",
+              borderRadius: "16px",
+              background: assumeNoPriorLimitUsage
+                ? "var(--color-primary-050, #f4f9fe)"
+                : "#ffffff",
+              cursor: "pointer",
+            }}
+          >
+            <input
+              type="checkbox"
+              checked={
+                assumeNoPriorLimitUsage
+              }
+              onChange={(e) =>
+                setAssumeNoPriorLimitUsage(
+                  e.target.checked
+                )
+              }
+              style={{
+                width: "20px",
+                height: "20px",
+                marginTop: "2px",
+              }}
+            />
+
+            <span>
+              <strong
+                style={{
+                  display: "block",
+                  marginBottom: "6px",
+                  fontSize: "1rem",
+                }}
+              >
+                올해 이미 사용한 보험 한도가 없어요
+              </strong>
+              <span
+                style={{
+                  display: "block",
+                  color: "var(--color-text-sub)",
+                  lineHeight: 1.6,
+                  fontSize: "0.9rem",
+                }}
+              >
+                올해 같은 보장으로 이미 받은 보험금이나 사용한 한도가 없다고 가정합니다.
+                이미 보험금을 받은 적이 있다면 체크하지 마세요.
+              </span>
+            </span>
+          </label>
+
+          <label
+            style={{
+              display: "grid",
+              gridTemplateColumns: "24px 1fr",
+              gap: "12px",
+              alignItems: "start",
+              padding: "18px",
+              border: assumeEachOccurrenceSeparate
+                ? "1.5px solid var(--color-primary-600, #2d6fa8)"
+                : "1px solid var(--color-border)",
+              borderRadius: "16px",
+              background: assumeEachOccurrenceSeparate
+                ? "var(--color-primary-050, #f4f9fe)"
+                : "#ffffff",
+              cursor: "pointer",
+            }}
+          >
+            <input
+              type="checkbox"
+              checked={
+                assumeEachOccurrenceSeparate
+              }
+              onChange={(e) =>
+                setAssumeEachOccurrenceSeparate(
+                  e.target.checked
+                )
+              }
+              style={{
+                width: "20px",
+                height: "20px",
+                marginTop: "2px",
+              }}
+            />
+
+            <span>
+              <strong
+                style={{
+                  display: "block",
+                  marginBottom: "6px",
+                  fontSize: "1rem",
+                }}
+              >
+                여러 번의 치료는 각각 다른 날에 받는다고 볼게요
+              </strong>
+              <span
+                style={{
+                  display: "block",
+                  color: "var(--color-text-sub)",
+                  lineHeight: 1.6,
+                  fontSize: "0.9rem",
+                }}
+              >
+                치료 날짜를 입력하지 않은 경우 각 회차를 서로 다른 진료일이나 입원 건으로 계산합니다.
+                같은 날 여러 번 치료하거나 같은 입원 중 반복 치료라면 체크하지 마세요.
+              </span>
+            </span>
+          </label>
         </div>
 
-        <label>
-          <input
-            type="checkbox"
-            checked={
-              assumeNoPriorLimitUsage
-            }
-            onChange={(e) =>
-              setAssumeNoPriorLimitUsage(
-                e.target.checked
-              )
-            }
-          />{" "}
-          비교 시작 전 지급한도 사용액과 자기부담 상한 누적액이 0원이라고 가정
-        </label>
-
-        <div className="notice-box">
-          선택하지 않으면 연간·일당·입원한도 또는 자기부담 상한의 기존 사용량이
-          필요한 계산은 확인 필요로 남습니다.
-        </div>
-
-        <label>
-          <input
-            type="checkbox"
-            checked={
-              assumeEachOccurrenceSeparate
-            }
-            onChange={(e) =>
-              setAssumeEachOccurrenceSeparate(
-                e.target.checked
-              )
-            }
-          />{" "}
-          날짜·입원건 정보가 없는 여러 회 치료는 각 회차가 서로 다른 진료일/입원건이라고 가정
-        </label>
-
-        <div className="notice-box warning">
-          같은 날 여러 번 진료받았거나 동일 입원 중 반복된 치료라면 이 가정을 선택하면
-          실제 약관 계산 단위와 달라질 수 있습니다.
+        <div
+          className="notice-box"
+          style={{ marginTop: "16px" }}
+        >
+          체크하지 않은 항목은 임의로 추정하지 않습니다.
+          필요한 경우 결과 화면에서 <strong>확인 필요</strong>로 안내합니다.
         </div>
       </section>
 
       <div className="notice-box warning">
-        급여 여부나 중증 여부를 모르는
-        경우에는 임의로 판단하지 않고
-        결과 화면에서 확인 필요 상태로
-        표시합니다.
+        급여 여부나 중증 여부처럼 확실하지 않은 정보도 임의로 정하지 않습니다.
+        모르는 항목은 그대로 두면 결과에서 확인이 필요한 부분을 알려드립니다.
       </div>
 
       <div className="button-group">
