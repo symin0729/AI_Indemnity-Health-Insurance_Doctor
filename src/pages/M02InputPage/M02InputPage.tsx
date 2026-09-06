@@ -38,6 +38,15 @@ function isValidIsoDate(value: string): boolean {
   );
 }
 
+function formatWonInput(value: string): string {
+  const digits = value.replace(/\D/g, "");
+  return digits ? Number(digits).toLocaleString("ko-KR") : "";
+}
+
+function getWonInputValue(value: string): string {
+  return value.replace(/\D/g, "");
+}
+
 function IsoDateInput({
   value,
   onChange,
@@ -143,11 +152,14 @@ function M02InputPage() {
     const hashStep = Number(window.location.hash.match(/input-step-(\d)/)?.[1]);
     return hashStep === 2 || hashStep === 3 ? hashStep : 1;
   });
+  const [transitionDirection, setTransitionDirection] =
+    useState<"forward" | "backward">("forward");
 
   const goToInputStep = (step: 1 | 2 | 3) => {
+    setTransitionDirection(step >= activeStep ? "forward" : "backward");
     setActiveStep(step);
     window.history.replaceState(null, "", `/input#input-step-${step}`);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: "auto" });
   };
 
 
@@ -262,12 +274,12 @@ function M02InputPage() {
   );
 
   const [
-    reentryCycleMonths,
-    setReentryCycleMonths,
+    reentryCycleYears,
+    setReentryCycleYears,
   ] = useState(
     savedContract?.reentryCycleMonths != null
       ? String(
-          savedContract.reentryCycleMonths
+          savedContract.reentryCycleMonths / 12
         )
       : ""
   );
@@ -451,6 +463,9 @@ function M02InputPage() {
     setEditingUsageId,
   ] = useState<string | null>(null);
 
+  const [isTreatmentFormOpen, setIsTreatmentFormOpen] =
+    useState(savedUsages.length === 0);
+
   const [
     errorMessage,
     setErrorMessage,
@@ -508,10 +523,10 @@ function M02InputPage() {
           : ""
       );
 
-      setReentryCycleMonths(
+      setReentryCycleYears(
         sample.reentryCycleMonths != null
           ? String(
-              sample.reentryCycleMonths
+              sample.reentryCycleMonths / 12
             )
           : ""
       );
@@ -529,14 +544,6 @@ function M02InputPage() {
           sample.coverages.includes(
             "NON_COVERED"
           )
-      );
-
-      setPlannedUsages(
-        scenario.plannedUsages.map(
-          (usage) => ({
-            ...usage,
-          })
-        )
       );
 
       if (
@@ -625,7 +632,7 @@ function M02InputPage() {
     setGeneration(3);
     setMonthlyPremium("");
     setRenewalCycleMonths("");
-    setReentryCycleMonths("");
+    setReentryCycleYears("");
     setSelectedSampleId(null);
     setIsSampleConfirmed(false);
     setSampleScenarioNotice("");
@@ -647,6 +654,7 @@ function M02InputPage() {
     setPlannedUsages([]);
 
     resetTreatmentForm();
+    setIsTreatmentFormOpen(true);
 
     setErrorMessage("");
   };
@@ -875,6 +883,58 @@ function M02InputPage() {
     }
 
     resetTreatmentForm();
+    setIsTreatmentFormOpen(false);
+  };
+
+  const handleStartNewTreatment = () => {
+    if (plannedUsages.length >= MAX_TREATMENTS) {
+      setErrorMessage(`예정 치료는 최대 ${MAX_TREATMENTS}건까지 등록할 수 있습니다.`);
+      return;
+    }
+
+    resetTreatmentForm();
+    setErrorMessage("");
+    setIsTreatmentFormOpen(true);
+  };
+
+  const handleLoadSampleTreatments = () => {
+    try {
+      const scenario = sampleScenarioService.load(selectedSampleId ?? "NON_COVERED");
+      const sampleUsage = scenario.plannedUsages[0];
+
+      if (!sampleUsage) {
+        setErrorMessage("선택한 샘플에는 확정된 예정 치료 정보가 없습니다.");
+        return;
+      }
+
+      resetTreatmentForm();
+      setTreatmentName(sampleUsage.treatmentName);
+      setTreatmentCategory(sampleUsage.treatmentCategory ?? "");
+      setTreatmentDate(sampleUsage.treatmentDate ?? "");
+      setCareSetting(sampleUsage.careSetting);
+      setBenefitClass(sampleUsage.benefitClass);
+      setSeverityClass(sampleUsage.severityClass);
+      setFrequency(String(sampleUsage.frequency));
+      setUnitCost(String(sampleUsage.unitCost));
+      setInstitutionType(sampleUsage.institutionType ?? "");
+      setHealthInsuranceCopayRatePercent(
+        sampleUsage.healthInsuranceCopayRate === undefined
+          ? ""
+          : String(sampleUsage.healthInsuranceCopayRate * 100)
+      );
+      setCoveredAmount(
+        sampleUsage.coveredAmount === undefined
+          ? ""
+          : String(sampleUsage.coveredAmount)
+      );
+      setIsTreatmentFormOpen(true);
+      setSampleScenarioNotice(scenario.notice);
+      setErrorMessage("");
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error ? error.message : "샘플 예정 치료를 불러오지 못했습니다."
+      );
+    }
   };
 
   // ========================================
@@ -885,6 +945,7 @@ function M02InputPage() {
     usage: MedicalUsage
   ) => {
     setErrorMessage("");
+    setIsTreatmentFormOpen(true);
 
     setEditingUsageId(
       usage.id
@@ -952,6 +1013,7 @@ function M02InputPage() {
   const handleCancelEdit = () => {
     resetTreatmentForm();
     setErrorMessage("");
+    setIsTreatmentFormOpen(plannedUsages.length === 0);
   };
 
   // ========================================
@@ -1024,9 +1086,9 @@ function M02InputPage() {
         : null;
 
     const reentryCycleNumber =
-      reentryCycleMonths
+      reentryCycleYears
         ? Number(
-            reentryCycleMonths
+            reentryCycleYears
           )
         : null;
 
@@ -1093,7 +1155,7 @@ function M02InputPage() {
       )
     ) {
       setErrorMessage(
-        "재가입 주기는 1개월 이상의 정수로 입력하거나 비워주세요."
+        "재가입 주기는 1년 이상의 정수로 입력하거나 비워주세요."
       );
       return;
     }
@@ -1241,7 +1303,9 @@ function M02InputPage() {
         renewalCycleNumber,
 
       reentryCycleMonths:
-        reentryCycleNumber,
+        reentryCycleNumber === null
+          ? null
+          : reentryCycleNumber * 12,
 
       coverages:
         currentCoverages,
@@ -1318,7 +1382,7 @@ function M02InputPage() {
       )}
 
       {/* STEP 1 */}
-      <div className="workflow-panel" hidden={activeStep !== 1}>
+      <div className="workflow-panel" data-direction={transitionDirection} hidden={activeStep !== 1}>
       <section id="input-step-1" tabIndex={-1} className="form-card">
         <span className="step-badge">
           STEP 1
@@ -1330,7 +1394,7 @@ function M02InputPage() {
 
         <p className="card-description">
           직접 입력하거나 시연용 샘플 보험증권을 불러와
-          계약 정보와 예정 치료를 자동으로 채울 수 있습니다.
+          계약 정보를 자동으로 채울 수 있습니다.
         </p>
 
         <div className="html-sample-actions">
@@ -1621,18 +1685,17 @@ function M02InputPage() {
         <label>
           현재 월 보험료
           <input
-            type="number"
-            onWheel={(e) => e.currentTarget.blur()}
-            min="0"
+            type="text"
+            inputMode="numeric"
             value={
-              monthlyPremium
+              formatWonInput(monthlyPremium)
             }
             onChange={(e) =>
               setMonthlyPremium(
-                e.target.value
+                getWonInputValue(e.target.value)
               )
             }
-            placeholder="예: 60000"
+            placeholder="예: 60,000"
           />
           원
         </label>
@@ -1658,27 +1721,33 @@ function M02InputPage() {
           </label>
 
           <label>
-            재가입 주기
+            재가입 주기 (년)
             <input
               type="number"
               onWheel={(e) => e.currentTarget.blur()}
               min="1"
               step="1"
               value={
-                reentryCycleMonths
+                reentryCycleYears
               }
               onChange={(e) =>
-                setReentryCycleMonths(
+                setReentryCycleYears(
                   e.target.value
                 )
               }
               placeholder="모르면 비워두기"
             />
-            개월
+            년
           </label>
         </div>
 
-        <div className="notice-box">
+        <div
+          className="notice-box"
+          style={{
+            marginTop: "-6px",
+            marginBottom: "22px",
+          }}
+        >
           공모전 MVP에서는 사전에 검증한 샘플 정보를 사용할 수 있습니다.
           샘플을 불러온 경우 실제 계산 전 사용자가 내용을 다시 확인해야 합니다.
         </div>
@@ -1720,7 +1789,7 @@ function M02InputPage() {
       </div>
 
       {/* STEP 2 */}
-      <div className="workflow-panel" hidden={activeStep !== 2}>
+      <div className="workflow-panel" data-direction={transitionDirection} hidden={activeStep !== 2}>
       <section id="input-step-2" tabIndex={-1} className="compare-card">
         <span className="step-badge">
           STEP 2
@@ -1738,18 +1807,17 @@ function M02InputPage() {
         <label>
           비교용 5세대 월 보험료
           <input
-            type="number"
-            onWheel={(e) => e.currentTarget.blur()}
-            min="0"
+            type="text"
+            inputMode="numeric"
             value={
-              target5GMonthlyPremium
+              formatWonInput(target5GMonthlyPremium)
             }
             onChange={(e) =>
               setTarget5GMonthlyPremiumInput(
-                e.target.value
+                getWonInputValue(e.target.value)
               )
             }
-            placeholder="예: 35000"
+            placeholder="예: 35,000"
           />
           원
         </label>
@@ -1793,13 +1861,31 @@ function M02InputPage() {
 
       {/* STEP 3 */}
       <section className="form-card">
-        <span className="step-badge">
-          STEP 3
-        </span>
+        <div className="treatment-section-header">
+          <div>
+            <span className="step-badge">STEP 3</span>
+            <h2 className="card-title">예정 치료</h2>
+          </div>
 
-        <h2 className="card-title">
-          예정 치료
-        </h2>
+          <div className="treatment-section-actions">
+            <button
+              type="button"
+              className="sample-button"
+              onClick={handleLoadSampleTreatments}
+              disabled={isTreatmentLimitReached}
+            >
+              치료 샘플 불러오기
+            </button>
+            <button
+              type="button"
+              className="primary-button treatment-add-button"
+              onClick={handleStartNewTreatment}
+              disabled={isTreatmentFormOpen || isTreatmentLimitReached}
+            >
+              + 치료 추가
+            </button>
+          </div>
+        </div>
 
         <p className="card-description">
           앞으로 예상되는 의료이용을
@@ -1807,6 +1893,7 @@ function M02InputPage() {
           추가하거나 수정할 수 있습니다.
         </p>
 
+        {isTreatmentFormOpen && <>
         {editingUsageId && (
           <div className="notice-box">
             현재 선택한 치료를 수정하고
@@ -1852,7 +1939,7 @@ function M02InputPage() {
             <IsoDateInput
               value={treatmentDate}
               onChange={setTreatmentDate}
-              placeholder="YYYY-MM-DD (선택)"
+              placeholder="YYYY-MM-DD"
             />
           </label>
         </div>
@@ -1957,16 +2044,15 @@ function M02InputPage() {
           <label>
             회당 환자부담 의료비 (M)
             <input
-              type="number"
-              onWheel={(e) => e.currentTarget.blur()}
-              min="0"
-              value={unitCost}
+              type="text"
+              inputMode="numeric"
+              value={formatWonInput(unitCost)}
               onChange={(e) =>
                 setUnitCost(
-                  e.target.value
+                  getWonInputValue(e.target.value)
                 )
               }
-              placeholder="예: 400000"
+              placeholder="예: 400,000"
             />
             원
           </label>
@@ -2029,15 +2115,14 @@ function M02InputPage() {
         <label>
           회당 보장대상 인정금액 (C)
           <input
-            type="number"
-            onWheel={(e) => e.currentTarget.blur()}
-            min="0"
+            type="text"
+            inputMode="numeric"
             value={
-              coveredAmount
+              formatWonInput(coveredAmount)
             }
             onChange={(e) =>
               setCoveredAmount(
-                e.target.value
+                getWonInputValue(e.target.value)
               )
             }
             placeholder="모르면 비워두세요"
@@ -2068,10 +2153,8 @@ function M02InputPage() {
             }
           >
             {editingUsageId
-              ? "치료 수정 완료"
-              : isTreatmentLimitReached
-                ? "최대 3건 등록 완료"
-                : "+ 치료 추가"}
+              ? "수정 확인"
+              : "확인"}
           </button>
 
           {editingUsageId && (
@@ -2086,6 +2169,7 @@ function M02InputPage() {
             </button>
           )}
         </div>
+        </>}
 
         {plannedUsages.length >
           0 && (
@@ -2309,7 +2393,7 @@ function M02InputPage() {
       </div>
 
       {/* STEP 4 */}
-      <div className="workflow-panel" hidden={activeStep !== 3}>
+      <div className="workflow-panel" data-direction={transitionDirection} hidden={activeStep !== 3}>
       <section id="input-step-3" tabIndex={-1} className="form-card">
         <span className="step-badge">
           STEP 4

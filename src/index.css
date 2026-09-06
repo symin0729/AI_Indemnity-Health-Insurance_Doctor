@@ -408,14 +408,16 @@ a {
   min-width: 0;
 }
 
-.app-shell-notice {
-  margin-bottom: 14px;
-  padding: 12px 15px;
-  border: 1px solid var(--pale);
-  border-radius: 14px;
-  background: #eef4fa;
-  color: #334e6f;
-  font-size: 12px;
+.app-shell-side-mvp {
+  margin: 9px 0 0;
+  color: #8fa5bd;
+  font-size: 9px;
+  line-height: 1.55;
+}
+
+.app-shell-side-mvp strong {
+  color: var(--pale);
+  font-size: 9px;
 }
 
 /* AppShell 안의 페이지 main은 외부 카드가 아니다 */
@@ -1272,6 +1274,7 @@ body > #root > main > section {
 
   .app-shell-side-title,
   .app-shell-side-note,
+  .app-shell-side-mvp,
   .app-shell-side-kicker {
     display: none;
   }
@@ -1343,10 +1346,6 @@ body > #root > main > section {
 
   .app-shell-sidebar {
     border-radius: 16px;
-  }
-
-  .app-shell-notice {
-    margin-bottom: 10px;
   }
 
   .page-card,
@@ -1446,7 +1445,7 @@ body > #root > main > section {
 @media print {
   .app-shell-header,
   .app-shell-sidebar,
-  .app-shell-notice,
+  .app-shell-side-mvp,
   .actions,
   .button-group {
     display: none !important;
@@ -1496,14 +1495,44 @@ body > #root > main > section {
 .navy-page > section, .navy-page > .button-group { margin-top: 18px; }
 .navy-page [id^="input-step-"] { scroll-margin-top: 90px; }
 .workflow-panel[hidden] { display: none; }
-.workflow-panel { animation: uiEnter 260ms var(--ease-standard) both; }
+.navy-input-page { overflow: hidden; }
+.workflow-panel[data-direction="forward"] { animation: workflowSlideForward 280ms var(--ease-standard) both; }
+.workflow-panel[data-direction="backward"] { animation: workflowSlideBackward 280ms var(--ease-standard) both; }
 .workflow-panel > section:first-child { margin-top: 18px; }
+@keyframes workflowSlideForward {
+  from { opacity: 0; transform: translateX(36px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes workflowSlideBackward {
+  from { opacity: 0; transform: translateX(-36px); }
+  to { opacity: 1; transform: translateX(0); }
+}
 .legacy-sample-picker { display: none; }
 .html-sample-actions {
   display: flex;
   align-items: center;
   gap: 10px;
   margin: -4px 0 20px;
+}
+.treatment-section-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.treatment-section-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.treatment-section-actions .sample-button,
+.treatment-section-actions .treatment-add-button {
+  min-height: 42px;
+  margin: 0;
+  padding: 10px 14px;
+  white-space: nowrap;
 }
 .sample-button {
   padding: 10px 13px;
@@ -1539,6 +1568,32 @@ body > #root > main > section {
   .navy-page input:not([type="checkbox"]):not([type="radio"]), .navy-page select { font-size: 16px; }
   .navy-page .primary-button { width: 100%; margin-left: 0; }
   .navy-page .button-group { gap: 10px; }
+  .navy-input-page { padding-bottom: 82px !important; }
+  .navy-input-page .workflow-panel > section:first-child { margin-top: 0; padding: 18px; }
+  .navy-input-page .form-grid { gap: 10px; }
+  .navy-input-page label { margin-bottom: 14px; }
+  .navy-input-page > .button-group {
+    position: fixed;
+    right: 9px;
+    bottom: max(8px, env(safe-area-inset-bottom));
+    left: 9px;
+    z-index: 24;
+    display: grid;
+    grid-template-columns: minmax(90px, 0.7fr) minmax(0, 1.3fr);
+    gap: 8px;
+    margin: 0;
+    padding: 10px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 -8px 28px rgba(11, 31, 59, 0.12);
+    backdrop-filter: blur(12px);
+  }
+  .navy-input-page > .button-group > button:first-child { display: none; }
+  .navy-input-page > .button-group button { width: 100%; min-width: 0; margin: 0; }
+  .treatment-section-header { align-items: stretch; flex-direction: column; }
+  .treatment-section-actions { display: grid; grid-template-columns: 1fr 1fr; }
+  .treatment-section-actions button { width: 100%; min-width: 0; }
 }
 @media print {
   .navy-page > .page-header { border: 0 !important; padding: 0 !important; }
