@@ -1,3 +1,4 @@
+import AppShell from "../../components/AppShell";
 import {
   useEffect,
   useState,
@@ -826,7 +827,7 @@ function M04ResultPage() {
     usages.length === 0
   ) {
     return (
-      <main>
+      <AppShell currentStep={5}><main className="navy-page">
         <header className="page-header">
           <span className="page-brand">
             AI 실손 닥터
@@ -850,13 +851,13 @@ function M04ResultPage() {
             입력 화면으로
           </button>
         </div>
-      </main>
+      </main></AppShell>
     );
   }
 
   if (isRuleLoading) {
     return (
-      <main>
+      <AppShell currentStep={5}><main className="navy-page">
         <header className="page-header">
           <span className="page-brand">
             AI 실손 닥터
@@ -866,7 +867,7 @@ function M04ResultPage() {
             mvp-v2 계산 룰을 불러오는 중입니다.
           </p>
         </header>
-      </main>
+      </main></AppShell>
     );
   }
 
@@ -875,7 +876,7 @@ function M04ResultPage() {
     !ruleSet
   ) {
     return (
-      <main>
+      <AppShell currentStep={5}><main className="navy-page">
         <header className="page-header">
           <span className="page-brand">
             AI 실손 닥터
@@ -900,7 +901,7 @@ function M04ResultPage() {
             이전
           </button>
         </div>
-      </main>
+      </main></AppShell>
     );
   }
 
@@ -932,7 +933,7 @@ function M04ResultPage() {
 
   if (!validation.valid) {
     return (
-      <main>
+      <AppShell currentStep={5}><main className="navy-page">
         <header className="page-header">
           <span className="page-brand">
             AI 실손 닥터
@@ -963,7 +964,7 @@ function M04ResultPage() {
             입력 수정하기
           </button>
         </div>
-      </main>
+      </main></AppShell>
     );
   }
 
@@ -1035,7 +1036,7 @@ function M04ResultPage() {
   };
 
   return (
-    <main>
+    <AppShell currentStep={5}><main className="navy-page">
       <header
         className="page-header"
         style={{
@@ -1946,7 +1947,7 @@ function M04ResultPage() {
           </section>
         </div>
       )}
-    </main>
+    </main></AppShell>
   );
 }
 

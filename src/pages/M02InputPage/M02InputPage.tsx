@@ -1,4 +1,5 @@
-import { useRef, useState } from "react";
+import AppShell from "../../components/AppShell";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import type {
@@ -138,6 +139,17 @@ function IsoDateInput({
 
 function M02InputPage() {
   const navigate = useNavigate();
+  const [activeStep, setActiveStep] = useState<1 | 2 | 3>(() => {
+    const hashStep = Number(window.location.hash.match(/input-step-(\d)/)?.[1]);
+    return hashStep === 2 || hashStep === 3 ? hashStep : 1;
+  });
+
+  const goToInputStep = (step: 1 | 2 | 3) => {
+    setActiveStep(step);
+    window.history.replaceState(null, "", `/input#input-step-${step}`);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
 
   const MAX_TREATMENTS = 3;
 
@@ -536,6 +548,10 @@ function M02InputPage() {
         );
       }
 
+      // 원본 HTML의 검증용 샘플과 같은 비교 조건을 함께 채운다.
+      setTarget5GMonthlyPremiumInput("35000");
+      setHasTarget5GSpecialRider1(true);
+
       /**
        * 샘플 시나리오에 명시된 계산 가정도
        * STEP 4 체크 상태에 그대로 반영한다.
@@ -568,7 +584,7 @@ function M02InputPage() {
         scenario.notice
       );
 
-      setIsSampleConfirmed(false);
+      setIsSampleConfirmed(true);
       setErrorMessage("");
     } catch (error) {
       setErrorMessage(
@@ -981,6 +997,14 @@ function M02InputPage() {
   // 다음
   // ========================================
 
+  useEffect(() => {
+    if (errorMessage) {
+      const error = document.getElementById("input-errors");
+      error?.scrollIntoView({ block: "center", behavior: "smooth" });
+      error?.focus({ preventScroll: true });
+    }
+  }, [errorMessage]);
+
   const handleNext = () => {
     setErrorMessage("");
 
@@ -1244,6 +1268,22 @@ function M02InputPage() {
     navigate("/confirm");
   };
 
+  const handleStep1Next = () => {
+    setErrorMessage("");
+
+    if (!monthlyPremium || Number(monthlyPremium) <= 0) {
+      setErrorMessage("현재 월 보험료를 입력해주세요.");
+      return;
+    }
+
+    if (!insurer.trim() || !productName.trim()) {
+      setErrorMessage("보험사와 상품명을 입력해주세요.");
+      return;
+    }
+
+    goToInputStep(2);
+  };
+
   const selectedSample =
     SAMPLE_POLICY_OPTIONS.find(
       (option) =>
@@ -1291,7 +1331,12 @@ function M02InputPage() {
     !editingUsageId;
 
   return (
-    <main>
+    <AppShell currentStep={activeStep} onReset={handleConfirmResetAll}
+      onStepChange={(step) => {
+        if (step === 4) { handleNext(); return; }
+        if (step === 1 || step === 2 || step === 3) goToInputStep(step);
+      }}>
+    <main className="navy-page navy-input-page">
       <header
         className="page-header"
         style={{
@@ -1476,15 +1521,18 @@ function M02InputPage() {
 
       {errorMessage && (
         <div
-          className="notice-box error"
           role="alert"
+          tabIndex={-1}
+          id="input-errors"
+          className="notice-box error"
         >
           {errorMessage}
         </div>
       )}
 
       {/* STEP 1 */}
-      <section className="form-card">
+      <div className="workflow-panel" hidden={activeStep !== 1}>
+      <section id="input-step-1" tabIndex={-1} className="form-card">
         <span className="step-badge">
           STEP 1
         </span>
@@ -1498,7 +1546,23 @@ function M02InputPage() {
           계약 정보와 예정 치료를 자동으로 채울 수 있습니다.
         </p>
 
+        <div className="html-sample-actions">
+          <button
+            type="button"
+            className="sample-button"
+            onClick={() => handleLoadSamplePolicy("NON_COVERED")}
+          >
+            샘플 불러오기
+          </button>
+          {selectedSampleId && (
+            <span className="status-badge success" role="status">
+              샘플 입력 완료
+            </span>
+          )}
+        </div>
+
         <div
+          className="legacy-sample-picker"
           style={{
             marginBottom: "26px",
             padding: "20px",
@@ -1866,9 +1930,11 @@ function M02InputPage() {
             : "현재 계약 비급여 특약 가입"}
         </label>
       </section>
+      </div>
 
       {/* STEP 2 */}
-      <section className="compare-card">
+      <div className="workflow-panel" hidden={activeStep !== 2}>
+      <section id="input-step-2" tabIndex={-1} className="compare-card">
         <span className="step-badge">
           STEP 2
         </span>
@@ -2453,9 +2519,11 @@ function M02InputPage() {
           </div>
         )}
       </section>
+      </div>
 
       {/* STEP 4 */}
-      <section className="form-card">
+      <div className="workflow-panel" hidden={activeStep !== 3}>
+      <section id="input-step-3" tabIndex={-1} className="form-card">
         <span className="step-badge">
           STEP 4
         </span>
@@ -2659,11 +2727,12 @@ function M02InputPage() {
           필요한 경우 결과 화면에서 <strong>확인 필요</strong>로 안내합니다.
         </div>
       </section>
+      </div>
 
-      <div className="notice-box warning">
+      {activeStep === 3 && <div className="notice-box warning">
         급여 여부나 중증 여부처럼 확실하지 않은 정보도 임의로 정하지 않습니다.
         모르는 항목은 그대로 두면 결과에서 확인이 필요한 부분을 알려드립니다.
-      </div>
+      </div>}
 
       <div className="button-group">
         <button
@@ -2677,9 +2746,7 @@ function M02InputPage() {
         <button
           type="button"
           className="secondary-button"
-          onClick={() =>
-            navigate("/")
-          }
+          onClick={() => activeStep === 1 ? navigate("/") : goToInputStep((activeStep - 1) as 1 | 2)}
         >
           이전
         </button>
@@ -2687,11 +2754,13 @@ function M02InputPage() {
         <button
           type="button"
           className="primary-button"
-          onClick={
-            handleNext
-          }
+          onClick={() => {
+            if (activeStep === 1) handleStep1Next();
+            else if (activeStep === 2) goToInputStep(3);
+            else handleNext();
+          }}
         >
-          입력 정보 확인하기
+          {activeStep < 3 ? "다음 단계" : "입력 정보 확인하기"}
         </button>
       </div>
 
@@ -2912,6 +2981,7 @@ function M02InputPage() {
         </div>
       )}
     </main>
+    </AppShell>
   );
 }
 

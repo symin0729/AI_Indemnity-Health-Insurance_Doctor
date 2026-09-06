@@ -1,3 +1,4 @@
+import AppShell from "../../components/AppShell";
 import { useState } from "react";
 
 import { useNavigate } from "react-router-dom";
@@ -44,7 +45,7 @@ function M03ConfirmPage() {
     usages.length === 0
   ) {
     return (
-      <main>
+      <AppShell currentStep={4}><main className="navy-page">
         <header className="page-header">
           <span className="page-brand">
             AI 실손 닥터
@@ -71,7 +72,7 @@ function M03ConfirmPage() {
             입력 화면으로
           </button>
         </div>
-      </main>
+      </main></AppShell>
     );
   }
 
@@ -136,7 +137,7 @@ function M03ConfirmPage() {
   };
 
   return (
-    <main>
+    <AppShell currentStep={4}><main className="navy-page">
       <header
         className="page-header"
         style={{
@@ -862,7 +863,7 @@ function M03ConfirmPage() {
           </div>
         </div>
       )}
-    </main>
+    </main></AppShell>
   );
 }
 

@@ -3,7 +3,7 @@ import {
   useState,
 } from "react";
 
-import splashLogo from "../assets/ai-insurance-doctor-logo.png";
+import splashLogo from "../assets/main-logo.png";
 
 const FADE_START_MS = 1050;
 const REMOVE_MS = 1400;
@@ -68,12 +68,8 @@ function SplashScreen() {
           justify-content: center;
           box-sizing: border-box;
           overflow: hidden;
-          padding:
-            max(24px, env(safe-area-inset-top))
-            max(20px, env(safe-area-inset-right))
-            max(24px, env(safe-area-inset-bottom))
-            max(20px, env(safe-area-inset-left));
-          background: #ffffff;
+          padding: 0;
+          background: #000000;
           opacity: 1;
           visibility: visible;
           transition:
@@ -89,10 +85,10 @@ function SplashScreen() {
 
         .app-splash__logo {
           display: block;
-          width: clamp(240px, 58vw, 560px);
-          max-width: 100%;
-          max-height: min(76vh, 76dvh);
-          height: auto;
+          width: 100%;
+          max-width: none;
+          height: 100%;
+          max-height: none;
           object-fit: contain;
           user-select: none;
           -webkit-user-drag: none;
@@ -112,34 +108,6 @@ function SplashScreen() {
           to {
             opacity: 1;
             transform: scale(1);
-          }
-        }
-
-        @media (max-width: 480px) {
-          .app-splash {
-            padding:
-              max(20px, env(safe-area-inset-top))
-              max(16px, env(safe-area-inset-right))
-              max(20px, env(safe-area-inset-bottom))
-              max(16px, env(safe-area-inset-left));
-          }
-
-          .app-splash__logo {
-            width: min(88vw, 390px);
-            max-height: min(70vh, 70dvh);
-          }
-        }
-
-        @media (max-width: 360px) {
-          .app-splash__logo {
-            width: min(90vw, 330px);
-          }
-        }
-
-        @media (max-height: 560px) {
-          .app-splash__logo {
-            width: min(72vw, 360px);
-            max-height: 60dvh;
           }
         }
 
