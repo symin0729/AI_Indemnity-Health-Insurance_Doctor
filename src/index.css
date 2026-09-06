@@ -1594,6 +1594,31 @@ body > #root > main > section {
 .navy-result-page.is-pdf-exporting .result-actions {
   display: none !important;
 }
+.app-shell-workspace > .navy-result-page.is-pdf-exporting {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+.navy-result-page.is-pdf-exporting .step-badge,
+.navy-result-page.is-pdf-exporting .status-badge,
+.navy-result-page.is-pdf-exporting .rule-info {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  line-height: 1 !important;
+  vertical-align: middle;
+}
+.navy-result-page.is-pdf-exporting .step-badge,
+.navy-result-page.is-pdf-exporting .rule-info {
+  min-height: 26px;
+}
+.navy-result-page.is-pdf-exporting .status-badge {
+  min-height: 27px;
+}
 .confirm-overview-grid > section {
   min-width: 0;
   height: 100%;

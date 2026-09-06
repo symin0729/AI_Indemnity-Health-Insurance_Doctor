@@ -483,8 +483,8 @@ function M02InputPage() {
     riderDetailVisible,
     setRiderDetailVisible,
   ] = useState({
-    special1: true,
-    special2: true,
+    special1: false,
+    special2: false,
   });
 
   const [
@@ -542,33 +542,8 @@ function M02InputPage() {
           : ""
       );
 
-      setHasCurrentSpecialRider1(
-        sample.coverages.includes(
-          "SPECIAL_RIDER_1"
-        )
-      );
-
-      setHasCurrentSpecialRider2(
-        sample.coverages.includes(
-          "SPECIAL_RIDER_2"
-        ) ||
-          sample.coverages.includes(
-            "NON_COVERED"
-          )
-      );
-
-      if (
-        scenario.target5GSpecialRider2 !==
-        null
-      ) {
-        setHasTarget5GSpecialRider2(
-          scenario.target5GSpecialRider2
-        );
-      }
-
       // 원본 HTML의 검증용 샘플과 같은 비교 조건을 함께 채운다.
       setTarget5GMonthlyPremiumInput("35000");
-      setHasTarget5GSpecialRider1(true);
 
       /**
        * 샘플 시나리오에 명시된 계산 가정도

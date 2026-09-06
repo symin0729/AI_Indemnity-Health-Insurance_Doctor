@@ -1081,7 +1081,14 @@ function M04ResultPage() {
 
         if (pageIndex > 0) pdf.addPage();
         const renderedHeight = sliceHeight * (contentWidth / canvas.width);
-        pdf.addImage(pageCanvas.toDataURL("image/jpeg", 0.94), "JPEG", margin, margin, contentWidth, renderedHeight);
+        pdf.addImage(
+          pageCanvas.toDataURL("image/jpeg", 0.94),
+          "JPEG",
+          margin,
+          margin,
+          contentWidth,
+          renderedHeight,
+        );
       }
 
       const date = new Date().toISOString().slice(0, 10);
