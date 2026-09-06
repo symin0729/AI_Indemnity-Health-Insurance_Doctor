@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import headerLogo from "../assets/header-logo.png";
 
 import { useAnalysisStore } from "../store/useAnalysisStore";
 
@@ -120,12 +121,12 @@ function AppShell({
             onClick={handleBrandClick}
             aria-label="AI 실손 닥터 첫 입력 단계로 이동"
           >
-            <span
+            <img
               className="app-shell-logo"
+              src={headerLogo}
+              alt=""
               aria-hidden="true"
-            >
-              AI
-            </span>
+            />
 
             <span>AI 실손 닥터</span>
           </button>

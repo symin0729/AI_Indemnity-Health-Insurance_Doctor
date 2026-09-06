@@ -10,6 +10,9 @@
  * - 미확인 값을 임의 기본값으로 채우지 않는다.
  */
 
+import bundledV1 from "../rules/mvp-v1.json";
+import bundledV2 from "../rules/mvp-v2.json";
+
 export type RuleVerificationStatus =
   | "VERIFIED"
   | "INSURER_CONFIRMATION_REQUIRED";
@@ -381,7 +384,8 @@ function validateRuleSet(
 }
 
 /**
- * public/rules/{version}.json 을 읽는다.
+ * 앱에 포함된 src/rules/{version}.json 을 읽는다.
+ * 결과 화면 진입 시 별도의 네트워크 요청이 필요하지 않다.
  *
  * 마이그레이션 기본 버전은 mvp-v2.
  * 기존 화면에서 loadRuleSet("mvp-v1")을 명시 호출하면
@@ -390,21 +394,19 @@ function validateRuleSet(
 export async function loadRuleSet(
   version = "mvp-v2"
 ): Promise<RuleSet> {
-  const response = await fetch(
-    `/rules/${version}.json`,
-    {
-      cache: "no-store",
-    }
-  );
+  const bundledRuleSets: Record<string, unknown> = {
+    "mvp-v1": bundledV1,
+    "mvp-v2": bundledV2,
+  };
 
-  if (!response.ok) {
+  if (!Object.hasOwn(bundledRuleSets, version)) {
     throw new Error(
-      `룰 파일을 불러오지 못했습니다: ${version}`
+      `지원하지 않는 계산 룰 버전입니다: ${version}`
     );
   }
 
-  const data: unknown =
-    await response.json();
+  // 호출마다 독립된 데이터를 반환해 다른 계산의 규칙 변경을 방지한다.
+  const data: unknown = structuredClone(bundledRuleSets[version]);
 
   validateRuleSet(data);
 
