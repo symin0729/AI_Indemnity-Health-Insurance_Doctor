@@ -69,7 +69,7 @@ function SplashScreen() {
           box-sizing: border-box;
           overflow: hidden;
           padding: 0;
-          background: #000000;
+          background: #ffffff;
           opacity: 1;
           visibility: visible;
           transition:
