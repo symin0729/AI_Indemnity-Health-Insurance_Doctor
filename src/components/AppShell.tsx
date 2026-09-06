@@ -241,22 +241,19 @@ function AppShell({
             아닌, 입력 조건과 명시적 가정에 따른
             모의 비교입니다.
           </p>
-        </aside>
 
-        <div className="app-shell-workspace">
           {showMvpNotice && (
-            <div
-              className="app-shell-notice"
-              role="note"
-            >
+            <p className="app-shell-side-mvp" role="note">
               <strong>MVP 안내</strong>
-              <span aria-hidden="true"> · </span>
+              <br />
               공식 제도 자료와 대표 규칙을 바탕으로
               한 시연용 서비스입니다. 실제 전환 전
               보험사별 약관·특약·견적을 확인하세요.
-            </div>
+            </p>
           )}
+        </aside>
 
+        <div className="app-shell-workspace">
           {children}
         </div>
       </div>
