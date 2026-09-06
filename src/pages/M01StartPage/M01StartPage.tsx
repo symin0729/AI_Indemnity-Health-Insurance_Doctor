@@ -8,6 +8,14 @@ const comparisonSteps = [
   { title: "결과와 근거 확인", description: "연간 총부담, 보장 차이, 확인 필요 항목과 Rule Trace를 확인합니다." },
 ];
 
+const insuranceGenerations = [
+  { generation: "1세대", period: "1999~2009", description: "초기 실손보험으로, 상품과 계약에 따라 보장 조건의 차이가 컸습니다." },
+  { generation: "2세대", period: "2009~2017", description: "표준화 약관이 도입되며 보험사별 보장 기준이 정비되었습니다." },
+  { generation: "3세대", period: "2017~2021", description: "일부 비급여 치료를 별도 특약으로 구분해 보장 구조를 세분화했습니다." },
+  { generation: "4세대", period: "2021~2026", description: "급여와 비급여를 분리하고 비급여 이용량을 보험료에 반영했습니다." },
+  { generation: "5세대", period: "2026~", description: "비급여를 중증과 비중증으로 나누고 중증·필수 치료 중심으로 개편했습니다." },
+];
+
 const cautions = [
   "본 서비스는 보험상품 가입을 추천하거나 실제 보험금 지급을 보장하지 않는 모의 비교 서비스입니다.",
   "현재 결과는 입력값과 MVP 대표 규칙을 사용합니다. 실제 계약의 약관·특약·면책·지급한도와 다를 수 있습니다.",
@@ -41,6 +49,31 @@ function M01StartPage() {
           <div className="start-hero__visual">
             <img src={headerLogo} alt="AI 실손 닥터" />
           </div>
+        </section>
+
+        <section className="insurance-history" aria-labelledby="insurance-history-title">
+          <div className="insurance-history__heading">
+            <div>
+              <span className="insurance-history__eyebrow">실손보험 제도의 변화</span>
+              <h2 id="insurance-history-title">1세대부터 5세대까지</h2>
+            </div>
+            <p>세대가 바뀌면서 보장 구조와 자기부담, 보험료 산정 방식도 달라졌습니다.</p>
+          </div>
+
+          <ol className="insurance-history__timeline">
+            {insuranceGenerations.map((item) => (
+              <li className="insurance-history__item" key={item.generation}>
+                <div className="insurance-history__marker" aria-hidden="true" />
+                <div className="insurance-history__meta">
+                  <strong>{item.generation}</strong>
+                  <span>{item.period}</span>
+                </div>
+                <p>{item.description}</p>
+              </li>
+            ))}
+          </ol>
+
+          <p className="insurance-history__note">실제 보장 내용은 가입 시기와 상품 약관에 따라 달라질 수 있습니다.</p>
         </section>
 
         <section className="start-guide">

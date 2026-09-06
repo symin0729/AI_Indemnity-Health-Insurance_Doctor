@@ -1,5 +1,6 @@
 import AppShell from "../../components/AppShell";
 import { useState } from "react";
+import { createPortal } from "react-dom";
 
 import { useNavigate } from "react-router-dom";
 
@@ -41,8 +42,7 @@ function M03ConfirmPage() {
 
   if (
     !contract ||
-    target5GMonthlyPremium === null ||
-    usages.length === 0
+    target5GMonthlyPremium === null
   ) {
     return (
       <AppShell currentStep={4}><main className="navy-page">
@@ -56,8 +56,7 @@ function M03ConfirmPage() {
           </h1>
 
           <p className="page-description">
-            먼저 현재 보험과 5세대 비교 조건,
-            예정 치료를 입력해주세요.
+            먼저 현재 보험과 5세대 비교 조건을 입력해주세요.
           </p>
         </header>
 
@@ -137,109 +136,16 @@ function M03ConfirmPage() {
   };
 
   return (
-    <AppShell currentStep={4}><main className="navy-page">
-      <header
-        className="page-header"
-        style={{
-          position: "relative",
-          maxWidth: "none",
-          padding: "clamp(22px, 4vw, 36px)",
-          border: "1px solid var(--color-border)",
-          borderRadius: "var(--radius-lg)",
-          background:
-            "linear-gradient(135deg, var(--color-primary-050) 0%, #ffffff 72%)",
-          overflow: "hidden",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: "clamp(18px, 4vw, 42px)",
-            flexWrap: "wrap",
-          }}
-        >
-          <div
-            style={{
-              flex: "1 1 480px",
-              minWidth: 0,
-              position: "relative",
-              zIndex: 1,
-            }}
-          >
-            <span className="page-brand">
-              AI 실손 닥터
-            </span>
-
-            <h1
-              style={{
-                marginTop: "18px",
-                maxWidth: "680px",
-              }}
-            >
-              입력값과 계산 가정을 확인해 주세요
-            </h1>
-
-            <p
-              className="page-description"
-              style={{
-                maxWidth: "640px",
-                marginBottom: "18px",
-              }}
-            >
-              아래 입력값과 가정을 기준으로
-              현재 계약 유지와 5세대 비교안의
-              1년 예상 부담을 계산합니다.
-            </p>
-
-            <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: "8px",
-              }}
-            >
-              <span className="rule-info">
-                계약 정보 확인
-              </span>
-
-              <span className="rule-info">
-                예정 치료 확인
-              </span>
-
-              <span className="rule-info">
-                계산 가정 확인
-              </span>
-            </div>
-          </div>
-
-          <div
-            style={{
-              flex: "0 1 320px",
-              width: "min(100%, 320px)",
-              marginLeft: "auto",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <img
-              src="/ai-insurance-confirm.png"
-              alt="보험 입력 정보와 계산 조건을 확인하는 AI 도우미 일러스트"
-              style={{
-                width: "100%",
-                maxWidth: "320px",
-                height: "auto",
-                objectFit: "contain",
-                filter:
-                  "drop-shadow(0 16px 28px rgba(21, 55, 91, 0.14))",
-              }}
-            />
-          </div>
-        </div>
+    <AppShell currentStep={4}><main className="navy-page navy-confirm-page">
+      <header className="page-header confirm-page-header">
+        <span className="step-badge">STEP 04 · 입력 확인</span>
+        <h1>계산 전 정보를 확인해주세요.</h1>
+        <p className="page-description">
+          현재 계약과 5세대에 동일한 의료이용 조건을 적용합니다.
+        </p>
       </header>
 
+      <div className="confirm-overview-grid">
       {/* STEP 1 */}
       <section className="form-card">
         <span className="step-badge">
@@ -802,6 +708,8 @@ function M03ConfirmPage() {
           )}
       </section>
 
+      </div>
+
       <div className="notice-box warning">
         본 비교는 사용자가 확인한 입력값과
         mvp-v2 룰셋을 이용한 모의 계산입니다.
@@ -816,10 +724,10 @@ function M03ConfirmPage() {
           className="secondary-button"
           disabled={isCalculating}
           onClick={() =>
-            navigate("/input")
+            navigate("/input#input-step-3")
           }
         >
-          입력 수정
+          이전
         </button>
 
         <button
@@ -834,7 +742,7 @@ function M03ConfirmPage() {
         </button>
       </div>
 
-      {isCalculating && (
+      {isCalculating && createPortal(
         <div
           className="calculation-modal-backdrop"
           role="dialog"
@@ -861,7 +769,8 @@ function M03ConfirmPage() {
               결과를 준비하고 있습니다.
             </p>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </main></AppShell>
   );

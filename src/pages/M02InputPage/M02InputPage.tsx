@@ -466,6 +466,9 @@ function M02InputPage() {
   const [isTreatmentFormOpen, setIsTreatmentFormOpen] =
     useState(savedUsages.length === 0);
 
+  const [hasNoPlannedTreatment, setHasNoPlannedTreatment] =
+    useState(false);
+
   const [
     errorMessage,
     setErrorMessage,
@@ -475,6 +478,14 @@ function M02InputPage() {
     isResetModalOpen,
     setIsResetModalOpen,
   ] = useState(false);
+
+  const [
+    riderDetailVisible,
+    setRiderDetailVisible,
+  ] = useState({
+    special1: false,
+    special2: false,
+  });
 
   const [
     pendingDeleteUsage,
@@ -531,33 +542,8 @@ function M02InputPage() {
           : ""
       );
 
-      setHasCurrentSpecialRider1(
-        sample.coverages.includes(
-          "SPECIAL_RIDER_1"
-        )
-      );
-
-      setHasCurrentSpecialRider2(
-        sample.coverages.includes(
-          "SPECIAL_RIDER_2"
-        ) ||
-          sample.coverages.includes(
-            "NON_COVERED"
-          )
-      );
-
-      if (
-        scenario.target5GSpecialRider2 !==
-        null
-      ) {
-        setHasTarget5GSpecialRider2(
-          scenario.target5GSpecialRider2
-        );
-      }
-
       // 원본 HTML의 검증용 샘플과 같은 비교 조건을 함께 채운다.
       setTarget5GMonthlyPremiumInput("35000");
-      setHasTarget5GSpecialRider1(true);
 
       /**
        * 샘플 시나리오에 명시된 계산 가정도
@@ -652,6 +638,7 @@ function M02InputPage() {
     );
 
     setPlannedUsages([]);
+    setHasNoPlannedTreatment(false);
 
     resetTreatmentForm();
     setIsTreatmentFormOpen(true);
@@ -883,6 +870,7 @@ function M02InputPage() {
     }
 
     resetTreatmentForm();
+    setHasNoPlannedTreatment(false);
     setIsTreatmentFormOpen(false);
   };
 
@@ -894,6 +882,7 @@ function M02InputPage() {
 
     resetTreatmentForm();
     setErrorMessage("");
+    setHasNoPlannedTreatment(false);
     setIsTreatmentFormOpen(true);
   };
 
@@ -927,6 +916,7 @@ function M02InputPage() {
           ? ""
           : String(sampleUsage.coveredAmount)
       );
+      setHasNoPlannedTreatment(false);
       setIsTreatmentFormOpen(true);
       setSampleScenarioNotice(scenario.notice);
       setErrorMessage("");
@@ -1231,12 +1221,12 @@ function M02InputPage() {
     }
 
     if (
-      finalUsages.length === 0
+      assumeEachOccurrenceSeparate &&
+      finalUsages.some((usage) => Boolean(usage.treatmentDate))
     ) {
       setErrorMessage(
-        "예정 치료를 1개 이상 입력해주세요."
+        "진료 예정일을 입력한 치료가 있습니다. ‘진료 예정일을 입력하지 않았나요?’ 선택을 해제해주세요."
       );
-
       return;
     }
 
@@ -1346,6 +1336,15 @@ function M02InputPage() {
     }
 
     goToInputStep(2);
+  };
+
+  const toggleRiderDetail = (
+    type: "special1" | "special2"
+  ) => {
+    setRiderDetailVisible((prev) => ({
+      ...prev,
+      [type]: !prev[type],
+    }));
   };
 
   const selectedSample =
@@ -1765,7 +1764,7 @@ function M02InputPage() {
                 )
               }
             />{" "}
-            현재 계약 중증 비급여 특약1 가입
+            현재 중증 비급여 특약1 가입
           </label>
         )}
 
@@ -1782,8 +1781,8 @@ function M02InputPage() {
             }
           />{" "}
           {generation === 5
-            ? "현재 계약 비중증 비급여 특약2 가입"
-            : "현재 계약 비급여 특약 가입"}
+            ? "현재 비중증 비급여 특약2 가입"
+            : "현재 비급여 특약 가입"}
         </label>
       </section>
       </div>
@@ -1822,35 +1821,140 @@ function M02InputPage() {
           원
         </label>
 
-        <label>
-          <input
-            type="checkbox"
-            checked={
-              hasTarget5GSpecialRider1
-            }
-            onChange={(e) =>
-              setHasTarget5GSpecialRider1(
-                e.target.checked
-              )
-            }
-          />{" "}
-          5세대 중증 비급여 특약1 가입
-        </label>
+        <div
+          style={{
+            display: "grid",
+            gap: "12px",
+            marginTop: "10px",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: "12px",
+            }}
+          >
+            <label
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                flex: 1,
+                cursor: "pointer",
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={
+                  hasTarget5GSpecialRider1
+                }
+                onChange={(e) =>
+                  setHasTarget5GSpecialRider1(
+                    e.target.checked
+                  )
+                }
+              />
+              <span>5세대 중증 비급여 특약1 가입</span>
+            </label>
 
-        <label>
-          <input
-            type="checkbox"
-            checked={
-              hasTarget5GSpecialRider2
-            }
-            onChange={(e) =>
-              setHasTarget5GSpecialRider2(
-                e.target.checked
-              )
-            }
-          />{" "}
-          5세대 비급여 특약2 가입
-        </label>
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={() =>
+                toggleRiderDetail("special1")
+              }
+              style={{
+                minHeight: "38px",
+                padding: "0 12px",
+                fontSize: "0.82rem",
+              }}
+            >
+              {riderDetailVisible.special1 ? "숨김" : "보이기"}
+            </button>
+          </div>
+
+          <div
+            style={{
+              display: riderDetailVisible.special1 ? "block" : "none",
+              marginTop: "22px",
+              padding: "20px 18px",
+              borderRadius: "16px",
+              border: "1px solid var(--color-border)",
+              background: "#fff",
+            }}
+          >
+            <h3 style={{ margin: "0 0 10px" }}>중증 비급여 (특약1)</h3>
+            <p style={{ margin: 0, color: "var(--color-text-sub)", lineHeight: 1.7 }}>
+              암, 뇌혈관·심장질환, 희귀난치성질환 등 건강보험 산정특례 대상 질환 및 그 합병증 치료를 집중 보장하는 필수 의료 지원 특약입니다. 상해·질병당 연간 5,000만 원 한도(통원 회당 20만 원, 연 100회)와 30%의 자기부담률 등 기존 4세대의 보장 수준을 유지하며, 상급종합병원 및 종합병원 입원 시 연간 자기부담금 500만 원 상한제를 신설하여 고액 치료비 부담을 크게 줄였습니다. 또한 비중증에서 제외되는 도수치료나 비급여 주사제라도 중증 질환 치료 목적임이 인정되면 통합 한도 내에서 보장되며, 비급여 이용량에 따른 보험료 할증도 적용되지 않습니다.
+            </p>
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: "12px",
+              marginTop: "14px",
+            }}
+          >
+            <label
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                flex: 1,
+                cursor: "pointer",
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={
+                  hasTarget5GSpecialRider2
+                }
+                onChange={(e) =>
+                  setHasTarget5GSpecialRider2(
+                    e.target.checked
+                  )
+                }
+              />
+              <span>5세대 비급여 특약2 가입</span>
+            </label>
+
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={() =>
+                toggleRiderDetail("special2")
+              }
+              style={{
+                minHeight: "38px",
+                padding: "0 12px",
+                fontSize: "0.82rem",
+              }}
+            >
+              {riderDetailVisible.special2 ? "숨김" : "보이기"}
+            </button>
+          </div>
+
+          <div
+            style={{
+              display: riderDetailVisible.special2 ? "block" : "none",
+              marginTop: "22px",
+              padding: "20px 18px",
+              borderRadius: "16px",
+              border: "1px solid var(--color-border)",
+              background: "#fff",
+            }}
+          >
+            <h3 style={{ margin: "0 0 10px" }}>비중증 비급여 (특약2)</h3>
+            <p style={{ margin: 0, color: "var(--color-text-sub)", lineHeight: 1.7 }}>
+              중증 비급여(특약1) 외 일반 비급여 치료를 대상으로 하며, 과잉 의료 이용 방지와 가입자 부담 완화를 위해 보장 구조가 개편되었습니다. 연간 보상한도는 1,000만 원(통원 일당 20만 원, 병·의원 입원 회당 300만 원, 비급여 MRI/MRA 연 300만 원)으로 조정되고 자기부담률은 50%로 상향되었습니다. 과잉 진료 우려가 큰 근골격계 물리치료(도수·체외충격파 등), 비급여 주사제, 미등재 신의료기술은 보장 대상에서 제외되며, 직전 2년 무사고 시 10% 보험료 할인 혜택 및 연간 수령액(100만 원 이상부터 할증)에 따라 최대 300%까지 차등 할증되는 제도가 적용됩니다.
+            </p>
+          </div>
+        </div>
 
         <div className="notice-box">
           비교용 보험료는 사용자가 직접
@@ -1889,9 +1993,32 @@ function M02InputPage() {
 
         <p className="card-description">
           앞으로 예상되는 의료이용을
-          입력합니다. 치료는 최대 3건까지
+          선택적으로 입력합니다. 치료는 최대 3건까지
           추가하거나 수정할 수 있습니다.
         </p>
+
+        {plannedUsages.length === 0 && (
+          <label className={`no-treatment-option${hasNoPlannedTreatment ? " is-selected" : ""}`}>
+            <input
+              type="checkbox"
+              checked={hasNoPlannedTreatment}
+              onChange={(event) => {
+                const isChecked = event.target.checked;
+                setHasNoPlannedTreatment(isChecked);
+                if (isChecked) {
+                  resetTreatmentForm();
+                  setIsTreatmentFormOpen(false);
+                } else {
+                  setIsTreatmentFormOpen(true);
+                }
+              }}
+            />
+            <span>
+              <strong>예정 치료가 없습니다.</strong>
+              <small>예정된 의료이용 없이 보험료만 비교합니다.</small>
+            </span>
+          </label>
+        )}
 
         {isTreatmentFormOpen && <>
         {editingUsageId && (
@@ -2396,7 +2523,7 @@ function M02InputPage() {
       <div className="workflow-panel" data-direction={transitionDirection} hidden={activeStep !== 3}>
       <section id="input-step-3" tabIndex={-1} className="form-card">
         <span className="step-badge">
-          STEP 4
+          STEP 03 · 명시적 계산 가정
         </span>
 
         <h2 className="card-title">
@@ -2404,8 +2531,7 @@ function M02InputPage() {
         </h2>
 
         <p className="card-description">
-          정확한 계산에 필요한 정보가 부족할 때만 아래 항목을 선택해주세요.
-          잘 모르겠다면 체크하지 않아도 됩니다.
+          부족한 정보를 임의 추정하지 않습니다. 사실에 맞는 항목만 선택해주세요.
         </p>
 
         <div
@@ -2457,7 +2583,7 @@ function M02InputPage() {
                   fontSize: "1rem",
                 }}
               >
-                보장되는 금액을 모르겠어요
+                현재 계약과 5세대의 보장대상 금액(C)을 모르겠어요.
               </strong>
               <span
                 style={{
@@ -2467,8 +2593,8 @@ function M02InputPage() {
                   fontSize: "0.9rem",
                 }}
               >
-                입력한 회당 치료비 전액이 보험 보장대상이라고 가정해서 계산합니다.
-                실제 보장범위가 다르면 결과도 달라질 수 있습니다.
+                선택하면 현재 계약과 5세대 모두 입력한 회당 환자부담 의료비
+                전액을 보장대상 금액(C)으로 가정합니다.
               </span>
             </span>
           </label>
@@ -2515,7 +2641,7 @@ function M02InputPage() {
                   fontSize: "1rem",
                 }}
               >
-                올해 이미 사용한 보험 한도가 없어요
+                올해 이미 사용한 보험 한도가 없어요.
               </strong>
               <span
                 style={{
@@ -2525,8 +2651,7 @@ function M02InputPage() {
                   fontSize: "0.9rem",
                 }}
               >
-                올해 같은 보장으로 이미 받은 보험금이나 사용한 한도가 없다고 가정합니다.
-                이미 보험금을 받은 적이 있다면 체크하지 마세요.
+                같은 보장으로 받은 보험금이나 사용한 한도가 없다고 가정합니다.
               </span>
             </span>
           </label>
@@ -2573,7 +2698,7 @@ function M02InputPage() {
                   fontSize: "1rem",
                 }}
               >
-                여러 번의 치료는 각각 다른 날에 받는다고 볼게요
+                [STEP 3 예정 치료 &gt; 진료 예정일]을 입력하지 않았나요?
               </strong>
               <span
                 style={{
@@ -2583,8 +2708,8 @@ function M02InputPage() {
                   fontSize: "0.9rem",
                 }}
               >
-                치료 날짜를 입력하지 않은 경우 각 회차를 서로 다른 진료일이나 입원 건으로 계산합니다.
-                같은 날 여러 번 치료하거나 같은 입원 중 반복 치료라면 체크하지 마세요.
+                선택하면 입력한 치료 횟수를 각각 별도의 병원 방문으로 계산합니다.
+                같은 날 여러 치료를 받을 예정이라면 선택하지 마세요.
               </span>
             </span>
           </label>
@@ -2594,16 +2719,11 @@ function M02InputPage() {
           className="notice-box"
           style={{ marginTop: "16px" }}
         >
-          체크하지 않은 항목은 임의로 추정하지 않습니다.
-          필요한 경우 결과 화면에서 <strong>확인 필요</strong>로 안내합니다.
+          체크하지 않은 조건과 ‘모름’으로 둔 급여·중증 여부는 계산 근거에서
+          보험사 확인 필요 항목으로 표시됩니다.
         </div>
       </section>
       </div>
-
-      {activeStep === 3 && <div className="notice-box warning">
-        급여 여부나 중증 여부처럼 확실하지 않은 정보도 임의로 정하지 않습니다.
-        모르는 항목은 그대로 두면 결과에서 확인이 필요한 부분을 알려드립니다.
-      </div>}
 
       <div className="button-group">
         <button

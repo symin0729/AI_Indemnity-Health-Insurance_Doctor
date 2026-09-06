@@ -789,6 +789,8 @@ function M04ResultPage() {
     setIsResetModalOpen,
   ] = useState(false);
 
+  const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
+
   useEffect(() => {
     const fetchRuleSet = async () => {
       try {
@@ -823,8 +825,7 @@ function M04ResultPage() {
 
   if (
     !contract ||
-    target5GMonthlyPremium === null ||
-    usages.length === 0
+    target5GMonthlyPremium === null
   ) {
     return (
       <AppShell currentStep={5}><main className="navy-page">
@@ -836,7 +837,7 @@ function M04ResultPage() {
             계산할 정보가 없습니다.
           </h1>
           <p className="page-description">
-            보험 정보와 예정 치료를 먼저 입력해주세요.
+            보험 정보와 5세대 비교 조건을 먼저 입력해주세요.
           </p>
         </header>
 
@@ -1035,8 +1036,76 @@ function M04ResultPage() {
     navigate("/");
   };
 
+  const handleDownloadPdf = async () => {
+    if (isDownloadingPdf) return;
+    setIsDownloadingPdf(true);
+
+    try {
+      await new Promise<void>((resolve) => {
+        window.requestAnimationFrame(() => {
+          window.requestAnimationFrame(() => resolve());
+        });
+      });
+
+      const resultPage = document.querySelector<HTMLElement>(".navy-result-page");
+      if (!resultPage) throw new Error("결과 화면을 찾을 수 없습니다.");
+
+      const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+        import("html2canvas"),
+        import("jspdf"),
+      ]);
+      const canvas = await html2canvas(resultPage, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#f2f5f8",
+        logging: false,
+      });
+
+      const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+      const margin = 8;
+      const contentWidth = 210 - margin * 2;
+      const contentHeight = 297 - margin * 2;
+      const sourcePageHeight = Math.floor(canvas.width * (contentHeight / contentWidth));
+
+      for (let sourceY = 0, pageIndex = 0; sourceY < canvas.height; sourceY += sourcePageHeight, pageIndex += 1) {
+        const sliceHeight = Math.min(sourcePageHeight, canvas.height - sourceY);
+        const pageCanvas = document.createElement("canvas");
+        pageCanvas.width = canvas.width;
+        pageCanvas.height = sliceHeight;
+        const context = pageCanvas.getContext("2d");
+        if (!context) throw new Error("PDF 이미지를 생성할 수 없습니다.");
+
+        context.fillStyle = "#f2f5f8";
+        context.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+        context.drawImage(canvas, 0, sourceY, canvas.width, sliceHeight, 0, 0, canvas.width, sliceHeight);
+
+        if (pageIndex > 0) pdf.addPage();
+        const renderedHeight = sliceHeight * (contentWidth / canvas.width);
+        pdf.addImage(
+          pageCanvas.toDataURL("image/jpeg", 0.94),
+          "JPEG",
+          margin,
+          margin,
+          contentWidth,
+          renderedHeight,
+        );
+      }
+
+      const date = new Date().toISOString().slice(0, 10);
+      pdf.save(`AI_실손_닥터_비교결과_${date}.pdf`);
+    } catch (error) {
+      window.alert(
+        error instanceof Error
+          ? `PDF를 만들지 못했습니다. ${error.message}`
+          : "PDF를 만들지 못했습니다."
+      );
+    } finally {
+      setIsDownloadingPdf(false);
+    }
+  };
+
   return (
-    <AppShell currentStep={5}><main className="navy-page">
+    <AppShell currentStep={5}><main className={`navy-page navy-result-page${isDownloadingPdf ? " is-pdf-exporting" : ""}`}>
       <header
         className="page-header"
         style={{
@@ -1069,11 +1138,8 @@ function M04ResultPage() {
                 marginBottom: "14px",
               }}
             >
-              <span className="page-brand">
-                AI 실손 닥터
-              </span>
               <span className="step-badge">
-                RESULT
+                STEP 5 · 비교 결과
               </span>
             </div>
 
@@ -1802,7 +1868,7 @@ function M04ResultPage() {
       </div>
 
       <div
-        className="button-group"
+        className="button-group result-actions"
         style={{
           display: "grid",
           gridTemplateColumns:
@@ -1841,6 +1907,23 @@ function M04ResultPage() {
           }}
         >
           입력 수정
+        </button>
+
+        <button
+          type="button"
+          onClick={handleDownloadPdf}
+          disabled={isDownloadingPdf}
+          style={{
+            minHeight: "48px",
+            border: "1px solid var(--color-primary-200, #b9d1ea)",
+            borderRadius: "12px",
+            background: "#ffffff",
+            color: "var(--color-primary-800)",
+            fontWeight: 800,
+            cursor: isDownloadingPdf ? "wait" : "pointer",
+          }}
+        >
+          {isDownloadingPdf ? "PDF 생성 중..." : "PDF 내려받기"}
         </button>
 
         <button
