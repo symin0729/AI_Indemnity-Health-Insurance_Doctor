@@ -169,9 +169,9 @@ a {
 .insurance-history__heading h2 { margin: 4px 0 0; font-size: 21px; }
 .insurance-history__heading > p { max-width: 480px; margin: 0; color: var(--muted); font-size: 12px; text-align: right; }
 .insurance-history__timeline { position: relative; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
-.insurance-history__timeline::before { content: ""; position: absolute; top: 8px; right: 8%; left: 8%; height: 2px; background: #dce6f0; }
-.insurance-history__item { position: relative; min-width: 0; padding-top: 24px; }
-.insurance-history__marker { position: absolute; top: 2px; left: 0; z-index: 1; width: 14px; height: 14px; border: 3px solid #fff; border-radius: 50%; background: var(--blue2); box-shadow: 0 0 0 1px var(--pale); }
+.insurance-history__timeline::before { display: none; }
+.insurance-history__item { position: relative; min-width: 0; padding: 16px; border: 1px solid var(--line); border-radius: 14px; background: #fafcfe; }
+.insurance-history__marker { display: none; }
 .insurance-history__meta { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; }
 .insurance-history__meta strong { color: var(--navy); font-size: 14px; }
 .insurance-history__meta span { color: var(--blue2); font-size: 9px; font-weight: 800; }
