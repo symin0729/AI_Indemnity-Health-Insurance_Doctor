@@ -158,9 +158,9 @@ function AppShell({
           </div>
 
           <h2 className="app-shell-side-title">
-            같은 의료이용,
+            동일한 의료 이용 조건에서
             <br />
-            두 계약으로 비교합니다.
+            두 개의 계약으로 비교합니다.
           </h2>
 
           <nav

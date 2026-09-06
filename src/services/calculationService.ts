@@ -513,12 +513,9 @@ function validateBaseInput(
     );
   }
 
-  if (
-    input.usages.length < 1 ||
-    input.usages.length > 3
-  ) {
+  if (input.usages.length > 3) {
     errors.push(
-      "예정 치료는 1건 이상 3건 이하로 입력해주세요."
+      "예정 치료는 최대 3건까지 입력할 수 있습니다."
     );
   }
 

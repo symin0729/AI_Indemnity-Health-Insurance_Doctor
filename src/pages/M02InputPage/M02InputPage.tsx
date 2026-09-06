@@ -466,6 +466,9 @@ function M02InputPage() {
   const [isTreatmentFormOpen, setIsTreatmentFormOpen] =
     useState(savedUsages.length === 0);
 
+  const [hasNoPlannedTreatment, setHasNoPlannedTreatment] =
+    useState(false);
+
   const [
     errorMessage,
     setErrorMessage,
@@ -660,6 +663,7 @@ function M02InputPage() {
     );
 
     setPlannedUsages([]);
+    setHasNoPlannedTreatment(false);
 
     resetTreatmentForm();
     setIsTreatmentFormOpen(true);
@@ -891,6 +895,7 @@ function M02InputPage() {
     }
 
     resetTreatmentForm();
+    setHasNoPlannedTreatment(false);
     setIsTreatmentFormOpen(false);
   };
 
@@ -902,6 +907,7 @@ function M02InputPage() {
 
     resetTreatmentForm();
     setErrorMessage("");
+    setHasNoPlannedTreatment(false);
     setIsTreatmentFormOpen(true);
   };
 
@@ -935,6 +941,7 @@ function M02InputPage() {
           ? ""
           : String(sampleUsage.coveredAmount)
       );
+      setHasNoPlannedTreatment(false);
       setIsTreatmentFormOpen(true);
       setSampleScenarioNotice(scenario.notice);
       setErrorMessage("");
@@ -1239,12 +1246,12 @@ function M02InputPage() {
     }
 
     if (
-      finalUsages.length === 0
+      assumeEachOccurrenceSeparate &&
+      finalUsages.some((usage) => Boolean(usage.treatmentDate))
     ) {
       setErrorMessage(
-        "예정 치료를 1개 이상 입력해주세요."
+        "진료 예정일을 입력한 치료가 있습니다. ‘진료 예정일을 입력하지 않았나요?’ 선택을 해제해주세요."
       );
-
       return;
     }
 
@@ -1782,7 +1789,7 @@ function M02InputPage() {
                 )
               }
             />{" "}
-            현재 계약 중증 비급여 특약1 가입
+            현재 중증 비급여 특약1 가입
           </label>
         )}
 
@@ -1799,8 +1806,8 @@ function M02InputPage() {
             }
           />{" "}
           {generation === 5
-            ? "현재 계약 비중증 비급여 특약2 가입"
-            : "현재 계약 비급여 특약 가입"}
+            ? "현재 비중증 비급여 특약2 가입"
+            : "현재 비급여 특약 가입"}
         </label>
       </section>
       </div>
@@ -2011,9 +2018,32 @@ function M02InputPage() {
 
         <p className="card-description">
           앞으로 예상되는 의료이용을
-          입력합니다. 치료는 최대 3건까지
+          선택적으로 입력합니다. 치료는 최대 3건까지
           추가하거나 수정할 수 있습니다.
         </p>
+
+        {plannedUsages.length === 0 && (
+          <label className={`no-treatment-option${hasNoPlannedTreatment ? " is-selected" : ""}`}>
+            <input
+              type="checkbox"
+              checked={hasNoPlannedTreatment}
+              onChange={(event) => {
+                const isChecked = event.target.checked;
+                setHasNoPlannedTreatment(isChecked);
+                if (isChecked) {
+                  resetTreatmentForm();
+                  setIsTreatmentFormOpen(false);
+                } else {
+                  setIsTreatmentFormOpen(true);
+                }
+              }}
+            />
+            <span>
+              <strong>예정 치료가 없습니다.</strong>
+              <small>예정된 의료이용 없이 보험료만 비교합니다.</small>
+            </span>
+          </label>
+        )}
 
         {isTreatmentFormOpen && <>
         {editingUsageId && (
@@ -2518,7 +2548,7 @@ function M02InputPage() {
       <div className="workflow-panel" data-direction={transitionDirection} hidden={activeStep !== 3}>
       <section id="input-step-3" tabIndex={-1} className="form-card">
         <span className="step-badge">
-          STEP 4
+          STEP 03 · 명시적 계산 가정
         </span>
 
         <h2 className="card-title">
@@ -2526,8 +2556,7 @@ function M02InputPage() {
         </h2>
 
         <p className="card-description">
-          정확한 계산에 필요한 정보가 부족할 때만 아래 항목을 선택해주세요.
-          잘 모르겠다면 체크하지 않아도 됩니다.
+          부족한 정보를 임의 추정하지 않습니다. 사실에 맞는 항목만 선택해주세요.
         </p>
 
         <div
@@ -2579,7 +2608,7 @@ function M02InputPage() {
                   fontSize: "1rem",
                 }}
               >
-                보장되는 금액을 모르겠어요
+                현재 계약과 5세대의 보장대상 금액(C)을 모르겠어요.
               </strong>
               <span
                 style={{
@@ -2589,8 +2618,8 @@ function M02InputPage() {
                   fontSize: "0.9rem",
                 }}
               >
-                입력한 회당 치료비 전액이 보험 보장대상이라고 가정해서 계산합니다.
-                실제 보장범위가 다르면 결과도 달라질 수 있습니다.
+                선택하면 현재 계약과 5세대 모두 입력한 회당 환자부담 의료비
+                전액을 보장대상 금액(C)으로 가정합니다.
               </span>
             </span>
           </label>
@@ -2637,7 +2666,7 @@ function M02InputPage() {
                   fontSize: "1rem",
                 }}
               >
-                올해 이미 사용한 보험 한도가 없어요
+                올해 이미 사용한 보험 한도가 없어요.
               </strong>
               <span
                 style={{
@@ -2647,8 +2676,7 @@ function M02InputPage() {
                   fontSize: "0.9rem",
                 }}
               >
-                올해 같은 보장으로 이미 받은 보험금이나 사용한 한도가 없다고 가정합니다.
-                이미 보험금을 받은 적이 있다면 체크하지 마세요.
+                같은 보장으로 받은 보험금이나 사용한 한도가 없다고 가정합니다.
               </span>
             </span>
           </label>
@@ -2695,7 +2723,7 @@ function M02InputPage() {
                   fontSize: "1rem",
                 }}
               >
-                여러 번의 치료는 각각 다른 날에 받는다고 볼게요
+                [STEP 3 예정 치료 &gt; 진료 예정일]을 입력하지 않았나요?
               </strong>
               <span
                 style={{
@@ -2705,8 +2733,8 @@ function M02InputPage() {
                   fontSize: "0.9rem",
                 }}
               >
-                치료 날짜를 입력하지 않은 경우 각 회차를 서로 다른 진료일이나 입원 건으로 계산합니다.
-                같은 날 여러 번 치료하거나 같은 입원 중 반복 치료라면 체크하지 마세요.
+                선택하면 입력한 치료 횟수를 각각 별도의 병원 방문으로 계산합니다.
+                같은 날 여러 치료를 받을 예정이라면 선택하지 마세요.
               </span>
             </span>
           </label>
@@ -2716,16 +2744,11 @@ function M02InputPage() {
           className="notice-box"
           style={{ marginTop: "16px" }}
         >
-          체크하지 않은 항목은 임의로 추정하지 않습니다.
-          필요한 경우 결과 화면에서 <strong>확인 필요</strong>로 안내합니다.
+          체크하지 않은 조건과 ‘모름’으로 둔 급여·중증 여부는 계산 근거에서
+          보험사 확인 필요 항목으로 표시됩니다.
         </div>
       </section>
       </div>
-
-      {activeStep === 3 && <div className="notice-box warning">
-        급여 여부나 중증 여부처럼 확실하지 않은 정보도 임의로 정하지 않습니다.
-        모르는 항목은 그대로 두면 결과에서 확인이 필요한 부분을 알려드립니다.
-      </div>}
 
       <div className="button-group">
         <button

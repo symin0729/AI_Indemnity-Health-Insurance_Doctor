@@ -54,7 +54,7 @@ const VERIFIED_SAMPLE_CONTRACT: InsuranceContract = {
   generation: 3,
   monthlyPremium: 60000,
   renewalCycleMonths: 12,
-  reentryCycleMonths: 180,
+  reentryCycleMonths: 12,
   coverages: ["NON_COVERED"],
 };
 

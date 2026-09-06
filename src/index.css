@@ -163,6 +163,20 @@ a {
 .start-hero__copy > p { max-width: 640px; margin: 0; color: #cbd8e7; font-size: 14px; }
 .start-hero__visual { min-height: 220px; display: grid; place-items: center; padding: 28px; border-radius: 22px; background: rgba(255, 255, 255, 0.94); }
 .start-hero__visual img { width: min(100%, 250px); max-height: 164px; object-fit: contain; }
+.insurance-history { margin-top: 16px; padding: 26px 30px; border: 1px solid var(--line); border-radius: 24px; background: #fff; box-shadow: var(--shadow-soft); }
+.insurance-history__heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 22px; }
+.insurance-history__eyebrow { color: var(--blue2); font-size: 10px; font-weight: 900; letter-spacing: 0.08em; }
+.insurance-history__heading h2 { margin: 4px 0 0; font-size: 21px; }
+.insurance-history__heading > p { max-width: 480px; margin: 0; color: var(--muted); font-size: 12px; text-align: right; }
+.insurance-history__timeline { position: relative; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
+.insurance-history__timeline::before { content: ""; position: absolute; top: 8px; right: 8%; left: 8%; height: 2px; background: #dce6f0; }
+.insurance-history__item { position: relative; min-width: 0; padding-top: 24px; }
+.insurance-history__marker { position: absolute; top: 2px; left: 0; z-index: 1; width: 14px; height: 14px; border: 3px solid #fff; border-radius: 50%; background: var(--blue2); box-shadow: 0 0 0 1px var(--pale); }
+.insurance-history__meta { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; }
+.insurance-history__meta strong { color: var(--navy); font-size: 14px; }
+.insurance-history__meta span { color: var(--blue2); font-size: 9px; font-weight: 800; }
+.insurance-history__item > p { margin: 7px 0 0; color: var(--muted); font-size: 10px; line-height: 1.55; }
+.insurance-history__note { margin: 18px 0 0; color: #8a98aa; font-size: 9px; text-align: right; }
 .start-guide { margin-top: 16px; padding: 30px; border: 1px solid var(--line); border-radius: 24px; background: #fff; box-shadow: var(--shadow-soft); }
 .start-guide > h2 { margin: 0 0 6px; font-size: 21px; }
 .start-guide__description { margin: 0 0 19px; color: var(--muted); font-size: 12px; }
@@ -187,11 +201,17 @@ a {
 @media (max-width: 900px) {
   .start-hero { grid-template-columns: 1fr; }
   .start-hero__visual { display: none; }
+  .insurance-history__heading { align-items: flex-start; flex-direction: column; gap: 6px; }
+  .insurance-history__heading > p { text-align: left; }
+  .insurance-history__timeline { grid-template-columns: repeat(5, minmax(180px, 1fr)); overflow-x: auto; padding: 1px 2px 12px; scroll-snap-type: x mandatory; }
+  .insurance-history__timeline::before { display: none; }
+  .insurance-history__item { padding: 16px; border: 1px solid var(--line); border-radius: 14px; background: #fafcfe; scroll-snap-align: start; }
+  .insurance-history__marker { display: none; }
 }
 
 @media (max-width: 620px) {
   .start-page__main { width: min(100% - 18px, 1120px); margin-top: 12px; }
-  .start-hero, .start-guide { padding: 22px; }
+  .start-hero, .start-guide, .insurance-history { padding: 22px; }
   .start-hero h1 { font-size: 29px; }
   .start-guide__steps { grid-template-columns: 1fr; }
 }
@@ -1534,6 +1554,72 @@ body > #root > main > section {
   padding: 10px 14px;
   white-space: nowrap;
 }
+.no-treatment-option {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 18px;
+  padding: 15px 16px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: border-color var(--duration-fast) ease, background var(--duration-fast) ease;
+}
+.no-treatment-option.is-selected {
+  border-color: var(--blue2);
+  background: #eef4fa;
+}
+.no-treatment-option input { margin: 0; }
+.no-treatment-option strong { display: block; font-size: 14px; }
+.no-treatment-option small { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; font-weight: 500; }
+.confirm-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 18px;
+  margin-top: 18px;
+}
+.navy-confirm-page > .confirm-page-header {
+  margin-bottom: 14px;
+  padding: 22px 28px !important;
+}
+.navy-confirm-page > .confirm-page-header h1 {
+  margin: 10px 0 0 !important;
+}
+.navy-confirm-page > .confirm-page-header .page-description {
+  margin: 8px 0 0;
+}
+.navy-result-page.is-pdf-exporting .result-actions {
+  display: none !important;
+}
+.confirm-overview-grid > section {
+  min-width: 0;
+  height: 100%;
+  margin: 0;
+}
+.confirm-overview-grid .form-grid {
+  grid-template-columns: 1fr;
+  gap: 14px 18px;
+}
+.confirm-overview-grid .form-grid > div {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+.confirm-overview-grid .form-grid > div .amount-label {
+  flex: 0 1 48%;
+  margin: 0;
+}
+.confirm-overview-grid .form-grid > div > strong {
+  flex: 1 1 52%;
+  text-align: right;
+}
+.confirm-overview-grid .treatment-card {
+  padding: 16px;
+}
 .sample-button {
   padding: 10px 13px;
   border: 1px solid var(--pale);
@@ -1562,6 +1648,7 @@ body > #root > main > section {
   .app-shell-step-label { display: block; font-size: 11px; }
   .app-shell-current-step { text-align: center; }
   .navy-page .card-grid { grid-template-columns: 1fr; }
+  .confirm-overview-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 620px) {
   .navy-page > .page-header { padding: 20px !important; }
@@ -1594,6 +1681,7 @@ body > #root > main > section {
   .treatment-section-header { align-items: stretch; flex-direction: column; }
   .treatment-section-actions { display: grid; grid-template-columns: 1fr 1fr; }
   .treatment-section-actions button { width: 100%; min-width: 0; }
+  .navy-confirm-page > .confirm-page-header { padding: 18px !important; }
 }
 @media print {
   .navy-page > .page-header { border: 0 !important; padding: 0 !important; }

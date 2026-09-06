@@ -18,7 +18,7 @@ export const SAMPLE_POLICY:
 
   renewalCycleMonths: 12,
 
-  reentryCycleMonths: 180,
+  reentryCycleMonths: 12,
 
   /*
    * 원본 샘플의 비급여 특약과
