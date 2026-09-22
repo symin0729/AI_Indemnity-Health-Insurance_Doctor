@@ -1,32 +1,6 @@
-# React + TypeScript + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
-
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+AI 실손 닥터는 1~4세대 실손보험 가입자가 현재 계약을 유지하는 경우와 5세대 실손보험으
+로 전환하는 경우의 예상 연간 총부담을 동일한 의료이용 조건에서 비교할 수 있도록 구현한 
+반응형 모바일 웹 서비스입니다.
+사용자가 현재 실손보험 계약 정보, 5세대 비교 조건, 예정 치료 정보를 입력하면 구조화된 약
+관 Rule Set과 TypeScript 기반 결정론적 룰 엔진을 이용하여 현재 계약과 5세대 전환 시나리
+오의 보험료, 자기부담금, 예상 보험금, 보장 제외 금액, 지급한도 초과 금액 등을 계산합니다.
