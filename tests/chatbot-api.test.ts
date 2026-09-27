@@ -76,10 +76,43 @@ describe("chat API", () => {
 });
 
 describe("health API", () => {
-  it("비밀값 없이 구성 상태만 반환한다", async () => {
+  afterEach(() => vi.unstubAllEnvs());
+
+  it("필수 설정이 없으면 degraded와 unconfigured를 반환한다", async () => {
+    vi.stubEnv("RAGFLOW_BASE_URL", "");
+    vi.stubEnv("RAGFLOW_API_KEY", "");
+    vi.stubEnv("RAGFLOW_DATASET_ID", "");
+    vi.stubEnv("LLM_API_KEY", "");
+    vi.stubEnv("LLM_MODEL", "");
+
     const response = healthHandler(new Request("http://localhost/api/health"));
     const body = await response.json();
-    expect(body.services.api).toBe("available");
+    expect(body).toEqual({
+      status: "degraded",
+      services: {
+        api: "available",
+        rag: "unconfigured",
+        llm: "unconfigured",
+      },
+    });
     expect(JSON.stringify(body)).not.toContain("API_KEY");
+  });
+
+  it("필수 설정이 모두 있으면 ready와 configured를 반환한다", async () => {
+    vi.stubEnv("RAGFLOW_BASE_URL", "https://ragflow.example.com");
+    vi.stubEnv("RAGFLOW_API_KEY", "rag-secret");
+    vi.stubEnv("RAGFLOW_DATASET_ID", "dataset-1");
+    vi.stubEnv("LLM_API_KEY", "llm-secret");
+    vi.stubEnv("LLM_MODEL", "model-1");
+
+    const response = healthHandler(new Request("http://localhost/api/health"));
+    expect(await response.json()).toEqual({
+      status: "ready",
+      services: {
+        api: "available",
+        rag: "configured",
+        llm: "configured",
+      },
+    });
   });
 });
