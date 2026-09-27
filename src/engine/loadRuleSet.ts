@@ -10,8 +10,8 @@
  * - 미확인 값을 임의 기본값으로 채우지 않는다.
  */
 
-import bundledV1 from "../rules/mvp-v1.json";
-import bundledV2 from "../rules/mvp-v2.json";
+import bundledV1 from "../rules/legacy/mvp-v1.json";
+import bundledV2 from "../rules/legacy/mvp-v2.json";
 
 export type RuleVerificationStatus =
   | "VERIFIED"

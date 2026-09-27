@@ -1,6 +1,6 @@
 import { callLlm } from "./lib/callLlm";
 import { callRagFlow } from "./lib/callRagFlow";
-import { buildPrompt } from "./lib/buildPrompt";
+import { buildGeneralPrompt } from "./lib/buildGeneralPrompt";
 import { classifyQuestion } from "./lib/classifyQuestion";
 import { getConfig, hasLlmConfig, hasRagConfig } from "./lib/config";
 import { fallback } from "./lib/fallback";
@@ -39,7 +39,7 @@ export default async function handler(request: Request): Promise<Response> {
     });
     if (evidence.length === 0) return jsonResponse(fallback("INSUFFICIENT_EVIDENCE", requestId));
 
-    const llmAnswer = await callLlm(buildPrompt(redacted.value, evidence), {
+    const llmAnswer = await callLlm(buildGeneralPrompt(redacted.value, evidence), {
       provider: config.llmProvider,
       apiKey: config.llmApiKey,
       model: config.llmModel,

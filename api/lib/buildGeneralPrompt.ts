@@ -1,6 +1,9 @@
 import type { RetrievedEvidence } from "./types";
 
-export const buildPrompt = (question: string, evidence: RetrievedEvidence[]): string => {
+export const buildGeneralPrompt = (
+  question: string,
+  evidence: RetrievedEvidence[],
+): string => {
   const sources = evidence.map((item, index) =>
     `[근거 ${index + 1}] documentId=${item.source.documentId}\n${item.content}`,
   ).join("\n\n");

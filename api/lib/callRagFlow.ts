@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { fetchWithTimeout } from "./http";
+import { matchesRagFilters, type RagFilters } from "./ragFilters";
 import type { RetrievedEvidence } from "./types";
 
 const ragflowResponseSchema = z.object({
@@ -15,6 +16,7 @@ export interface RagFlowOptions {
   apiKey: string;
   datasetId: string;
   timeoutMs: number;
+  filters?: RagFilters;
 }
 
 export const callRagFlow = async (
@@ -55,6 +57,7 @@ export const callRagFlow = async (
       chunk.metadata && typeof chunk.metadata === "object"
         ? (chunk.metadata as Record<string, unknown>)
         : chunk;
+    if (options.filters && !matchesRagFilters(metadata, options.filters)) return [];
     const url = text(metadata.sourceUrl) ?? text(metadata.source_url) ?? text(metadata.url);
     const organization = text(metadata.publisher) ?? text(metadata.organization);
     const verifiedAt = text(metadata.verifiedAt) ?? text(metadata.verified_at);

@@ -1,0 +1,57 @@
+[
+  {
+    "productCode": "SAMSUNG_GEN1_PENDING",
+    "insurer": "SAMSUNG",
+    "insurerName": "삼성화재",
+    "generation": 1,
+    "displayName": "1세대 대표상품(선정 필요)",
+    "reviewStatus": "PENDING_SELECTION",
+    "ruleSetFile": "gen1-SAMSUNG_GEN1_PENDING.json",
+    "evidenceDocumentIds": [],
+    "verifiedAt": null
+  },
+  {
+    "productCode": "SAMSUNG_GEN2_PENDING",
+    "insurer": "SAMSUNG",
+    "insurerName": "삼성화재",
+    "generation": 2,
+    "displayName": "2세대 대표상품(선정 필요)",
+    "reviewStatus": "PENDING_SELECTION",
+    "ruleSetFile": "gen2-SAMSUNG_GEN2_PENDING.json",
+    "evidenceDocumentIds": [],
+    "verifiedAt": null
+  },
+  {
+    "productCode": "SAMSUNG_1704_1",
+    "insurer": "SAMSUNG",
+    "insurerName": "삼성화재",
+    "generation": 3,
+    "displayName": "3세대 대표상품",
+    "reviewStatus": "PENDING_EVIDENCE",
+    "ruleSetFile": "gen3-1704-1.json",
+    "evidenceDocumentIds": [],
+    "verifiedAt": null
+  },
+  {
+    "productCode": "SAMSUNG_2107_1",
+    "insurer": "SAMSUNG",
+    "insurerName": "삼성화재",
+    "generation": 4,
+    "displayName": "4세대 대표상품",
+    "reviewStatus": "PENDING_EVIDENCE",
+    "ruleSetFile": "gen4-2107-1.json",
+    "evidenceDocumentIds": [],
+    "verifiedAt": null
+  },
+  {
+    "productCode": "SAMSUNG_2605_1",
+    "insurer": "SAMSUNG",
+    "insurerName": "삼성화재",
+    "generation": 5,
+    "displayName": "5세대 대표상품",
+    "reviewStatus": "PENDING_EVIDENCE",
+    "ruleSetFile": "gen5-2605-1.json",
+    "evidenceDocumentIds": [],
+    "verifiedAt": null
+  }
+]
