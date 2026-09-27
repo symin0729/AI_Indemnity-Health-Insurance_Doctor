@@ -5,7 +5,7 @@ import headerLogo from "../assets/header-logo.png";
 
 import { useAnalysisStore } from "../store/useAnalysisStore";
 
-type AppStep = 1 | 2 | 3 | 4 | 5;
+type AppStep = 1 | 2 | 3 | 4 | 5 | 6;
 
 type AppShellProps = {
   children: ReactNode;
@@ -39,6 +39,10 @@ const STEP_ITEMS: Array<{
     step: 5,
     label: "비교 결과",
   },
+  {
+    step: 6,
+    label: "챗봇",
+  },
 ];
 
 function AppShell({
@@ -58,7 +62,7 @@ function AppShell({
     useState(false);
 
   const handleStepClick = (step: AppStep) => {
-    if (step === 5 && currentStep < 5) {
+    if (step >= 5 && currentStep < 5) {
       return;
     }
 
@@ -77,7 +81,12 @@ function AppShell({
       return;
     }
 
-    navigate("/result");
+    if (step === 5) {
+      navigate("/result");
+      return;
+    }
+
+    navigate("/chat");
   };
 
   const handleBrandClick = () => {
@@ -109,7 +118,7 @@ function AppShell({
     navigate("/input");
   };
 
-  const progressPercent = `${currentStep * 20}%`;
+  const progressPercent = `${Math.min(currentStep, 5) * 20}%`;
 
   return (
     <>
@@ -174,9 +183,7 @@ function AppShell({
               const isDone =
                 item.step < currentStep;
 
-              const isDisabled =
-                item.step === 5 &&
-                currentStep < 5;
+              const isDisabled = item.step >= 5 && currentStep < 5;
 
               return (
                 <button
@@ -234,7 +241,9 @@ function AppShell({
           </div>
 
           <p className="app-shell-current-step" aria-live="polite">
-            {currentStep} / 5 · {STEP_ITEMS[currentStep - 1].label}
+            {currentStep === 6
+              ? "선택 STEP 6 · 챗봇"
+              : `${currentStep} / 5 · ${STEP_ITEMS[currentStep - 1].label}`}
           </p>
           <p className="app-shell-side-note">
             보험상품 권유나 보험금 지급 보장이

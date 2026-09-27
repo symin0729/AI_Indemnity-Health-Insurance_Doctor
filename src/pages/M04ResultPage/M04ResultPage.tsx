@@ -1928,6 +1928,14 @@ function M04ResultPage() {
 
         <button
           type="button"
+          className="result-chat-button"
+          onClick={() => navigate("/chat")}
+        >
+          챗봇으로 이동 →
+        </button>
+
+        <button
+          type="button"
           className="primary-button"
           onClick={handleStartOver}
           style={{ minHeight: "48px", borderRadius: "12px" }}
