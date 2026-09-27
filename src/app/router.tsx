@@ -4,6 +4,7 @@ import M01StartPage from "../pages/M01StartPage/M01StartPage";
 import M02InputPage from "../pages/M02InputPage/M02InputPage";
 import M03ConfirmPage from "../pages/M03ConfirmPage/M03ConfirmPage";
 import M04ResultPage from "../pages/M04ResultPage/M04ResultPage";
+import ResultChatbot from "../features/chatbot/ResultChatbot";
 
 export const router = createBrowserRouter([
   {
@@ -21,5 +22,9 @@ export const router = createBrowserRouter([
   {
     path: "/result",
     element: <M04ResultPage />,
+  },
+  {
+    path: "/chat",
+    element: <ResultChatbot />,
   },
 ]);
