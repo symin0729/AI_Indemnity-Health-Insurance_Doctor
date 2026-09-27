@@ -9,12 +9,35 @@ const answerSchema = z.object({
   confirmations: z.array(z.string()),
 }).strict();
 
-const responseSchema = z.object({ output_text: z.string().optional() }).passthrough();
+const answerJsonSchema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    answer: { type: "string" },
+    keyPoints: { type: "array", items: { type: "string" } },
+    sourceDocumentIds: { type: "array", items: { type: "string" } },
+    confirmations: { type: "array", items: { type: "string" } },
+  },
+  required: ["answer", "keyPoints", "sourceDocumentIds", "confirmations"],
+} as const;
+
+const geminiResponseSchema = z.object({
+  output_text: z.string().optional(),
+  status: z.string().optional(),
+  steps: z.array(z.object({
+    type: z.string(),
+    content: z.array(z.object({
+      type: z.string(),
+      text: z.string().optional(),
+    })).optional(),
+  })).optional(),
+}).passthrough();
 
 export interface LlmOptions {
   provider: string;
   apiKey: string;
   model: string;
+  thinkingLevel: "minimal" | "low" | "medium" | "high";
   timeoutMs: number;
 }
 
@@ -22,45 +45,46 @@ export const callLlm = async (
   prompt: string,
   options: LlmOptions,
 ): Promise<LlmAnswer> => {
-  if (options.provider !== "openai") {
+  if (options.provider !== "gemini") {
     throw new Error(`Unsupported LLM provider: ${options.provider}`);
   }
   const response = await fetchWithTimeout(
-    "https://api.openai.com/v1/responses",
+    "https://generativelanguage.googleapis.com/v1beta/interactions",
     {
       method: "POST",
       headers: {
-        authorization: `Bearer ${options.apiKey}`,
+        "x-goog-api-key": options.apiKey,
         "content-type": "application/json",
       },
       body: JSON.stringify({
         model: options.model,
-        store: false,
         input: prompt,
-        text: {
-          format: {
-            type: "json_schema",
-            name: "insurance_general_answer",
-            strict: true,
-            schema: {
-              type: "object",
-              additionalProperties: false,
-              properties: {
-                answer: { type: "string" },
-                keyPoints: { type: "array", items: { type: "string" } },
-                sourceDocumentIds: { type: "array", items: { type: "string" } },
-                confirmations: { type: "array", items: { type: "string" } },
-              },
-              required: ["answer", "keyPoints", "sourceDocumentIds", "confirmations"],
-            },
-          },
+        store: false,
+        generation_config: {
+          thinking_level: options.thinkingLevel,
+        },
+        response_format: {
+          type: "text",
+          mime_type: "application/json",
+          schema: answerJsonSchema,
         },
       }),
     },
     options.timeoutMs,
   );
   if (!response.ok) throw new Error(`LLM request failed (${response.status})`);
-  const envelope = responseSchema.parse(await response.json());
-  if (!envelope.output_text) throw new Error("LLM response did not contain output_text");
-  return answerSchema.parse(JSON.parse(envelope.output_text));
+  const envelope = geminiResponseSchema.parse(await response.json());
+  if (envelope.status && envelope.status !== "completed") {
+    throw new Error("LLM response did not finish successfully");
+  }
+  const outputText = envelope.output_text ?? envelope.steps
+    ?.filter((step) => step.type === "model_output")
+    .flatMap((step) => step.content ?? [])
+    .filter((part) => part.type === "text")
+    .map((part) => part.text ?? "")
+    .join("");
+  if (!outputText?.trim()) {
+    throw new Error("LLM response did not contain output text");
+  }
+  return answerSchema.parse(JSON.parse(outputText));
 };

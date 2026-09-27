@@ -43,6 +43,7 @@ export default async function handler(request: Request): Promise<Response> {
       provider: config.llmProvider,
       apiKey: config.llmApiKey,
       model: config.llmModel,
+      thinkingLevel: config.llmThinkingLevel,
       timeoutMs: config.timeoutMs,
     });
     if (!validateAnswer(llmAnswer, evidence)) return jsonResponse(fallback("FALLBACK", requestId));
