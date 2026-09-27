@@ -23,6 +23,10 @@ export const localApiPlugin = (): Plugin => ({
       const pathname = new URL(request.url ?? '/', 'http://localhost').pathname
       const modulePath = pathname === '/api/chat'
         ? '/api/chat.ts'
+        : pathname === '/api/evidence'
+          ? '/api/evidence.ts'
+          : pathname === '/api/explain'
+            ? '/api/explain.ts'
         : pathname === '/api/health'
           ? '/api/health.ts'
           : null

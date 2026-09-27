@@ -1,11 +1,9 @@
-import type { ChatRequest } from "./types";
-
 export class ConsentValidationError extends Error {
   readonly code = "CONSENT_REQUIRED";
 }
 
 export const validateConsent = (
-  input: ChatRequest,
+  input: { consentGranted: boolean; consentPolicyVersion: string },
   expectedVersion: string,
 ): void => {
   if (!input.consentGranted || input.consentPolicyVersion !== expectedVersion) {
