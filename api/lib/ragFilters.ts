@@ -14,6 +14,9 @@ const value = (metadata: Record<string, unknown>, key: string): string | undefin
 const firstValue = (metadata: Record<string, unknown>, ...keys: string[]): string | undefined =>
   keys.map((key) => value(metadata, key)).find((candidate) => candidate !== undefined);
 
+export const isVerifiedRagMetadata = (metadata: Record<string, unknown>): boolean =>
+  firstValue(metadata, "status", "reviewStatus", "review_status")?.toUpperCase() === "VERIFIED";
+
 export const matchesRagFilters = (
   metadata: Record<string, unknown>,
   filters: RagFilters,
