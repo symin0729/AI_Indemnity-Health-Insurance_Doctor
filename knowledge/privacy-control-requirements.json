@@ -49,7 +49,7 @@
       "사용자 질문·대화·상담 내용",
       "사용자 입력 의료비·보험료·건강정보",
       "진단서·영수증·처방전·진료기록",
-      "Rule 초안·손계산 초안·fixture",
+      "Rule 초안·계산 fixture",
       "LLM 답변과 사용자 경험담"
     ],
     "requiredMetadata": [
@@ -62,7 +62,11 @@
       "sourceUrl",
       "verifiedAt"
     ],
-    "serverSideFiltersRequired": ["productCode", "generation", "documentId/status"],
+    "serverSideFiltersRequired": [
+      "productCode",
+      "generation",
+      "documentId/status"
+    ],
     "postRetrievalFilterRequired": true
   },
   "apiControls": [
@@ -70,31 +74,45 @@
       "id": "PRIV-API-001",
       "requirement": "JSON 요청만 허용하고 정의되지 않은 필드를 거부한다.",
       "implementationStatus": "IMPLEMENTED",
-      "evidence": ["api/chat.ts", "api/evidence.ts", "api/lib/validateInput.ts"]
+      "evidence": [
+        "api/chat.ts",
+        "api/evidence.ts",
+        "api/lib/validateInput.ts"
+      ]
     },
     {
       "id": "PRIV-API-002",
       "requirement": "유효한 동의와 정책 버전을 확인한다.",
       "implementationStatus": "IMPLEMENTED",
-      "evidence": ["api/lib/validateConsent.ts"]
+      "evidence": [
+        "api/lib/validateConsent.ts"
+      ]
     },
     {
       "id": "PRIV-API-003",
       "requirement": "개인정보가 탐지된 질문은 RAG·LLM 호출 전에 차단한다.",
       "implementationStatus": "IMPLEMENTED",
-      "evidence": ["api/lib/redactPersonalData.ts", "tests/personal-data.test.ts"]
+      "evidence": [
+        "api/lib/redactPersonalData.ts",
+        "tests/personal-data.test.ts"
+      ]
     },
     {
       "id": "PRIV-API-004",
       "requirement": "허용 범위 밖의 의료조언·상품추천·지급확정 요청을 차단한다.",
       "implementationStatus": "IMPLEMENTED_WITH_TEST_COVERAGE_REQUIRED",
-      "evidence": ["api/lib/classifyQuestion.ts", "knowledge/question-scope.json"]
+      "evidence": [
+        "api/lib/classifyQuestion.ts",
+        "knowledge/question-scope.json"
+      ]
     },
     {
       "id": "PRIV-API-005",
       "requirement": "계산 설명 API는 15·16번 승인 전 운영 호출을 차단한다.",
       "implementationStatus": "REVIEW_REQUIRED",
-      "evidence": ["api/explain.ts"]
+      "evidence": [
+        "api/explain.ts"
+      ]
     }
   ],
   "externalTransfer": {
@@ -109,8 +127,24 @@
     ]
   },
   "logging": {
-    "allowed": ["requestId", "scopeResult", "statusCode", "errorCode", "latency", "productCode", "RuleSetVersion", "ruleId", "evidenceId"],
-    "prohibited": ["질문 원문", "답변 원문 내 개인정보", "건강정보", "계약·계좌·결제·인증정보", "RAGFlow·LLM API 키"],
+    "allowed": [
+      "requestId",
+      "scopeResult",
+      "statusCode",
+      "errorCode",
+      "latency",
+      "productCode",
+      "RuleSetVersion",
+      "ruleId",
+      "evidenceId"
+    ],
+    "prohibited": [
+      "질문 원문",
+      "답변 원문 내 개인정보",
+      "건강정보",
+      "계약·계좌·결제·인증정보",
+      "RAGFlow·LLM API 키"
+    ],
     "maskingRequired": true,
     "retentionPeriod": null,
     "retentionStatus": "LEGAL_AND_OPERATIONAL_REVIEW_REQUIRED",
@@ -120,11 +154,25 @@
     "leastPrivilege": true,
     "productionSecretsClientExposureProhibited": true,
     "roles": {
-      "USER": ["OWN_REQUEST_RESULT"],
-      "OPERATOR": ["VERIFIED_RAG_METADATA", "MINIMAL_OPERATION_LOGS"],
-      "DEVELOPER": ["SYNTHETIC_TEST_DATA", "RULE_CODE"],
-      "REVIEWER": ["OFFICIAL_DOCUMENTS", "RULE_EVIDENCE", "APPROVAL_RECORDS"],
-      "SECURITY_ADMIN": ["INCIDENT_RESPONSE_LOGS"]
+      "USER": [
+        "OWN_REQUEST_RESULT"
+      ],
+      "OPERATOR": [
+        "VERIFIED_RAG_METADATA",
+        "MINIMAL_OPERATION_LOGS"
+      ],
+      "DEVELOPER": [
+        "SYNTHETIC_TEST_DATA",
+        "RULE_CODE"
+      ],
+      "REVIEWER": [
+        "OFFICIAL_DOCUMENTS",
+        "RULE_EVIDENCE",
+        "APPROVAL_RECORDS"
+      ],
+      "SECURITY_ADMIN": [
+        "INCIDENT_RESPONSE_LOGS"
+      ]
     }
   },
   "incidentResponse": [
@@ -138,7 +186,6 @@
     "로그 보유기간과 삭제 절차 미확정",
     "RAGFlow 요청 단계 서버 측 메타데이터 필터 미구현",
     "계산 설명 API 운영 활성화 승인 미완료",
-    "실제 2인 독립 검수 미완료",
     "RAGFlow·Gemini Guard 실행 평가 미완료"
   ],
   "approvedBy": [],

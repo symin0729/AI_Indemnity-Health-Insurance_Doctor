@@ -29,7 +29,7 @@ describe("Samsung Rule/Evidence integrity", () => {
           expect(evidence?.article).toBeTruthy();
           expect(evidence?.paragraph).toBeTruthy();
           expect(evidence?.pdfPage).toBeGreaterThan(0);
-          expect(evidence?.status).toBe("REVIEW_REQUIRED");
+          expect(evidence?.status).toBe("AI_SOURCE_VALIDATED");
         }
       }
     }

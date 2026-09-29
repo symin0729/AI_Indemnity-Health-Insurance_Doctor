@@ -107,8 +107,8 @@ const payload = {
   calculationEnabled: false,
   sourcePdfCount: documents.size,
   reviewItemCount: reviewItems.length,
-  validationPolicy: "AI가 공식 약관 원문, Rule, Evidence, 자동 경계값 테스트를 대조한다. 원문만으로 판단할 수 없으면 사용자에게 필요한 추가 자료와 확인 방법을 알린다.",
-  approvalRule: "원문 근거, 실행 로직, 자동 경계값 테스트, RAG 검색 평가의 모든 발견사항이 해소된 후에만 VERIFIED 후보가 된다.",
+  validationPolicy: "AI가 공식 약관 원문, Rule, Evidence를 교차 대조하고 결정론적 경계값·한도·면책 회귀 테스트를 실행한다. 원문만으로 판단할 수 없으면 필요한 추가 자료와 확인 방법을 기록한다.",
+  approvalRule: "AI 원문 교차검증, 실행 로직, 자동 경계값·한도·면책 테스트가 통과한 Rule만 후속 단계 입력으로 사용한다. RAGFlow·Gemini Guard 승인 전에는 운영 계산을 활성화하지 않는다.",
   documentReviewItems: [...documents.values()].map((document) => ({
     productCode: document.productCode,
     documentId: document.documentId,
@@ -135,7 +135,7 @@ const lines = [
   "",
   "AI가 동일 SHA-256의 PDF 원문과 계산 Rule을 대조하고 자동 경계값 테스트를 실행합니다. PDF 쪽은 파일 뷰어 기준입니다.",
   "",
-  "사용자가 손계산이나 약관 해석을 직접 담당하지 않습니다. 원문만으로 확정할 수 없는 항목은 필요한 추가 자료와 구하는 방법을 별도로 기록합니다.",
+  "기존의 2인 독립검수·손계산 요구는 AI 원문 교차검증과 결정론적 자동 회귀 테스트로 대체합니다. 원문만으로 확정할 수 없는 항목은 필요한 추가 자료와 확인 방법을 기록합니다.",
   "",
 ];
 

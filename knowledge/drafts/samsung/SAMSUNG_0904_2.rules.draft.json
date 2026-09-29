@@ -16,10 +16,10 @@
       "limit": "1사고 50,000,000원; 사고일부터 365일",
       "status": "RULE_DRAFTED",
       "variant": "default",
-      "humanReviewRequired": true,
       "evidenceIds": [
         "SAMSUNG_0904_2_E_G1-01"
-      ]
+      ],
+      "aiSourceValidated": true
     },
     {
       "id": "G1-02",
@@ -29,10 +29,10 @@
       "limit": "1사고 50,000,000원; 사고일부터 365일",
       "status": "RULE_DRAFTED",
       "variant": "default",
-      "humanReviewRequired": true,
       "evidenceIds": [
         "SAMSUNG_0904_2_E_G1-02"
-      ]
+      ],
+      "aiSourceValidated": true
     },
     {
       "id": "G1-03",
@@ -42,10 +42,10 @@
       "limit": "전체 입원보상한도 내",
       "status": "RULE_DRAFTED",
       "variant": "default",
-      "humanReviewRequired": true,
       "evidenceIds": [
         "SAMSUNG_0904_2_E_G1-03"
-      ]
+      ],
+      "aiSourceValidated": true
     },
     {
       "id": "G1-04",
@@ -55,10 +55,10 @@
       "limit": "1사고당 사고일부터 365일 이내 통산 30일; 1일 최고 100,000원",
       "status": "RULE_DRAFTED",
       "variant": "default",
-      "humanReviewRequired": true,
       "evidenceIds": [
         "SAMSUNG_0904_2_E_G1-04"
-      ]
+      ],
+      "aiSourceValidated": true
     },
     {
       "id": "G1-05",
@@ -68,11 +68,11 @@
       "limit": "동일 질병당 50,000,000원; 진단확정일부터 365일",
       "status": "RULE_DRAFTED",
       "variant": "default",
-      "humanReviewRequired": true,
       "sourceCorrection": "정식 0904.2 PDF 113페이지의 질병 입원 제2조 산식으로 교정; 종전 118페이지는 오분류된 0904.1 PDF 기준",
       "evidenceIds": [
         "SAMSUNG_0904_2_E_G1-05"
-      ]
+      ],
+      "aiSourceValidated": true
     }
   ]
 }

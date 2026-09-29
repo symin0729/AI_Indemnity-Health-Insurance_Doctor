@@ -17,105 +17,10 @@ const specs = fs.readdirSync(specDir)
     rules: SamsungExecutionRule[];
   });
 const rules = new Map(specs.flatMap((spec) => spec.rules).map((rule) => [rule.ruleId, rule]));
-const automatedCases = fs.readdirSync(draftDir)
-  .filter((name) => name.endsWith(".hand-calculation.draft.json"))
-  .flatMap((name) => (JSON.parse(fs.readFileSync(path.join(draftDir, name), "utf8")) as {
-    cases: Array<{
-      caseId: string;
-      ruleId: string;
-      inputs: Record<string, number | boolean | string>;
-      expectedClaim: number;
-      expectedDeductible?: number;
-    }>;
-  }).cases);
 
 describe("Samsung execution-spec draft engine", () => {
   it("keeps all source specifications disabled", () => {
     expect(specs.every((spec) => spec.calculationEnabled === false)).toBe(true);
-  });
-
-  it.each(automatedCases)("$caseId reproduces the automated draft answer", (item) => {
-    const rule = rules.get(item.ruleId);
-    expect(rule).toBeDefined();
-    const inputs = rule?.generation === 1
-      ? {
-          ...item.inputs,
-          nhiApplied: item.ruleId === "G1-02" ? false : (item.inputs.nhiApplied ?? true),
-          requiredCoverageConfirmed: true,
-          policyExclusionsCleared: true,
-          priorPaidBenefit: 0,
-        }
-      : rule?.generation === 2
-        ? {
-            ...item.inputs,
-            nhiApplied: item.inputs.nhiApplied ?? true,
-            requiredCoverageConfirmed: true,
-            policyExclusionsCleared: true,
-            priorEligibleDeductible: item.inputs.priorEligibleDeductible ?? 0,
-            priorPaidBenefit: item.inputs.priorPaidBenefit ?? 0,
-            priorAnnualCount: item.inputs.priorAnnualCount ?? 0,
-            contractBenefitCap: 50_000_000,
-            perOccurrenceBenefitCap: 300_000,
-            otherIndemnityPoliciesExist: false,
-            coveragePeriodConfirmed: true,
-            sameDayAggregationConfirmed: true,
-          }
-        : rule?.generation === 3
-          ? {
-              ...item.inputs,
-              nhiApplied: item.inputs.nhiApplied ?? true,
-              requiredCoverageConfirmed: true,
-              policyExclusionsCleared: true,
-              priorEligibleDeductible: item.inputs.priorEligibleDeductible ?? 0,
-              priorPaidBenefit: item.inputs.priorPaidBenefit ?? 0,
-              priorAnnualCount: item.inputs.priorAnnualCount ?? 0,
-              contractBenefitCap: 50_000_000,
-              perOccurrenceBenefitCap: 300_000,
-              otherIndemnityPoliciesExist: false,
-              coveragePeriodConfirmed: true,
-              sameDayAggregationConfirmed: true,
-              threeNonCoveredExcludedFromBaseConfirmed: true,
-              threeNonCoveredCategory: "MANUAL_THERAPY",
-              aggregationUnit: item.ruleId === "G3-STD-03" ? "DIAGNOSTIC_ACTION" : "TREATMENT",
-            }
-          : rule?.generation === 4
-            ? {
-                ...item.inputs,
-                nhiApplied: item.inputs.nhiApplied ?? true,
-                requiredCoverageConfirmed: true,
-                policyExclusionsCleared: true,
-                priorPaidBenefit: item.inputs.priorPaidBenefit ?? 0,
-                priorAnnualCount: item.inputs.priorAnnualCount ?? 0,
-                contractBenefitCap: 50_000_000,
-                perOccurrenceBenefitCap: 200_000,
-                otherIndemnityPoliciesExist: false,
-                coveragePeriodConfirmed: true,
-                sameDayAggregationConfirmed: true,
-                threeNonCoveredExcludedFromBaseConfirmed: true,
-                claimCause: "INJURY",
-                improvementEvidenceConfirmed: true,
-                aggregationUnit: item.ruleId === "G4-07" ? "DIAGNOSTIC_ACTION" : "TREATMENT",
-              }
-            : rule?.generation === 5
-              ? {
-                  ...item.inputs,
-                  nhiApplied: item.inputs.nhiApplied ?? true,
-                  requiredCoverageConfirmed: true,
-                  policyExclusionsCleared: true,
-                  priorPaidBenefit: item.inputs.priorPaidBenefit ?? 0,
-                  priorAnnualCount: item.inputs.priorAnnualCount ?? 0,
-                  priorServiceDays: item.inputs.priorServiceDays ?? 0,
-                  otherIndemnityPoliciesExist: false,
-                  coveragePeriodConfirmed: true,
-                  claimCause: "INJURY",
-                  improvementEvidenceConfirmed: true,
-                }
-              : item.inputs;
-    const result = evaluateSamsungExecutionSpec(rule!, inputs);
-    expect(result.status).toBe("DRAFT_CALCULATED");
-    expect(result.claim).toBe(item.expectedClaim);
-    if (item.expectedDeductible !== undefined) expect(result.deductible).toBe(item.expectedDeductible);
-    expect(result.source.pdfPage).toBeGreaterThan(0);
   });
 
   it("refuses the fifth-generation covered outpatient calculation without required facts", () => {

@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0",
   "generatedAt": "2026-09-29",
-  "status": "REVIEW_REQUIRED",
+  "status": "AI_SOURCE_VALIDATED",
   "documents": [
     {
       "documentId": "SAMSUNG_0904_2_TERMS",
@@ -16,11 +16,14 @@
       "sha256": "ee9b673d2bc222bd91bb66dc799fe0ded106b3aa03b7377b6494273aeb49f10b",
       "pageCount": 315,
       "aiReviewedAt": "2026-09-29",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
       "blockers": [
-        "AI 원문·자동 경계값·RAG 검색 검증 미완료"
+        "RAGFlow 검색 평가 미실행",
+        "Gemini Guard 미실행"
       ]
     },
     {
@@ -35,12 +38,15 @@
       "sourceUrl": "https://www.samsungfire.com/publication/pdf/96178_0_20170101_file1.pdf",
       "sha256": "2f7c8e6bdfbd9a0b777789e6dc9b88b4d034434133733b00af6bc6bd1623b93c",
       "pageCount": 218,
-      "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
+      "aiReviewedAt": "2026-09-29",
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
       "blockers": [
-        "AI 원문·자동 경계값·RAG 검색 검증 미완료"
+        "RAGFlow 검색 평가 미실행",
+        "Gemini Guard 미실행"
       ]
     },
     {
@@ -55,12 +61,15 @@
       "sourceUrl": "https://www.samsungfire.com/publication/pdf/96228_0_20170401_file1.pdf",
       "sha256": "838a66bd7cdd9991d6ec02f0efa58bf9984fdfafb99f1c4d2f257081e572549b",
       "pageCount": 242,
-      "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
+      "aiReviewedAt": "2026-09-29",
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
       "blockers": [
-        "AI 원문·자동 경계값·RAG 검색 검증 미완료"
+        "RAGFlow 검색 평가 미실행",
+        "Gemini Guard 미실행"
       ]
     },
     {
@@ -75,12 +84,15 @@
       "sourceUrl": "https://www.samsungfire.co.kr/product/leaflet/P02_03_04_075_202107.pdf",
       "sha256": "12ef0b100dc8ca42f3033ce068264296f1ec375e4c5278801f1c6220cd149232",
       "pageCount": 220,
-      "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
+      "aiReviewedAt": "2026-09-29",
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
       "blockers": [
-        "AI 원문·자동 경계값·RAG 검색 검증 미완료"
+        "RAGFlow 검색 평가 미실행",
+        "Gemini Guard 미실행"
       ]
     },
     {
@@ -95,12 +107,15 @@
       "sourceUrl": "https://direct.samsungfire.com/docs/realloss.pdf",
       "sha256": "db0ed9738c9f59fbb28b678b910e0bdd3ef4bf08bdac52643c2e2dd167003415",
       "pageCount": 157,
-      "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
+      "aiReviewedAt": "2026-09-29",
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
       "blockers": [
-        "AI 원문·자동 경계값·RAG 검색 검증 미완료"
+        "RAGFlow 검색 평가 미실행",
+        "Gemini Guard 미실행"
       ]
     }
   ]

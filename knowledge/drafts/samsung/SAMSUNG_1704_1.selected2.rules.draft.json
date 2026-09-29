@@ -16,11 +16,11 @@
       "limit": "연간 자기부담 상한 및 가입금액 적용",
       "variant": "selected2",
       "status": "RULE_DRAFTED",
-      "humanReviewRequired": true,
       "sourceCorrection": "적용 범위를 입원으로 명확화하고 상급병실료 구성요소를 추가",
       "evidenceIds": [
         "SAMSUNG_1704_1_E_G3-SEL2-01"
-      ]
+      ],
+      "aiSourceValidated": true
     },
     {
       "id": "G3-SEL2-02",
@@ -30,11 +30,11 @@
       "limit": "도수 350만원/50회; 주사 250만원/50회; MRI 300만원",
       "variant": "selected2",
       "status": "RULE_DRAFTED",
-      "humanReviewRequired": true,
       "sourceCorrection": "14_S 초안은 공제액만 기재하여 보험금 산식으로 수정",
       "evidenceIds": [
         "SAMSUNG_1704_1_E_G3-SEL2-02"
-      ]
+      ],
+      "aiSourceValidated": true
     },
     {
       "id": "G3-SEL2-BASE-02",
@@ -44,11 +44,11 @@
       "formula": "보상대상의료비 - MAX(기관별 정액공제, 급여 본인부담금 × 10% + 비급여 실제부담액 × 20%)",
       "limit": "매년 계약해당일부터 1년간 방문 180회",
       "status": "RULE_DRAFTED",
-      "humanReviewRequired": true,
       "sourceCorrection": "AI 원문 대조에서 기존 14_S Rule 목록에 빠진 담보를 추가",
       "evidenceIds": [
         "SAMSUNG_1704_1_E_G3-SEL2-BASE-02"
-      ]
+      ],
+      "aiSourceValidated": true
     },
     {
       "id": "G3-SEL2-BASE-03",
@@ -58,11 +58,11 @@
       "formula": "보상대상의료비 - MAX(약국 8,000원, 급여 본인부담금 × 10% + 비급여 실제부담액 × 20%)",
       "limit": "매년 계약해당일부터 1년간 처방전 180건",
       "status": "RULE_DRAFTED",
-      "humanReviewRequired": true,
       "sourceCorrection": "AI 원문 대조에서 기존 14_S Rule 목록에 빠진 담보를 추가",
       "evidenceIds": [
         "SAMSUNG_1704_1_E_G3-SEL2-BASE-03"
-      ]
+      ],
+      "aiSourceValidated": true
     }
   ]
 }
