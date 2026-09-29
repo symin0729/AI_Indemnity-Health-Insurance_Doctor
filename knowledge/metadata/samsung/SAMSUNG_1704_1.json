@@ -1,1 +1,18 @@
-{"productCode":"SAMSUNG_1704_1","generation":3,"publisher":"삼성화재","status":"PENDING_EVIDENCE","documents":[],"verifiedAt":null}
+{
+  "productCode": "SAMSUNG_1704_1",
+  "generation": 3,
+  "productName": "무배당 삼성화재 실손의료비보험(1704.1)",
+  "publisher": "삼성화재",
+  "variants": [
+    "standard",
+    "selected2"
+  ],
+  "status": "REVIEW_REQUIRED",
+  "calculationEnabled": false,
+  "documentIds": [
+    "SAMSUNG_1704_1_TERMS"
+  ],
+  "aiReviewedAt": "2026-09-29",
+  "verifiedAt": null,
+  "verifiedBy": []
+}

@@ -1,19 +1,26 @@
 import type { InsuranceGeneration } from "./insurance";
 
-export type ProductReviewStatus =
+export type ProductVerificationStatus =
   | "PENDING_SELECTION"
   | "PENDING_EVIDENCE"
+  | "REVIEW_REQUIRED"
+  | "SOURCE_VERIFIED"
   | "VERIFIED"
   | "RETIRED";
 
 export interface InsuranceProduct {
   productCode: string;
-  insurer: "SAMSUNG";
-  insurerName: string;
+  insurer: "삼성화재";
   generation: InsuranceGeneration;
-  displayName: string;
-  reviewStatus: ProductReviewStatus;
-  ruleSetFile: string;
-  evidenceDocumentIds: string[];
+  productName: string;
+  sampleLabel: string;
+  effectiveFrom: string | null;
+  effectiveTo: string | null;
+  variants: string[];
+  requiredSelections: string[];
+  verificationStatus: ProductVerificationStatus;
+  calculationEnabled: boolean;
+  ruleSetIds: string[];
+  documentIds: string[];
   verifiedAt: string | null;
 }

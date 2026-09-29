@@ -1,1 +1,17 @@
-{"productCode":"SAMSUNG_2605_1","generation":5,"publisher":"삼성화재","status":"PENDING_EVIDENCE","documents":[],"verifiedAt":null}
+{
+  "productCode": "SAMSUNG_2605_1",
+  "generation": 5,
+  "productName": "무배당 삼성화재 다이렉트 실손의료비보험(2605.1)",
+  "publisher": "삼성화재",
+  "variants": [
+    "default"
+  ],
+  "status": "REVIEW_REQUIRED",
+  "calculationEnabled": false,
+  "documentIds": [
+    "SAMSUNG_2605_1_TERMS"
+  ],
+  "aiReviewedAt": "2026-09-28",
+  "verifiedAt": null,
+  "verifiedBy": []
+}

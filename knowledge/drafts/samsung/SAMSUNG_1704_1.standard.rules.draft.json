@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "1.0",
+  "ruleSetId": "SAMSUNG_1704_1_STANDARD_RULES_DRAFT",
+  "productCode": "SAMSUNG_1704_1",
+  "generation": 3,
+  "variant": "standard",
+  "documentId": "SAMSUNG_1704_1_TERMS",
+  "verificationStatus": "RULE_DRAFTED",
+  "calculationEnabled": false,
+  "rules": [
+    {
+      "id": "G3-STD-01",
+      "coverage": "3대 비급여 도수·체외충격파·증식",
+      "page": 19,
+      "formula": "보상대상의료비 - MAX(20,000원, 보상대상의료비 × 30%)",
+      "limit": "연 3,500,000원 / 50회; 세 치료횟수 합산",
+      "variant": "standard",
+      "status": "RULE_DRAFTED",
+      "humanReviewRequired": true,
+      "evidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-01"
+      ]
+    },
+    {
+      "id": "G3-STD-02",
+      "coverage": "3대 비급여 주사료",
+      "page": 19,
+      "formula": "보상대상의료비 - MAX(20,000원, 보상대상의료비 × 30%)",
+      "limit": "연 2,500,000원 / 입원·통원 합산 50회",
+      "variant": "standard",
+      "status": "RULE_DRAFTED",
+      "humanReviewRequired": true,
+      "evidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-02"
+      ]
+    },
+    {
+      "id": "G3-STD-03",
+      "coverage": "3대 비급여 MRI/MRA",
+      "page": 19,
+      "formula": "보상대상의료비 - MAX(20,000원, 보상대상의료비 × 30%)",
+      "limit": "연 3,000,000원; 복수 진단행위는 각 행위별 1회 공제·한도",
+      "variant": "standard",
+      "status": "RULE_DRAFTED",
+      "humanReviewRequired": true,
+      "evidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-03"
+      ]
+    },
+    {
+      "id": "G3-STD-BASE-01",
+      "variant": "standard",
+      "coverage": "표준형 기본형 입원",
+      "page": 16,
+      "formula": "(입원실료·입원제비용·입원수술비 본인 실제부담액 × 80%) + MIN(상급병실료 차액 × 50%, 입원일수 × 100,000원)",
+      "limit": "연간 자기부담 200만원 초과분 보상; 입원 보험가입금액 한도",
+      "status": "RULE_DRAFTED",
+      "humanReviewRequired": true,
+      "sourceCorrection": "AI 원문 대조에서 기존 14_S Rule 목록에 빠진 담보를 추가",
+      "evidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-BASE-01"
+      ]
+    },
+    {
+      "id": "G3-STD-BASE-02",
+      "variant": "standard",
+      "coverage": "표준형 기본형 외래",
+      "page": 16,
+      "formula": "보상대상의료비 - MAX(기관별 정액공제, 보상대상의료비 × 20%)",
+      "limit": "매년 계약해당일부터 1년간 방문 180회",
+      "status": "RULE_DRAFTED",
+      "humanReviewRequired": true,
+      "sourceCorrection": "AI 원문 대조에서 기존 14_S Rule 목록에 빠진 담보를 추가",
+      "evidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-BASE-02"
+      ]
+    },
+    {
+      "id": "G3-STD-BASE-03",
+      "variant": "standard",
+      "coverage": "표준형 기본형 처방조제비",
+      "page": 16,
+      "formula": "보상대상의료비 - MAX(약국 8,000원, 보상대상의료비 × 20%)",
+      "limit": "매년 계약해당일부터 1년간 처방전 180건",
+      "status": "RULE_DRAFTED",
+      "humanReviewRequired": true,
+      "sourceCorrection": "AI 원문 대조에서 기존 14_S Rule 목록에 빠진 담보를 추가",
+      "evidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-BASE-03"
+      ]
+    }
+  ]
+}

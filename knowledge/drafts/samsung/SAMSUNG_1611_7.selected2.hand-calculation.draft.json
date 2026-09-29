@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0",
+  "productCode": "SAMSUNG_1611_7",
+  "generation": 2,
+  "variant": "selected2",
+  "status": "READY_FOR_INDEPENDENT_REVIEW",
+  "calculationEnabled": false,
+  "cases": [
+    {
+      "caseId": "SAMSUNG_1611_7_HC05",
+      "ruleId": "G2-SEL2-01",
+      "inputs": {
+        "coveredCopay": 60000,
+        "nonCoveredExpense": 40000
+      },
+      "expectedClaim": 86000,
+      "status": "DRAFT_RECALCULATED"
+    },
+    {
+      "caseId": "SAMSUNG_1611_7_HC06",
+      "ruleId": "G2-SEL2-02",
+      "inputs": {
+        "coveredCopay": 60000,
+        "nonCoveredExpense": 40000,
+        "institution": "CLINIC"
+      },
+      "expectedDeductible": 14000,
+      "expectedClaim": 86000,
+      "status": "DRAFT_RECALCULATED"
+    }
+  ],
+  "limitations": [
+    "한도 누적·면책·경계값 케이스는 실행 엔진 구현 전 추가 필요",
+    "실제 2인 독립 검산 미완료"
+  ]
+}

@@ -1,0 +1,211 @@
+{
+  "schemaVersion": "1.0",
+  "status": "NOT_READY",
+  "generatedAt": "2026-09-28",
+  "productsFile": "src/data/products.json",
+  "manifestFile": "knowledge/manifest.json",
+  "evidenceMapFile": "knowledge/rule-evidence-map.json",
+  "questionScopeFile": "knowledge/question-scope.json",
+  "retrievalEvaluationFile": "knowledge/retrieval-evaluation.json",
+  "privacyRequirementsFile": "knowledge/privacy-control-requirements.json",
+  "aiValidationReportFile": "knowledge/validation/samsung/AI_TERMS_VALIDATION_REPORT.md",
+  "aiValidationDataFile": "knowledge/validation/samsung/ai-terms-validation.json",
+  "executableSpecDirectory": "knowledge/drafts/samsung/executable-specs",
+  "stage16ReviewPackage": {
+    "status": "PENDING_TWO_INDEPENDENT_REVIEWS",
+    "calculationEnabled": false,
+    "machineReadableChecklist": "knowledge/validation/samsung/two-person-independent-review.json",
+    "humanReadableChecklist": "knowledge/validation/samsung/TWO_PERSON_INDEPENDENT_REVIEW_CHECKLIST.md",
+    "engine": "src/engine/evaluateSamsungExecutionSpec.ts",
+    "regressionTest": "tests/samsung-draft-hand-calculation.test.ts",
+    "sourcePdfCount": 5,
+    "ruleReviewItemCount": 38,
+    "handCalculationCaseCount": 32
+  },
+  "artifactSummary": {
+    "officialPdfCount": 5,
+    "evidenceCount": 38,
+    "ruleCandidateCount": 38,
+    "executableSpecCount": 7,
+    "retrievalEvaluationCaseCount": 100,
+    "scopeQuestionCount": 18
+  },
+  "aiValidatedRuleIds": [
+    "G1-01",
+    "G1-02",
+    "G1-03",
+    "G1-04",
+    "G1-05",
+    "G2-STD-01",
+    "G2-STD-02",
+    "G2-STD-03",
+    "G2-STD-04",
+    "G2-SEL2-01",
+    "G2-SEL2-02",
+    "G2-SEL2-03",
+    "G3-STD-01",
+    "G3-STD-02",
+    "G3-STD-03",
+    "G3-SEL2-01",
+    "G3-SEL2-02",
+    "G3-STD-BASE-01",
+    "G3-STD-BASE-02",
+    "G3-STD-BASE-03",
+    "G3-SEL2-BASE-02",
+    "G3-SEL2-BASE-03",
+    "G4-01",
+    "G4-02",
+    "G4-03",
+    "G4-04",
+    "G4-05",
+    "G4-06",
+    "G4-07",
+    "G4-08",
+    "G4-09",
+    "G5-01",
+    "G5-02",
+    "G5-03",
+    "G5-04",
+    "G5-05",
+    "G5-06",
+    "G5-07",
+    "G5-08",
+    "G5-09"
+  ],
+  "verifiedDocumentIds": [],
+  "verifiedEvidenceIds": [],
+  "implementableRuleIds": [],
+  "blockedRuleIds": [
+    "G1-01",
+    "G1-02",
+    "G1-03",
+    "G1-04",
+    "G1-05",
+    "G2-STD-01",
+    "G2-STD-02",
+    "G2-STD-03",
+    "G2-STD-04",
+    "G2-SEL2-01",
+    "G2-SEL2-02",
+    "G2-SEL2-03",
+    "G3-STD-01",
+    "G3-STD-02",
+    "G3-STD-03",
+    "G3-SEL2-01",
+    "G3-SEL2-02",
+    "G3-STD-BASE-01",
+    "G3-STD-BASE-02",
+    "G3-STD-BASE-03",
+    "G3-SEL2-BASE-02",
+    "G3-SEL2-BASE-03",
+    "G4-01",
+    "G4-02",
+    "G4-03",
+    "G4-04",
+    "G4-05",
+    "G4-06",
+    "G4-07",
+    "G4-08",
+    "G4-09",
+    "G5-01",
+    "G5-02",
+    "G5-03",
+    "G5-04",
+    "G5-05",
+    "G5-06",
+    "G5-07",
+    "G5-08",
+    "G5-09"
+  ],
+  "approvalGates": {
+    "independentHumanReviewersRequired": 2,
+    "independentHumanReviewComplete": false,
+    "ragFlowEvaluationComplete": false,
+    "geminiGuardEvaluationComplete": false,
+    "calculationRegressionComplete": false,
+    "privacyControlsApproved": false
+  },
+  "downstreamUse": {
+    "stage15AllowedInputs": [
+      "VERIFIED official PDFs",
+      "VERIFIED extraction records",
+      "product/document metadata"
+    ],
+    "stage16AllowedInputs": [
+      "AI-validated executable specs after approval",
+      "independently reviewed calculation fixtures"
+    ],
+    "prohibitedRagInputs": [
+      "rules.draft.json",
+      "hand-calculation drafts",
+      "calculation fixtures",
+      "user questions",
+      "personal data"
+    ]
+  },
+  "generationReadiness": {
+    "1": {
+      "productCode": "SAMSUNG_0904_2",
+      "materialStatus": "REVIEW_REQUIRED",
+      "ragReady": false,
+      "ruleReady": false,
+      "calculationEnabled": false,
+      "blockers": [
+        "실제 2인 독립 교차검수 미완료",
+        "RAGFlow 검색 평가 미실행",
+        "Gemini Guard 미실행"
+      ]
+    },
+    "2": {
+      "productCode": "SAMSUNG_1611_7",
+      "materialStatus": "REVIEW_REQUIRED",
+      "ragReady": false,
+      "ruleReady": false,
+      "calculationEnabled": false,
+      "blockers": [
+        "실제 2인 독립 교차검수 미완료",
+        "RAGFlow 검색 평가 미실행",
+        "Gemini Guard 미실행"
+      ]
+    },
+    "3": {
+      "productCode": "SAMSUNG_1704_1",
+      "materialStatus": "REVIEW_REQUIRED",
+      "ragReady": false,
+      "ruleReady": false,
+      "calculationEnabled": false,
+      "blockers": [
+        "실제 2인 독립 교차검수 미완료",
+        "RAGFlow 검색 평가 미실행",
+        "Gemini Guard 미실행"
+      ]
+    },
+    "4": {
+      "productCode": "SAMSUNG_2107_1",
+      "materialStatus": "REVIEW_REQUIRED",
+      "ragReady": false,
+      "ruleReady": false,
+      "calculationEnabled": false,
+      "blockers": [
+        "실제 2인 독립 교차검수 미완료",
+        "RAGFlow 검색 평가 미실행",
+        "Gemini Guard 미실행"
+      ]
+    },
+    "5": {
+      "productCode": "SAMSUNG_2605_1",
+      "materialStatus": "REVIEW_REQUIRED",
+      "ragReady": false,
+      "ruleReady": false,
+      "calculationEnabled": false,
+      "blockers": [
+        "실제 2인 독립 교차검수 미완료",
+        "RAGFlow 검색 평가 미실행",
+        "Gemini Guard 미실행"
+      ]
+    }
+  },
+  "initialIntegrationGeneration": 4,
+  "approvedBy": [],
+  "approvedAt": null
+}

@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "1.0",
+  "productCode": "SAMSUNG_2605_1",
+  "generation": 5,
+  "variant": "default",
+  "status": "READY_FOR_INDEPENDENT_REVIEW",
+  "calculationEnabled": false,
+  "cases": [
+    {
+      "caseId": "SAMSUNG_2605_1_HC01",
+      "ruleId": "G5-01",
+      "inputs": {
+        "eligibleExpense": 100000
+      },
+      "expectedClaim": 80000,
+      "status": "DRAFT_RECALCULATED"
+    },
+    {
+      "caseId": "SAMSUNG_2605_1_HC02",
+      "ruleId": "G5-03",
+      "inputs": {
+        "eligibleExpense": 100000
+      },
+      "expectedClaim": 70000,
+      "status": "DRAFT_RECALCULATED"
+    },
+    {
+      "caseId": "SAMSUNG_2605_1_HC03",
+      "ruleId": "G5-04",
+      "inputs": {
+        "eligibleExpense": 50000
+      },
+      "expectedDeductible": 30000,
+      "expectedClaim": 20000,
+      "status": "DRAFT_RECALCULATED"
+    },
+    {
+      "caseId": "SAMSUNG_2605_1_HC04",
+      "ruleId": "G5-05",
+      "inputs": {
+        "eligibleExpense": 50000,
+        "aggregationUnit": "TREATMENT"
+      },
+      "expectedDeductible": 30000,
+      "expectedClaim": 20000,
+      "status": "DRAFT_RECALCULATED"
+    },
+    {
+      "caseId": "SAMSUNG_2605_1_HC05",
+      "ruleId": "G5-06",
+      "inputs": {
+        "eligibleExpense": 100000
+      },
+      "expectedClaim": 50000,
+      "status": "DRAFT_RECALCULATED"
+    },
+    {
+      "caseId": "SAMSUNG_2605_1_HC06",
+      "ruleId": "G5-07",
+      "inputs": {
+        "eligibleExpense": 50000
+      },
+      "expectedDeductible": 50000,
+      "expectedClaim": 0,
+      "status": "DRAFT_RECALCULATED"
+    },
+    {
+      "caseId": "SAMSUNG_2605_1_HC07",
+      "ruleId": "G5-08",
+      "inputs": {
+        "eligibleExpense": 50000
+      },
+      "expectedDeductible": 50000,
+      "expectedClaim": 0,
+      "status": "DRAFT_RECALCULATED"
+    }
+  ],
+  "limitations": [
+    "한도 누적·면책·경계값 케이스는 실행 엔진 구현 전 추가 필요",
+    "실제 2인 독립 검산 미완료"
+  ]
+}

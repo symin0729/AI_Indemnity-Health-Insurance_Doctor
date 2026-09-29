@@ -1,0 +1,176 @@
+{
+  "schemaVersion": "1.0",
+  "specId": "SAMSUNG_1611_7_SELECTED2_RULES_DRAFT_EXECUTION_SPEC",
+  "productCode": "SAMSUNG_1611_7",
+  "generation": 2,
+  "variant": "selected2",
+  "status": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING",
+  "calculationEnabled": false,
+  "rules": [
+    {
+      "ruleId": "G2-SEL2-01",
+      "productCode": "SAMSUNG_1611_7",
+      "generation": 2,
+      "variant": "selected2",
+      "coverage": "선택형Ⅱ 입원",
+      "careSetting": "INPATIENT",
+      "benefitClass": "MIXED_OR_UNSPECIFIED",
+      "severityClass": "ANY",
+      "requiredCoverages": [
+        "VARIANT_SELECTED2"
+      ],
+      "calculation": {
+        "type": "COMPONENT_SUM",
+        "components": [
+          {
+            "basis": "COVERED_COPAY",
+            "benefitRate": 0.9
+          },
+          {
+            "basis": "NON_COVERED_EXPENSE",
+            "benefitRate": 0.8
+          },
+          {
+            "basis": "ROOM_DIFFERENCE",
+            "benefitRate": 0.5,
+            "dailyBenefitCap": 100000
+          }
+        ],
+        "annualDeductibleCap": 2000000,
+        "nonNhiFallback": {
+          "type": "RATE_BENEFIT",
+          "benefitRate": 0.4
+        }
+      },
+      "limitText": "급여 10% + 비급여 20% 자기부담이 연간 2,000,000원 초과 시 초과분 보상",
+      "requiresAccumulator": true,
+      "enforcement": {
+        "annualDeductibleCap": 2000000,
+        "benefitCap": 50000000
+      },
+      "specialConditions": [
+        "POLICY_EXCLUSIONS_MUST_BE_CLEARED",
+        "MULTIPLE_POLICY_PROPORTIONAL_PAYMENT_REQUIRED_IF_APPLICABLE",
+        "ANNUAL_DEDUCTIBLE_CAP_2000000_FOR_INPATIENT",
+        "NON_NHI_FALLBACK_40_PERCENT"
+      ],
+      "evidenceIds": [
+        "SAMSUNG_1611_7_E_G2-SEL2-01"
+      ],
+      "source": {
+        "documentId": "SAMSUNG_1611_7_TERMS",
+        "article": "상품요약서",
+        "paragraph": "선택형Ⅱ 입원",
+        "pdfPage": 26,
+        "printedPage": null
+      },
+      "verificationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING"
+    },
+    {
+      "ruleId": "G2-SEL2-02",
+      "productCode": "SAMSUNG_1611_7",
+      "generation": 2,
+      "variant": "selected2",
+      "coverage": "선택형Ⅱ 외래",
+      "careSetting": "OUTPATIENT",
+      "benefitClass": "MIXED_OR_UNSPECIFIED",
+      "severityClass": "ANY",
+      "requiredCoverages": [
+        "VARIANT_SELECTED2"
+      ],
+      "calculation": {
+        "type": "EXPENSE_MINUS_MAX_WEIGHTED_DEDUCTIBLE",
+        "deductibleComponents": [
+          {
+            "basis": "COVERED_COPAY",
+            "rate": 0.1
+          },
+          {
+            "basis": "NON_COVERED_EXPENSE",
+            "rate": 0.2
+          }
+        ],
+        "minimumByInstitution": {
+          "CLINIC": 10000,
+          "HOSPITAL": 15000,
+          "GENERAL_TERTIARY": 20000
+        }
+      },
+      "limitText": "연간 방문 180회; 처방전 180건",
+      "requiresAccumulator": true,
+      "enforcement": {
+        "maxAnnualCount": 180,
+        "countUnit": "VISIT",
+        "requiresPerOccurrenceBenefitCap": true
+      },
+      "specialConditions": [
+        "POLICY_EXCLUSIONS_MUST_BE_CLEARED",
+        "MULTIPLE_POLICY_PROPORTIONAL_PAYMENT_REQUIRED_IF_APPLICABLE",
+        "ANNUAL_DEDUCTIBLE_CAP_2000000_FOR_INPATIENT",
+        "NON_NHI_FALLBACK_40_PERCENT"
+      ],
+      "evidenceIds": [
+        "SAMSUNG_1611_7_E_G2-SEL2-02"
+      ],
+      "source": {
+        "documentId": "SAMSUNG_1611_7_TERMS",
+        "article": "상품요약서",
+        "paragraph": "선택형Ⅱ 외래",
+        "pdfPage": 26,
+        "printedPage": null
+      },
+      "verificationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING"
+    },
+    {
+      "ruleId": "G2-SEL2-03",
+      "productCode": "SAMSUNG_1611_7",
+      "generation": 2,
+      "variant": "selected2",
+      "coverage": "선택형Ⅱ 처방조제비",
+      "careSetting": "OUTPATIENT",
+      "benefitClass": "MIXED_OR_UNSPECIFIED",
+      "severityClass": "ANY",
+      "requiredCoverages": [
+        "VARIANT_SELECTED2"
+      ],
+      "calculation": {
+        "type": "EXPENSE_MINUS_MAX_WEIGHTED_DEDUCTIBLE",
+        "deductibleComponents": [
+          {
+            "basis": "COVERED_COPAY",
+            "rate": 0.1
+          },
+          {
+            "basis": "NON_COVERED_EXPENSE",
+            "rate": 0.2
+          }
+        ],
+        "minimumAmount": 8000
+      },
+      "limitText": "매년 계약해당일부터 1년간 처방전 180건",
+      "requiresAccumulator": false,
+      "enforcement": {
+        "maxAnnualCount": 180,
+        "countUnit": "PRESCRIPTION",
+        "requiresPerOccurrenceBenefitCap": true
+      },
+      "specialConditions": [
+        "POLICY_EXCLUSIONS_MUST_BE_CLEARED",
+        "MULTIPLE_POLICY_PROPORTIONAL_PAYMENT_REQUIRED_IF_APPLICABLE",
+        "ANNUAL_DEDUCTIBLE_CAP_2000000_FOR_INPATIENT",
+        "NON_NHI_FALLBACK_40_PERCENT"
+      ],
+      "evidenceIds": [
+        "SAMSUNG_1611_7_E_G2-SEL2-03"
+      ],
+      "source": {
+        "documentId": "SAMSUNG_1611_7_TERMS",
+        "article": "상품요약서",
+        "paragraph": "선택형Ⅱ 처방조제비",
+        "pdfPage": 26,
+        "printedPage": null
+      },
+      "verificationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING"
+    }
+  ]
+}

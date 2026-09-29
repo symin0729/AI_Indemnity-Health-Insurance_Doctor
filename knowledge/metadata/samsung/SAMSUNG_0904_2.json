@@ -1,0 +1,17 @@
+{
+  "productCode": "SAMSUNG_0904_2",
+  "generation": 1,
+  "productName": "무배당 삼성 올라이프 100세 건강파트너보험(0904.2) 내 실손 특별약관",
+  "publisher": "삼성화재",
+  "variants": [
+    "default"
+  ],
+  "status": "REVIEW_REQUIRED",
+  "calculationEnabled": false,
+  "documentIds": [
+    "SAMSUNG_0904_2_TERMS"
+  ],
+  "aiReviewedAt": "2026-09-28",
+  "verifiedAt": null,
+  "verifiedBy": []
+}

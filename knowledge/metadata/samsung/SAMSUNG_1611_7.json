@@ -1,0 +1,18 @@
+{
+  "productCode": "SAMSUNG_1611_7",
+  "generation": 2,
+  "productName": "무배당 삼성화재 실손의료비보험(1611.7)",
+  "publisher": "삼성화재",
+  "variants": [
+    "standard",
+    "selected2"
+  ],
+  "status": "REVIEW_REQUIRED",
+  "calculationEnabled": false,
+  "documentIds": [
+    "SAMSUNG_1611_7_TERMS"
+  ],
+  "aiReviewedAt": "2026-09-29",
+  "verifiedAt": null,
+  "verifiedBy": []
+}
