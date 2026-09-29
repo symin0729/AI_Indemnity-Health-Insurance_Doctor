@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "1.0",
+  "productCode": "SAMSUNG_0904_2",
+  "generation": 1,
+  "variant": "default",
+  "status": "READY_FOR_INDEPENDENT_REVIEW",
+  "calculationEnabled": false,
+  "cases": [
+    {
+      "caseId": "SAMSUNG_0904_2_HC01",
+      "ruleId": "G1-01",
+      "inputs": {
+        "coveredRoomAndTreatment": 100000,
+        "roomDifference": 0
+      },
+      "expectedClaim": 100000,
+      "status": "DRAFT_RECALCULATED"
+    },
+    {
+      "caseId": "SAMSUNG_0904_2_HC02",
+      "ruleId": "G1-02",
+      "inputs": {
+        "nonNhiInpatientTotal": 100000
+      },
+      "expectedClaim": 40000,
+      "status": "DRAFT_RECALCULATED"
+    },
+    {
+      "caseId": "SAMSUNG_0904_2_HC03",
+      "ruleId": "G1-03",
+      "inputs": {
+        "roomDifference": 100000
+      },
+      "expectedClaim": 50000,
+      "status": "DRAFT_RECALCULATED"
+    },
+    {
+      "caseId": "SAMSUNG_0904_2_HC04",
+      "ruleId": "G1-04",
+      "inputs": {
+        "outpatientExpense": 3000,
+        "nhiApplied": true
+      },
+      "expectedClaim": 0,
+      "status": "DRAFT_RECALCULATED"
+    },
+    {
+      "caseId": "SAMSUNG_0904_2_HC05",
+      "ruleId": "G1-04",
+      "inputs": {
+        "outpatientExpense": 20000,
+        "nhiApplied": true
+      },
+      "expectedClaim": 15000,
+      "status": "DRAFT_RECALCULATED"
+    },
+    {
+      "caseId": "SAMSUNG_0904_2_HC06",
+      "ruleId": "G1-05",
+      "inputs": {
+        "coveredRoomAndTreatment": 100000,
+        "roomDifference": 0
+      },
+      "expectedClaim": 100000,
+      "status": "DRAFT_RECALCULATED"
+    }
+  ],
+  "limitations": [
+    "한도 누적·면책·경계값 케이스는 실행 엔진 구현 전 추가 필요",
+    "실제 2인 독립 검산 미완료"
+  ]
+}

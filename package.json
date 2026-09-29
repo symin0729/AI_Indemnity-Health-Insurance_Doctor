@@ -8,6 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "test": "vitest run",
+    "build:samsung-specs": "node scripts/build-samsung-executable-specs.mjs",
+    "build:samsung-review": "node scripts/build-samsung-review-checklist.mjs",
     "test:gemini": "node scripts/test-gemini.mjs",
     "preview": "vite preview"
   },

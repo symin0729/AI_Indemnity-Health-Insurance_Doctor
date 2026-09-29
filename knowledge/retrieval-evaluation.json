@@ -1,5 +1,1508 @@
 {
   "schemaVersion": "1.0",
   "status": "DRAFT",
-  "cases": []
+  "executionStatus": "NOT_EXECUTED",
+  "minimumQuestionsPerProduct": 20,
+  "cases": [
+    {
+      "questionId": "G1-Q01",
+      "question": "상해 입원의료비(D1)의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_0904_2",
+        "generation": 1,
+        "variant": "default"
+      },
+      "expectedRuleId": "G1-01",
+      "expectedEvidenceIds": [
+        "SAMSUNG_0904_2_E_G1-01"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G1-Q02",
+      "question": "상해 입원의료비(D1) 비건보의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_0904_2",
+        "generation": 1,
+        "variant": "default"
+      },
+      "expectedRuleId": "G1-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_0904_2_E_G1-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G1-Q03",
+      "question": "상해 입원의료비(D1) 병실료차액의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_0904_2",
+        "generation": 1,
+        "variant": "default"
+      },
+      "expectedRuleId": "G1-03",
+      "expectedEvidenceIds": [
+        "SAMSUNG_0904_2_E_G1-03"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G1-Q04",
+      "question": "상해 통원의료비(D1)의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_0904_2",
+        "generation": 1,
+        "variant": "default"
+      },
+      "expectedRuleId": "G1-04",
+      "expectedEvidenceIds": [
+        "SAMSUNG_0904_2_E_G1-04"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G1-Q05",
+      "question": "질병 입원의료비(D1)의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_0904_2",
+        "generation": 1,
+        "variant": "default"
+      },
+      "expectedRuleId": "G1-05",
+      "expectedEvidenceIds": [
+        "SAMSUNG_0904_2_E_G1-05"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G1-Q06",
+      "question": "상해 입원의료비(D1)의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_0904_2",
+        "generation": 1,
+        "variant": "default"
+      },
+      "expectedRuleId": "G1-01",
+      "expectedEvidenceIds": [
+        "SAMSUNG_0904_2_E_G1-01"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G1-Q07",
+      "question": "상해 입원의료비(D1) 비건보의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_0904_2",
+        "generation": 1,
+        "variant": "default"
+      },
+      "expectedRuleId": "G1-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_0904_2_E_G1-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G1-Q08",
+      "question": "상해 입원의료비(D1) 병실료차액의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_0904_2",
+        "generation": 1,
+        "variant": "default"
+      },
+      "expectedRuleId": "G1-03",
+      "expectedEvidenceIds": [
+        "SAMSUNG_0904_2_E_G1-03"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G1-Q09",
+      "question": "상해 통원의료비(D1)의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_0904_2",
+        "generation": 1,
+        "variant": "default"
+      },
+      "expectedRuleId": "G1-04",
+      "expectedEvidenceIds": [
+        "SAMSUNG_0904_2_E_G1-04"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G1-Q10",
+      "question": "질병 입원의료비(D1)의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_0904_2",
+        "generation": 1,
+        "variant": "default"
+      },
+      "expectedRuleId": "G1-05",
+      "expectedEvidenceIds": [
+        "SAMSUNG_0904_2_E_G1-05"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G1-Q11",
+      "question": "상해 입원의료비(D1)의 연간·횟수·회당 한도를 알려주세요.",
+      "filters": {
+        "productCode": "SAMSUNG_0904_2",
+        "generation": 1,
+        "variant": "default"
+      },
+      "expectedRuleId": "G1-01",
+      "expectedEvidenceIds": [
+        "SAMSUNG_0904_2_E_G1-01"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G1-Q12",
+      "question": "상해 입원의료비(D1) 비건보의 연간·횟수·회당 한도를 알려주세요.",
+      "filters": {
+        "productCode": "SAMSUNG_0904_2",
+        "generation": 1,
+        "variant": "default"
+      },
+      "expectedRuleId": "G1-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_0904_2_E_G1-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G1-Q13",
+      "question": "상해 입원의료비(D1) 병실료차액의 연간·횟수·회당 한도를 알려주세요.",
+      "filters": {
+        "productCode": "SAMSUNG_0904_2",
+        "generation": 1,
+        "variant": "default"
+      },
+      "expectedRuleId": "G1-03",
+      "expectedEvidenceIds": [
+        "SAMSUNG_0904_2_E_G1-03"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G1-Q14",
+      "question": "상해 통원의료비(D1)의 연간·횟수·회당 한도를 알려주세요.",
+      "filters": {
+        "productCode": "SAMSUNG_0904_2",
+        "generation": 1,
+        "variant": "default"
+      },
+      "expectedRuleId": "G1-04",
+      "expectedEvidenceIds": [
+        "SAMSUNG_0904_2_E_G1-04"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G1-Q15",
+      "question": "질병 입원의료비(D1)의 연간·횟수·회당 한도를 알려주세요.",
+      "filters": {
+        "productCode": "SAMSUNG_0904_2",
+        "generation": 1,
+        "variant": "default"
+      },
+      "expectedRuleId": "G1-05",
+      "expectedEvidenceIds": [
+        "SAMSUNG_0904_2_E_G1-05"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G1-Q16",
+      "question": "상해 입원의료비(D1) 계산의 근거 페이지를 찾아주세요.",
+      "filters": {
+        "productCode": "SAMSUNG_0904_2",
+        "generation": 1,
+        "variant": "default"
+      },
+      "expectedRuleId": "G1-01",
+      "expectedEvidenceIds": [
+        "SAMSUNG_0904_2_E_G1-01"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G1-Q17",
+      "question": "상해 입원의료비(D1) 비건보 계산의 근거 페이지를 찾아주세요.",
+      "filters": {
+        "productCode": "SAMSUNG_0904_2",
+        "generation": 1,
+        "variant": "default"
+      },
+      "expectedRuleId": "G1-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_0904_2_E_G1-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G1-Q18",
+      "question": "상해 입원의료비(D1) 병실료차액 계산의 근거 페이지를 찾아주세요.",
+      "filters": {
+        "productCode": "SAMSUNG_0904_2",
+        "generation": 1,
+        "variant": "default"
+      },
+      "expectedRuleId": "G1-03",
+      "expectedEvidenceIds": [
+        "SAMSUNG_0904_2_E_G1-03"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G1-Q19",
+      "question": "상해 통원의료비(D1) 계산의 근거 페이지를 찾아주세요.",
+      "filters": {
+        "productCode": "SAMSUNG_0904_2",
+        "generation": 1,
+        "variant": "default"
+      },
+      "expectedRuleId": "G1-04",
+      "expectedEvidenceIds": [
+        "SAMSUNG_0904_2_E_G1-04"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G1-Q20",
+      "question": "질병 입원의료비(D1) 계산의 근거 페이지를 찾아주세요.",
+      "filters": {
+        "productCode": "SAMSUNG_0904_2",
+        "generation": 1,
+        "variant": "default"
+      },
+      "expectedRuleId": "G1-05",
+      "expectedEvidenceIds": [
+        "SAMSUNG_0904_2_E_G1-05"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G2-Q01",
+      "question": "입원의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_1611_7",
+        "generation": 2,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G2-STD-01",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1611_7_E_G2-STD-01"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G2-Q02",
+      "question": "외래의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_1611_7",
+        "generation": 2,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G2-STD-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1611_7_E_G2-STD-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G2-Q03",
+      "question": "처방조제비의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_1611_7",
+        "generation": 2,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G2-STD-03",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1611_7_E_G2-STD-03"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G2-Q04",
+      "question": "기관별 외래 공제의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_1611_7",
+        "generation": 2,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G2-STD-04",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1611_7_E_G2-STD-04"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G2-Q05",
+      "question": "선택형Ⅱ 입원의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_1611_7",
+        "generation": 2,
+        "variant": "selected2"
+      },
+      "expectedRuleId": "G2-SEL2-01",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1611_7_E_G2-SEL2-01"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G2-Q06",
+      "question": "선택형Ⅱ 외래의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_1611_7",
+        "generation": 2,
+        "variant": "selected2"
+      },
+      "expectedRuleId": "G2-SEL2-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1611_7_E_G2-SEL2-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G2-Q07",
+      "question": "선택형Ⅱ 처방조제비의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_1611_7",
+        "generation": 2,
+        "variant": "selected2"
+      },
+      "expectedRuleId": "G2-SEL2-03",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1611_7_E_G2-SEL2-03"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G2-Q08",
+      "question": "입원의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_1611_7",
+        "generation": 2,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G2-STD-01",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1611_7_E_G2-STD-01"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G2-Q09",
+      "question": "외래의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_1611_7",
+        "generation": 2,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G2-STD-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1611_7_E_G2-STD-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G2-Q10",
+      "question": "처방조제비의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_1611_7",
+        "generation": 2,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G2-STD-03",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1611_7_E_G2-STD-03"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G2-Q11",
+      "question": "기관별 외래 공제의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_1611_7",
+        "generation": 2,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G2-STD-04",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1611_7_E_G2-STD-04"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G2-Q12",
+      "question": "선택형Ⅱ 입원의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_1611_7",
+        "generation": 2,
+        "variant": "selected2"
+      },
+      "expectedRuleId": "G2-SEL2-01",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1611_7_E_G2-SEL2-01"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G2-Q13",
+      "question": "선택형Ⅱ 외래의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_1611_7",
+        "generation": 2,
+        "variant": "selected2"
+      },
+      "expectedRuleId": "G2-SEL2-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1611_7_E_G2-SEL2-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G2-Q14",
+      "question": "선택형Ⅱ 처방조제비의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_1611_7",
+        "generation": 2,
+        "variant": "selected2"
+      },
+      "expectedRuleId": "G2-SEL2-03",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1611_7_E_G2-SEL2-03"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G2-Q15",
+      "question": "입원의 연간·횟수·회당 한도를 알려주세요.",
+      "filters": {
+        "productCode": "SAMSUNG_1611_7",
+        "generation": 2,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G2-STD-01",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1611_7_E_G2-STD-01"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G2-Q16",
+      "question": "외래의 연간·횟수·회당 한도를 알려주세요.",
+      "filters": {
+        "productCode": "SAMSUNG_1611_7",
+        "generation": 2,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G2-STD-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1611_7_E_G2-STD-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G2-Q17",
+      "question": "처방조제비의 연간·횟수·회당 한도를 알려주세요.",
+      "filters": {
+        "productCode": "SAMSUNG_1611_7",
+        "generation": 2,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G2-STD-03",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1611_7_E_G2-STD-03"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G2-Q18",
+      "question": "기관별 외래 공제의 연간·횟수·회당 한도를 알려주세요.",
+      "filters": {
+        "productCode": "SAMSUNG_1611_7",
+        "generation": 2,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G2-STD-04",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1611_7_E_G2-STD-04"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G2-Q19",
+      "question": "선택형Ⅱ 입원의 연간·횟수·회당 한도를 알려주세요.",
+      "filters": {
+        "productCode": "SAMSUNG_1611_7",
+        "generation": 2,
+        "variant": "selected2"
+      },
+      "expectedRuleId": "G2-SEL2-01",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1611_7_E_G2-SEL2-01"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G2-Q20",
+      "question": "선택형Ⅱ 외래의 연간·횟수·회당 한도를 알려주세요.",
+      "filters": {
+        "productCode": "SAMSUNG_1611_7",
+        "generation": 2,
+        "variant": "selected2"
+      },
+      "expectedRuleId": "G2-SEL2-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1611_7_E_G2-SEL2-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G3-Q01",
+      "question": "3대 비급여 도수·체외충격파·증식의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G3-STD-01",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-01"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G3-Q02",
+      "question": "3대 비급여 주사료의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G3-STD-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G3-Q03",
+      "question": "3대 비급여 MRI/MRA의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G3-STD-03",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-03"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G3-Q04",
+      "question": "선택형Ⅱ 기본형 입원의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "selected2"
+      },
+      "expectedRuleId": "G3-SEL2-01",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-SEL2-01"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G3-Q05",
+      "question": "선택형Ⅱ 3대 비급여의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "selected2"
+      },
+      "expectedRuleId": "G3-SEL2-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-SEL2-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G3-Q06",
+      "question": "표준형 기본형 입원의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G3-STD-BASE-01",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-BASE-01"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G3-Q07",
+      "question": "표준형 기본형 외래의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G3-STD-BASE-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-BASE-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G3-Q08",
+      "question": "표준형 기본형 처방조제비의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G3-STD-BASE-03",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-BASE-03"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G3-Q09",
+      "question": "선택형Ⅱ 기본형 외래의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "selected2"
+      },
+      "expectedRuleId": "G3-SEL2-BASE-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-SEL2-BASE-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G3-Q10",
+      "question": "선택형Ⅱ 기본형 처방조제비의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "selected2"
+      },
+      "expectedRuleId": "G3-SEL2-BASE-03",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-SEL2-BASE-03"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G3-Q11",
+      "question": "3대 비급여 도수·체외충격파·증식의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G3-STD-01",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-01"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G3-Q12",
+      "question": "3대 비급여 주사료의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G3-STD-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G3-Q13",
+      "question": "3대 비급여 MRI/MRA의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G3-STD-03",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-03"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G3-Q14",
+      "question": "선택형Ⅱ 기본형 입원의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "selected2"
+      },
+      "expectedRuleId": "G3-SEL2-01",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-SEL2-01"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G3-Q15",
+      "question": "선택형Ⅱ 3대 비급여의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "selected2"
+      },
+      "expectedRuleId": "G3-SEL2-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-SEL2-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G3-Q16",
+      "question": "표준형 기본형 입원의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G3-STD-BASE-01",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-BASE-01"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G3-Q17",
+      "question": "표준형 기본형 외래의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G3-STD-BASE-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-BASE-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G3-Q18",
+      "question": "표준형 기본형 처방조제비의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G3-STD-BASE-03",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-BASE-03"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G3-Q19",
+      "question": "선택형Ⅱ 기본형 외래의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "selected2"
+      },
+      "expectedRuleId": "G3-SEL2-BASE-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-SEL2-BASE-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G3-Q20",
+      "question": "선택형Ⅱ 기본형 처방조제비의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "selected2"
+      },
+      "expectedRuleId": "G3-SEL2-BASE-03",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-SEL2-BASE-03"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G4-Q01",
+      "question": "상해급여 입원의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_2107_1",
+        "generation": 4,
+        "variant": "default"
+      },
+      "expectedRuleId": "G4-01",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2107_1_E_G4-01"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G4-Q02",
+      "question": "질병급여 입원의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_2107_1",
+        "generation": 4,
+        "variant": "default"
+      },
+      "expectedRuleId": "G4-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2107_1_E_G4-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G4-Q03",
+      "question": "일반 비급여 입원의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_2107_1",
+        "generation": 4,
+        "variant": "default"
+      },
+      "expectedRuleId": "G4-03",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2107_1_E_G4-03"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G4-Q04",
+      "question": "일반 비급여 통원의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_2107_1",
+        "generation": 4,
+        "variant": "default"
+      },
+      "expectedRuleId": "G4-04",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2107_1_E_G4-04"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G4-Q05",
+      "question": "3대 비급여 도수·체외충격파·증식의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_2107_1",
+        "generation": 4,
+        "variant": "default"
+      },
+      "expectedRuleId": "G4-05",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2107_1_E_G4-05"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G4-Q06",
+      "question": "3대 비급여 주사료의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_2107_1",
+        "generation": 4,
+        "variant": "default"
+      },
+      "expectedRuleId": "G4-06",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2107_1_E_G4-06"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G4-Q07",
+      "question": "3대 비급여 MRI/MRA의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_2107_1",
+        "generation": 4,
+        "variant": "default"
+      },
+      "expectedRuleId": "G4-07",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2107_1_E_G4-07"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G4-Q08",
+      "question": "상해급여 입원의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_2107_1",
+        "generation": 4,
+        "variant": "default"
+      },
+      "expectedRuleId": "G4-01",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2107_1_E_G4-01"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G4-Q09",
+      "question": "질병급여 입원의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_2107_1",
+        "generation": 4,
+        "variant": "default"
+      },
+      "expectedRuleId": "G4-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2107_1_E_G4-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G4-Q10",
+      "question": "일반 비급여 입원의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_2107_1",
+        "generation": 4,
+        "variant": "default"
+      },
+      "expectedRuleId": "G4-03",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2107_1_E_G4-03"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G4-Q11",
+      "question": "일반 비급여 통원의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_2107_1",
+        "generation": 4,
+        "variant": "default"
+      },
+      "expectedRuleId": "G4-04",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2107_1_E_G4-04"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G4-Q12",
+      "question": "3대 비급여 도수·체외충격파·증식의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_2107_1",
+        "generation": 4,
+        "variant": "default"
+      },
+      "expectedRuleId": "G4-05",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2107_1_E_G4-05"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G4-Q13",
+      "question": "3대 비급여 주사료의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_2107_1",
+        "generation": 4,
+        "variant": "default"
+      },
+      "expectedRuleId": "G4-06",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2107_1_E_G4-06"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G4-Q14",
+      "question": "3대 비급여 MRI/MRA의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_2107_1",
+        "generation": 4,
+        "variant": "default"
+      },
+      "expectedRuleId": "G4-07",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2107_1_E_G4-07"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G4-Q15",
+      "question": "상해급여 입원의 연간·횟수·회당 한도를 알려주세요.",
+      "filters": {
+        "productCode": "SAMSUNG_2107_1",
+        "generation": 4,
+        "variant": "default"
+      },
+      "expectedRuleId": "G4-01",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2107_1_E_G4-01"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G4-Q16",
+      "question": "질병급여 입원의 연간·횟수·회당 한도를 알려주세요.",
+      "filters": {
+        "productCode": "SAMSUNG_2107_1",
+        "generation": 4,
+        "variant": "default"
+      },
+      "expectedRuleId": "G4-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2107_1_E_G4-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G4-Q17",
+      "question": "일반 비급여 입원의 연간·횟수·회당 한도를 알려주세요.",
+      "filters": {
+        "productCode": "SAMSUNG_2107_1",
+        "generation": 4,
+        "variant": "default"
+      },
+      "expectedRuleId": "G4-03",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2107_1_E_G4-03"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G4-Q18",
+      "question": "일반 비급여 통원의 연간·횟수·회당 한도를 알려주세요.",
+      "filters": {
+        "productCode": "SAMSUNG_2107_1",
+        "generation": 4,
+        "variant": "default"
+      },
+      "expectedRuleId": "G4-04",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2107_1_E_G4-04"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G4-Q19",
+      "question": "3대 비급여 도수·체외충격파·증식의 연간·횟수·회당 한도를 알려주세요.",
+      "filters": {
+        "productCode": "SAMSUNG_2107_1",
+        "generation": 4,
+        "variant": "default"
+      },
+      "expectedRuleId": "G4-05",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2107_1_E_G4-05"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G4-Q20",
+      "question": "3대 비급여 주사료의 연간·횟수·회당 한도를 알려주세요.",
+      "filters": {
+        "productCode": "SAMSUNG_2107_1",
+        "generation": 4,
+        "variant": "default"
+      },
+      "expectedRuleId": "G4-06",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2107_1_E_G4-06"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-Q01",
+      "question": "급여 입원의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "default"
+      },
+      "expectedRuleId": "G5-01",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_G5-01"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-Q02",
+      "question": "급여 통원의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "default"
+      },
+      "expectedRuleId": "G5-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_G5-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-Q03",
+      "question": "중증 비급여 입원의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "default"
+      },
+      "expectedRuleId": "G5-03",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_G5-03"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-Q04",
+      "question": "중증 비급여 통원의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "default"
+      },
+      "expectedRuleId": "G5-04",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_G5-04"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-Q05",
+      "question": "중증 비급여 3대의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "default"
+      },
+      "expectedRuleId": "G5-05",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_G5-05"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-Q06",
+      "question": "비중증 비급여 입원의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "default"
+      },
+      "expectedRuleId": "G5-06",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_G5-06"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-Q07",
+      "question": "비중증 비급여 통원의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "default"
+      },
+      "expectedRuleId": "G5-07",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_G5-07"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-Q08",
+      "question": "비중증 비급여 MRI/MRA의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "default"
+      },
+      "expectedRuleId": "G5-08",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_G5-08"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-Q09",
+      "question": "비중증 비급여 보험료 차등의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "default"
+      },
+      "expectedRuleId": "G5-09",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_G5-09"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-Q10",
+      "question": "급여 입원의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "default"
+      },
+      "expectedRuleId": "G5-01",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_G5-01"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-Q11",
+      "question": "급여 통원의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "default"
+      },
+      "expectedRuleId": "G5-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_G5-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-Q12",
+      "question": "중증 비급여 입원의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "default"
+      },
+      "expectedRuleId": "G5-03",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_G5-03"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-Q13",
+      "question": "중증 비급여 통원의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "default"
+      },
+      "expectedRuleId": "G5-04",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_G5-04"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-Q14",
+      "question": "중증 비급여 3대의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "default"
+      },
+      "expectedRuleId": "G5-05",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_G5-05"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-Q15",
+      "question": "비중증 비급여 입원의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "default"
+      },
+      "expectedRuleId": "G5-06",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_G5-06"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-Q16",
+      "question": "비중증 비급여 통원의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "default"
+      },
+      "expectedRuleId": "G5-07",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_G5-07"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-Q17",
+      "question": "비중증 비급여 MRI/MRA의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "default"
+      },
+      "expectedRuleId": "G5-08",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_G5-08"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-Q18",
+      "question": "비중증 비급여 보험료 차등의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "default"
+      },
+      "expectedRuleId": "G5-09",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_G5-09"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-Q19",
+      "question": "급여 입원의 연간·횟수·회당 한도를 알려주세요.",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "default"
+      },
+      "expectedRuleId": "G5-01",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_G5-01"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-Q20",
+      "question": "급여 통원의 연간·횟수·회당 한도를 알려주세요.",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "default"
+      },
+      "expectedRuleId": "G5-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_G5-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    }
+  ]
 }

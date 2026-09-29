@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "1.0",
+  "productCode": "SAMSUNG_1611_7",
+  "generation": 2,
+  "variant": "standard",
+  "status": "READY_FOR_INDEPENDENT_REVIEW",
+  "calculationEnabled": false,
+  "cases": [
+    {
+      "caseId": "SAMSUNG_1611_7_HC01",
+      "ruleId": "G2-STD-01",
+      "inputs": {
+        "eligibleExpense": 100000
+      },
+      "expectedClaim": 80000,
+      "status": "DRAFT_RECALCULATED"
+    },
+    {
+      "caseId": "SAMSUNG_1611_7_HC02",
+      "ruleId": "G2-STD-02",
+      "inputs": {
+        "eligibleExpense": 50000,
+        "institution": "CLINIC"
+      },
+      "expectedDeductible": 10000,
+      "expectedClaim": 40000,
+      "status": "DRAFT_RECALCULATED"
+    },
+    {
+      "caseId": "SAMSUNG_1611_7_HC03",
+      "ruleId": "G2-STD-02",
+      "inputs": {
+        "eligibleExpense": 200000,
+        "institution": "CLINIC"
+      },
+      "expectedDeductible": 40000,
+      "expectedClaim": 160000,
+      "status": "DRAFT_RECALCULATED"
+    },
+    {
+      "caseId": "SAMSUNG_1611_7_HC04",
+      "ruleId": "G2-STD-03",
+      "inputs": {
+        "eligibleExpense": 30000
+      },
+      "expectedDeductible": 8000,
+      "expectedClaim": 22000,
+      "status": "DRAFT_RECALCULATED"
+    }
+  ],
+  "limitations": [
+    "한도 누적·면책·경계값 케이스는 실행 엔진 구현 전 추가 필요",
+    "실제 2인 독립 검산 미완료"
+  ]
+}

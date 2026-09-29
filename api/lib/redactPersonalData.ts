@@ -6,6 +6,15 @@ interface SensitivePattern {
 const sensitivePatterns: SensitivePattern[] = [
   { label: "이름", pattern: /(?:이름|성명)\s*(?:은|는|이|가|:)?\s*[가-힣]{2,5}/g },
   { label: "주민등록번호", pattern: /\b\d{6}\s*[- ]?\s*[1-4]\d{6}\b/g },
+  { label: "외국인등록번호", pattern: /\b\d{6}\s*[- ]?\s*[5-8]\d{6}\b/g },
+  {
+    label: "여권번호",
+    pattern: /(?:여권\s*(?:번호|No\.?|#)?)\s*(?:은|는|이|가|:)?\s*[A-Z][A-Z0-9]{6,11}/gi,
+  },
+  {
+    label: "운전면허번호",
+    pattern: /(?:운전\s*)?면허\s*(?:번호|No\.?|#)?\s*(?:은|는|이|가|:)?\s*\d{2}\s*[- ]?\s*\d{2}\s*[- ]?\s*\d{6}\s*[- ]?\s*\d{2}/gi,
+  },
   { label: "전화번호", pattern: /\b01[016789]\s*[- ]?\s*\d{3,4}\s*[- ]?\s*\d{4}\b/g },
   { label: "이메일", pattern: /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi },
   {
@@ -20,7 +29,12 @@ const sensitivePatterns: SensitivePattern[] = [
     label: "보험회사 고객번호",
     pattern: /(?:보험사|보험회사)?\s*고객\s*(?:번호|ID|No\.?)\s*(?:은|는|이|가|:)?\s*[A-Z0-9][A-Z0-9-]{3,}/gi,
   },
+  { label: "카드번호", pattern: /\b(?:\d{4}[- ]?){3}\d{4}\b/g },
   { label: "계좌번호", pattern: /\b\d{2,6}(?:[- ]\d{2,6}){2,5}\b/g },
+  {
+    label: "비밀번호 또는 인증코드",
+    pattern: /(?:비밀번호|비밀번호|password|passwd|otp|인증\s*(?:번호|코드))\s*(?:은|는|이|가|:)?\s*[^\s,]{4,}/gi,
+  },
   {
     label: "개인 계약 상세정보",
     pattern: /(?:제|내|저의|본인)\s*(?:보험(?!료|금)|계약|상품|특약|가입일|가입\s*내역|현재\s*세대)/g,

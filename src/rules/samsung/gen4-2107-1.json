@@ -1,1 +1,6 @@
-{"rulesetVersion":"samsung-gen4-2107-1","description":"약관 근거 검수 전이므로 계산에 사용하지 않습니다.","rules":[]}
+{
+  "rulesetVersion": "samsung-gen4-2107-1-review-required",
+  "sourceDate": "2026-09-28",
+  "description": "4세대 default 종형. 2인 독립 검수 전이므로 운영 계산에 사용하지 않습니다.",
+  "rules": []
+}

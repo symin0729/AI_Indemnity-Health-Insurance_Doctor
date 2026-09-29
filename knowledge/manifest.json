@@ -1,4 +1,107 @@
 {
   "schemaVersion": "1.0",
-  "documents": []
+  "generatedAt": "2026-09-29",
+  "status": "REVIEW_REQUIRED",
+  "documents": [
+    {
+      "documentId": "SAMSUNG_0904_2_TERMS",
+      "productCode": "SAMSUNG_0904_2",
+      "generation": 1,
+      "documentType": "OFFICIAL_PRODUCT_SUMMARY_AND_TERMS",
+      "fileName": "samsung_gen1_0904_2_terms.pdf",
+      "relativePath": "knowledge/documents/samsung/gen1/SAMSUNG_0904_2/samsung_gen1_0904_2_terms.pdf",
+      "title": "무배당 삼성 올라이프 100세 건강파트너보험(0904.2) 보통약관 및 특별약관 공식 PDF",
+      "publisher": "삼성화재해상보험주식회사",
+      "sourceUrl": "https://www.samsungfire.com/publication/pdf/95355_0_20090401_file1.pdf",
+      "sha256": "ee9b673d2bc222bd91bb66dc799fe0ded106b3aa03b7377b6494273aeb49f10b",
+      "pageCount": 315,
+      "aiReviewedAt": "2026-09-29",
+      "verifiedAt": null,
+      "verifiedBy": [],
+      "status": "REVIEW_REQUIRED",
+      "blockers": [
+        "AI 원문·자동 경계값·RAG 검색 검증 미완료"
+      ]
+    },
+    {
+      "documentId": "SAMSUNG_1611_7_TERMS",
+      "productCode": "SAMSUNG_1611_7",
+      "generation": 2,
+      "documentType": "OFFICIAL_PRODUCT_SUMMARY_AND_TERMS",
+      "fileName": "samsung_gen2_1611_7_terms.pdf",
+      "relativePath": "knowledge/documents/samsung/gen2/SAMSUNG_1611_7/samsung_gen2_1611_7_terms.pdf",
+      "title": "무배당 삼성화재 실손의료비보험(1611.7) 공식 PDF",
+      "publisher": "삼성화재해상보험주식회사",
+      "sourceUrl": "https://www.samsungfire.com/publication/pdf/96178_0_20170101_file1.pdf",
+      "sha256": "2f7c8e6bdfbd9a0b777789e6dc9b88b4d034434133733b00af6bc6bd1623b93c",
+      "pageCount": 218,
+      "aiReviewedAt": "2026-09-28",
+      "verifiedAt": null,
+      "verifiedBy": [],
+      "status": "REVIEW_REQUIRED",
+      "blockers": [
+        "AI 원문·자동 경계값·RAG 검색 검증 미완료"
+      ]
+    },
+    {
+      "documentId": "SAMSUNG_1704_1_TERMS",
+      "productCode": "SAMSUNG_1704_1",
+      "generation": 3,
+      "documentType": "OFFICIAL_PRODUCT_SUMMARY_AND_TERMS",
+      "fileName": "samsung_gen3_1704_1_terms.pdf",
+      "relativePath": "knowledge/documents/samsung/gen3/SAMSUNG_1704_1/samsung_gen3_1704_1_terms.pdf",
+      "title": "무배당 삼성화재 실손의료비보험(1704.1) 공식 PDF",
+      "publisher": "삼성화재해상보험주식회사",
+      "sourceUrl": "https://www.samsungfire.com/publication/pdf/96228_0_20170401_file1.pdf",
+      "sha256": "838a66bd7cdd9991d6ec02f0efa58bf9984fdfafb99f1c4d2f257081e572549b",
+      "pageCount": 242,
+      "aiReviewedAt": "2026-09-28",
+      "verifiedAt": null,
+      "verifiedBy": [],
+      "status": "REVIEW_REQUIRED",
+      "blockers": [
+        "AI 원문·자동 경계값·RAG 검색 검증 미완료"
+      ]
+    },
+    {
+      "documentId": "SAMSUNG_2107_1_TERMS",
+      "productCode": "SAMSUNG_2107_1",
+      "generation": 4,
+      "documentType": "OFFICIAL_PRODUCT_SUMMARY_AND_TERMS",
+      "fileName": "samsung_gen4_2107_1_terms.pdf",
+      "relativePath": "knowledge/documents/samsung/gen4/SAMSUNG_2107_1/samsung_gen4_2107_1_terms.pdf",
+      "title": "무배당 삼성화재 실손의료비보험(2107.1) 공식 PDF",
+      "publisher": "삼성화재해상보험주식회사",
+      "sourceUrl": "https://www.samsungfire.co.kr/product/leaflet/P02_03_04_075_202107.pdf",
+      "sha256": "12ef0b100dc8ca42f3033ce068264296f1ec375e4c5278801f1c6220cd149232",
+      "pageCount": 220,
+      "aiReviewedAt": "2026-09-28",
+      "verifiedAt": null,
+      "verifiedBy": [],
+      "status": "REVIEW_REQUIRED",
+      "blockers": [
+        "AI 원문·자동 경계값·RAG 검색 검증 미완료"
+      ]
+    },
+    {
+      "documentId": "SAMSUNG_2605_1_TERMS",
+      "productCode": "SAMSUNG_2605_1",
+      "generation": 5,
+      "documentType": "OFFICIAL_PRODUCT_SUMMARY_AND_TERMS",
+      "fileName": "samsung_gen5_2605_1_terms.pdf",
+      "relativePath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_terms.pdf",
+      "title": "무배당 삼성화재 다이렉트 실손의료비보험(2605.1) 공식 PDF",
+      "publisher": "삼성화재해상보험주식회사",
+      "sourceUrl": "https://direct.samsungfire.com/docs/realloss.pdf",
+      "sha256": "db0ed9738c9f59fbb28b678b910e0bdd3ef4bf08bdac52643c2e2dd167003415",
+      "pageCount": 157,
+      "aiReviewedAt": "2026-09-28",
+      "verifiedAt": null,
+      "verifiedBy": [],
+      "status": "REVIEW_REQUIRED",
+      "blockers": [
+        "AI 원문·자동 경계값·RAG 검색 검증 미완료"
+      ]
+    }
+  ]
 }

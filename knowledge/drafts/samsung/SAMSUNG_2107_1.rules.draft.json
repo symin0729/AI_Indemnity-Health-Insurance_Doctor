@@ -1,0 +1,133 @@
+{
+  "schemaVersion": "1.0",
+  "ruleSetId": "SAMSUNG_2107_1_DEFAULT_RULES_DRAFT",
+  "productCode": "SAMSUNG_2107_1",
+  "generation": 4,
+  "variant": "default",
+  "documentId": "SAMSUNG_2107_1_TERMS",
+  "verificationStatus": "RULE_DRAFTED",
+  "calculationEnabled": false,
+  "rules": [
+    {
+      "id": "G4-01",
+      "coverage": "상해급여 입원",
+      "page": 9,
+      "formula": "급여 본인부담금 × 80%",
+      "limit": "연간 보험가입금액 한도",
+      "status": "RULE_DRAFTED",
+      "variant": "default",
+      "humanReviewRequired": true,
+      "evidenceIds": [
+        "SAMSUNG_2107_1_E_G4-01"
+      ]
+    },
+    {
+      "id": "G4-02",
+      "coverage": "질병급여 입원",
+      "page": 9,
+      "formula": "급여 본인부담금 × 80%",
+      "limit": "연간 보험가입금액 한도",
+      "status": "RULE_DRAFTED",
+      "variant": "default",
+      "humanReviewRequired": true,
+      "evidenceIds": [
+        "SAMSUNG_2107_1_E_G4-02"
+      ]
+    },
+    {
+      "id": "G4-08",
+      "coverage": "상해급여 통원",
+      "page": 39,
+      "formula": "급여 통원의료비 - MAX(의원·병원 10,000원/종합병원·상급종합병원 20,000원, 보장대상의료비 × 20%)",
+      "limit": "상해급여 입원·통원 합산 연간 보험가입금액(최대 50,000,000원); 통원 1회당 최대 200,000원",
+      "status": "RULE_DRAFTED",
+      "variant": "default",
+      "humanReviewRequired": true,
+      "sourceCorrection": "기존 규칙 목록에서 누락된 상해급여 통원 산식을 본문 PDF 39~41페이지에서 추가",
+      "evidenceIds": [
+        "SAMSUNG_2107_1_E_G4-08"
+      ]
+    },
+    {
+      "id": "G4-09",
+      "coverage": "질병급여 통원",
+      "page": 43,
+      "formula": "급여 통원의료비 - MAX(의원·병원 10,000원/종합병원·상급종합병원 20,000원, 보장대상의료비 × 20%)",
+      "limit": "질병급여 입원·통원 합산 연간 보험가입금액(최대 50,000,000원); 통원 1회당 최대 200,000원",
+      "status": "RULE_DRAFTED",
+      "variant": "default",
+      "humanReviewRequired": true,
+      "sourceCorrection": "기존 규칙 목록에서 누락된 질병급여 통원 산식을 본문 PDF 43~45페이지에서 추가",
+      "evidenceIds": [
+        "SAMSUNG_2107_1_E_G4-09"
+      ]
+    },
+    {
+      "id": "G4-03",
+      "coverage": "일반 비급여 입원",
+      "page": 95,
+      "formula": "비급여 의료비(비급여 병실료 제외) × 70%",
+      "limit": "상급병실료 차액: 비급여 병실료 × 50%, 1일 평균 100,000원 한도",
+      "status": "RULE_DRAFTED",
+      "variant": "default",
+      "humanReviewRequired": true,
+      "evidenceIds": [
+        "SAMSUNG_2107_1_E_G4-03"
+      ]
+    },
+    {
+      "id": "G4-04",
+      "coverage": "일반 비급여 통원",
+      "page": 95,
+      "formula": "비급여 통원의료비 - MAX(30,000원, 보장대상의료비 × 30%)",
+      "limit": "연 100회; 공제표 적용",
+      "status": "RULE_DRAFTED",
+      "variant": "default",
+      "humanReviewRequired": true,
+      "sourceCorrection": "상해비급여 통원 공제표가 있는 PDF 95페이지로 정규화",
+      "evidenceIds": [
+        "SAMSUNG_2107_1_E_G4-04"
+      ]
+    },
+    {
+      "id": "G4-05",
+      "coverage": "3대 비급여 도수·체외충격파·증식",
+      "page": 103,
+      "formula": "보상대상의료비 - MAX(30,000원, 보상대상의료비 × 30%)",
+      "limit": "연 3,500,000원 / 50회; 최초 10회 보장 후 검사결과로 증상 개선·병변호전이 확인된 경우에만 10회 단위로 연간 50회까지",
+      "status": "RULE_DRAFTED",
+      "variant": "default",
+      "humanReviewRequired": true,
+      "sourceCorrection": "PDF 103페이지 주석의 10회 단위 증상 개선 확인 조건을 한도에 추가",
+      "evidenceIds": [
+        "SAMSUNG_2107_1_E_G4-05"
+      ]
+    },
+    {
+      "id": "G4-06",
+      "coverage": "3대 비급여 주사료",
+      "page": 103,
+      "formula": "보상대상의료비 - MAX(30,000원, 보상대상의료비 × 30%)",
+      "limit": "연 2,500,000원 / 50회",
+      "status": "RULE_DRAFTED",
+      "variant": "default",
+      "humanReviewRequired": true,
+      "evidenceIds": [
+        "SAMSUNG_2107_1_E_G4-06"
+      ]
+    },
+    {
+      "id": "G4-07",
+      "coverage": "3대 비급여 MRI/MRA",
+      "page": 103,
+      "formula": "보상대상의료비 - MAX(30,000원, 보상대상의료비 × 30%)",
+      "limit": "연 3,000,000원",
+      "status": "RULE_DRAFTED",
+      "variant": "default",
+      "humanReviewRequired": true,
+      "evidenceIds": [
+        "SAMSUNG_2107_1_E_G4-07"
+      ]
+    }
+  ]
+}

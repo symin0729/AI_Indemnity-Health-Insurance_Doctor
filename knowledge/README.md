@@ -13,7 +13,7 @@
 3. `manifest.json`에 파일명, SHA-256, 출처, 검수일을 기록합니다.
 4. `metadata/samsung/`과 `extraction/samsung/`에 구조화 메타데이터와 조항별 추출문을 작성합니다.
 5. `rule-evidence-map.json`에 Rule ID와 문서·조항을 연결합니다.
-6. 교차 검수가 완료된 자료만 `VERIFIED`로 변경하고 RAGFlow에 등록합니다.
+6. AI 원문 대조·자동 경계값 테스트·RAG 검색 평가가 완료된 자료만 `VERIFIED`로 변경합니다.
 
 ## 작업 상태별 저장 위치
 
@@ -25,6 +25,6 @@
 - `retrieval-evaluation.json`: 검색 질문과 기대 Evidence 초안
 - `calculation-rule-candidates.json`: 구현 가능·확인 필요 Rule 후보
 
-1·2세대는 공식 PDF 표지 검수가 끝나기 전까지 `SAMSUNG_GEN1_PENDING`,
-`SAMSUNG_GEN2_PENDING` 코드를 유지합니다. 초안 파일에 빈 배열이 있어도
-`status` 값이 `DRAFT`이며, 검수·승인 완료를 의미하지 않습니다.
+1·2세대 대표 상품 코드는 각각 `SAMSUNG_0904_2`, `SAMSUNG_1611_7`로 확정했습니다.
+다만 AI 원문·자동 경계값·RAG 검증 전이므로 `status` 값은 `REVIEW_REQUIRED`이며,
+운영 계산과 RAG 입력에 사용할 수 없습니다.

@@ -1,5 +1,567 @@
 {
   "schemaVersion": "1.0",
-  "status": "DRAFT",
-  "candidates": []
+  "status": "RULE_DRAFTED",
+  "calculationEnabled": false,
+  "candidates": [
+    {
+      "productCode": "SAMSUNG_0904_2",
+      "generation": 1,
+      "ruleId": "G1-01",
+      "coverage": "상해 입원의료비(D1)",
+      "variant": "default",
+      "formula": "건강보험 적용: 입원실료·입원제비용·입원수술비 실제 부담액 + 병실료차액 50%, 합산 후 1사고 5천만원 한도",
+      "limit": "1사고 50,000,000원; 사고일부터 365일",
+      "evidenceIds": [
+        "SAMSUNG_0904_2_E_G1-01"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_0904_2",
+      "generation": 1,
+      "ruleId": "G1-02",
+      "coverage": "상해 입원의료비(D1) 비건보",
+      "variant": "default",
+      "formula": "국민건강보험 미적용 시 발생 상해 입원의료비(D) 총액 × 40%",
+      "limit": "1사고 50,000,000원; 사고일부터 365일",
+      "evidenceIds": [
+        "SAMSUNG_0904_2_E_G1-02"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_0904_2",
+      "generation": 1,
+      "ruleId": "G1-03",
+      "coverage": "상해 입원의료비(D1) 병실료차액",
+      "variant": "default",
+      "formula": "실제사용병실과 기준병실 차액 × 50%; 특실/1인실은 2인실 기준",
+      "limit": "전체 입원보상한도 내",
+      "evidenceIds": [
+        "SAMSUNG_0904_2_E_G1-03"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_0904_2",
+      "generation": 1,
+      "ruleId": "G1-04",
+      "coverage": "상해 통원의료비(D1)",
+      "variant": "default",
+      "formula": "건강보험 적용: MIN(100,000원, MAX(0, 발생 통원의료비 - 5,000원)); 건강보험 미적용: MIN(100,000원, MAX(0, 발생 통원의료비 - 5,000원) × 40%)",
+      "limit": "1사고당 사고일부터 365일 이내 통산 30일; 1일 최고 100,000원",
+      "evidenceIds": [
+        "SAMSUNG_0904_2_E_G1-04"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_0904_2",
+      "generation": 1,
+      "ruleId": "G1-05",
+      "coverage": "질병 입원의료비(D1)",
+      "variant": "default",
+      "formula": "건강보험 적용: 입원실료·입원제비용·입원수술비 실제 부담액 + 병실료차액 50%; 미적용: 발생 질병입원의료비 총액 × 40%",
+      "limit": "동일 질병당 50,000,000원; 진단확정일부터 365일",
+      "evidenceIds": [
+        "SAMSUNG_0904_2_E_G1-05"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_1611_7",
+      "generation": 2,
+      "ruleId": "G2-STD-01",
+      "coverage": "입원",
+      "variant": "standard",
+      "formula": "(입원실료·입원제비용·입원수술비의 본인 실제부담액 × 80%) + MIN(상급병실료 차액 × 50%, 입원일수 × 100,000원)",
+      "limit": "나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
+      "evidenceIds": [
+        "SAMSUNG_1611_7_E_G2-STD-01"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_1611_7",
+      "generation": 2,
+      "ruleId": "G2-STD-02",
+      "coverage": "외래",
+      "variant": "standard",
+      "formula": "보상대상의료비 - MAX(기관별 정액공제, 보상대상의료비 × 20%)",
+      "limit": "연간 방문 180회",
+      "evidenceIds": [
+        "SAMSUNG_1611_7_E_G2-STD-02"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_1611_7",
+      "generation": 2,
+      "ruleId": "G2-STD-03",
+      "coverage": "처방조제비",
+      "variant": "standard",
+      "formula": "보상대상의료비 - MAX(약국 8,000원, 보상대상의료비 × 20%)",
+      "limit": "연간 처방전 180건",
+      "evidenceIds": [
+        "SAMSUNG_1611_7_E_G2-STD-03"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_1611_7",
+      "generation": 2,
+      "ruleId": "G2-STD-04",
+      "coverage": "기관별 외래 공제",
+      "variant": "standard",
+      "formula": "의원 등 10,000원 / 병원 등 15,000원 / 종합전문·상급종합 20,000원",
+      "limit": "공제금액과 20% 중 큰 금액",
+      "evidenceIds": [
+        "SAMSUNG_1611_7_E_G2-STD-04"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_1611_7",
+      "generation": 2,
+      "ruleId": "G2-SEL2-01",
+      "coverage": "선택형Ⅱ 입원",
+      "variant": "selected2",
+      "formula": "(급여 본인부담금 × 90%) + (비급여 실제부담액 × 80%) + MIN(상급병실료 차액 × 50%, 입원일수 × 100,000원)",
+      "limit": "급여 10% + 비급여 20% 자기부담이 연간 2,000,000원 초과 시 초과분 보상",
+      "evidenceIds": [
+        "SAMSUNG_1611_7_E_G2-SEL2-01"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_1611_7",
+      "generation": 2,
+      "ruleId": "G2-SEL2-02",
+      "coverage": "선택형Ⅱ 외래",
+      "variant": "selected2",
+      "formula": "보상대상의료비 - MAX(기관별 공제, 급여 10% + 비급여 20%)",
+      "limit": "연간 방문 180회; 처방전 180건",
+      "evidenceIds": [
+        "SAMSUNG_1611_7_E_G2-SEL2-02"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_1611_7",
+      "generation": 2,
+      "ruleId": "G2-SEL2-03",
+      "coverage": "선택형Ⅱ 처방조제비",
+      "variant": "selected2",
+      "formula": "보상대상의료비 - MAX(약국 8,000원, 급여 본인부담금 × 10% + 비급여 실제부담액 × 20%)",
+      "limit": "매년 계약해당일부터 1년간 처방전 180건",
+      "evidenceIds": [
+        "SAMSUNG_1611_7_E_G2-SEL2-03"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_1704_1",
+      "generation": 3,
+      "ruleId": "G3-STD-01",
+      "coverage": "3대 비급여 도수·체외충격파·증식",
+      "variant": "standard",
+      "formula": "보상대상의료비 - MAX(20,000원, 보상대상의료비 × 30%)",
+      "limit": "연 3,500,000원 / 50회; 세 치료횟수 합산",
+      "evidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-01"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_1704_1",
+      "generation": 3,
+      "ruleId": "G3-STD-02",
+      "coverage": "3대 비급여 주사료",
+      "variant": "standard",
+      "formula": "보상대상의료비 - MAX(20,000원, 보상대상의료비 × 30%)",
+      "limit": "연 2,500,000원 / 입원·통원 합산 50회",
+      "evidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-02"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_1704_1",
+      "generation": 3,
+      "ruleId": "G3-STD-03",
+      "coverage": "3대 비급여 MRI/MRA",
+      "variant": "standard",
+      "formula": "보상대상의료비 - MAX(20,000원, 보상대상의료비 × 30%)",
+      "limit": "연 3,000,000원; 복수 진단행위는 각 행위별 1회 공제·한도",
+      "evidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-03"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_1704_1",
+      "generation": 3,
+      "ruleId": "G3-SEL2-01",
+      "coverage": "선택형Ⅱ 기본형 입원",
+      "variant": "selected2",
+      "formula": "(급여 본인부담금 × 90%) + (비급여 실제부담액 × 80%) + MIN(상급병실료 차액 × 50%, 입원일수 × 100,000원)",
+      "limit": "연간 자기부담 상한 및 가입금액 적용",
+      "evidenceIds": [
+        "SAMSUNG_1704_1_E_G3-SEL2-01"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_1704_1",
+      "generation": 3,
+      "ruleId": "G3-SEL2-02",
+      "coverage": "선택형Ⅱ 3대 비급여",
+      "variant": "selected2",
+      "formula": "각 선택계약별 보상대상의료비 - MAX(20,000원, 보상대상의료비 × 30%)",
+      "limit": "도수 350만원/50회; 주사 250만원/50회; MRI 300만원",
+      "evidenceIds": [
+        "SAMSUNG_1704_1_E_G3-SEL2-02"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_1704_1",
+      "generation": 3,
+      "ruleId": "G3-STD-BASE-01",
+      "coverage": "표준형 기본형 입원",
+      "variant": "standard",
+      "formula": "(입원실료·입원제비용·입원수술비 본인 실제부담액 × 80%) + MIN(상급병실료 차액 × 50%, 입원일수 × 100,000원)",
+      "limit": "연간 자기부담 200만원 초과분 보상; 입원 보험가입금액 한도",
+      "evidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-BASE-01"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_1704_1",
+      "generation": 3,
+      "ruleId": "G3-STD-BASE-02",
+      "coverage": "표준형 기본형 외래",
+      "variant": "standard",
+      "formula": "보상대상의료비 - MAX(기관별 정액공제, 보상대상의료비 × 20%)",
+      "limit": "매년 계약해당일부터 1년간 방문 180회",
+      "evidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-BASE-02"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_1704_1",
+      "generation": 3,
+      "ruleId": "G3-STD-BASE-03",
+      "coverage": "표준형 기본형 처방조제비",
+      "variant": "standard",
+      "formula": "보상대상의료비 - MAX(약국 8,000원, 보상대상의료비 × 20%)",
+      "limit": "매년 계약해당일부터 1년간 처방전 180건",
+      "evidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-BASE-03"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_1704_1",
+      "generation": 3,
+      "ruleId": "G3-SEL2-BASE-02",
+      "coverage": "선택형Ⅱ 기본형 외래",
+      "variant": "selected2",
+      "formula": "보상대상의료비 - MAX(기관별 정액공제, 급여 본인부담금 × 10% + 비급여 실제부담액 × 20%)",
+      "limit": "매년 계약해당일부터 1년간 방문 180회",
+      "evidenceIds": [
+        "SAMSUNG_1704_1_E_G3-SEL2-BASE-02"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_1704_1",
+      "generation": 3,
+      "ruleId": "G3-SEL2-BASE-03",
+      "coverage": "선택형Ⅱ 기본형 처방조제비",
+      "variant": "selected2",
+      "formula": "보상대상의료비 - MAX(약국 8,000원, 급여 본인부담금 × 10% + 비급여 실제부담액 × 20%)",
+      "limit": "매년 계약해당일부터 1년간 처방전 180건",
+      "evidenceIds": [
+        "SAMSUNG_1704_1_E_G3-SEL2-BASE-03"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_2107_1",
+      "generation": 4,
+      "ruleId": "G4-01",
+      "coverage": "상해급여 입원",
+      "variant": "default",
+      "formula": "급여 본인부담금 × 80%",
+      "limit": "연간 보험가입금액 한도",
+      "evidenceIds": [
+        "SAMSUNG_2107_1_E_G4-01"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_2107_1",
+      "generation": 4,
+      "ruleId": "G4-02",
+      "coverage": "질병급여 입원",
+      "variant": "default",
+      "formula": "급여 본인부담금 × 80%",
+      "limit": "연간 보험가입금액 한도",
+      "evidenceIds": [
+        "SAMSUNG_2107_1_E_G4-02"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_2107_1",
+      "generation": 4,
+      "ruleId": "G4-08",
+      "coverage": "상해급여 통원",
+      "variant": "default",
+      "formula": "급여 통원의료비 - MAX(의원·병원 10,000원/종합병원·상급종합병원 20,000원, 보장대상의료비 × 20%)",
+      "limit": "상해급여 입원·통원 합산 연간 보험가입금액(최대 50,000,000원); 통원 1회당 최대 200,000원",
+      "evidenceIds": [
+        "SAMSUNG_2107_1_E_G4-08"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_2107_1",
+      "generation": 4,
+      "ruleId": "G4-09",
+      "coverage": "질병급여 통원",
+      "variant": "default",
+      "formula": "급여 통원의료비 - MAX(의원·병원 10,000원/종합병원·상급종합병원 20,000원, 보장대상의료비 × 20%)",
+      "limit": "질병급여 입원·통원 합산 연간 보험가입금액(최대 50,000,000원); 통원 1회당 최대 200,000원",
+      "evidenceIds": [
+        "SAMSUNG_2107_1_E_G4-09"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_2107_1",
+      "generation": 4,
+      "ruleId": "G4-03",
+      "coverage": "일반 비급여 입원",
+      "variant": "default",
+      "formula": "비급여 의료비(비급여 병실료 제외) × 70%",
+      "limit": "상급병실료 차액: 비급여 병실료 × 50%, 1일 평균 100,000원 한도",
+      "evidenceIds": [
+        "SAMSUNG_2107_1_E_G4-03"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_2107_1",
+      "generation": 4,
+      "ruleId": "G4-04",
+      "coverage": "일반 비급여 통원",
+      "variant": "default",
+      "formula": "비급여 통원의료비 - MAX(30,000원, 보장대상의료비 × 30%)",
+      "limit": "연 100회; 공제표 적용",
+      "evidenceIds": [
+        "SAMSUNG_2107_1_E_G4-04"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_2107_1",
+      "generation": 4,
+      "ruleId": "G4-05",
+      "coverage": "3대 비급여 도수·체외충격파·증식",
+      "variant": "default",
+      "formula": "보상대상의료비 - MAX(30,000원, 보상대상의료비 × 30%)",
+      "limit": "연 3,500,000원 / 50회; 최초 10회 보장 후 검사결과로 증상 개선·병변호전이 확인된 경우에만 10회 단위로 연간 50회까지",
+      "evidenceIds": [
+        "SAMSUNG_2107_1_E_G4-05"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_2107_1",
+      "generation": 4,
+      "ruleId": "G4-06",
+      "coverage": "3대 비급여 주사료",
+      "variant": "default",
+      "formula": "보상대상의료비 - MAX(30,000원, 보상대상의료비 × 30%)",
+      "limit": "연 2,500,000원 / 50회",
+      "evidenceIds": [
+        "SAMSUNG_2107_1_E_G4-06"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_2107_1",
+      "generation": 4,
+      "ruleId": "G4-07",
+      "coverage": "3대 비급여 MRI/MRA",
+      "variant": "default",
+      "formula": "보상대상의료비 - MAX(30,000원, 보상대상의료비 × 30%)",
+      "limit": "연 3,000,000원",
+      "evidenceIds": [
+        "SAMSUNG_2107_1_E_G4-07"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_2605_1",
+      "generation": 5,
+      "ruleId": "G5-01",
+      "coverage": "급여 입원",
+      "variant": "default",
+      "formula": "보장대상의료비 × 80% (자기부담 20%)",
+      "limit": "급여 상해/질병 각각 연간 보험가입금액 한도",
+      "evidenceIds": [
+        "SAMSUNG_2605_1_E_G5-01"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_2605_1",
+      "generation": 5,
+      "ruleId": "G5-02",
+      "coverage": "급여 통원",
+      "variant": "default",
+      "formula": "보장대상의료비 - MAX(병원급별 공제 10,000~20,000원, 보장대상의료비×20%, 보장대상의료비×건강보험 본인부담률)",
+      "limit": "가입금액별 1회 통원 한도",
+      "evidenceIds": [
+        "SAMSUNG_2605_1_E_G5-02"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_2605_1",
+      "generation": 5,
+      "ruleId": "G5-03",
+      "coverage": "중증 비급여 입원",
+      "variant": "default",
+      "formula": "(중증 비급여 입원의료비(비급여 병실료 제외) × 70%) + MIN(비급여 병실료 × 50%, 입원일수 × 100,000원)",
+      "limit": "상급종합·종합병원 자기부담 최대 5,000,000원(특정 3대 제외)",
+      "evidenceIds": [
+        "SAMSUNG_2605_1_E_G5-03"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_2605_1",
+      "generation": 5,
+      "ruleId": "G5-04",
+      "coverage": "중증 비급여 통원",
+      "variant": "default",
+      "formula": "보장대상의료비 - MAX(30,000원, 보장대상의료비 × 30%)",
+      "limit": "상해/질병 각각 연 최대 100회",
+      "evidenceIds": [
+        "SAMSUNG_2605_1_E_G5-04"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_2605_1",
+      "generation": 5,
+      "ruleId": "G5-05",
+      "coverage": "중증 비급여 3대",
+      "variant": "default",
+      "formula": "각 행위별 보상대상의료비 - MAX(30,000원, 보상대상의료비 × 30%)",
+      "limit": "근골격계 이학요법·체외충격파: 350만원/50회(최초 10회 후 증상 개선 확인 시 10회 단위); 주사 250만원/50회; MRI/MRA 300만원",
+      "evidenceIds": [
+        "SAMSUNG_2605_1_E_G5-05"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_2605_1",
+      "generation": 5,
+      "ruleId": "G5-06",
+      "coverage": "비중증 비급여 입원",
+      "variant": "default",
+      "formula": "(비중증 비급여 입원의료비(비급여 병실료 제외) × 50%) + MIN(비급여 병실료 × 50%, 입원일수 × 100,000원)",
+      "limit": "(상급)종합병원 외 병·의원은 회당 3,000,000원 한도",
+      "evidenceIds": [
+        "SAMSUNG_2605_1_E_G5-06"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_2605_1",
+      "generation": 5,
+      "ruleId": "G5-07",
+      "coverage": "비중증 비급여 통원",
+      "variant": "default",
+      "formula": "보장대상의료비 - MAX(50,000원, 보장대상의료비 × 50%)",
+      "limit": "상해/질병 각각 연 최대 100일; 가입금액별 1일 한도",
+      "evidenceIds": [
+        "SAMSUNG_2605_1_E_G5-07"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_2605_1",
+      "generation": 5,
+      "ruleId": "G5-08",
+      "coverage": "비중증 비급여 MRI/MRA",
+      "variant": "default",
+      "formula": "보장대상의료비 - MAX(50,000원, 보장대상의료비 × 50%)",
+      "limit": "연 2,000,000원",
+      "evidenceIds": [
+        "SAMSUNG_2605_1_E_G5-08"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    },
+    {
+      "productCode": "SAMSUNG_2605_1",
+      "generation": 5,
+      "ruleId": "G5-09",
+      "coverage": "비중증 비급여 보험료 차등",
+      "variant": "default",
+      "formula": "보험료 갱신 전 3개월 말일부터 직전 12개월 비중증 비급여 보험금: 0원=할인, 0원 초과~100만원 미만=100%, 100~150만원 미만=200%, 150~300만원 미만=300%, 300만원 이상=400%",
+      "limit": "2028-05-06부터 적용; 장기요양 1·2등급 관련 비급여는 차등 산정에서 제외",
+      "evidenceIds": [
+        "SAMSUNG_2605_1_E_G5-09"
+      ],
+      "status": "RULE_DRAFTED",
+      "implementationStatus": "BLOCKED_PENDING_HUMAN_REVIEW"
+    }
+  ]
 }
