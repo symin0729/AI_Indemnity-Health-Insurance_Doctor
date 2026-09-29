@@ -52,7 +52,6 @@ describe("Samsung executable Rule specifications", () => {
       expect(rule.source.documentId).not.toBe("");
       expect(rule.source.pdfPage).toBeGreaterThan(0);
       expect(rule.specialConditions).toContain("POLICY_EXCLUSIONS_MUST_BE_CLEARED");
-      const parent = specs.find((spec) => spec.rules.includes(rule));
       expect(rule.verificationStatus).toBe(
         "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING",
       );

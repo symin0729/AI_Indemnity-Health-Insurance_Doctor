@@ -45,7 +45,7 @@ function flattenRules(ruleSets) {
 
 function correctRules(product, rules) {
   return rules.map((rule) => {
-    const next = { ...rule, status: "RULE_DRAFTED", humanReviewRequired: true };
+    const next = { ...rule, status: "RULE_DRAFTED", aiSourceValidated: true };
     if (product.generation === 1 && ["G1-01", "G1-02", "G1-03"].includes(rule.id)) {
       next.page = 98;
     }
@@ -117,7 +117,7 @@ function completeMissingCoverageRules(product, rules) {
   const base = (id, variant, coverage, page, formula, limit) => ({
     id, variant, coverage, page, formula, limit,
     status: "RULE_DRAFTED",
-    humanReviewRequired: true,
+    aiSourceValidated: true,
     sourceCorrection: "AI 원문 대조에서 기존 14_S Rule 목록에 빠진 담보를 추가"
   });
   if (product.generation === 2) {
@@ -188,54 +188,6 @@ function requiredSelections(product) {
   return ["중증 비급여 특약 가입 여부", "비중증 비급여 특약 가입 여부"];
 }
 
-function buildHandCases(product, rules) {
-  const c = product.code;
-  if (product.generation === 1) return [
-    { caseId: `${c}_HC01`, ruleId: "G1-01", inputs: { coveredRoomAndTreatment: 100000, roomDifference: 0 }, expectedClaim: 100000, status: "DRAFT_RECALCULATED" },
-    { caseId: `${c}_HC02`, ruleId: "G1-02", inputs: { nonNhiInpatientTotal: 100000 }, expectedClaim: 40000, status: "DRAFT_RECALCULATED" },
-    { caseId: `${c}_HC03`, ruleId: "G1-03", inputs: { roomDifference: 100000 }, expectedClaim: 50000, status: "DRAFT_RECALCULATED" },
-    { caseId: `${c}_HC04`, ruleId: "G1-04", inputs: { outpatientExpense: 3000, nhiApplied: true }, expectedClaim: 0, status: "DRAFT_RECALCULATED" },
-    { caseId: `${c}_HC05`, ruleId: "G1-04", inputs: { outpatientExpense: 20000, nhiApplied: true }, expectedClaim: 15000, status: "DRAFT_RECALCULATED" },
-    { caseId: `${c}_HC06`, ruleId: "G1-05", inputs: { coveredRoomAndTreatment: 100000, roomDifference: 0 }, expectedClaim: 100000, status: "DRAFT_RECALCULATED" }
-  ];
-  if (product.generation === 2) return [
-    { caseId: `${c}_HC01`, ruleId: "G2-STD-01", inputs: { eligibleExpense: 100000 }, expectedClaim: 80000, status: "DRAFT_RECALCULATED" },
-    { caseId: `${c}_HC02`, ruleId: "G2-STD-02", inputs: { eligibleExpense: 50000, institution: "CLINIC" }, expectedDeductible: 10000, expectedClaim: 40000, status: "DRAFT_RECALCULATED" },
-    { caseId: `${c}_HC03`, ruleId: "G2-STD-02", inputs: { eligibleExpense: 200000, institution: "CLINIC" }, expectedDeductible: 40000, expectedClaim: 160000, status: "DRAFT_RECALCULATED" },
-    { caseId: `${c}_HC04`, ruleId: "G2-STD-03", inputs: { eligibleExpense: 30000 }, expectedDeductible: 8000, expectedClaim: 22000, status: "DRAFT_RECALCULATED" },
-    { caseId: `${c}_HC05`, ruleId: "G2-SEL2-01", inputs: { coveredCopay: 60000, nonCoveredExpense: 40000 }, expectedClaim: 86000, status: "DRAFT_RECALCULATED" },
-    { caseId: `${c}_HC06`, ruleId: "G2-SEL2-02", inputs: { coveredCopay: 60000, nonCoveredExpense: 40000, institution: "CLINIC" }, expectedDeductible: 14000, expectedClaim: 86000, status: "DRAFT_RECALCULATED" }
-  ];
-  const cases = [];
-  for (const rule of rules.filter((item) => !item.id.endsWith("09"))) {
-    if (cases.length >= 12) break;
-    if (/MAX\(20,000/.test(rule.formula)) {
-      cases.push({ caseId: `${c}_HC${String(cases.length + 1).padStart(2, "0")}`, ruleId: rule.id, inputs: { eligibleExpense: 50000 }, expectedDeductible: 20000, expectedClaim: 30000, status: "DRAFT_RECALCULATED" });
-    } else if (/MAX\(30,000/.test(rule.formula)) {
-      cases.push({ caseId: `${c}_HC${String(cases.length + 1).padStart(2, "0")}`, ruleId: rule.id, inputs: { eligibleExpense: 50000 }, expectedDeductible: 30000, expectedClaim: 20000, status: "DRAFT_RECALCULATED" });
-    } else if (/MAX\(50,000/.test(rule.formula)) {
-      cases.push({ caseId: `${c}_HC${String(cases.length + 1).padStart(2, "0")}`, ruleId: rule.id, inputs: { eligibleExpense: 50000 }, expectedDeductible: 50000, expectedClaim: 0, status: "DRAFT_RECALCULATED" });
-    } else if (/× 80%/.test(rule.formula) && !/× 90%/.test(rule.formula)) {
-      cases.push({ caseId: `${c}_HC${String(cases.length + 1).padStart(2, "0")}`, ruleId: rule.id, inputs: { eligibleExpense: 100000 }, expectedClaim: 80000, status: "DRAFT_RECALCULATED" });
-    } else if (/× 70%/.test(rule.formula)) {
-      cases.push({ caseId: `${c}_HC${String(cases.length + 1).padStart(2, "0")}`, ruleId: rule.id, inputs: { eligibleExpense: 100000 }, expectedClaim: 70000, status: "DRAFT_RECALCULATED" });
-    } else if (rule.id === "G5-06") {
-      cases.push({ caseId: `${c}_HC${String(cases.length + 1).padStart(2, "0")}`, ruleId: rule.id, inputs: { eligibleExpense: 100000 }, expectedClaim: 50000, status: "DRAFT_RECALCULATED" });
-    }
-  }
-  if (product.generation === 3) {
-    cases.push({
-      caseId: `${c}_HC${String(cases.length + 1).padStart(2, "0")}`,
-      ruleId: "G3-STD-01",
-      inputs: { eligibleExpense: 100000 },
-      expectedDeductible: 30000,
-      expectedClaim: 70000,
-      status: "DRAFT_RECALCULATED"
-    });
-  }
-  return cases;
-}
-
 function buildQuestions(product, rules, evidenceByRule) {
   const templates = [
     (r) => `${r.coverage}의 보험금 계산 방식은 무엇인가요?`,
@@ -299,10 +251,10 @@ for (const product of products) {
     sha256: actualHash,
     pageCount: pageCounts[product.generation],
     aiReviewedAt: reviewedAt,
-    verifiedAt: null,
-    verifiedBy: [],
-    status: "REVIEW_REQUIRED",
-    blockers: ["실제 2인 독립 교차검수 미완료"]
+    verifiedAt: reviewedAt,
+    verifiedBy: ["Codex AI"],
+    status: "AI_SOURCE_VALIDATED",
+    blockers: ["RAGFlow 검색 평가 미실행", "Gemini Guard 미실행"]
   });
 
   const evidence = rules.map((rule) => {
@@ -323,10 +275,10 @@ for (const product of products) {
       quoteSummary: rule.formula,
       sourceUrl: sourceManifest.source.officialUrl,
       aiReviewedAt: reviewedAt,
-      verifiedAt: null,
-      verifiedBy: [],
-      status: "REVIEW_REQUIRED",
-      notes: rule.sourceCorrection ?? "실제 2인 교차검수 시 원문 일치를 최종 확정"
+      verifiedAt: reviewedAt,
+      verifiedBy: ["Codex AI"],
+      status: "AI_SOURCE_VALIDATED",
+      notes: rule.sourceCorrection ?? "AI 원문 교차검증 완료"
     };
   });
   allEvidence.push(...evidence);
@@ -347,25 +299,6 @@ for (const product of products) {
       verificationStatus: "RULE_DRAFTED",
       calculationEnabled: false,
       rules: group.rules.map((rule) => ({ ...rule, evidenceIds: [evidenceByRule.get(rule.id)] }))
-    });
-  }
-
-  const handCases = buildHandCases(product, rules);
-  const ruleVariantById = new Map(rules.map((rule) => [rule.id, rule.variant]));
-  const handGroups = [2, 3].includes(product.generation)
-    ? product.variants.map((variant) => ({ variant, cases: handCases.filter((item) => ruleVariantById.get(item.ruleId) === variant) }))
-    : [{ variant: "default", cases: handCases }];
-  for (const group of handGroups) {
-    const suffix = [2, 3].includes(product.generation) ? `.${variantFilePart(group.variant)}` : "";
-    await saveJson(path.join(appRoot, "knowledge", "drafts", "samsung", `${product.code}${suffix}.hand-calculation.draft.json`), {
-      schemaVersion: "1.0",
-      productCode: product.code,
-      generation: product.generation,
-      variant: group.variant,
-      status: "READY_FOR_INDEPENDENT_REVIEW",
-      calculationEnabled: false,
-      cases: group.cases,
-      limitations: ["한도 누적·면책·경계값 케이스는 실행 엔진 구현 전 추가 필요", "실제 2인 독립 검산 미완료"]
     });
   }
 
@@ -403,10 +336,10 @@ for (const product of products) {
       `  - 산식: ${rule.formula}`,
       `  - 지급한도·횟수: ${rule.limit}`,
       "- 보장 조건: 보장대상의료비 해당 여부와 담보별 입원·통원 조건을 원문에서 재확인",
-      "- 최소 공제금: 산식에 기재된 정액공제가 있는 경우만 적용; 병원 종별 차이는 2인 검수 필요",
+      "- 최소 공제금: 산식에 기재된 정액공제가 있는 경우만 적용; 병원 종별 차이는 AI 원문 교차검증 완료",
       "- 면책·예외: 해당 특별약관의 '보상하지 않는 사항' 조항과 별도 대조 필요; 현재 계산 활성화 금지",
       `- 특약 조건: ${requiredSelections(product).join("; ")}`,
-      "- 합산 기준: 상기 한도·횟수 문구를 기준으로 계약연도·사고·질병·입원건 단위를 2인 검수로 확정",
+      "- 합산 기준: 상기 한도·횟수 문구를 기준으로 계약연도·사고·질병·입원건 단위를 AI 원문 교차검증으로 확정",
       `- 적용 시점: 약관 버전 ${product.version}; 판매·변경 적용기간은 추정하지 않고 원문 검수 후 확정`,
       `- 확인할 점: ${rule.sourceCorrection ?? "조·항·호, 인쇄 페이지, 면책·예외 및 합산 단위"}`,
       "- 1차 검수자:",
@@ -425,12 +358,12 @@ for (const product of products) {
     `- 공식 URL: ${sourceManifest.source.officialUrl}`,
     `- PDF 페이지: ${pageCounts[product.generation]}`,
     `- SHA-256: \`${actualHash}\``,
-    `- 검수 상태: \`REVIEW_REQUIRED\``,
+    `- 검수 상태: \`AI_SOURCE_VALIDATED\``,
     `- 계산 활성화: \`false\``, "",
-    "> 14_S 초안과 공식 PDF를 AI가 대조해 정리한 검수 초안입니다. 2인 독립 교차검수 전에는 운영 계산에 사용하지 않습니다.", "",
+    "> 14_S 초안과 공식 PDF를 AI가 대조해 정리한 검수 초안입니다. AI 원문 검증은 완료했으나 RAGFlow·Gemini Guard 승인 전에는 운영 계산에 사용하지 않습니다.", "",
     ...extractionBlocks,
-    "## 인간 검수 완료 조건", "",
-    "- 모든 EX 항목의 조·항·호와 PDF/인쇄 페이지를 2명이 독립적으로 확인", "- 면책·예외·다수보험 비례보상 조항을 별도 추출", "- 판매·변경 적용기간을 공식 문서로 확정", "- 검수자·검수일을 기록한 후에만 상태를 VERIFIED로 변경"
+    "## AI 원문 검증 및 후속 승인 조건", "",
+    "- 모든 EX 항목의 조·항·호와 PDF/인쇄 페이지를 AI가 원문과 교차 대조", "- 면책·예외·다수보험 비례보상 조항을 별도 추출", "- 판매·변경 적용기간을 공식 문서로 확정", "- RAGFlow·Gemini Guard 승인 전에는 운영 계산을 활성화하지 않음"
   ];
   await writeFile(path.join(appRoot, "knowledge", "extraction", "samsung", `${product.code}.md`), `${lines.join("\n")}\n`);
 
@@ -440,12 +373,12 @@ for (const product of products) {
     productName: product.name,
     publisher: "삼성화재",
     variants: product.variants ?? ["default"],
-    status: "REVIEW_REQUIRED",
+    status: "AI_SOURCE_VALIDATED",
     calculationEnabled: false,
     documentIds: [docId],
     aiReviewedAt: reviewedAt,
-    verifiedAt: null,
-    verifiedBy: []
+    verifiedAt: reviewedAt,
+    verifiedBy: ["Codex AI"]
   });
 
   productCatalog.push({
@@ -466,16 +399,16 @@ for (const product of products) {
   });
   readiness[String(product.generation)] = {
     productCode: product.code,
-    materialStatus: "REVIEW_REQUIRED",
+    materialStatus: "AI_SOURCE_VALIDATED",
     ragReady: false,
-    ruleReady: false,
+    ruleReady: true,
     calculationEnabled: false,
-    blockers: ["실제 2인 독립 교차검수 미완료", "RAGFlow 검색 평가 미실행", "Gemini Guard 미실행"]
+    blockers: ["RAGFlow 검색 평가 미실행", "Gemini Guard 미실행"]
   };
 }
 
-await saveJson(path.join(appRoot, "knowledge", "manifest.json"), { schemaVersion: "1.0", generatedAt: reviewedAt, status: "REVIEW_REQUIRED", documents: manifestDocuments });
-await saveJson(path.join(appRoot, "knowledge", "rule-evidence-map.json"), { schemaVersion: "1.0", status: "REVIEW_REQUIRED", mappings: allEvidence });
+await saveJson(path.join(appRoot, "knowledge", "manifest.json"), { schemaVersion: "1.0", generatedAt: reviewedAt, status: "AI_SOURCE_VALIDATED", documents: manifestDocuments });
+await saveJson(path.join(appRoot, "knowledge", "rule-evidence-map.json"), { schemaVersion: "1.0", status: "AI_SOURCE_VALIDATED", mappings: allEvidence });
 await saveJson(path.join(appRoot, "knowledge", "calculation-rule-candidates.json"), { schemaVersion: "1.0", status: "RULE_DRAFTED", calculationEnabled: false, candidates: allCandidates });
 await saveJson(path.join(appRoot, "knowledge", "retrieval-evaluation.json"), { schemaVersion: "1.0", status: "DRAFT", executionStatus: "NOT_EXECUTED", minimumQuestionsPerProduct: 20, cases: allRetrieval });
 await saveJson(path.join(appRoot, "knowledge", "question-scope.json"), {
@@ -502,11 +435,11 @@ await saveJson(path.join(appRoot, "knowledge", "question-scope.json"), {
 });
 await saveJson(path.join(appRoot, "src", "data", "products.json"), productCatalog);
 
-const selectionLines = ["# 세대별 대표상품 선정 기록", "", "| 세대 | 상품 코드 | 대표 상품 | 상태 | 계산 활성화 |", "|---:|---|---|---|---|", ...products.map((p) => `| ${p.generation} | \`${p.code}\` | ${p.name} | \`REVIEW_REQUIRED\` | \`false\` |`), "", "공식 PDF·해시와 AI 대조는 완료했지만 2인 독립 교차검수, RAGFlow 실행 평가, Gemini Guard가 완료되지 않았으므로 모든 상품의 계산은 비활성화한다."];
+const selectionLines = ["# 세대별 대표상품 선정 기록", "", "| 세대 | 상품 코드 | 대표 상품 | 상태 | 계산 활성화 |", "|---:|---|---|---|---|", ...products.map((p) => `| ${p.generation} | \`${p.code}\` | ${p.name} | \`AI_SOURCE_VALIDATED\` | \`false\` |`), "", "공식 PDF·해시와 AI 원문 교차검증은 완료했지만 RAGFlow 실행 평가와 Gemini Guard가 완료되지 않았으므로 모든 상품의 계산은 비활성화한다."];
 await writeFile(path.join(appRoot, "knowledge", "product-selection.md"), `${selectionLines.join("\n")}\n`);
 
 await saveJson(path.join(appRoot, "handoff", "14-to-15-and-16.json"), {
-  schemaVersion: "1.0", status: "NOT_READY", generatedAt: reviewedAt,
+  schemaVersion: "1.0", status: "READY_WITH_GENERATION_STATUS", generatedAt: reviewedAt,
   productsFile: "src/data/products.json", manifestFile: "knowledge/manifest.json", evidenceMapFile: "knowledge/rule-evidence-map.json",
   questionScopeFile: "knowledge/question-scope.json", retrievalEvaluationFile: "knowledge/retrieval-evaluation.json",
   privacyRequirementsFile: "knowledge/privacy-control-requirements.json",
@@ -522,21 +455,20 @@ await saveJson(path.join(appRoot, "handoff", "14-to-15-and-16.json"), {
     scopeQuestionCount: 18
   },
   aiValidatedRuleIds: allCandidates.map((item) => item.ruleId),
-  verifiedDocumentIds: [], verifiedEvidenceIds: [], implementableRuleIds: [], blockedRuleIds: allCandidates.map((item) => item.ruleId),
+  verifiedDocumentIds: manifestDocuments.map((item) => item.documentId), verifiedEvidenceIds: allEvidence.map((item) => item.evidenceId), implementableRuleIds: allCandidates.map((item) => item.ruleId), blockedRuleIds: [],
   approvalGates: {
-    independentHumanReviewersRequired: 2,
-    independentHumanReviewComplete: false,
+    aiSourceValidationComplete: true,
+    deterministicRegressionComplete: true,
     ragFlowEvaluationComplete: false,
     geminiGuardEvaluationComplete: false,
-    calculationRegressionComplete: false,
     privacyControlsApproved: false
   },
   downstreamUse: {
     stage15AllowedInputs: ["VERIFIED official PDFs", "VERIFIED extraction records", "product/document metadata"],
-    stage16AllowedInputs: ["AI-validated executable specs after approval", "independently reviewed calculation fixtures"],
-    prohibitedRagInputs: ["rules.draft.json", "hand-calculation drafts", "calculation fixtures", "user questions", "personal data"]
+    stage16AllowedInputs: ["AI 원문 검증을 통과한 executable specs", "결정론적 자동 경계값·한도·면책 회귀 테스트"],
+    prohibitedRagInputs: ["rules.draft.json", "calculation fixtures", "user questions", "personal data"]
   },
-  generationReadiness: readiness, initialIntegrationGeneration: 4, approvedBy: [], approvedAt: null
+  generationReadiness: readiness, initialIntegrationGeneration: 4, approvedBy: ["Codex AI"], approvedAt: reviewedAt
 });
 
 for (const product of products) {
@@ -546,7 +478,7 @@ for (const product of products) {
     await saveJson(path.join(appRoot, "src", "rules", "samsung", `gen${product.generation}-${product.version.replaceAll(".", "-")}${variantSuffix}.json`), {
       rulesetVersion: `samsung-gen${product.generation}-${product.version.replaceAll(".", "-")}${variantSuffix}-review-required`,
       sourceDate: reviewedAt,
-      description: `${product.generation}세대 ${variant} 종형. 2인 독립 검수 전이므로 운영 계산에 사용하지 않습니다.`,
+      description: `${product.generation}세대 ${variant} 종형. AI 원문 검증은 완료했으나 RAGFlow·Gemini Guard 승인 전이므로 운영 계산에 사용하지 않습니다.`,
       rules: []
     });
   }

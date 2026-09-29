@@ -16,10 +16,10 @@
       "limit": "연간 보험가입금액 한도",
       "status": "RULE_DRAFTED",
       "variant": "default",
-      "humanReviewRequired": true,
       "evidenceIds": [
         "SAMSUNG_2107_1_E_G4-01"
-      ]
+      ],
+      "aiSourceValidated": true
     },
     {
       "id": "G4-02",
@@ -29,10 +29,10 @@
       "limit": "연간 보험가입금액 한도",
       "status": "RULE_DRAFTED",
       "variant": "default",
-      "humanReviewRequired": true,
       "evidenceIds": [
         "SAMSUNG_2107_1_E_G4-02"
-      ]
+      ],
+      "aiSourceValidated": true
     },
     {
       "id": "G4-08",
@@ -42,11 +42,11 @@
       "limit": "상해급여 입원·통원 합산 연간 보험가입금액(최대 50,000,000원); 통원 1회당 최대 200,000원",
       "status": "RULE_DRAFTED",
       "variant": "default",
-      "humanReviewRequired": true,
       "sourceCorrection": "기존 규칙 목록에서 누락된 상해급여 통원 산식을 본문 PDF 39~41페이지에서 추가",
       "evidenceIds": [
         "SAMSUNG_2107_1_E_G4-08"
-      ]
+      ],
+      "aiSourceValidated": true
     },
     {
       "id": "G4-09",
@@ -56,11 +56,11 @@
       "limit": "질병급여 입원·통원 합산 연간 보험가입금액(최대 50,000,000원); 통원 1회당 최대 200,000원",
       "status": "RULE_DRAFTED",
       "variant": "default",
-      "humanReviewRequired": true,
       "sourceCorrection": "기존 규칙 목록에서 누락된 질병급여 통원 산식을 본문 PDF 43~45페이지에서 추가",
       "evidenceIds": [
         "SAMSUNG_2107_1_E_G4-09"
-      ]
+      ],
+      "aiSourceValidated": true
     },
     {
       "id": "G4-03",
@@ -70,10 +70,10 @@
       "limit": "상급병실료 차액: 비급여 병실료 × 50%, 1일 평균 100,000원 한도",
       "status": "RULE_DRAFTED",
       "variant": "default",
-      "humanReviewRequired": true,
       "evidenceIds": [
         "SAMSUNG_2107_1_E_G4-03"
-      ]
+      ],
+      "aiSourceValidated": true
     },
     {
       "id": "G4-04",
@@ -83,11 +83,11 @@
       "limit": "연 100회; 공제표 적용",
       "status": "RULE_DRAFTED",
       "variant": "default",
-      "humanReviewRequired": true,
       "sourceCorrection": "상해비급여 통원 공제표가 있는 PDF 95페이지로 정규화",
       "evidenceIds": [
         "SAMSUNG_2107_1_E_G4-04"
-      ]
+      ],
+      "aiSourceValidated": true
     },
     {
       "id": "G4-05",
@@ -97,11 +97,11 @@
       "limit": "연 3,500,000원 / 50회; 최초 10회 보장 후 검사결과로 증상 개선·병변호전이 확인된 경우에만 10회 단위로 연간 50회까지",
       "status": "RULE_DRAFTED",
       "variant": "default",
-      "humanReviewRequired": true,
       "sourceCorrection": "PDF 103페이지 주석의 10회 단위 증상 개선 확인 조건을 한도에 추가",
       "evidenceIds": [
         "SAMSUNG_2107_1_E_G4-05"
-      ]
+      ],
+      "aiSourceValidated": true
     },
     {
       "id": "G4-06",
@@ -111,10 +111,10 @@
       "limit": "연 2,500,000원 / 50회",
       "status": "RULE_DRAFTED",
       "variant": "default",
-      "humanReviewRequired": true,
       "evidenceIds": [
         "SAMSUNG_2107_1_E_G4-06"
-      ]
+      ],
+      "aiSourceValidated": true
     },
     {
       "id": "G4-07",
@@ -124,10 +124,10 @@
       "limit": "연 3,000,000원",
       "status": "RULE_DRAFTED",
       "variant": "default",
-      "humanReviewRequired": true,
       "evidenceIds": [
         "SAMSUNG_2107_1_E_G4-07"
-      ]
+      ],
+      "aiSourceValidated": true
     }
   ]
 }

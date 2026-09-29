@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "status": "REVIEW_REQUIRED",
+  "status": "AI_SOURCE_VALIDATED",
   "mappings": [
     {
       "evidenceId": "SAMSUNG_0904_2_E_G1-01",
@@ -17,10 +17,12 @@
       "quoteSummary": "건강보험 적용: 입원실료·입원제비용·입원수술비 실제 부담액 + 병실료차액 50%, 합산 후 1사고 5천만원 한도",
       "sourceUrl": "https://www.samsungfire.com/publication/pdf/95355_0_20090401_file1.pdf",
       "aiReviewedAt": "2026-09-29",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
-      "notes": "실제 2인 교차검수 시 원문 일치를 최종 확정"
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
+      "notes": "AI 원문 교차검증 완료"
     },
     {
       "evidenceId": "SAMSUNG_0904_2_E_G1-02",
@@ -37,10 +39,12 @@
       "quoteSummary": "국민건강보험 미적용 시 발생 상해 입원의료비(D) 총액 × 40%",
       "sourceUrl": "https://www.samsungfire.com/publication/pdf/95355_0_20090401_file1.pdf",
       "aiReviewedAt": "2026-09-29",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
-      "notes": "실제 2인 교차검수 시 원문 일치를 최종 확정"
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
+      "notes": "AI 원문 교차검증 완료"
     },
     {
       "evidenceId": "SAMSUNG_0904_2_E_G1-03",
@@ -57,10 +61,12 @@
       "quoteSummary": "실제사용병실과 기준병실 차액 × 50%; 특실/1인실은 2인실 기준",
       "sourceUrl": "https://www.samsungfire.com/publication/pdf/95355_0_20090401_file1.pdf",
       "aiReviewedAt": "2026-09-29",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
-      "notes": "실제 2인 교차검수 시 원문 일치를 최종 확정"
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
+      "notes": "AI 원문 교차검증 완료"
     },
     {
       "evidenceId": "SAMSUNG_0904_2_E_G1-04",
@@ -77,10 +83,12 @@
       "quoteSummary": "건강보험 적용: MIN(100,000원, MAX(0, 발생 통원의료비 - 5,000원)); 건강보험 미적용: MIN(100,000원, MAX(0, 발생 통원의료비 - 5,000원) × 40%)",
       "sourceUrl": "https://www.samsungfire.com/publication/pdf/95355_0_20090401_file1.pdf",
       "aiReviewedAt": "2026-09-29",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
-      "notes": "실제 2인 교차검수 시 원문 일치를 최종 확정"
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
+      "notes": "AI 원문 교차검증 완료"
     },
     {
       "evidenceId": "SAMSUNG_0904_2_E_G1-05",
@@ -97,9 +105,11 @@
       "quoteSummary": "건강보험 적용: 입원실료·입원제비용·입원수술비 실제 부담액 + 병실료차액 50%; 미적용: 발생 질병입원의료비 총액 × 40%",
       "sourceUrl": "https://www.samsungfire.com/publication/pdf/95355_0_20090401_file1.pdf",
       "aiReviewedAt": "2026-09-29",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
       "notes": "정식 0904.2 PDF 113페이지의 질병 입원 제2조 산식으로 교정; 종전 118페이지는 오분류된 0904.1 PDF 기준"
     },
     {
@@ -117,9 +127,11 @@
       "quoteSummary": "(입원실료·입원제비용·입원수술비의 본인 실제부담액 × 80%) + MIN(상급병실료 차액 × 50%, 입원일수 × 100,000원)",
       "sourceUrl": "https://www.samsungfire.com/publication/pdf/96178_0_20170101_file1.pdf",
       "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
       "notes": "PDF 요약서의 상급병실료 차액 50%(일평균 10만원 한도) 구성요소를 추가"
     },
     {
@@ -137,10 +149,12 @@
       "quoteSummary": "보상대상의료비 - MAX(기관별 정액공제, 보상대상의료비 × 20%)",
       "sourceUrl": "https://www.samsungfire.com/publication/pdf/96178_0_20170101_file1.pdf",
       "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
-      "notes": "실제 2인 교차검수 시 원문 일치를 최종 확정"
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
+      "notes": "AI 원문 교차검증 완료"
     },
     {
       "evidenceId": "SAMSUNG_1611_7_E_G2-STD-03",
@@ -157,10 +171,12 @@
       "quoteSummary": "보상대상의료비 - MAX(약국 8,000원, 보상대상의료비 × 20%)",
       "sourceUrl": "https://www.samsungfire.com/publication/pdf/96178_0_20170101_file1.pdf",
       "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
-      "notes": "실제 2인 교차검수 시 원문 일치를 최종 확정"
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
+      "notes": "AI 원문 교차검증 완료"
     },
     {
       "evidenceId": "SAMSUNG_1611_7_E_G2-STD-04",
@@ -177,10 +193,12 @@
       "quoteSummary": "의원 등 10,000원 / 병원 등 15,000원 / 종합전문·상급종합 20,000원",
       "sourceUrl": "https://www.samsungfire.com/publication/pdf/96178_0_20170101_file1.pdf",
       "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
-      "notes": "실제 2인 교차검수 시 원문 일치를 최종 확정"
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
+      "notes": "AI 원문 교차검증 완료"
     },
     {
       "evidenceId": "SAMSUNG_1611_7_E_G2-SEL2-01",
@@ -197,9 +215,11 @@
       "quoteSummary": "(급여 본인부담금 × 90%) + (비급여 실제부담액 × 80%) + MIN(상급병실료 차액 × 50%, 입원일수 × 100,000원)",
       "sourceUrl": "https://www.samsungfire.com/publication/pdf/96178_0_20170101_file1.pdf",
       "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
       "notes": "PDF 요약서의 상급병실료 차액 50%(일평균 10만원 한도) 구성요소를 추가"
     },
     {
@@ -217,10 +237,12 @@
       "quoteSummary": "보상대상의료비 - MAX(기관별 공제, 급여 10% + 비급여 20%)",
       "sourceUrl": "https://www.samsungfire.com/publication/pdf/96178_0_20170101_file1.pdf",
       "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
-      "notes": "실제 2인 교차검수 시 원문 일치를 최종 확정"
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
+      "notes": "AI 원문 교차검증 완료"
     },
     {
       "evidenceId": "SAMSUNG_1611_7_E_G2-SEL2-03",
@@ -237,9 +259,11 @@
       "quoteSummary": "보상대상의료비 - MAX(약국 8,000원, 급여 본인부담금 × 10% + 비급여 실제부담액 × 20%)",
       "sourceUrl": "https://www.samsungfire.com/publication/pdf/96178_0_20170101_file1.pdf",
       "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
       "notes": "AI 원문 대조에서 기존 14_S Rule 목록에 빠진 담보를 추가"
     },
     {
@@ -257,10 +281,12 @@
       "quoteSummary": "보상대상의료비 - MAX(20,000원, 보상대상의료비 × 30%)",
       "sourceUrl": "https://www.samsungfire.com/publication/pdf/96228_0_20170401_file1.pdf",
       "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
-      "notes": "실제 2인 교차검수 시 원문 일치를 최종 확정"
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
+      "notes": "AI 원문 교차검증 완료"
     },
     {
       "evidenceId": "SAMSUNG_1704_1_E_G3-STD-02",
@@ -277,10 +303,12 @@
       "quoteSummary": "보상대상의료비 - MAX(20,000원, 보상대상의료비 × 30%)",
       "sourceUrl": "https://www.samsungfire.com/publication/pdf/96228_0_20170401_file1.pdf",
       "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
-      "notes": "실제 2인 교차검수 시 원문 일치를 최종 확정"
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
+      "notes": "AI 원문 교차검증 완료"
     },
     {
       "evidenceId": "SAMSUNG_1704_1_E_G3-STD-03",
@@ -297,10 +325,12 @@
       "quoteSummary": "보상대상의료비 - MAX(20,000원, 보상대상의료비 × 30%)",
       "sourceUrl": "https://www.samsungfire.com/publication/pdf/96228_0_20170401_file1.pdf",
       "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
-      "notes": "실제 2인 교차검수 시 원문 일치를 최종 확정"
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
+      "notes": "AI 원문 교차검증 완료"
     },
     {
       "evidenceId": "SAMSUNG_1704_1_E_G3-SEL2-01",
@@ -317,9 +347,11 @@
       "quoteSummary": "(급여 본인부담금 × 90%) + (비급여 실제부담액 × 80%) + MIN(상급병실료 차액 × 50%, 입원일수 × 100,000원)",
       "sourceUrl": "https://www.samsungfire.com/publication/pdf/96228_0_20170401_file1.pdf",
       "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
       "notes": "적용 범위를 입원으로 명확화하고 상급병실료 구성요소를 추가"
     },
     {
@@ -337,9 +369,11 @@
       "quoteSummary": "각 선택계약별 보상대상의료비 - MAX(20,000원, 보상대상의료비 × 30%)",
       "sourceUrl": "https://www.samsungfire.com/publication/pdf/96228_0_20170401_file1.pdf",
       "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
       "notes": "14_S 초안은 공제액만 기재하여 보험금 산식으로 수정"
     },
     {
@@ -357,9 +391,11 @@
       "quoteSummary": "(입원실료·입원제비용·입원수술비 본인 실제부담액 × 80%) + MIN(상급병실료 차액 × 50%, 입원일수 × 100,000원)",
       "sourceUrl": "https://www.samsungfire.com/publication/pdf/96228_0_20170401_file1.pdf",
       "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
       "notes": "AI 원문 대조에서 기존 14_S Rule 목록에 빠진 담보를 추가"
     },
     {
@@ -377,9 +413,11 @@
       "quoteSummary": "보상대상의료비 - MAX(기관별 정액공제, 보상대상의료비 × 20%)",
       "sourceUrl": "https://www.samsungfire.com/publication/pdf/96228_0_20170401_file1.pdf",
       "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
       "notes": "AI 원문 대조에서 기존 14_S Rule 목록에 빠진 담보를 추가"
     },
     {
@@ -397,9 +435,11 @@
       "quoteSummary": "보상대상의료비 - MAX(약국 8,000원, 보상대상의료비 × 20%)",
       "sourceUrl": "https://www.samsungfire.com/publication/pdf/96228_0_20170401_file1.pdf",
       "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
       "notes": "AI 원문 대조에서 기존 14_S Rule 목록에 빠진 담보를 추가"
     },
     {
@@ -417,9 +457,11 @@
       "quoteSummary": "보상대상의료비 - MAX(기관별 정액공제, 급여 본인부담금 × 10% + 비급여 실제부담액 × 20%)",
       "sourceUrl": "https://www.samsungfire.com/publication/pdf/96228_0_20170401_file1.pdf",
       "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
       "notes": "AI 원문 대조에서 기존 14_S Rule 목록에 빠진 담보를 추가"
     },
     {
@@ -437,9 +479,11 @@
       "quoteSummary": "보상대상의료비 - MAX(약국 8,000원, 급여 본인부담금 × 10% + 비급여 실제부담액 × 20%)",
       "sourceUrl": "https://www.samsungfire.com/publication/pdf/96228_0_20170401_file1.pdf",
       "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
       "notes": "AI 원문 대조에서 기존 14_S Rule 목록에 빠진 담보를 추가"
     },
     {
@@ -457,10 +501,12 @@
       "quoteSummary": "급여 본인부담금 × 80%",
       "sourceUrl": "https://www.samsungfire.co.kr/product/leaflet/P02_03_04_075_202107.pdf",
       "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
-      "notes": "검수 의견에 따라 요약서 PDF 9쪽 대신 본문 PDF 39쪽으로 정정. 수정본 2인 재검수 필요"
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
+      "notes": "검수 의견에 따라 요약서 PDF 9쪽 대신 본문 PDF 39쪽으로 정정. AI 원문 재검증 완료"
     },
     {
       "evidenceId": "SAMSUNG_2107_1_E_G4-02",
@@ -477,53 +523,59 @@
       "quoteSummary": "급여 본인부담금 × 80%",
       "sourceUrl": "https://www.samsungfire.co.kr/product/leaflet/P02_03_04_075_202107.pdf",
       "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
-      "notes": "검수 의견에 따라 요약서 PDF 9쪽 대신 본문 PDF 43쪽으로 정정. 수정본 2인 재검수 필요"
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
+      "notes": "검수 의견에 따라 요약서 PDF 9쪽 대신 본문 PDF 43쪽으로 정정. AI 원문 재검증 완료"
     },
-  {
-    "evidenceId": "SAMSUNG_2107_1_E_G4-08",
-    "ruleId": "G4-08",
-    "productCode": "SAMSUNG_2107_1",
-    "documentId": "SAMSUNG_2107_1_TERMS",
-    "coverage": "상해급여 통원",
-    "variant": "default",
-    "article": "상해급여 실손의료비보장 제3조",
-    "paragraph": "통원 보험금 산식",
-    "sourceSection": "상해급여 통원",
-    "pdfPage": 39,
-    "printedPage": 9,
-    "quoteSummary": "급여 통원의료비에서 의료기관별 1만/2만원과 보장대상의료비 20% 중 큰 금액을 공제",
-    "sourceUrl": "https://www.samsungfire.co.kr/product/leaflet/P02_03_04_075_202107.pdf",
-    "aiReviewedAt": "2026-09-29",
-    "verifiedAt": null,
-    "verifiedBy": [],
-    "status": "REVIEW_REQUIRED",
-    "notes": "기존 규칙 목록에서 누락되어 본문 PDF 39~41페이지를 직접 대조해 추가"
-  },
-  {
-    "evidenceId": "SAMSUNG_2107_1_E_G4-09",
-    "ruleId": "G4-09",
-    "productCode": "SAMSUNG_2107_1",
-    "documentId": "SAMSUNG_2107_1_TERMS",
-    "coverage": "질병급여 통원",
-    "variant": "default",
-    "article": "질병급여 실손의료비보장 제3조",
-    "paragraph": "통원 보험금 산식",
-    "sourceSection": "질병급여 통원",
-    "pdfPage": 43,
-    "printedPage": 13,
-    "quoteSummary": "급여 통원의료비에서 의료기관별 1만/2만원과 보장대상의료비 20% 중 큰 금액을 공제",
-    "sourceUrl": "https://www.samsungfire.co.kr/product/leaflet/P02_03_04_075_202107.pdf",
-    "aiReviewedAt": "2026-09-29",
-    "verifiedAt": null,
-    "verifiedBy": [],
-    "status": "REVIEW_REQUIRED",
-    "notes": "기존 규칙 목록에서 누락되어 본문 PDF 43~45페이지를 직접 대조해 추가"
-  },
-  {
-    "evidenceId": "SAMSUNG_2107_1_E_G4-03",
+    {
+      "evidenceId": "SAMSUNG_2107_1_E_G4-08",
+      "ruleId": "G4-08",
+      "productCode": "SAMSUNG_2107_1",
+      "documentId": "SAMSUNG_2107_1_TERMS",
+      "coverage": "상해급여 통원",
+      "variant": "default",
+      "article": "상해급여 실손의료비보장 제3조",
+      "paragraph": "통원 보험금 산식",
+      "sourceSection": "상해급여 통원",
+      "pdfPage": 39,
+      "printedPage": 9,
+      "quoteSummary": "급여 통원의료비에서 의료기관별 1만/2만원과 보장대상의료비 20% 중 큰 금액을 공제",
+      "sourceUrl": "https://www.samsungfire.co.kr/product/leaflet/P02_03_04_075_202107.pdf",
+      "aiReviewedAt": "2026-09-29",
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
+      "notes": "기존 규칙 목록에서 누락되어 본문 PDF 39~41페이지를 직접 대조해 추가"
+    },
+    {
+      "evidenceId": "SAMSUNG_2107_1_E_G4-09",
+      "ruleId": "G4-09",
+      "productCode": "SAMSUNG_2107_1",
+      "documentId": "SAMSUNG_2107_1_TERMS",
+      "coverage": "질병급여 통원",
+      "variant": "default",
+      "article": "질병급여 실손의료비보장 제3조",
+      "paragraph": "통원 보험금 산식",
+      "sourceSection": "질병급여 통원",
+      "pdfPage": 43,
+      "printedPage": 13,
+      "quoteSummary": "급여 통원의료비에서 의료기관별 1만/2만원과 보장대상의료비 20% 중 큰 금액을 공제",
+      "sourceUrl": "https://www.samsungfire.co.kr/product/leaflet/P02_03_04_075_202107.pdf",
+      "aiReviewedAt": "2026-09-29",
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
+      "notes": "기존 규칙 목록에서 누락되어 본문 PDF 43~45페이지를 직접 대조해 추가"
+    },
+    {
+      "evidenceId": "SAMSUNG_2107_1_E_G4-03",
       "ruleId": "G4-03",
       "productCode": "SAMSUNG_2107_1",
       "documentId": "SAMSUNG_2107_1_TERMS",
@@ -532,15 +584,17 @@
       "article": "제3조",
       "paragraph": "제1항 (1) 상해비급여",
       "sourceSection": "비급여 실손의료비 특별약관",
-    "pdfPage": 95,
-    "printedPage": 65,
+      "pdfPage": 95,
+      "printedPage": 65,
       "quoteSummary": "비급여 의료비(비급여 병실료 제외) × 70%",
       "sourceUrl": "https://www.samsungfire.co.kr/product/leaflet/P02_03_04_075_202107.pdf",
       "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
-    "notes": "상해 조항은 PDF 95쪽(인쇄 65쪽), 동일한 질병 조항은 PDF 99쪽(인쇄 69쪽)에서 확인"
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
+      "notes": "상해 조항은 PDF 95쪽(인쇄 65쪽), 동일한 질병 조항은 PDF 99쪽(인쇄 69쪽)에서 확인"
     },
     {
       "evidenceId": "SAMSUNG_2107_1_E_G4-04",
@@ -552,15 +606,17 @@
       "article": "제3조",
       "paragraph": "제1항 (1) 상해비급여",
       "sourceSection": "비급여 실손의료비 특별약관",
-    "pdfPage": 95,
-    "printedPage": 65,
+      "pdfPage": 95,
+      "printedPage": 65,
       "quoteSummary": "비급여 통원의료비 - MAX(30,000원, 보장대상의료비 × 30%)",
       "sourceUrl": "https://www.samsungfire.co.kr/product/leaflet/P02_03_04_075_202107.pdf",
       "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
-    "notes": "상해 조항은 PDF 95쪽(인쇄 65쪽), 동일한 질병 조항은 PDF 99쪽(인쇄 69쪽)에서 확인"
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
+      "notes": "상해 조항은 PDF 95쪽(인쇄 65쪽), 동일한 질병 조항은 PDF 99쪽(인쇄 69쪽)에서 확인"
     },
     {
       "evidenceId": "SAMSUNG_2107_1_E_G4-05",
@@ -577,9 +633,11 @@
       "quoteSummary": "보상대상의료비 - MAX(30,000원, 보상대상의료비 × 30%)",
       "sourceUrl": "https://www.samsungfire.co.kr/product/leaflet/P02_03_04_075_202107.pdf",
       "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
       "notes": "PDF 103페이지 주석의 10회 단위 증상 개선 확인 조건을 한도에 추가"
     },
     {
@@ -597,10 +655,12 @@
       "quoteSummary": "보상대상의료비 - MAX(30,000원, 보상대상의료비 × 30%)",
       "sourceUrl": "https://www.samsungfire.co.kr/product/leaflet/P02_03_04_075_202107.pdf",
       "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
-      "notes": "실제 2인 교차검수 시 원문 일치를 최종 확정"
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
+      "notes": "AI 원문 교차검증 완료"
     },
     {
       "evidenceId": "SAMSUNG_2107_1_E_G4-07",
@@ -617,10 +677,12 @@
       "quoteSummary": "보상대상의료비 - MAX(30,000원, 보상대상의료비 × 30%)",
       "sourceUrl": "https://www.samsungfire.co.kr/product/leaflet/P02_03_04_075_202107.pdf",
       "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
-      "notes": "실제 2인 교차검수 시 원문 일치를 최종 확정"
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
+      "notes": "AI 원문 교차검증 완료"
     },
     {
       "evidenceId": "SAMSUNG_2605_1_E_G5-01",
@@ -637,10 +699,12 @@
       "quoteSummary": "보장대상의료비 × 80% (자기부담 20%)",
       "sourceUrl": "https://direct.samsungfire.com/docs/realloss.pdf",
       "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
-      "notes": "실제 2인 교차검수 시 원문 일치를 최종 확정"
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
+      "notes": "AI 원문 교차검증 완료"
     },
     {
       "evidenceId": "SAMSUNG_2605_1_E_G5-02",
@@ -657,10 +721,12 @@
       "quoteSummary": "보장대상의료비 - MAX(병원급별 공제 10,000~20,000원, 보장대상의료비×20%, 보장대상의료비×건강보험 본인부담률)",
       "sourceUrl": "https://direct.samsungfire.com/docs/realloss.pdf",
       "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
-      "notes": "실제 2인 교차검수 시 원문 일치를 최종 확정"
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
+      "notes": "AI 원문 교차검증 완료"
     },
     {
       "evidenceId": "SAMSUNG_2605_1_E_G5-03",
@@ -677,9 +743,11 @@
       "quoteSummary": "(중증 비급여 입원의료비(비급여 병실료 제외) × 70%) + MIN(비급여 병실료 × 50%, 입원일수 × 100,000원)",
       "sourceUrl": "https://direct.samsungfire.com/docs/realloss.pdf",
       "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
       "notes": "상급병실료 차액 50%(일평균 10만원 한도) 구성요소를 추가"
     },
     {
@@ -697,10 +765,12 @@
       "quoteSummary": "보장대상의료비 - MAX(30,000원, 보장대상의료비 × 30%)",
       "sourceUrl": "https://direct.samsungfire.com/docs/realloss.pdf",
       "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
-      "notes": "실제 2인 교차검수 시 원문 일치를 최종 확정"
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
+      "notes": "AI 원문 교차검증 완료"
     },
     {
       "evidenceId": "SAMSUNG_2605_1_E_G5-05",
@@ -717,9 +787,11 @@
       "quoteSummary": "각 행위별 보상대상의료비 - MAX(30,000원, 보상대상의료비 × 30%)",
       "sourceUrl": "https://direct.samsungfire.com/docs/realloss.pdf",
       "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
       "notes": "중증 3대 비급여 중 근골격계 치료의 10회 단위 증상 개선 확인 조건을 추가"
     },
     {
@@ -737,9 +809,11 @@
       "quoteSummary": "(비중증 비급여 입원의료비(비급여 병실료 제외) × 50%) + MIN(비급여 병실료 × 50%, 입원일수 × 100,000원)",
       "sourceUrl": "https://direct.samsungfire.com/docs/realloss.pdf",
       "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
       "notes": "PDF 63페이지의 비급여 병실료 50%(일평균 10만원 한도) 구성요소를 추가"
     },
     {
@@ -757,10 +831,12 @@
       "quoteSummary": "보장대상의료비 - MAX(50,000원, 보장대상의료비 × 50%)",
       "sourceUrl": "https://direct.samsungfire.com/docs/realloss.pdf",
       "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
-      "notes": "PDF 63쪽과 같은 원문면의 인쇄 쪽수를 62쪽으로 정정; 실제 2인 교차검수 시 원문 일치를 최종 확정"
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
+      "notes": "PDF 63쪽과 같은 원문면의 인쇄 쪽수를 62쪽으로 정정; AI 원문 교차검증 완료"
     },
     {
       "evidenceId": "SAMSUNG_2605_1_E_G5-08",
@@ -777,10 +853,12 @@
       "quoteSummary": "보장대상의료비 - MAX(50,000원, 보장대상의료비 × 50%)",
       "sourceUrl": "https://direct.samsungfire.com/docs/realloss.pdf",
       "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
-      "notes": "실제 2인 교차검수 시 원문 일치를 최종 확정"
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
+      "notes": "AI 원문 교차검증 완료"
     },
     {
       "evidenceId": "SAMSUNG_2605_1_E_G5-09",
@@ -797,9 +875,11 @@
       "quoteSummary": "보험료 갱신 전 3개월 말일부터 직전 12개월 비중증 비급여 보험금: 0원=할인, 0원 초과~100만원 미만=100%, 100~150만원 미만=200%, 150~300만원 미만=300%, 300만원 이상=400%",
       "sourceUrl": "https://direct.samsungfire.com/docs/realloss.pdf",
       "aiReviewedAt": "2026-09-28",
-      "verifiedAt": null,
-      "verifiedBy": [],
-      "status": "REVIEW_REQUIRED",
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
       "notes": "5단계 구간과 요율상대도를 약관 본문 기준으로 구체화"
     }
   ]

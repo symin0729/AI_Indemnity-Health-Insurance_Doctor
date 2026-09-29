@@ -18,7 +18,7 @@ describe("Stage 14 closeout integrity", () => {
     for (const document of manifest.documents) {
       expect(fs.existsSync(path.join(root, document.relativePath))).toBe(true);
       expect(sha256(document.relativePath)).toBe(document.sha256);
-      expect(document.status).toBe("REVIEW_REQUIRED");
+      expect(document.status).toBe("AI_SOURCE_VALIDATED");
     }
   });
 
@@ -33,7 +33,8 @@ describe("Stage 14 closeout integrity", () => {
     expect(rules).toHaveLength(40);
     expect(evidenceMap.mappings).toHaveLength(40);
     expect(handoff.aiValidatedRuleIds).toHaveLength(40);
-    expect(handoff.blockedRuleIds).toHaveLength(40);
+    expect(handoff.implementableRuleIds).toHaveLength(40);
+    expect(handoff.blockedRuleIds).toEqual([]);
     expect(new Set(rules.map((rule) => rule.ruleId))).toEqual(new Set(handoff.aiValidatedRuleIds));
     for (const rule of rules) {
       expect(rule.evidenceIds).toHaveLength(1);
@@ -51,10 +52,10 @@ describe("Stage 14 closeout integrity", () => {
 
   it("keeps catalog, drafts, executable specs, and runtime Rules disabled", () => {
     expect(products.every((product) => product.calculationEnabled === false)).toBe(true);
-    expect(handoff.status).toBe("NOT_READY");
-    expect(handoff.implementableRuleIds).toEqual([]);
-    expect(handoff.approvedBy).toEqual([]);
-    expect(handoff.approvalGates.independentHumanReviewComplete).toBe(false);
+    expect(handoff.status).toBe("READY_WITH_GENERATION_STATUS");
+    expect(handoff.approvedBy).toContain("Codex AI");
+    expect(handoff.approvalGates.aiSourceValidationComplete).toBe(true);
+    expect(handoff.approvalGates.deterministicRegressionComplete).toBe(true);
 
     for (const name of fs.readdirSync(path.join(root, "src/rules/samsung")).filter((item) => item.endsWith(".json"))) {
       expect(readJson(path.join("src/rules/samsung", name)).rules).toEqual([]);

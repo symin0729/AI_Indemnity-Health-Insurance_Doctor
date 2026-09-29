@@ -16,7 +16,7 @@ describe("product rule loader", () => {
     ["SAMSUNG_1704_1", "selected2"],
     ["SAMSUNG_2107_1", "default"],
     ["SAMSUNG_2605_1", "default"],
-  ])("%s/%s는 2인 검수 전에 실행 Rule을 로드하지 않는다", async (productCode, variant) => {
+  ])("%s/%s는 RAG·Guard 승인 전에 운영 Rule을 로드하지 않는다", async (productCode, variant) => {
     const ruleSet = await loadProductRuleSet(productCode, variant);
     expect(ruleSet.rulesetVersion).toContain("review-required");
     expect(ruleSet.rules).toEqual([]);
