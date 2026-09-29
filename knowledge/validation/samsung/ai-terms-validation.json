@@ -1,13 +1,13 @@
 {
   "schemaVersion": "1.0",
-  "validatedAt": "2026-09-28",
+  "validatedAt": "2026-09-29",
   "validator": "Codex AI",
   "status": "AI_VALIDATED_WITH_CORRECTIONS",
   "calculationEnabled": false,
   "scope": {
     "documents": 5,
     "generations": [1, 2, 3, 4, 5],
-    "method": "공식 PDF 페이지별 텍스트 추출 후 Rule 산식·공제·한도·특약 구조 대조"
+    "method": "공식 PDF 페이지별 텍스트 추출 후 Rule 산식·공제·한도·특약 구조 대조; 5세대 일반형·계약전환용 추가 원문 교차 비교"
   },
   "corrections": [
     {"ruleId":"G2-STD-01","result":"CORRECTED","reason":"상급병실료 차액 50%, 1일 평균 10만원 한도 구성요소 누락"},
@@ -17,7 +17,8 @@
     {"ruleId":"G5-03","result":"CORRECTED","reason":"중증 비급여 상급병실료 차액 구성요소 누락"},
     {"ruleId":"G5-05","result":"CORRECTED","reason":"근골격계 치료 최초 10회 이후 증상 개선 확인 조건 누락"},
     {"ruleId":"G5-06","result":"CORRECTED","reason":"비중증 비급여 상급병실료 차액 50%, 1일 평균 10만원 한도 누락"},
-    {"ruleId":"G5-09","result":"CORRECTED","reason":"5단계 보험료 차등의 평가기간·금액구간·요율상대도 구체화"}
+    {"ruleId":"G5-09","result":"CORRECTED","reason":"5단계 보험료 차등의 평가기간·금액구간·요율상대도 구체화"},
+    {"ruleId":"G5-SAFETY","result":"CORRECTED","reason":"5세대 계산 초안에 특약·면책·다수계약·보장기간 및 100회/100일 누적값 확인 차단 추가"}
   ],
   "addedRules": [
     {"ruleId":"G2-SEL2-03","reason":"2세대 선택형II 처방조제비가 외래 Rule에 합쳐져 있어 독립 Rule 추가"},

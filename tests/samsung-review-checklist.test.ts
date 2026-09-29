@@ -30,7 +30,7 @@ describe("Samsung two-person independent review package", () => {
         validationStatus: string;
       }>;
     };
-    expect(review.status).toBe("PENDING_AI_SOURCE_VALIDATION");
+    expect(review.status).toBe("SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING");
     expect(review.calculationEnabled).toBe(false);
     expect(review.sourcePdfCount).toBe(5);
     expect(review.reviewItemCount).toBe(40);
@@ -46,11 +46,7 @@ describe("Samsung two-person independent review package", () => {
       expect(item.pdfSha256).toMatch(/^[a-f0-9]{64}$/);
       expect(fs.existsSync(path.resolve(item.pdfPath))).toBe(true);
       expect(item.calculation.type).toBe(item.calculationType);
-      expect(item.validationStatus).toBe(
-        ["SAMSUNG_0904_2", "SAMSUNG_1611_7", "SAMSUNG_1704_1", "SAMSUNG_2107_1"].includes(item.productCode)
-          ? "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING"
-          : "PENDING_AI_SOURCE_VALIDATION",
-      );
+      expect(item.validationStatus).toBe("SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING");
       expect(item.automatedTestRequirements.length).toBeGreaterThanOrEqual(5);
     }
     expect(new Set(review.reviewItems.map((item) => item.calculationType))).toEqual(new Set([

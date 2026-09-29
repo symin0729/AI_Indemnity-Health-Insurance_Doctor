@@ -4,7 +4,7 @@
   "productCode": "SAMSUNG_2605_1",
   "generation": 5,
   "variant": "default",
-  "status": "PENDING_AI_SOURCE_VALIDATION",
+  "status": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING",
   "calculationEnabled": false,
   "rules": [
     {
@@ -44,7 +44,7 @@
         "pdfPage": 8,
         "printedPage": 7
       },
-      "verificationStatus": "PENDING_AI_SOURCE_VALIDATION"
+      "verificationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING"
     },
     {
       "ruleId": "G5-02",
@@ -86,7 +86,7 @@
         "pdfPage": 8,
         "printedPage": 7
       },
-      "verificationStatus": "PENDING_AI_SOURCE_VALIDATION"
+      "verificationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING"
     },
     {
       "ruleId": "G5-03",
@@ -139,7 +139,7 @@
         "pdfPage": 8,
         "printedPage": 7
       },
-      "verificationStatus": "PENDING_AI_SOURCE_VALIDATION"
+      "verificationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING"
     },
     {
       "ruleId": "G5-04",
@@ -180,7 +180,7 @@
         "pdfPage": 8,
         "printedPage": 7
       },
-      "verificationStatus": "PENDING_AI_SOURCE_VALIDATION"
+      "verificationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING"
     },
     {
       "ruleId": "G5-05",
@@ -221,7 +221,7 @@
         "pdfPage": 9,
         "printedPage": 8
       },
-      "verificationStatus": "PENDING_AI_SOURCE_VALIDATION"
+      "verificationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING"
     },
     {
       "ruleId": "G5-06",
@@ -268,7 +268,7 @@
         "pdfPage": 63,
         "printedPage": 62
       },
-      "verificationStatus": "PENDING_AI_SOURCE_VALIDATION"
+      "verificationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING"
     },
     {
       "ruleId": "G5-07",
@@ -310,7 +310,7 @@
         "pdfPage": 63,
         "printedPage": 62
       },
-      "verificationStatus": "PENDING_AI_SOURCE_VALIDATION"
+      "verificationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING"
     },
     {
       "ruleId": "G5-08",
@@ -351,7 +351,7 @@
         "pdfPage": 9,
         "printedPage": 8
       },
-      "verificationStatus": "PENDING_AI_SOURCE_VALIDATION"
+      "verificationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING"
     },
     {
       "ruleId": "G5-09",
@@ -416,7 +416,7 @@
         "pdfPage": 10,
         "printedPage": 9
       },
-      "verificationStatus": "PENDING_AI_SOURCE_VALIDATION"
+      "verificationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING"
     }
   ]
 }

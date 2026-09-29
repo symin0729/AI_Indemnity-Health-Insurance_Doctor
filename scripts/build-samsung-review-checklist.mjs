@@ -19,7 +19,7 @@ for (const item of mappings) {
 }
 
 const documents = new Map((manifest.documents ?? []).map((item) => [item.documentId, item]));
-const sourceAndEngineValidatedProducts = new Set(["SAMSUNG_0904_2", "SAMSUNG_1611_7", "SAMSUNG_1704_1", "SAMSUNG_2107_1"]);
+const sourceAndEngineValidatedProducts = new Set(["SAMSUNG_0904_2", "SAMSUNG_1611_7", "SAMSUNG_1704_1", "SAMSUNG_2107_1", "SAMSUNG_2605_1"]);
 const packageDerivedDocumentChecks = {
   SAMSUNG_0904_2: [
     "PDF 표지·보통약관·D1 특별약관이 모두 0904.2로 일치하는지 확인한다.",
@@ -38,7 +38,7 @@ const packageDerivedDocumentChecks = {
     "전환형별 제3조 ⑩~⑭ 예외가 공통 산식에 잘못 적용되지 않는지 확인한다.",
   ],
   SAMSUNG_2605_1: [
-    "현재 PDF가 다이렉트 [계약전환용] 문서임을 확인하고, 신규가입용 약관에도 동일 Rule을 적용할 수 있는지 별도로 확정한다.",
+    "기존 PDF는 다이렉트 [계약전환용]이며, 추가로 받은 일반형·계약전환용 2605.1 약관의 2~160쪽 원문이 동일하므로 공통 Rule을 동일 적용할 수 있음을 확인한다.",
     "중증 비급여 통원 100회와 비중증 비급여 통원 100일의 단위 차이가 원문 의도와 일치하는지 확인한다.",
   ],
 };
@@ -103,7 +103,7 @@ const reviewItems = mappings.map((item) => {
 
 const payload = {
   schemaVersion: "1.0",
-  status: "PENDING_AI_SOURCE_VALIDATION",
+  status: "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING",
   calculationEnabled: false,
   sourcePdfCount: documents.size,
   reviewItemCount: reviewItems.length,
@@ -131,7 +131,7 @@ fs.writeFileSync(path.join(outDir, "two-person-independent-review.json"), `${JSO
 const lines = [
   "# 삼성화재 세대별 AI 원문·계산 검증표",
   "",
-  "> 상태: PENDING_AI_SOURCE_VALIDATION / 계산 운영 비활성화",
+  "> 상태: SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING / 계산 운영 비활성화",
   "",
   "AI가 동일 SHA-256의 PDF 원문과 계산 Rule을 대조하고 자동 경계값 테스트를 실행합니다. PDF 쪽은 파일 뷰어 기준입니다.",
   "",
@@ -176,7 +176,6 @@ lines.push(
   "- [ ] Rule Trace가 실제 적용 조항을 표시한다.",
   "- [ ] 원문만으로 확정할 수 없는 항목은 필요한 추가 자료와 확인 방법이 기록되었다.",
   "- [ ] 발견사항을 모두 해소한 뒤에만 calculationEnabled 변경을 승인한다.",
-  "",
 );
 fs.writeFileSync(path.join(outDir, "TWO_PERSON_INDEPENDENT_REVIEW_CHECKLIST.md"), `${lines.join("\n")}\n`);
 console.log(`review items: ${reviewItems.length}`);
