@@ -5,7 +5,7 @@ const root = path.resolve(import.meta.dirname, "..");
 const draftDir = path.join(root, "knowledge/drafts/samsung");
 const outputDir = path.join(draftDir, "executable-specs");
 const evidenceMap = JSON.parse(await readFile(path.join(root, "knowledge/rule-evidence-map.json"), "utf8"));
-const sourceAndEngineValidatedProducts = new Set(["SAMSUNG_0904_2", "SAMSUNG_1611_7", "SAMSUNG_1704_1", "SAMSUNG_2107_1"]);
+const sourceAndEngineValidatedProducts = new Set(["SAMSUNG_0904_2", "SAMSUNG_1611_7", "SAMSUNG_1704_1", "SAMSUNG_2107_1", "SAMSUNG_2605_1"]);
 await mkdir(outputDir, { recursive: true });
 
 const institutionMinimums = { CLINIC: 10000, HOSPITAL: 15000, GENERAL_TERTIARY: 20000 };

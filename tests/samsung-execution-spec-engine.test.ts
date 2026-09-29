@@ -96,7 +96,21 @@ describe("Samsung execution-spec draft engine", () => {
                 improvementEvidenceConfirmed: true,
                 aggregationUnit: item.ruleId === "G4-07" ? "DIAGNOSTIC_ACTION" : "TREATMENT",
               }
-      : item.inputs;
+            : rule?.generation === 5
+              ? {
+                  ...item.inputs,
+                  nhiApplied: item.inputs.nhiApplied ?? true,
+                  requiredCoverageConfirmed: true,
+                  policyExclusionsCleared: true,
+                  priorPaidBenefit: item.inputs.priorPaidBenefit ?? 0,
+                  priorAnnualCount: item.inputs.priorAnnualCount ?? 0,
+                  priorServiceDays: item.inputs.priorServiceDays ?? 0,
+                  otherIndemnityPoliciesExist: false,
+                  coveragePeriodConfirmed: true,
+                  claimCause: "INJURY",
+                  improvementEvidenceConfirmed: true,
+                }
+              : item.inputs;
     const result = evaluateSamsungExecutionSpec(rule!, inputs);
     expect(result.status).toBe("DRAFT_CALCULATED");
     expect(result.claim).toBe(item.expectedClaim);
@@ -115,9 +129,38 @@ describe("Samsung execution-spec draft engine", () => {
       eligibleExpense: 100_000,
       healthInsuranceCopayRate: 0.3,
       institution: "CLINIC_HOSPITAL",
+      nhiApplied: true,
+      policyExclusionsCleared: true,
+      otherIndemnityPoliciesExist: false,
+      coveragePeriodConfirmed: true,
     });
     expect(result.deductible).toBe(30_000);
     expect(result.claim).toBe(70_000);
+  });
+
+  it("requires the fifth-generation outpatient cause and prior annual usage", () => {
+    const result = evaluateSamsungExecutionSpec(rules.get("G5-07")!, {
+      eligibleExpense: 100_000,
+      requiredCoverageConfirmed: true,
+      policyExclusionsCleared: true,
+      otherIndemnityPoliciesExist: false,
+      coveragePeriodConfirmed: true,
+    });
+    expect(result.status).toBe("CONFIRMATION_REQUIRED");
+  });
+
+  it("stops fifth-generation non-severe outpatient benefits after 100 service days", () => {
+    const result = evaluateSamsungExecutionSpec(rules.get("G5-07")!, {
+      eligibleExpense: 100_000,
+      requiredCoverageConfirmed: true,
+      policyExclusionsCleared: true,
+      otherIndemnityPoliciesExist: false,
+      coveragePeriodConfirmed: true,
+      claimCause: "INJURY",
+      priorServiceDays: 100,
+    });
+    expect(result.status).toBe("DRAFT_CALCULATED");
+    expect(result.claim).toBe(0);
   });
 
   it("applies the second- and third-generation annual deductible ceiling", () => {

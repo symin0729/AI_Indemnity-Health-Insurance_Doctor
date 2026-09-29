@@ -30,9 +30,7 @@ describe("Samsung executable Rule specifications", () => {
     expect(specs.every((spec) => spec.calculationEnabled === false)).toBe(true);
     for (const spec of specs) {
       expect(spec.status).toBe(
-        ["SAMSUNG_0904_2", "SAMSUNG_1611_7", "SAMSUNG_1704_1", "SAMSUNG_2107_1"].includes(spec.productCode)
-          ? "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING"
-          : "PENDING_AI_SOURCE_VALIDATION",
+        "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING",
       );
     }
   });
@@ -56,9 +54,7 @@ describe("Samsung executable Rule specifications", () => {
       expect(rule.specialConditions).toContain("POLICY_EXCLUSIONS_MUST_BE_CLEARED");
       const parent = specs.find((spec) => spec.rules.includes(rule));
       expect(rule.verificationStatus).toBe(
-        parent && ["SAMSUNG_0904_2", "SAMSUNG_1611_7", "SAMSUNG_1704_1", "SAMSUNG_2107_1"].includes(parent.productCode)
-          ? "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING"
-          : "PENDING_AI_SOURCE_VALIDATION",
+        "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING",
       );
     }
   });

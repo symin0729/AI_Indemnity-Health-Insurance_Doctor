@@ -113,7 +113,21 @@ describe("Samsung draft hand-calculation fixtures", () => {
                   improvementEvidenceConfirmed: true,
                   aggregationUnit: item.ruleId === "G4-07" ? "DIAGNOSTIC_ACTION" : "TREATMENT",
                 }
-          : item.inputs;
+              : rule?.generation === 5
+                ? {
+                    ...item.inputs,
+                    nhiApplied: item.inputs.nhiApplied ?? true,
+                    requiredCoverageConfirmed: true,
+                    policyExclusionsCleared: true,
+                    priorPaidBenefit: item.inputs.priorPaidBenefit ?? 0,
+                    priorAnnualCount: item.inputs.priorAnnualCount ?? 0,
+                    priorServiceDays: item.inputs.priorServiceDays ?? 0,
+                    otherIndemnityPoliciesExist: false,
+                    coveragePeriodConfirmed: true,
+                    claimCause: "INJURY",
+                    improvementEvidenceConfirmed: true,
+                  }
+                : item.inputs;
       const actual = evaluateSamsungExecutionSpec(rule!, inputs);
       expect(actual.status).toBe("DRAFT_CALCULATED");
       expect(actual.claim).toBe(item.expectedClaim);

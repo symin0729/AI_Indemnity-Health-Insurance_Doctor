@@ -182,7 +182,7 @@ function calculated(
     enforcedClaim = 0;
     enforcementWarnings.push(`연간 ${enforcement.maxAnnualCount}회/일 한도를 소진했습니다.`);
   }
-  if ([2, 3, 4].includes(rule.generation ?? 0) && enforcement?.maxAnnualCount !== undefined && usedCount === undefined) {
+  if ([2, 3, 4, 5].includes(rule.generation ?? 0) && enforcement?.maxAnnualCount !== undefined && usedCount === undefined) {
     return confirmation(rule, `연간 ${enforcement.maxAnnualCount}회/건 한도 적용을 위해 기존 이용 횟수가 필요합니다.`);
   }
   if (enforcement?.improvementEvidenceAfterCount !== undefined && (usedCount ?? 0) >= enforcement.improvementEvidenceAfterCount
@@ -206,7 +206,7 @@ function calculated(
     enforcedClaim += restored;
     enforcedDeductible -= restored;
   }
-  if (enforcement?.annualBenefitCap !== undefined && [3, 4].includes(rule.generation ?? 0) && input.priorPaidBenefit === undefined) {
+  if (enforcement?.annualBenefitCap !== undefined && [3, 4, 5].includes(rule.generation ?? 0) && input.priorPaidBenefit === undefined) {
     return confirmation(rule, `연간 ${enforcement.annualBenefitCap.toLocaleString("ko-KR")}원 한도 적용을 위해 기지급 보험금이 필요합니다.`);
   }
   if (enforcement?.annualBenefitCap !== undefined && input.priorPaidBenefit !== undefined) {
@@ -278,7 +278,7 @@ export function evaluateSamsungExecutionSpec(
 ): SamsungDraftCalculationResult {
   const calculation = rule.calculation;
 
-  if ([1, 2, 3, 4].includes(rule.generation ?? 0)) {
+  if ([1, 2, 3, 4, 5].includes(rule.generation ?? 0)) {
     if (rule.requiredCoverages?.length && input.requiredCoverageConfirmed !== true) {
       return confirmation(rule, `필수 특약 가입 여부를 확인해야 합니다: ${rule.requiredCoverages.join(", ")}`);
     }
@@ -289,16 +289,19 @@ export function evaluateSamsungExecutionSpec(
       && (/^G3-STD-0[1-3]$/.test(rule.ruleId) || rule.ruleId === "G3-SEL2-02");
     const fourthGenerationCovered = rule.generation === 4
       && ["G4-01", "G4-02", "G4-08", "G4-09"].includes(rule.ruleId);
-    if (!thirdGenerationSpecial && (rule.generation !== 4 || fourthGenerationCovered) && input.nhiApplied === undefined) {
+    const fifthGenerationNhiStatusRequired = rule.generation === 5 && rule.ruleId === "G5-01";
+    if ((!thirdGenerationSpecial && rule.generation !== 5 && (rule.generation !== 4 || fourthGenerationCovered)
+      && input.nhiApplied === undefined)
+      || (fifthGenerationNhiStatusRequired && input.nhiApplied === undefined)) {
       return confirmation(rule, "국민건강보험 적용 여부가 필요합니다.");
     }
-    if ([2, 3, 4].includes(rule.generation ?? 0) && input.otherIndemnityPoliciesExist === undefined) {
+    if ([2, 3, 4, 5].includes(rule.generation ?? 0) && input.otherIndemnityPoliciesExist === undefined) {
       return confirmation(rule, "다른 실손의료보험 계약 존재 여부를 확인해야 합니다.");
     }
-    if ([2, 3, 4].includes(rule.generation ?? 0) && input.otherIndemnityPoliciesExist && input.proportionalPaymentFactor === undefined) {
+    if ([2, 3, 4, 5].includes(rule.generation ?? 0) && input.otherIndemnityPoliciesExist && input.proportionalPaymentFactor === undefined) {
       return confirmation(rule, "다수보험 비례분담 계산에 필요한 계약별 보상책임액이 필요합니다.");
     }
-    if ([2, 3, 4].includes(rule.generation ?? 0) && input.coveragePeriodConfirmed !== true) {
+    if ([2, 3, 4, 5].includes(rule.generation ?? 0) && input.coveragePeriodConfirmed !== true) {
       return confirmation(rule, "보험기간 또는 계약 종료 후 계속 치료 보상기간에 해당하는지 확인해야 합니다.");
     }
     if ((rule.generation === 2 || (rule.generation === 3 && rule.ruleId.includes("BASE")))
@@ -319,6 +322,9 @@ export function evaluateSamsungExecutionSpec(
       if (input.threeNonCoveredExcludedFromBaseConfirmed !== true) {
         return confirmation(rule, "일반 비급여 계산에서 3대 비급여 대상 의료비를 제외했는지 확인해야 합니다.");
       }
+    }
+    if (rule.generation === 5 && ["G5-04", "G5-07"].includes(rule.ruleId) && !input.claimCause) {
+      return confirmation(rule, "연간 통원 횟수·일수 한도를 적용하려면 상해·질병 구분이 필요합니다.");
     }
     if (rule.ruleId === "G1-02" && input.nhiApplied !== false) {
       return confirmation(rule, "G1-02는 국민건강보험 미적용 입원 사례에만 적용합니다.");
