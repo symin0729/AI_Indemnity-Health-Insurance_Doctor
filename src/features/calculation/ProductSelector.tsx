@@ -13,8 +13,8 @@ export function ProductSelector({ products, value, onChange }: ProductSelectorPr
       <select value={value} onChange={(event) => onChange(event.target.value)}>
         <option value="">상품을 선택해주세요</option>
         {products.map((product) => (
-          <option key={product.productCode} value={product.productCode} disabled={!product.calculationEnabled}>
-            {product.productName} · {product.verificationStatus}
+          <option key={product.productCode} value={product.productCode} disabled={product.reviewStatus !== "VERIFIED"}>
+            {product.displayName} · {product.reviewStatus}
           </option>
         ))}
       </select>

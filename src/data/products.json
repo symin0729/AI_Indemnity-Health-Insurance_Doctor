@@ -1,128 +1,57 @@
 [
   {
-    "productCode": "SAMSUNG_0904_2",
-    "insurer": "삼성화재",
+    "productCode": "SAMSUNG_GEN1_PENDING",
+    "insurer": "SAMSUNG",
+    "insurerName": "삼성화재",
     "generation": 1,
-    "productName": "무배당 삼성 올라이프 100세 건강파트너보험(0904.2) 내 실손 특별약관",
-    "sampleLabel": "1세대 삼성화재 검수 샘플",
-    "effectiveFrom": null,
-    "effectiveTo": null,
-    "variants": [
-      "default"
-    ],
-    "requiredSelections": [
-      "상해 D1 특약 가입 여부",
-      "질병 D1 특약 가입 여부"
-    ],
-    "verificationStatus": "REVIEW_REQUIRED",
-    "calculationEnabled": false,
-    "ruleSetIds": [],
-    "documentIds": [
-      "SAMSUNG_0904_2_TERMS"
-    ],
+    "displayName": "1세대 대표상품(선정 필요)",
+    "reviewStatus": "PENDING_SELECTION",
+    "ruleSetFile": "gen1-SAMSUNG_GEN1_PENDING.json",
+    "evidenceDocumentIds": [],
     "verifiedAt": null
   },
   {
-    "productCode": "SAMSUNG_1611_7",
-    "insurer": "삼성화재",
+    "productCode": "SAMSUNG_GEN2_PENDING",
+    "insurer": "SAMSUNG",
+    "insurerName": "삼성화재",
     "generation": 2,
-    "productName": "무배당 삼성화재 실손의료비보험(1611.7)",
-    "sampleLabel": "2세대 삼성화재 검수 샘플",
-    "effectiveFrom": null,
-    "effectiveTo": null,
-    "variants": [
-      "standard",
-      "selected2"
-    ],
-    "requiredSelections": [
-      "종형: standard | selected2"
-    ],
-    "verificationStatus": "REVIEW_REQUIRED",
-    "calculationEnabled": false,
-    "ruleSetIds": [],
-    "documentIds": [
-      "SAMSUNG_1611_7_TERMS"
-    ],
+    "displayName": "2세대 대표상품(선정 필요)",
+    "reviewStatus": "PENDING_SELECTION",
+    "ruleSetFile": "gen2-SAMSUNG_GEN2_PENDING.json",
+    "evidenceDocumentIds": [],
     "verifiedAt": null
   },
   {
     "productCode": "SAMSUNG_1704_1",
-    "insurer": "삼성화재",
+    "insurer": "SAMSUNG",
+    "insurerName": "삼성화재",
     "generation": 3,
-    "productName": "무배당 삼성화재 실손의료비보험(1704.1)",
-    "sampleLabel": "3세대 삼성화재 검수 샘플",
-    "effectiveFrom": null,
-    "effectiveTo": null,
-    "variants": [
-      "standard",
-      "selected2"
-    ],
-    "requiredSelections": [
-      "종형: standard | selected2",
-      "3대 비급여 선택특약 가입 여부"
-    ],
-    "verificationStatus": "REVIEW_REQUIRED",
-    "calculationEnabled": false,
-    "ruleSetIds": [],
-    "documentIds": [
-      "SAMSUNG_1704_1_TERMS"
-    ],
+    "displayName": "3세대 대표상품",
+    "reviewStatus": "PENDING_EVIDENCE",
+    "ruleSetFile": "gen3-1704-1.json",
+    "evidenceDocumentIds": [],
     "verifiedAt": null
   },
   {
     "productCode": "SAMSUNG_2107_1",
-    "insurer": "삼성화재",
+    "insurer": "SAMSUNG",
+    "insurerName": "삼성화재",
     "generation": 4,
-    "productName": "무배당 삼성화재 실손의료비보험(2107.1)",
-    "sampleLabel": "4세대 삼성화재 검수 샘플",
-    "effectiveFrom": null,
-    "effectiveTo": null,
-    "variants": [
-      "default"
-    ],
-    "requiredSelections": [
-      "급여 주계약 가입 확인",
-      "비급여 특약 가입 여부",
-      "급여·비급여 및 입원·통원 구분",
-      "치료 유형(일반·도수/체외충격파/증식·주사·MRI/MRA)",
-      "의료기관 종류 및 연간 누적 금액·횟수"
-    ],
-    "verificationStatus": "REVIEW_REQUIRED",
-    "calculationEnabled": false,
-    "ruleSetIds": [],
-    "documentIds": [
-      "SAMSUNG_2107_1_TERMS"
-    ],
+    "displayName": "4세대 대표상품",
+    "reviewStatus": "PENDING_EVIDENCE",
+    "ruleSetFile": "gen4-2107-1.json",
+    "evidenceDocumentIds": [],
     "verifiedAt": null
   },
   {
     "productCode": "SAMSUNG_2605_1",
-    "insurer": "삼성화재",
+    "insurer": "SAMSUNG",
+    "insurerName": "삼성화재",
     "generation": 5,
-    "productName": "무배당 삼성화재 실손의료비보험(2605.1)",
-    "sampleLabel": "5세대 삼성화재 검수 샘플",
-    "effectiveFrom": null,
-    "effectiveTo": null,
-    "variants": [
-      "general",
-      "conversion"
-    ],
-    "requiredSelections": [
-      "계약 유형(일반형/계약전환용)",
-      "급여 기본계약 가입 확인",
-      "중증 비급여 특약 가입 여부",
-      "비중증 비급여 특약 가입 여부",
-      "급여·비급여 및 입원·통원 구분",
-      "산정특례 적용 여부와 질환 관련성",
-      "의료기관 종류 및 약관상 보장 제외 여부"
-    ],
-    "verificationStatus": "REVIEW_REQUIRED",
-    "calculationEnabled": false,
-    "ruleSetIds": [],
-    "documentIds": [
-      "SAMSUNG_2605_1_GENERAL_TERMS",
-      "SAMSUNG_2605_1_CONVERSION_TERMS"
-    ],
+    "displayName": "5세대 대표상품",
+    "reviewStatus": "PENDING_EVIDENCE",
+    "ruleSetFile": "gen5-2605-1.json",
+    "evidenceDocumentIds": [],
     "verifiedAt": null
   }
 ]

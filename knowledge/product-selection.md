@@ -1,11 +1,11 @@
 # 세대별 대표상품 선정 기록
 
-| 세대 | 상품 코드 | 대표 상품 | 상태 | 계산 활성화 |
-|---:|---|---|---|---|
-| 1 | `SAMSUNG_0904_2` | 무배당 삼성 올라이프 100세 건강파트너보험(0904.2) 내 실손 특별약관 | `REVIEW_REQUIRED` | `false` |
-| 2 | `SAMSUNG_1611_7` | 무배당 삼성화재 실손의료비보험(1611.7) | `REVIEW_REQUIRED` | `false` |
-| 3 | `SAMSUNG_1704_1` | 무배당 삼성화재 실손의료비보험(1704.1) | `REVIEW_REQUIRED` | `false` |
-| 4 | `SAMSUNG_2107_1` | 무배당 삼성화재 실손의료비보험(2107.1) | `REVIEW_REQUIRED` | `false` |
-| 5 | `SAMSUNG_2605_1` | 무배당 삼성화재 실손의료비보험(2605.1) 일반형·계약전환형 | `REVIEW_REQUIRED` | `false` |
+| 세대 | 상품 코드 | 상태 | 비고 |
+|---|---|---|---|
+| 1 | `SAMSUNG_GEN1_PENDING` | `PENDING_SELECTION` | 정확한 상품명·판매기간·약관 확정 필요 |
+| 2 | `SAMSUNG_GEN2_PENDING` | `PENDING_SELECTION` | 정확한 상품명·판매기간·약관 확정 필요 |
+| 3 | `SAMSUNG_1704_1` | `PENDING_EVIDENCE` | PDF 원본과 버전 검수 필요 |
+| 4 | `SAMSUNG_2107_1` | `PENDING_EVIDENCE` | PDF 원본과 버전 검수 필요 |
+| 5 | `SAMSUNG_2605_1` | `PENDING_EVIDENCE` | PDF 원본과 버전 검수 필요 |
 
-공식 PDF·해시를 기준으로 AI 원문 대조, 자동 경계값 테스트, RAG 검색 평가를 진행한다. 원문만으로 판단할 수 없는 항목은 필요한 추가 자료를 명시한다. 이 검증이 완료되기 전까지 계산은 비활성화한다.
+`VERIFIED`로 전환하려면 공식 PDF, SHA-256 해시, 발행처, 출처 URL, 검수일을 `manifest.json`과 메타데이터에 기록해야 합니다.
