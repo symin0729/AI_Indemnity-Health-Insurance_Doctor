@@ -72,6 +72,7 @@ describe("Samsung execution-spec draft engine", () => {
     const result = evaluateSamsungExecutionSpec(rules.get("G2-STD-01")!, {
       eligibleExpense: 100_000,
       priorEligibleDeductible: 1_990_000,
+      roomDifference: 0,
       nhiApplied: true,
       requiredCoverageConfirmed: true,
       policyExclusionsCleared: true,
@@ -79,6 +80,7 @@ describe("Samsung execution-spec draft engine", () => {
       priorPaidBenefit: 0,
       otherIndemnityPoliciesExist: false,
       coveragePeriodConfirmed: true,
+      coveragePeriod: "ACTIVE",
     });
     expect(result.deductible).toBe(10_000);
     expect(result.claim).toBe(90_000);
@@ -95,6 +97,7 @@ describe("Samsung execution-spec draft engine", () => {
       priorPaidBenefit: 0,
       otherIndemnityPoliciesExist: false,
       coveragePeriodConfirmed: true,
+      coveragePeriod: "ACTIVE",
     });
     expect(result.claim).toBe(40_000);
   });
@@ -104,6 +107,7 @@ describe("Samsung execution-spec draft engine", () => {
       eligibleExpense: 50_000,
       institution: "CLINIC",
       nhiApplied: true,
+      coveragePeriod: "ACTIVE",
     });
     expect(result.status).toBe("CONFIRMATION_REQUIRED");
   });
@@ -117,6 +121,9 @@ describe("Samsung execution-spec draft engine", () => {
       policyExclusionsCleared: true,
       priorAnnualCount: 0,
       perOccurrenceBenefitCap: 300_000,
+      outpatientBenefitCap: 300_000,
+      prescriptionBenefitCap: 0,
+      coveragePeriod: "ACTIVE",
       otherIndemnityPoliciesExist: false,
       coveragePeriodConfirmed: true,
       sameDayAggregationConfirmed: true,
@@ -134,6 +141,8 @@ describe("Samsung execution-spec draft engine", () => {
       priorPaidBenefit: 0,
       otherIndemnityPoliciesExist: false,
       coveragePeriodConfirmed: true,
+      coveragePeriod: "ACTIVE",
+      aggregationUnit: "TREATMENT",
     });
     expect(result.status).toBe("DRAFT_CALCULATED");
     expect(result.claim).toBe(70_000);
@@ -147,6 +156,7 @@ describe("Samsung execution-spec draft engine", () => {
       priorPaidBenefit: 0,
       otherIndemnityPoliciesExist: false,
       coveragePeriodConfirmed: true,
+      coveragePeriod: "ACTIVE",
     });
     expect(result.status).toBe("CONFIRMATION_REQUIRED");
   });
@@ -161,6 +171,9 @@ describe("Samsung execution-spec draft engine", () => {
       otherIndemnityPoliciesExist: false,
       coveragePeriodConfirmed: true,
       threeNonCoveredCategory: "INJECTION",
+      coveragePeriod: "ACTIVE",
+      aggregationUnit: "VISIT",
+      injectionRiderEligibleConfirmed: true,
     });
     expect(result.claim).toBe(20_000);
   });
@@ -176,6 +189,7 @@ describe("Samsung execution-spec draft engine", () => {
       contractBenefitCap: 50_000_000,
       otherIndemnityPoliciesExist: false,
       coveragePeriodConfirmed: true,
+      coveragePeriod: "ACTIVE",
     });
     expect(result.status).toBe("CONFIRMATION_REQUIRED");
   });
