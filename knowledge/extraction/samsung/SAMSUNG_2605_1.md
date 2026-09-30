@@ -2,22 +2,23 @@
 
 ## 문서 정보
 
-- documentId: `SAMSUNG_2605_1_TERMS`
-- 상품명: 무배당 삼성화재 다이렉트 실손의료비보험(2605.1)
+- 기본 documentId: `SAMSUNG_2605_1_GENERAL_TERMS`
+- 교차검증 documentId: `SAMSUNG_2605_1_CONVERSION_TERMS`
+- 상품명: 무배당 삼성화재 실손의료비보험(2605.1)
 - 세대: 5
-- 파일명: samsung_gen5_2605_1_terms.pdf
-- 공식 URL: https://direct.samsungfire.com/docs/realloss.pdf
-- PDF 페이지: 157
-- SHA-256: `db0ed9738c9f59fbb28b678b910e0bdd3ef4bf08bdac52643c2e2dd167003415`
+- 일반형 파일: `samsung_gen5_2605_1_general_terms.pdf` (160쪽, SHA-256 `126f5b033c77b852e797c58458a025897340b08b511c909d4905cad18ec987e5`)
+- 계약전환형 파일: `samsung_gen5_2605_1_conversion_terms.pdf` (160쪽, SHA-256 `63b996663c352482402384778b7b23d4e13689b2d1888423d9c33a12597add9e`)
+- 출처: 사용자 제공 삼성화재 공식 PDF
 - 검수 상태: `AI_SOURCE_VALIDATED`
 - 계산 활성화: `false`
 
-> 14_S 초안과 공식 PDF를 AI가 대조해 정리한 검수 초안입니다. AI 원문 검증은 완료했으나 RAGFlow·Gemini Guard 승인 전에는 운영 계산에 사용하지 않습니다.
+> 아래 조항은 일반형 RuleSet 기록입니다. 계약전환형은 동일 산식을 독립 Rule/Evidence로 복제하고 전환 세부유형·자격·계속 치료 조건을 추가 검증합니다.
++> 14_S 초안과 공식 PDF를 AI가 대조해 정리한 검수 초안입니다. AI 원문 검증은 완료했으나 RAGFlow·Gemini Guard 승인 전에는 운영 계산에 사용하지 않습니다.
 
 ## 조항 EX-001
 
 - Rule ID: `G5-01`
-- Evidence ID: `SAMSUNG_2605_1_E_G5-01`
+- Evidence ID: `SAMSUNG_2605_1_E_GENERAL_G5-01`
 - 분류: 입원 / 급여
 - 약관 조항: 자기부담금·보장한도 / 쉽게 이해하는 상품 및 약관 요약서 / 급여 입원
 - pdfPage: 8
@@ -44,7 +45,7 @@
 ## 조항 EX-002
 
 - Rule ID: `G5-02`
-- Evidence ID: `SAMSUNG_2605_1_E_G5-02`
+- Evidence ID: `SAMSUNG_2605_1_E_GENERAL_G5-02`
 - 분류: 통원 / 급여
 - 약관 조항: 자기부담금·보장한도 / 쉽게 이해하는 상품 및 약관 요약서 / 급여 통원
 - pdfPage: 8
@@ -71,7 +72,7 @@
 ## 조항 EX-003
 
 - Rule ID: `G5-03`
-- Evidence ID: `SAMSUNG_2605_1_E_G5-03`
+- Evidence ID: `SAMSUNG_2605_1_E_GENERAL_G5-03`
 - 분류: 입원 / 비급여
 - 약관 조항: 자기부담금·보장한도 / 쉽게 이해하는 상품 및 약관 요약서 / 중증 비급여 입원
 - pdfPage: 8
@@ -98,7 +99,7 @@
 ## 조항 EX-004
 
 - Rule ID: `G5-04`
-- Evidence ID: `SAMSUNG_2605_1_E_G5-04`
+- Evidence ID: `SAMSUNG_2605_1_E_GENERAL_G5-04`
 - 분류: 통원 / 비급여
 - 약관 조항: 자기부담금·보장한도 / 쉽게 이해하는 상품 및 약관 요약서 / 중증 비급여 통원
 - pdfPage: 8
@@ -125,7 +126,7 @@
 ## 조항 EX-005
 
 - Rule ID: `G5-05`
-- Evidence ID: `SAMSUNG_2605_1_E_G5-05`
+- Evidence ID: `SAMSUNG_2605_1_E_GENERAL_G5-05`
 - 분류: 비급여
 - 약관 조항: 자기부담금·보장한도 / 쉽게 이해하는 상품 및 약관 요약서 / 중증 비급여 3대
 - pdfPage: 9
@@ -152,7 +153,7 @@
 ## 조항 EX-006
 
 - Rule ID: `G5-06`
-- Evidence ID: `SAMSUNG_2605_1_E_G5-06`
+- Evidence ID: `SAMSUNG_2605_1_E_GENERAL_G5-06`
 - 분류: 입원 / 비급여
 - 약관 조항: 특별약관2 비중증 비급여 / 제3조 / 제1항 (1) 상해비급여
 - pdfPage: 63
@@ -179,7 +180,7 @@
 ## 조항 EX-007
 
 - Rule ID: `G5-07`
-- Evidence ID: `SAMSUNG_2605_1_E_G5-07`
+- Evidence ID: `SAMSUNG_2605_1_E_GENERAL_G5-07`
 - 분류: 통원 / 비급여
 - 약관 조항: 특별약관2 비중증 비급여 / 제3조 / 제1항 (1) 상해비급여
 - pdfPage: 63
@@ -206,7 +207,7 @@
 ## 조항 EX-008
 
 - Rule ID: `G5-08`
-- Evidence ID: `SAMSUNG_2605_1_E_G5-08`
+- Evidence ID: `SAMSUNG_2605_1_E_GENERAL_G5-08`
 - 분류: 비급여 / MRI/MRA
 - 약관 조항: 자기부담금·보장한도 / 쉽게 이해하는 상품 및 약관 요약서 / 비중증 비급여 MRI/MRA
 - pdfPage: 9
@@ -233,7 +234,7 @@
 ## 조항 EX-009
 
 - Rule ID: `G5-09`
-- Evidence ID: `SAMSUNG_2605_1_E_G5-09`
+- Evidence ID: `SAMSUNG_2605_1_E_GENERAL_G5-09`
 - 분류: 비급여
 - 약관 조항: 비중증 비급여 보험료 차등 / 쉽게 이해하는 상품 및 약관 요약서 / 비중증 비급여 보험료 차등
 - pdfPage: 10

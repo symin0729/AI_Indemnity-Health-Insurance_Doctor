@@ -12,7 +12,7 @@ describe("Samsung Rule/Evidence integrity", () => {
 
     for (const product of products) {
       const productFiles = draftFiles.filter((name) => name.startsWith(product.productCode));
-      expect(productFiles.length).toBe([2, 3].includes(product.generation) ? 2 : 1);
+      expect(productFiles.length).toBe([2, 3, 5].includes(product.generation) ? 2 : 1);
       for (const file of productFiles) {
         const draft = JSON.parse(fs.readFileSync(path.resolve("knowledge/drafts/samsung", file), "utf8")) as {
           calculationEnabled: boolean;

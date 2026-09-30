@@ -1210,11 +1210,12 @@
       "filters": {
         "productCode": "SAMSUNG_2605_1",
         "generation": 5,
-        "variant": "default"
+        "variant": "general",
+        "documentId": "SAMSUNG_2605_1_GENERAL_TERMS"
       },
       "expectedRuleId": "G5-01",
       "expectedEvidenceIds": [
-        "SAMSUNG_2605_1_E_G5-01"
+        "SAMSUNG_2605_1_E_GENERAL_G5-01"
       ],
       "expectedStatus": "RAG_ALLOWED",
       "executionStatus": "NOT_EXECUTED"
@@ -1225,11 +1226,12 @@
       "filters": {
         "productCode": "SAMSUNG_2605_1",
         "generation": 5,
-        "variant": "default"
+        "variant": "general",
+        "documentId": "SAMSUNG_2605_1_GENERAL_TERMS"
       },
       "expectedRuleId": "G5-02",
       "expectedEvidenceIds": [
-        "SAMSUNG_2605_1_E_G5-02"
+        "SAMSUNG_2605_1_E_GENERAL_G5-02"
       ],
       "expectedStatus": "RAG_ALLOWED",
       "executionStatus": "NOT_EXECUTED"
@@ -1240,11 +1242,12 @@
       "filters": {
         "productCode": "SAMSUNG_2605_1",
         "generation": 5,
-        "variant": "default"
+        "variant": "general",
+        "documentId": "SAMSUNG_2605_1_GENERAL_TERMS"
       },
       "expectedRuleId": "G5-03",
       "expectedEvidenceIds": [
-        "SAMSUNG_2605_1_E_G5-03"
+        "SAMSUNG_2605_1_E_GENERAL_G5-03"
       ],
       "expectedStatus": "RAG_ALLOWED",
       "executionStatus": "NOT_EXECUTED"
@@ -1255,11 +1258,12 @@
       "filters": {
         "productCode": "SAMSUNG_2605_1",
         "generation": 5,
-        "variant": "default"
+        "variant": "general",
+        "documentId": "SAMSUNG_2605_1_GENERAL_TERMS"
       },
       "expectedRuleId": "G5-04",
       "expectedEvidenceIds": [
-        "SAMSUNG_2605_1_E_G5-04"
+        "SAMSUNG_2605_1_E_GENERAL_G5-04"
       ],
       "expectedStatus": "RAG_ALLOWED",
       "executionStatus": "NOT_EXECUTED"
@@ -1270,11 +1274,12 @@
       "filters": {
         "productCode": "SAMSUNG_2605_1",
         "generation": 5,
-        "variant": "default"
+        "variant": "general",
+        "documentId": "SAMSUNG_2605_1_GENERAL_TERMS"
       },
       "expectedRuleId": "G5-05",
       "expectedEvidenceIds": [
-        "SAMSUNG_2605_1_E_G5-05"
+        "SAMSUNG_2605_1_E_GENERAL_G5-05"
       ],
       "expectedStatus": "RAG_ALLOWED",
       "executionStatus": "NOT_EXECUTED"
@@ -1285,11 +1290,12 @@
       "filters": {
         "productCode": "SAMSUNG_2605_1",
         "generation": 5,
-        "variant": "default"
+        "variant": "general",
+        "documentId": "SAMSUNG_2605_1_GENERAL_TERMS"
       },
       "expectedRuleId": "G5-06",
       "expectedEvidenceIds": [
-        "SAMSUNG_2605_1_E_G5-06"
+        "SAMSUNG_2605_1_E_GENERAL_G5-06"
       ],
       "expectedStatus": "RAG_ALLOWED",
       "executionStatus": "NOT_EXECUTED"
@@ -1300,11 +1306,12 @@
       "filters": {
         "productCode": "SAMSUNG_2605_1",
         "generation": 5,
-        "variant": "default"
+        "variant": "general",
+        "documentId": "SAMSUNG_2605_1_GENERAL_TERMS"
       },
       "expectedRuleId": "G5-07",
       "expectedEvidenceIds": [
-        "SAMSUNG_2605_1_E_G5-07"
+        "SAMSUNG_2605_1_E_GENERAL_G5-07"
       ],
       "expectedStatus": "RAG_ALLOWED",
       "executionStatus": "NOT_EXECUTED"
@@ -1315,11 +1322,12 @@
       "filters": {
         "productCode": "SAMSUNG_2605_1",
         "generation": 5,
-        "variant": "default"
+        "variant": "general",
+        "documentId": "SAMSUNG_2605_1_GENERAL_TERMS"
       },
       "expectedRuleId": "G5-08",
       "expectedEvidenceIds": [
-        "SAMSUNG_2605_1_E_G5-08"
+        "SAMSUNG_2605_1_E_GENERAL_G5-08"
       ],
       "expectedStatus": "RAG_ALLOWED",
       "executionStatus": "NOT_EXECUTED"
@@ -1330,11 +1338,12 @@
       "filters": {
         "productCode": "SAMSUNG_2605_1",
         "generation": 5,
-        "variant": "default"
+        "variant": "general",
+        "documentId": "SAMSUNG_2605_1_GENERAL_TERMS"
       },
       "expectedRuleId": "G5-09",
       "expectedEvidenceIds": [
-        "SAMSUNG_2605_1_E_G5-09"
+        "SAMSUNG_2605_1_E_GENERAL_G5-09"
       ],
       "expectedStatus": "RAG_ALLOWED",
       "executionStatus": "NOT_EXECUTED"
@@ -1345,11 +1354,12 @@
       "filters": {
         "productCode": "SAMSUNG_2605_1",
         "generation": 5,
-        "variant": "default"
+        "variant": "general",
+        "documentId": "SAMSUNG_2605_1_GENERAL_TERMS"
       },
       "expectedRuleId": "G5-01",
       "expectedEvidenceIds": [
-        "SAMSUNG_2605_1_E_G5-01"
+        "SAMSUNG_2605_1_E_GENERAL_G5-01"
       ],
       "expectedStatus": "RAG_ALLOWED",
       "executionStatus": "NOT_EXECUTED"
@@ -1360,11 +1370,12 @@
       "filters": {
         "productCode": "SAMSUNG_2605_1",
         "generation": 5,
-        "variant": "default"
+        "variant": "general",
+        "documentId": "SAMSUNG_2605_1_GENERAL_TERMS"
       },
       "expectedRuleId": "G5-02",
       "expectedEvidenceIds": [
-        "SAMSUNG_2605_1_E_G5-02"
+        "SAMSUNG_2605_1_E_GENERAL_G5-02"
       ],
       "expectedStatus": "RAG_ALLOWED",
       "executionStatus": "NOT_EXECUTED"
@@ -1375,11 +1386,12 @@
       "filters": {
         "productCode": "SAMSUNG_2605_1",
         "generation": 5,
-        "variant": "default"
+        "variant": "general",
+        "documentId": "SAMSUNG_2605_1_GENERAL_TERMS"
       },
       "expectedRuleId": "G5-03",
       "expectedEvidenceIds": [
-        "SAMSUNG_2605_1_E_G5-03"
+        "SAMSUNG_2605_1_E_GENERAL_G5-03"
       ],
       "expectedStatus": "RAG_ALLOWED",
       "executionStatus": "NOT_EXECUTED"
@@ -1390,11 +1402,12 @@
       "filters": {
         "productCode": "SAMSUNG_2605_1",
         "generation": 5,
-        "variant": "default"
+        "variant": "general",
+        "documentId": "SAMSUNG_2605_1_GENERAL_TERMS"
       },
       "expectedRuleId": "G5-04",
       "expectedEvidenceIds": [
-        "SAMSUNG_2605_1_E_G5-04"
+        "SAMSUNG_2605_1_E_GENERAL_G5-04"
       ],
       "expectedStatus": "RAG_ALLOWED",
       "executionStatus": "NOT_EXECUTED"
@@ -1405,11 +1418,12 @@
       "filters": {
         "productCode": "SAMSUNG_2605_1",
         "generation": 5,
-        "variant": "default"
+        "variant": "general",
+        "documentId": "SAMSUNG_2605_1_GENERAL_TERMS"
       },
       "expectedRuleId": "G5-05",
       "expectedEvidenceIds": [
-        "SAMSUNG_2605_1_E_G5-05"
+        "SAMSUNG_2605_1_E_GENERAL_G5-05"
       ],
       "expectedStatus": "RAG_ALLOWED",
       "executionStatus": "NOT_EXECUTED"
@@ -1420,11 +1434,12 @@
       "filters": {
         "productCode": "SAMSUNG_2605_1",
         "generation": 5,
-        "variant": "default"
+        "variant": "general",
+        "documentId": "SAMSUNG_2605_1_GENERAL_TERMS"
       },
       "expectedRuleId": "G5-06",
       "expectedEvidenceIds": [
-        "SAMSUNG_2605_1_E_G5-06"
+        "SAMSUNG_2605_1_E_GENERAL_G5-06"
       ],
       "expectedStatus": "RAG_ALLOWED",
       "executionStatus": "NOT_EXECUTED"
@@ -1435,11 +1450,12 @@
       "filters": {
         "productCode": "SAMSUNG_2605_1",
         "generation": 5,
-        "variant": "default"
+        "variant": "general",
+        "documentId": "SAMSUNG_2605_1_GENERAL_TERMS"
       },
       "expectedRuleId": "G5-07",
       "expectedEvidenceIds": [
-        "SAMSUNG_2605_1_E_G5-07"
+        "SAMSUNG_2605_1_E_GENERAL_G5-07"
       ],
       "expectedStatus": "RAG_ALLOWED",
       "executionStatus": "NOT_EXECUTED"
@@ -1450,11 +1466,12 @@
       "filters": {
         "productCode": "SAMSUNG_2605_1",
         "generation": 5,
-        "variant": "default"
+        "variant": "general",
+        "documentId": "SAMSUNG_2605_1_GENERAL_TERMS"
       },
       "expectedRuleId": "G5-08",
       "expectedEvidenceIds": [
-        "SAMSUNG_2605_1_E_G5-08"
+        "SAMSUNG_2605_1_E_GENERAL_G5-08"
       ],
       "expectedStatus": "RAG_ALLOWED",
       "executionStatus": "NOT_EXECUTED"
@@ -1465,11 +1482,12 @@
       "filters": {
         "productCode": "SAMSUNG_2605_1",
         "generation": 5,
-        "variant": "default"
+        "variant": "general",
+        "documentId": "SAMSUNG_2605_1_GENERAL_TERMS"
       },
       "expectedRuleId": "G5-09",
       "expectedEvidenceIds": [
-        "SAMSUNG_2605_1_E_G5-09"
+        "SAMSUNG_2605_1_E_GENERAL_G5-09"
       ],
       "expectedStatus": "RAG_ALLOWED",
       "executionStatus": "NOT_EXECUTED"
@@ -1480,11 +1498,12 @@
       "filters": {
         "productCode": "SAMSUNG_2605_1",
         "generation": 5,
-        "variant": "default"
+        "variant": "general",
+        "documentId": "SAMSUNG_2605_1_GENERAL_TERMS"
       },
       "expectedRuleId": "G5-01",
       "expectedEvidenceIds": [
-        "SAMSUNG_2605_1_E_G5-01"
+        "SAMSUNG_2605_1_E_GENERAL_G5-01"
       ],
       "expectedStatus": "RAG_ALLOWED",
       "executionStatus": "NOT_EXECUTED"
@@ -1495,11 +1514,332 @@
       "filters": {
         "productCode": "SAMSUNG_2605_1",
         "generation": 5,
-        "variant": "default"
+        "variant": "general",
+        "documentId": "SAMSUNG_2605_1_GENERAL_TERMS"
       },
       "expectedRuleId": "G5-02",
       "expectedEvidenceIds": [
-        "SAMSUNG_2605_1_E_G5-02"
+        "SAMSUNG_2605_1_E_GENERAL_G5-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-CONV-Q01",
+      "question": "[계약전환형] 급여 입원의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "conversion",
+        "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS"
+      },
+      "expectedRuleId": "G5-CONV-01",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_CONVERSION_G5-01"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-CONV-Q02",
+      "question": "[계약전환형] 급여 통원의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "conversion",
+        "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS"
+      },
+      "expectedRuleId": "G5-CONV-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_CONVERSION_G5-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-CONV-Q03",
+      "question": "[계약전환형] 중증 비급여 입원의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "conversion",
+        "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS"
+      },
+      "expectedRuleId": "G5-CONV-03",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_CONVERSION_G5-03"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-CONV-Q04",
+      "question": "[계약전환형] 중증 비급여 통원의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "conversion",
+        "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS"
+      },
+      "expectedRuleId": "G5-CONV-04",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_CONVERSION_G5-04"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-CONV-Q05",
+      "question": "[계약전환형] 중증 비급여 3대의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "conversion",
+        "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS"
+      },
+      "expectedRuleId": "G5-CONV-05",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_CONVERSION_G5-05"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-CONV-Q06",
+      "question": "[계약전환형] 비중증 비급여 입원의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "conversion",
+        "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS"
+      },
+      "expectedRuleId": "G5-CONV-06",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_CONVERSION_G5-06"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-CONV-Q07",
+      "question": "[계약전환형] 비중증 비급여 통원의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "conversion",
+        "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS"
+      },
+      "expectedRuleId": "G5-CONV-07",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_CONVERSION_G5-07"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-CONV-Q08",
+      "question": "[계약전환형] 비중증 비급여 MRI/MRA의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "conversion",
+        "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS"
+      },
+      "expectedRuleId": "G5-CONV-08",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_CONVERSION_G5-08"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-CONV-Q09",
+      "question": "[계약전환형] 비중증 비급여 보험료 차등의 보험금 계산 방식은 무엇인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "conversion",
+        "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS"
+      },
+      "expectedRuleId": "G5-CONV-09",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_CONVERSION_G5-09"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-CONV-Q10",
+      "question": "[계약전환형] 급여 입원의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "conversion",
+        "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS"
+      },
+      "expectedRuleId": "G5-CONV-01",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_CONVERSION_G5-01"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-CONV-Q11",
+      "question": "[계약전환형] 급여 통원의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "conversion",
+        "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS"
+      },
+      "expectedRuleId": "G5-CONV-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_CONVERSION_G5-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-CONV-Q12",
+      "question": "[계약전환형] 중증 비급여 입원의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "conversion",
+        "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS"
+      },
+      "expectedRuleId": "G5-CONV-03",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_CONVERSION_G5-03"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-CONV-Q13",
+      "question": "[계약전환형] 중증 비급여 통원의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "conversion",
+        "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS"
+      },
+      "expectedRuleId": "G5-CONV-04",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_CONVERSION_G5-04"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-CONV-Q14",
+      "question": "[계약전환형] 중증 비급여 3대의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "conversion",
+        "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS"
+      },
+      "expectedRuleId": "G5-CONV-05",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_CONVERSION_G5-05"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-CONV-Q15",
+      "question": "[계약전환형] 비중증 비급여 입원의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "conversion",
+        "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS"
+      },
+      "expectedRuleId": "G5-CONV-06",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_CONVERSION_G5-06"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-CONV-Q16",
+      "question": "[계약전환형] 비중증 비급여 통원의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "conversion",
+        "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS"
+      },
+      "expectedRuleId": "G5-CONV-07",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_CONVERSION_G5-07"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-CONV-Q17",
+      "question": "[계약전환형] 비중증 비급여 MRI/MRA의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "conversion",
+        "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS"
+      },
+      "expectedRuleId": "G5-CONV-08",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_CONVERSION_G5-08"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-CONV-Q18",
+      "question": "[계약전환형] 비중증 비급여 보험료 차등의 자기부담과 공제금은 어떻게 적용되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "conversion",
+        "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS"
+      },
+      "expectedRuleId": "G5-CONV-09",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_CONVERSION_G5-09"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-CONV-Q19",
+      "question": "[계약전환형] 급여 입원의 연간·횟수·회당 한도를 알려주세요.",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "conversion",
+        "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS"
+      },
+      "expectedRuleId": "G5-CONV-01",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_CONVERSION_G5-01"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "G5-CONV-Q20",
+      "question": "[계약전환형] 급여 통원의 연간·횟수·회당 한도를 알려주세요.",
+      "filters": {
+        "productCode": "SAMSUNG_2605_1",
+        "generation": 5,
+        "variant": "conversion",
+        "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS"
+      },
+      "expectedRuleId": "G5-CONV-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_2605_1_E_CONVERSION_G5-02"
       ],
       "expectedStatus": "RAG_ALLOWED",
       "executionStatus": "NOT_EXECUTED"

@@ -96,17 +96,11 @@
       ]
     },
     {
-      "documentId": "SAMSUNG_2605_1_TERMS",
       "productCode": "SAMSUNG_2605_1",
       "generation": 5,
       "documentType": "OFFICIAL_PRODUCT_SUMMARY_AND_TERMS",
-      "fileName": "samsung_gen5_2605_1_terms.pdf",
-      "relativePath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_terms.pdf",
-      "title": "무배당 삼성화재 다이렉트 실손의료비보험(2605.1) 공식 PDF",
       "publisher": "삼성화재해상보험주식회사",
-      "sourceUrl": "https://direct.samsungfire.com/docs/realloss.pdf",
-      "sha256": "db0ed9738c9f59fbb28b678b910e0bdd3ef4bf08bdac52643c2e2dd167003415",
-      "pageCount": 157,
+      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF",
       "aiReviewedAt": "2026-09-29",
       "verifiedAt": "2026-09-29",
       "verifiedBy": [
@@ -116,7 +110,40 @@
       "blockers": [
         "RAGFlow 검색 평가 미실행",
         "Gemini Guard 미실행"
-      ]
+      ],
+      "documentId": "SAMSUNG_2605_1_GENERAL_TERMS",
+      "contractType": "GENERAL",
+      "fileName": "samsung_gen5_2605_1_general_terms.pdf",
+      "relativePath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_general_terms.pdf",
+      "title": "무배당 삼성화재 실손의료비보험(2605.1) 일반형 공식 PDF",
+      "sourceUrl": null,
+      "sha256": "126f5b033c77b852e797c58458a025897340b08b511c909d4905cad18ec987e5",
+      "pageCount": 160
+    },
+    {
+      "productCode": "SAMSUNG_2605_1",
+      "generation": 5,
+      "documentType": "OFFICIAL_PRODUCT_SUMMARY_AND_TERMS",
+      "publisher": "삼성화재해상보험주식회사",
+      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF",
+      "aiReviewedAt": "2026-09-29",
+      "verifiedAt": "2026-09-29",
+      "verifiedBy": [
+        "Codex AI"
+      ],
+      "status": "AI_SOURCE_VALIDATED",
+      "blockers": [
+        "RAGFlow 검색 평가 미실행",
+        "Gemini Guard 미실행"
+      ],
+      "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS",
+      "contractType": "CONVERSION",
+      "fileName": "samsung_gen5_2605_1_conversion_terms.pdf",
+      "relativePath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_conversion_terms.pdf",
+      "title": "무배당 삼성화재 실손의료비보험 계약전환용(2605.1) 공식 PDF",
+      "sourceUrl": null,
+      "sha256": "63b996663c352482402384778b7b23d4e13689b2d1888423d9c33a12597add9e",
+      "pageCount": 160
     }
   ]
 }
