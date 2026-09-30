@@ -1,3 +1,4 @@
+import type { CopayInstitution, CopayRegion } from "./insuranceInputDefaults";
 /**
  * AI 실손 닥터 - 의료이용 도메인 (mvp-v2)
  *
@@ -107,6 +108,8 @@ export interface MedicalUsage {
    * 급여 통원 최소공제액 D 판정용 의료기관 종별.
    */
   institutionType?: MedicalInstitutionType;
+  copayInstitution?: CopayInstitution;
+  copayRegion?: CopayRegion;
 
   /**
    * 급여 통원에 적용되는 건강보험 본인부담률 r.

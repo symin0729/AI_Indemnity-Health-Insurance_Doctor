@@ -1,3 +1,4 @@
+import { generationForInceptionDate, generalPatientCopayPercent, type CopayInstitution, type CopayRegion } from "../../domain/insuranceInputDefaults";
 import { genericGen23CareSetting, syncGen23CareSetting, gen23CareSettingError } from "../../domain/samsungGen23CareSetting";
 import { Gen23Inputs } from "../../components/samsung/Gen23Inputs";
 import { parseGen23Form, restoreGen23Form, type Gen23FormState } from "../../domain/samsungGen23Form";
@@ -469,6 +470,17 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
     setHealthInsuranceCopayRatePercent,
   ] = useState("");
 
+  const [copayInstitution, setCopayInstitution] = useState<CopayInstitution | "">("");
+  const [copayRegion, setCopayRegion] = useState<CopayRegion | "">("");
+  const applyCopayDefault = (care: CareSetting, institution = copayInstitution, region = copayRegion) => {
+    const rate = generalPatientCopayPercent(care, institution || undefined, region || undefined);
+    setHealthInsuranceCopayRatePercent(rate === undefined ? "" : String(rate));
+  };
+  const changeCareSetting = (care: CareSetting) => {
+    setCareSetting(care);
+    applyCopayDefault(care);
+  };
+
   /**
    * C: 해당 비교안에서 약관상 보장대상으로 인정되는 금액.
    * 모르면 비워두고 결과에서 확인 필요로 처리한다.
@@ -647,6 +659,8 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
     setTreatmentDate("");
     setTreatmentCategory("");
     setInstitutionType("");
+    setCopayInstitution("");
+    setCopayRegion("");
     setHealthInsuranceCopayRatePercent("");
     setCoveredAmount("");
     setClaimCause("UNKNOWN");
@@ -870,6 +884,8 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
           }
         : {}),
 
+      ...(copayInstitution ? { copayInstitution } : {}),
+      ...(copayRegion ? { copayRegion } : {}),
       ...(institutionType
         ? { institutionType }
         : {}),
@@ -986,6 +1002,8 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
       setFrequency(String(sampleUsage.frequency));
       setUnitCost(String(sampleUsage.unitCost));
       setInstitutionType(sampleUsage.institutionType ?? "");
+      setCopayInstitution(sampleUsage.copayInstitution ?? "");
+      setCopayRegion(sampleUsage.copayRegion ?? "");
       setHealthInsuranceCopayRatePercent(
         sampleUsage.healthInsuranceCopayRate === undefined
           ? ""
@@ -1056,6 +1074,8 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
     setInstitutionType(
       usage.institutionType ?? ""
     );
+    setCopayInstitution(usage.copayInstitution ?? "");
+    setCopayRegion(usage.copayRegion ?? "");
 
     setHealthInsuranceCopayRatePercent(
       usage.healthInsuranceCopayRate ===
@@ -1744,7 +1764,11 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
           가입일
           <IsoDateInput
             value={inceptionDate}
-            onChange={setInceptionDate}
+            onChange={(value) => {
+              setInceptionDate(value);
+              const detected = generationForInceptionDate(value);
+              if (detected !== undefined) setGeneration(detected);
+            }}
             placeholder="예: 2018-03-01"
           />
         </label>
@@ -1923,7 +1947,7 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
                   <h3>0904.2 D1 계산 조건</h3>
                   <div className="form-grid">
                     <label>질병 / 상해<select value={claimCause} onChange={(event) => setClaimCause(event.target.value as ClaimCause)}><option value="UNKNOWN">확인할 수 없음</option><option value="INJURY">상해</option><option value="DISEASE">질병</option></select></label>
-                    <label>입원 / 통원<select value={careSetting} onChange={(event) => setCareSetting(event.target.value as CareSetting)}><option value="INPATIENT">입원</option><option value="OUTPATIENT">통원</option></select></label>
+                    <label>입원 / 통원<select value={careSetting} onChange={(event) => changeCareSetting(event.target.value as CareSetting)}><option value="INPATIENT">입원</option><option value="OUTPATIENT">통원</option></select></label>
                     <label>이번 진료의 국민건강보험 적용 여부<select value={nationalHealthInsuranceStatus} onChange={(event) => setNationalHealthInsuranceStatus(event.target.value as NationalHealthInsuranceStatus)}><option value="UNKNOWN">확인할 수 없음</option><option value="APPLIED">적용됨</option><option value="NOT_APPLIED">적용되지 않음</option><option value="PARTIAL">일부 적용</option></select></label>
                   </div>
                   {nationalHealthInsuranceStatus === "PARTIAL" && <div className="notice-box warning">일부 적용 조합은 RULE_NOT_VERIFIED로 처리됩니다.</div>}
@@ -2263,7 +2287,7 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
           {(generation === 2 || generation === 3) && <Gen23Inputs generation={generation} value={gen23Form} onChange={(values) => {
             setGen23Form(values);
             const selectedCare = genericGen23CareSetting(values.gen23CareSetting);
-            if (selectedCare) setCareSetting(selectedCare);
+            if (selectedCare && selectedCare !== careSetting) changeCareSetting(selectedCare);
           }} />}
         {editingUsageId && (
           <div className="notice-box">
@@ -2324,7 +2348,7 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
               }
               onChange={(e) => {
                 const nextCare = e.target.value as CareSetting;
-                setCareSetting(nextCare);
+                changeCareSetting(nextCare);
                 if (generation === 2 || generation === 3) {
                   setGen23Form(previous => ({ ...previous, gen23CareSetting: syncGen23CareSetting(nextCare, previous.gen23CareSetting) }));
                 }
@@ -2438,29 +2462,34 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
         <div className="form-grid">
           <label>
             의료기관 종별
-            <select
-              value={
-                institutionType
-              }
-              onChange={(e) =>
-                setInstitutionType(
-                  e.target.value as
-                    | ""
-                    | MedicalInstitutionType
-                )
-              }
-            >
-              <option value="">
-                모름 / 해당 없음
-              </option>
-              <option value="CLINIC_HOSPITAL">
-                병·의원
-              </option>
-              <option value="GENERAL_TERTIARY">
-                종합·상급종합병원
-              </option>
+            <select value={copayInstitution || institutionType} onChange={(e) => {
+              const value = e.target.value as CopayInstitution | "";
+              setCopayInstitution(value);
+              setInstitutionType(value === "TERTIARY" || value === "GENERAL" ? "GENERAL_TERTIARY" : value === "CLINIC" || value === "HOSPITAL" ? "CLINIC_HOSPITAL" : "");
+              applyCopayDefault(careSetting, value);
+            }}>
+              <option value="">모름 / 해당 없음</option>
+              {!copayInstitution && institutionType && <option value={institutionType}>기존 분류 — 세부 종별을 선택해주세요</option>}
+              <option value="TERTIARY">상급종합병원</option>
+              <option value="GENERAL">종합병원</option>
+              <option value="HOSPITAL">병원급</option>
+              <option value="CLINIC">의원급</option>
+              <option value="PUBLIC_HEALTH">보건기관</option>
             </select>
           </label>
+          {(copayInstitution === "GENERAL" || copayInstitution === "HOSPITAL") && careSetting === "OUTPATIENT" && <label>
+            의료기관 소재 지역
+            <select value={copayRegion} onChange={(e) => {
+              const value = e.target.value as CopayRegion | "";
+              setCopayRegion(value);
+              applyCopayDefault(careSetting, copayInstitution, value);
+            }}>
+              <option value="">선택해주세요</option>
+              <option value="DONG">동지역</option>
+              <option value="EUP_MYEON">읍·면지역</option>
+            </select>
+          </label>}
+          <p>일반환자 급여 기준입니다. 입원 20%는 일반 진료비에 한정하며 식대 50%와 상급병실 2~4인실은 포함하지 않습니다. 상급종합병원 외래(진찰료 100%·나머지 60%)와 보건기관(12,000원 이하 정액·초과 30%)은 단일 비율로 표현할 수 없어 자동 입력하지 않습니다.</p>
 
           <label>
             건강보험 본인부담률 (r)
