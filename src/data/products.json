@@ -81,8 +81,11 @@
       "default"
     ],
     "requiredSelections": [
+      "급여 주계약 가입 확인",
       "비급여 특약 가입 여부",
-      "3대 비급여 특약 가입 여부"
+      "급여·비급여 및 입원·통원 구분",
+      "치료 유형(일반·도수/체외충격파/증식·주사·MRI/MRA)",
+      "의료기관 종류 및 연간 누적 금액·횟수"
     ],
     "verificationStatus": "REVIEW_REQUIRED",
     "calculationEnabled": false,
@@ -96,22 +99,29 @@
     "productCode": "SAMSUNG_2605_1",
     "insurer": "삼성화재",
     "generation": 5,
-    "productName": "무배당 삼성화재 다이렉트 실손의료비보험(2605.1)",
+    "productName": "무배당 삼성화재 실손의료비보험(2605.1)",
     "sampleLabel": "5세대 삼성화재 검수 샘플",
     "effectiveFrom": null,
     "effectiveTo": null,
     "variants": [
-      "default"
+      "general",
+      "conversion"
     ],
     "requiredSelections": [
+      "계약 유형(일반형/계약전환용)",
+      "급여 기본계약 가입 확인",
       "중증 비급여 특약 가입 여부",
-      "비중증 비급여 특약 가입 여부"
+      "비중증 비급여 특약 가입 여부",
+      "급여·비급여 및 입원·통원 구분",
+      "산정특례 적용 여부와 질환 관련성",
+      "의료기관 종류 및 약관상 보장 제외 여부"
     ],
     "verificationStatus": "REVIEW_REQUIRED",
     "calculationEnabled": false,
     "ruleSetIds": [],
     "documentIds": [
-      "SAMSUNG_2605_1_TERMS"
+      "SAMSUNG_2605_1_GENERAL_TERMS",
+      "SAMSUNG_2605_1_CONVERSION_TERMS"
     ],
     "verifiedAt": null
   }

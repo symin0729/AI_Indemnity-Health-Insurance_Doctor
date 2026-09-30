@@ -1,9 +1,9 @@
 {
   "schemaVersion": "1.0",
-  "specId": "SAMSUNG_2605_1_DEFAULT_RULES_DRAFT_EXECUTION_SPEC",
+  "specId": "SAMSUNG_2605_1_GENERAL_RULES_DRAFT_EXECUTION_SPEC",
   "productCode": "SAMSUNG_2605_1",
   "generation": 5,
-  "variant": "default",
+  "variant": "general",
   "status": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING",
   "calculationEnabled": false,
   "rules": [
@@ -11,7 +11,7 @@
       "ruleId": "G5-01",
       "productCode": "SAMSUNG_2605_1",
       "generation": 5,
-      "variant": "default",
+      "variant": "general",
       "coverage": "급여 입원",
       "careSetting": "INPATIENT",
       "benefitClass": "COVERED",
@@ -28,17 +28,23 @@
       },
       "limitText": "급여 상해/질병 각각 연간 보험가입금액 한도",
       "requiresAccumulator": true,
-      "enforcement": null,
+      "enforcement": {
+        "annualBenefitCap": 50000000,
+        "requiresContractBenefitCap": true
+      },
       "specialConditions": [
         "POLICY_EXCLUSIONS_MUST_BE_CLEARED",
         "MULTIPLE_POLICY_PROPORTIONAL_PAYMENT_REQUIRED_IF_APPLICABLE",
         "POLICY_YEAR_AMOUNT_AND_COUNT_ACCUMULATION"
       ],
       "evidenceIds": [
-        "SAMSUNG_2605_1_E_G5-01"
+        "SAMSUNG_2605_1_E_GENERAL_G5-01"
       ],
       "source": {
-        "documentId": "SAMSUNG_2605_1_TERMS",
+        "documentId": "SAMSUNG_2605_1_GENERAL_TERMS",
+        "applicableContractTypes": [
+          "GENERAL"
+        ],
         "article": "쉽게 이해하는 상품 및 약관 요약서",
         "paragraph": "급여 입원",
         "pdfPage": 8,
@@ -50,7 +56,7 @@
       "ruleId": "G5-02",
       "productCode": "SAMSUNG_2605_1",
       "generation": 5,
-      "variant": "default",
+      "variant": "general",
       "coverage": "급여 통원",
       "careSetting": "OUTPATIENT",
       "benefitClass": "COVERED",
@@ -77,10 +83,13 @@
         "POLICY_YEAR_AMOUNT_AND_COUNT_ACCUMULATION"
       ],
       "evidenceIds": [
-        "SAMSUNG_2605_1_E_G5-02"
+        "SAMSUNG_2605_1_E_GENERAL_G5-02"
       ],
       "source": {
-        "documentId": "SAMSUNG_2605_1_TERMS",
+        "documentId": "SAMSUNG_2605_1_GENERAL_TERMS",
+        "applicableContractTypes": [
+          "GENERAL"
+        ],
         "article": "쉽게 이해하는 상품 및 약관 요약서",
         "paragraph": "급여 통원",
         "pdfPage": 8,
@@ -92,7 +101,7 @@
       "ruleId": "G5-03",
       "productCode": "SAMSUNG_2605_1",
       "generation": 5,
-      "variant": "default",
+      "variant": "general",
       "coverage": "중증 비급여 입원",
       "careSetting": "INPATIENT",
       "benefitClass": "NON_COVERED",
@@ -121,6 +130,7 @@
       "limitText": "상급종합·종합병원 자기부담 최대 5,000,000원(특정 3대 제외)",
       "requiresAccumulator": false,
       "enforcement": {
+        "annualBenefitCap": 50000000,
         "annualDeductibleCap": 5000000,
         "appliesWhen": "GENERAL_OR_TERTIARY_HOSPITAL_EXCLUDING_SPECIFIED_THREE"
       },
@@ -130,10 +140,13 @@
         "POLICY_YEAR_AMOUNT_AND_COUNT_ACCUMULATION"
       ],
       "evidenceIds": [
-        "SAMSUNG_2605_1_E_G5-03"
+        "SAMSUNG_2605_1_E_GENERAL_G5-03"
       ],
       "source": {
-        "documentId": "SAMSUNG_2605_1_TERMS",
+        "documentId": "SAMSUNG_2605_1_GENERAL_TERMS",
+        "applicableContractTypes": [
+          "GENERAL"
+        ],
         "article": "쉽게 이해하는 상품 및 약관 요약서",
         "paragraph": "중증 비급여 입원",
         "pdfPage": 8,
@@ -145,7 +158,7 @@
       "ruleId": "G5-04",
       "productCode": "SAMSUNG_2605_1",
       "generation": 5,
-      "variant": "default",
+      "variant": "general",
       "coverage": "중증 비급여 통원",
       "careSetting": "OUTPATIENT",
       "benefitClass": "NON_COVERED",
@@ -161,9 +174,11 @@
       "limitText": "상해/질병 각각 연 최대 100회",
       "requiresAccumulator": true,
       "enforcement": {
+        "annualBenefitCap": 50000000,
         "maxAnnualCount": 100,
         "countUnit": "VISIT",
-        "separateBy": "INJURY_OR_DISEASE"
+        "separateBy": "INJURY_OR_DISEASE",
+        "fixedPerOccurrenceBenefitCap": 200000
       },
       "specialConditions": [
         "POLICY_EXCLUSIONS_MUST_BE_CLEARED",
@@ -171,10 +186,13 @@
         "POLICY_YEAR_AMOUNT_AND_COUNT_ACCUMULATION"
       ],
       "evidenceIds": [
-        "SAMSUNG_2605_1_E_G5-04"
+        "SAMSUNG_2605_1_E_GENERAL_G5-04"
       ],
       "source": {
-        "documentId": "SAMSUNG_2605_1_TERMS",
+        "documentId": "SAMSUNG_2605_1_GENERAL_TERMS",
+        "applicableContractTypes": [
+          "GENERAL"
+        ],
         "article": "쉽게 이해하는 상품 및 약관 요약서",
         "paragraph": "중증 비급여 통원",
         "pdfPage": 8,
@@ -186,7 +204,7 @@
       "ruleId": "G5-05",
       "productCode": "SAMSUNG_2605_1",
       "generation": 5,
-      "variant": "default",
+      "variant": "general",
       "coverage": "중증 비급여 3대",
       "careSetting": "ANY",
       "benefitClass": "NON_COVERED",
@@ -202,8 +220,24 @@
       "limitText": "근골격계 이학요법·체외충격파: 350만원/50회(최초 10회 후 증상 개선 확인 시 10회 단위); 주사 250만원/50회; MRI/MRA 300만원",
       "requiresAccumulator": true,
       "enforcement": {
-        "aggregationUnitMustBeProvided": true,
-        "improvementEvidenceAfterCount": 10
+        "categoryLimits": {
+          "MANUAL_THERAPY": {
+            "annualBenefitCap": 3500000,
+            "maxAnnualCount": 50,
+            "countUnit": "TREATMENT",
+            "improvementEvidenceAfterCount": 10
+          },
+          "INJECTION": {
+            "annualBenefitCap": 2500000,
+            "maxAnnualCount": 50,
+            "countUnit": "TREATMENT"
+          },
+          "MRI": {
+            "annualBenefitCap": 3000000,
+            "countUnit": "DIAGNOSTIC_ACTION",
+            "aggregationUnitMustBeProvided": true
+          }
+        }
       },
       "specialConditions": [
         "POLICY_EXCLUSIONS_MUST_BE_CLEARED",
@@ -212,10 +246,13 @@
         "AFTER_FIRST_10_TREATMENTS_IMPROVEMENT_EVIDENCE_REQUIRED"
       ],
       "evidenceIds": [
-        "SAMSUNG_2605_1_E_G5-05"
+        "SAMSUNG_2605_1_E_GENERAL_G5-05"
       ],
       "source": {
-        "documentId": "SAMSUNG_2605_1_TERMS",
+        "documentId": "SAMSUNG_2605_1_GENERAL_TERMS",
+        "applicableContractTypes": [
+          "GENERAL"
+        ],
         "article": "쉽게 이해하는 상품 및 약관 요약서",
         "paragraph": "중증 비급여 3대",
         "pdfPage": 9,
@@ -227,7 +264,7 @@
       "ruleId": "G5-06",
       "productCode": "SAMSUNG_2605_1",
       "generation": 5,
-      "variant": "default",
+      "variant": "general",
       "coverage": "비중증 비급여 입원",
       "careSetting": "INPATIENT",
       "benefitClass": "NON_COVERED",
@@ -252,21 +289,28 @@
       },
       "limitText": "(상급)종합병원 외 병·의원은 회당 3,000,000원 한도",
       "requiresAccumulator": false,
-      "enforcement": null,
+      "enforcement": {
+        "annualBenefitCap": 10000000,
+        "fixedPerOccurrenceBenefitCap": 3000000,
+        "fixedPerOccurrenceCapAppliesWhen": "NON_GENERAL_OR_TERTIARY_HOSPITAL"
+      },
       "specialConditions": [
         "POLICY_EXCLUSIONS_MUST_BE_CLEARED",
         "MULTIPLE_POLICY_PROPORTIONAL_PAYMENT_REQUIRED_IF_APPLICABLE",
         "POLICY_YEAR_AMOUNT_AND_COUNT_ACCUMULATION"
       ],
       "evidenceIds": [
-        "SAMSUNG_2605_1_E_G5-06"
+        "SAMSUNG_2605_1_E_GENERAL_G5-06"
       ],
       "source": {
-        "documentId": "SAMSUNG_2605_1_TERMS",
+        "documentId": "SAMSUNG_2605_1_GENERAL_TERMS",
+        "applicableContractTypes": [
+          "GENERAL"
+        ],
         "article": "제3조",
         "paragraph": "제1항 (1) 상해비급여",
-        "pdfPage": 63,
-        "printedPage": 62
+        "pdfPage": 64,
+        "printedPage": 63
       },
       "verificationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING"
     },
@@ -274,7 +318,7 @@
       "ruleId": "G5-07",
       "productCode": "SAMSUNG_2605_1",
       "generation": 5,
-      "variant": "default",
+      "variant": "general",
       "coverage": "비중증 비급여 통원",
       "careSetting": "OUTPATIENT",
       "benefitClass": "NON_COVERED",
@@ -291,9 +335,11 @@
       "limitText": "상해/질병 각각 연 최대 100일; 가입금액별 1일 한도",
       "requiresAccumulator": true,
       "enforcement": {
+        "annualBenefitCap": 10000000,
         "maxAnnualCount": 100,
         "countUnit": "SERVICE_DAY",
-        "separateBy": "INJURY_OR_DISEASE"
+        "separateBy": "INJURY_OR_DISEASE",
+        "fixedPerOccurrenceBenefitCap": 200000
       },
       "specialConditions": [
         "POLICY_EXCLUSIONS_MUST_BE_CLEARED",
@@ -301,14 +347,17 @@
         "POLICY_YEAR_AMOUNT_AND_COUNT_ACCUMULATION"
       ],
       "evidenceIds": [
-        "SAMSUNG_2605_1_E_G5-07"
+        "SAMSUNG_2605_1_E_GENERAL_G5-07"
       ],
       "source": {
-        "documentId": "SAMSUNG_2605_1_TERMS",
+        "documentId": "SAMSUNG_2605_1_GENERAL_TERMS",
+        "applicableContractTypes": [
+          "GENERAL"
+        ],
         "article": "제3조",
         "paragraph": "제1항 (1) 상해비급여",
-        "pdfPage": 63,
-        "printedPage": 62
+        "pdfPage": 64,
+        "printedPage": 63
       },
       "verificationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING"
     },
@@ -316,7 +365,7 @@
       "ruleId": "G5-08",
       "productCode": "SAMSUNG_2605_1",
       "generation": 5,
-      "variant": "default",
+      "variant": "general",
       "coverage": "비중증 비급여 MRI/MRA",
       "careSetting": "ANY",
       "benefitClass": "NON_COVERED",
@@ -342,10 +391,13 @@
         "POLICY_YEAR_AMOUNT_AND_COUNT_ACCUMULATION"
       ],
       "evidenceIds": [
-        "SAMSUNG_2605_1_E_G5-08"
+        "SAMSUNG_2605_1_E_GENERAL_G5-08"
       ],
       "source": {
-        "documentId": "SAMSUNG_2605_1_TERMS",
+        "documentId": "SAMSUNG_2605_1_GENERAL_TERMS",
+        "applicableContractTypes": [
+          "GENERAL"
+        ],
         "article": "쉽게 이해하는 상품 및 약관 요약서",
         "paragraph": "비중증 비급여 MRI/MRA",
         "pdfPage": 9,
@@ -357,7 +409,7 @@
       "ruleId": "G5-09",
       "productCode": "SAMSUNG_2605_1",
       "generation": 5,
-      "variant": "default",
+      "variant": "general",
       "coverage": "비중증 비급여 보험료 차등",
       "careSetting": "ANY",
       "benefitClass": "NON_COVERED",
@@ -407,10 +459,13 @@
         "POLICY_YEAR_AMOUNT_AND_COUNT_ACCUMULATION"
       ],
       "evidenceIds": [
-        "SAMSUNG_2605_1_E_G5-09"
+        "SAMSUNG_2605_1_E_GENERAL_G5-09"
       ],
       "source": {
-        "documentId": "SAMSUNG_2605_1_TERMS",
+        "documentId": "SAMSUNG_2605_1_GENERAL_TERMS",
+        "applicableContractTypes": [
+          "GENERAL"
+        ],
         "article": "쉽게 이해하는 상품 및 약관 요약서",
         "paragraph": "비중증 비급여 보험료 차등",
         "pdfPage": 10,

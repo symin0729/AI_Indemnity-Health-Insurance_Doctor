@@ -6,6 +6,9 @@ export type SamsungInstitution =
   | "GENERAL_HOSPITAL";
 
 export interface SamsungDraftCalculationInput {
+  contractType?: "GENERAL" | "CONVERSION";
+  conversionContractSubtype?: "CONTRACT_CONVERSION" | "RESUMPTION" | "CHILD_CONVERSION";
+  conversionEligibilityConfirmed?: boolean;
   eligibleExpense?: number;
   coveredRoomAndTreatment?: number;
   nonNhiInpatientTotal?: number;
@@ -60,10 +63,12 @@ export interface SamsungDraftCalculationInput {
 export interface SamsungExecutionRule {
   ruleId: string;
   generation?: number;
+  variant?: string;
   requiredCoverages?: string[];
   calculation: Record<string, unknown> & { type: string };
   source: {
     documentId: string;
+    applicableContractTypes?: Array<"GENERAL" | "CONVERSION">;
     article: string;
     paragraph: string;
     pdfPage: number;
@@ -82,6 +87,8 @@ export interface SamsungExecutionRule {
     resetAfterGapDays?: number;
     requiresPerOccurrenceBenefitCap?: boolean;
     maxPerOccurrenceBenefitCap?: number;
+    fixedPerOccurrenceBenefitCap?: number;
+    fixedPerOccurrenceCapAppliesWhen?: string;
     requiresContractBenefitCap?: boolean;
     categoryLimits?: Record<string, SamsungExecutionRule["enforcement"]>;
     aggregationUnitMustBeProvided?: boolean;
@@ -238,9 +245,12 @@ function calculated(
   }
   let restored = 0;
   const capBasis = [2, 3].includes(rule.generation ?? 0) ? capEligibleDeductible : enforcedDeductible;
-  const deductibleCapApplies = (![2, 3].includes(rule.generation ?? 0) || (capBasis !== null && capBasis > 0)) && (enforcement?.appliesWhen !== "GENERAL_OR_TERTIARY_HOSPITAL_EXCLUDING_SPECIFIED_THREE"
-    || (input.institution === "GENERAL_TERTIARY" && input.specifiedThreeNonCoveredTreatment === false));
-  if ([2, 3].includes(rule.generation ?? 0) && enforcement?.annualDeductibleCap !== undefined && deductibleCapApplies && enforcedDeductible !== null
+  const deductibleCapApplies =
+    (![2, 3].includes(rule.generation ?? 0) || (capBasis !== null && capBasis > 0)) &&
+    (enforcement?.appliesWhen !== "GENERAL_OR_TERTIARY_HOSPITAL_EXCLUDING_SPECIFIED_THREE"
+      || (input.institution === "GENERAL_TERTIARY" && input.specifiedThreeNonCoveredTreatment === false));
+
+  if ([2, 3, 5].includes(rule.generation ?? 0) && enforcement?.annualDeductibleCap !== undefined && deductibleCapApplies && enforcedDeductible !== null
     && input.priorEligibleDeductible === undefined) {
     return confirmation(rule, `연간 자기부담 ${enforcement.annualDeductibleCap.toLocaleString("ko-KR")}원 상한 적용을 위해 기존 누적 자기부담액이 필요합니다.`);
   }
@@ -302,6 +312,14 @@ function calculated(
       return confirmation(rule, `통원의료비의 계약상 회당 보험가입금액(최대 ${maximumCap.toLocaleString("ko-KR")}원)이 필요합니다.`);
     }
     enforcedClaim = Math.min(enforcedClaim, cap);
+  }
+  if (enforcement?.fixedPerOccurrenceBenefitCap !== undefined) {
+    if (enforcement.fixedPerOccurrenceCapAppliesWhen === "NON_GENERAL_OR_TERTIARY_HOSPITAL" && !input.institution) {
+      return confirmation(rule, "입원 회당 한도 적용을 위해 의료기관 종별이 필요합니다.");
+    }
+    const applies = enforcement.fixedPerOccurrenceCapAppliesWhen !== "NON_GENERAL_OR_TERTIARY_HOSPITAL"
+      || input.institution !== "GENERAL_TERTIARY";
+    if (applies) enforcedClaim = Math.min(enforcedClaim, enforcement.fixedPerOccurrenceBenefitCap);
   }
   if (input.proportionalPaymentFactor !== undefined) {
     if (([2, 3].includes(rule.generation ?? 0) && !Number.isFinite(input.proportionalPaymentFactor))
@@ -410,6 +428,21 @@ export function evaluateSamsungExecutionSpec(
 
 
   if ([1, 2, 3, 4, 5].includes(rule.generation ?? 0)) {
+    if (rule.generation === 5) {
+      const expectedContractType = rule.variant === "conversion" ? "CONVERSION" : "GENERAL";
+      if (input.contractType !== expectedContractType) {
+        return confirmation(rule, `5세대 ${rule.variant === "conversion" ? "계약전환형" : "일반형"} 계산에는 계약 유형 ${expectedContractType} 확인이 필요합니다.`);
+      }
+      if (rule.variant === "conversion") {
+        if (!input.conversionContractSubtype) {
+          return confirmation(rule, "계약전환형의 전환 세부유형(계약전환·재개·자녀보험전환)이 필요합니다.");
+        }
+        if (input.conversionEligibilityConfirmed !== true) {
+          return confirmation(rule, "계약전환형의 전환 자격과 계속 치료 적용 조건 확인이 필요합니다.");
+        }
+      }
+    }
+
     if (rule.requiredCoverages?.length && input.requiredCoverageConfirmed !== true
       && !(rule.generation === 3 && input.coverageStates)) {
       return confirmation(rule, `필수 특약 가입 여부를 확인해야 합니다: ${rule.requiredCoverages.join(", ")}`);

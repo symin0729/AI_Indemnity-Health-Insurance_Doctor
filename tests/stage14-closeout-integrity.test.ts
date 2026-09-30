@@ -13,27 +13,28 @@ const readJson = (file: string) => JSON.parse(fs.readFileSync(path.join(root, fi
 const sha256 = (file: string) => crypto.createHash("sha256").update(fs.readFileSync(path.join(root, file))).digest("hex");
 
 describe("Stage 14 closeout integrity", () => {
-  it("keeps five official PDFs present and hash-identical to the manifest", () => {
-    expect(manifest.documents).toHaveLength(5);
+  it("keeps all official PDFs present and hash-identical to the manifest", () => {
+    expect(manifest.documents).toHaveLength(6);
     for (const document of manifest.documents) {
       expect(fs.existsSync(path.join(root, document.relativePath))).toBe(true);
       expect(sha256(document.relativePath)).toBe(document.sha256);
       expect(document.status).toBe("AI_SOURCE_VALIDATED");
     }
+    expect(manifest.documents.some((document) => document.title.includes("다이렉트"))).toBe(false);
   });
 
-  it("connects all 40 Rule candidates, Evidence records, and executable specs", () => {
+  it("connects all 49 Rule candidates, Evidence records, and executable specs", () => {
     const specsDir = path.join(root, handoff.executableSpecDirectory);
     const specFiles = fs.readdirSync(specsDir).filter((name) => name.endsWith(".execution-spec.draft.json"));
     const specs = specFiles.map((name) => readJson(path.join(handoff.executableSpecDirectory, name)));
     const rules = specs.flatMap((spec) => spec.rules);
     const evidenceIds = new Set(evidenceMap.mappings.map((item) => item.evidenceId));
 
-    expect(specFiles).toHaveLength(7);
-    expect(rules).toHaveLength(40);
-    expect(evidenceMap.mappings).toHaveLength(40);
-    expect(handoff.aiValidatedRuleIds).toHaveLength(40);
-    expect(handoff.implementableRuleIds).toHaveLength(40);
+    expect(specFiles).toHaveLength(8);
+    expect(rules).toHaveLength(49);
+    expect(evidenceMap.mappings).toHaveLength(49);
+    expect(handoff.aiValidatedRuleIds).toHaveLength(49);
+    expect(handoff.implementableRuleIds).toHaveLength(49);
     expect(handoff.blockedRuleIds).toEqual([]);
     expect(new Set(rules.map((rule) => rule.ruleId))).toEqual(new Set(handoff.aiValidatedRuleIds));
     for (const rule of rules) {
