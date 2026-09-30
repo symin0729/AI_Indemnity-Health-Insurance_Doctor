@@ -8,8 +8,6 @@ import type {
   MedicalInstitutionType,
   MedicalUsage,
   SeverityClass,
-  ClaimCause,
-  NationalHealthInsuranceStatus,
 } from "../../domain/medical";
 
 import type { InsuranceGeneration } from "../../domain/insurance";
@@ -24,7 +22,7 @@ import {
   sampleScenarioService,
 } from "../../services/sampleScenarioService";
 
-import { useAnalysisStore, type RiderEnrollmentStatus } from "../../store/useAnalysisStore";
+import { useAnalysisStore } from "../../store/useAnalysisStore";
 
 
 function isValidIsoDate(value: string): boolean {
@@ -197,8 +195,6 @@ function M02InputPage() {
         state.calculationAssumptions
     );
 
-  const savedProductCalculationSelections = useAnalysisStore((state) => state.productCalculationSelections);
-
   // ========================================
   // Store setter
   // ========================================
@@ -229,8 +225,6 @@ function M02InputPage() {
         state.setCalculationAssumptions
     );
 
-  const setProductCalculationSelections = useAnalysisStore((state) => state.setProductCalculationSelections);
-
   const resetAnalysis = useAnalysisStore(
     (state) => state.resetAnalysis
   );
@@ -258,14 +252,6 @@ function M02InputPage() {
     useState<InsuranceGeneration>(
       savedContract?.generation ?? 3
     );
-
-  const [gen4NonCoveredRider, setGen4NonCoveredRider] = useState<RiderEnrollmentStatus>(savedProductCalculationSelections.gen4NonCoveredRider);
-  const [gen1Product, setGen1Product] = useState(savedProductCalculationSelections.gen1Product);
-  const [gen1ContractBasis, setGen1ContractBasis] = useState(savedProductCalculationSelections.gen1ContractBasis);
-  const [gen1D1Coverage, setGen1D1Coverage] = useState(savedProductCalculationSelections.gen1D1Coverage);
-  const [gen5ContractType, setGen5ContractType] = useState<"GENERAL" | "CONVERSION">(savedProductCalculationSelections.gen5ContractType);
-  const [gen5SevereRider, setGen5SevereRider] = useState<RiderEnrollmentStatus>(savedProductCalculationSelections.gen5SevereRider);
-  const [gen5NonSevereRider, setGen5NonSevereRider] = useState<RiderEnrollmentStatus>(savedProductCalculationSelections.gen5NonSevereRider);
 
   const [monthlyPremium, setMonthlyPremium] =
     useState(
@@ -312,6 +298,28 @@ function M02InputPage() {
     sampleScenarioNotice,
     setSampleScenarioNotice,
   ] = useState("");
+
+  const [
+    hasCurrentSpecialRider1,
+    setHasCurrentSpecialRider1,
+  ] = useState(
+    savedContract?.coverages.includes(
+      "SPECIAL_RIDER_1"
+    ) ?? false
+  );
+
+  const [
+    hasCurrentSpecialRider2,
+    setHasCurrentSpecialRider2,
+  ] = useState(
+    savedContract?.coverages.includes(
+      "SPECIAL_RIDER_2"
+    ) ||
+      savedContract?.coverages.includes(
+        "NON_COVERED"
+      ) ||
+      false
+  );
 
   // ========================================
   // 5세대 비교
@@ -438,16 +446,6 @@ function M02InputPage() {
     coveredAmount,
     setCoveredAmount,
   ] = useState("");
-
-  const [claimCause, setClaimCause] = useState<ClaimCause>("UNKNOWN");
-  const [nationalHealthInsuranceStatus, setNationalHealthInsuranceStatus] =
-    useState<NationalHealthInsuranceStatus>("UNKNOWN");
-  const [gen1CoveredRoomAndTreatment, setGen1CoveredRoomAndTreatment] = useState("");
-  const [gen1RoomDifference, setGen1RoomDifference] = useState("");
-  const [gen1NonNhiInpatientTotal, setGen1NonNhiInpatientTotal] = useState("");
-  const [gen1PriorPaidBenefit, setGen1PriorPaidBenefit] = useState("");
-  const [gen1PriorServiceDays, setGen1PriorServiceDays] = useState("");
-  const [gen1PolicyExclusionsCleared, setGen1PolicyExclusionsCleared] = useState(false);
 
   // ========================================
   // 치료 목록 / 수정 상태
@@ -606,14 +604,6 @@ function M02InputPage() {
     setInstitutionType("");
     setHealthInsuranceCopayRatePercent("");
     setCoveredAmount("");
-    setClaimCause("UNKNOWN");
-    setNationalHealthInsuranceStatus("UNKNOWN");
-    setGen1CoveredRoomAndTreatment("");
-    setGen1RoomDifference("");
-    setGen1NonNhiInpatientTotal("");
-    setGen1PriorPaidBenefit("");
-    setGen1PriorServiceDays("");
-    setGen1PolicyExclusionsCleared(false);
     setEditingUsageId(null);
   };
 
@@ -626,15 +616,14 @@ function M02InputPage() {
     setProductName("");
     setInceptionDate("");
     setGeneration(3);
-    setGen1Product("UNKNOWN");
-    setGen1ContractBasis("SAMPLE_SIMULATION");
-    setGen1D1Coverage("UNKNOWN");
     setMonthlyPremium("");
     setRenewalCycleMonths("");
     setReentryCycleYears("");
     setSelectedSampleId(null);
     setIsSampleConfirmed(false);
     setSampleScenarioNotice("");
+    setHasCurrentSpecialRider1(false);
+    setHasCurrentSpecialRider2(false);
 
     setTarget5GMonthlyPremiumInput("");
     setHasTarget5GSpecialRider1(false);
@@ -703,8 +692,6 @@ function M02InputPage() {
       coveredAmount === ""
         ? null
         : Number(coveredAmount);
-
-    const optionalAmount = (value: string) => value === "" ? undefined : Number(value);
 
     if (!treatmentName.trim()) {
       setErrorMessage(
@@ -832,17 +819,6 @@ function M02InputPage() {
               coveredAmountNumber,
           }
         : {}),
-
-      ...(generation === 1 ? {
-        claimCause,
-        nationalHealthInsuranceStatus,
-        gen1CoveredRoomAndTreatment: optionalAmount(gen1CoveredRoomAndTreatment),
-        gen1RoomDifference: optionalAmount(gen1RoomDifference),
-        gen1NonNhiInpatientTotal: optionalAmount(gen1NonNhiInpatientTotal),
-        gen1PriorPaidBenefit: optionalAmount(gen1PriorPaidBenefit),
-        gen1PriorServiceDays: optionalAmount(gen1PriorServiceDays),
-        gen1PolicyExclusionsCleared,
-      } : {}),
     };
 
     return usage;
@@ -1018,14 +994,6 @@ function M02InputPage() {
             usage.coveredAmount
           )
     );
-    setClaimCause(usage.claimCause ?? "UNKNOWN");
-    setNationalHealthInsuranceStatus(usage.nationalHealthInsuranceStatus ?? "UNKNOWN");
-    setGen1CoveredRoomAndTreatment(usage.gen1CoveredRoomAndTreatment === undefined ? "" : String(usage.gen1CoveredRoomAndTreatment));
-    setGen1RoomDifference(usage.gen1RoomDifference === undefined ? "" : String(usage.gen1RoomDifference));
-    setGen1NonNhiInpatientTotal(usage.gen1NonNhiInpatientTotal === undefined ? "" : String(usage.gen1NonNhiInpatientTotal));
-    setGen1PriorPaidBenefit(usage.gen1PriorPaidBenefit === undefined ? "" : String(usage.gen1PriorPaidBenefit));
-    setGen1PriorServiceDays(usage.gen1PriorServiceDays === undefined ? "" : String(usage.gen1PriorServiceDays));
-    setGen1PolicyExclusionsCleared(usage.gen1PolicyExclusionsCleared ?? false);
   };
 
   // ========================================
@@ -1266,18 +1234,20 @@ function M02InputPage() {
       [];
 
     if (generation === 5) {
-      if (gen5SevereRider === "ENROLLED") {
+      if (hasCurrentSpecialRider1) {
         currentCoverages.push(
           "SPECIAL_RIDER_1"
         );
       }
 
-      if (gen5NonSevereRider === "ENROLLED") {
+      if (hasCurrentSpecialRider2) {
         currentCoverages.push(
           "SPECIAL_RIDER_2"
         );
       }
-    } else if (generation === 4 && gen4NonCoveredRider === "ENROLLED") {
+    } else if (
+      hasCurrentSpecialRider2
+    ) {
       /**
        * 기존 세대의 현재 MVP 비급여 특약 확인값.
        * G3_MRI_OUTPATIENT 같은 기존세대 룰과 연결한다.
@@ -1347,16 +1317,6 @@ function M02InputPage() {
       assumeEntireMedicalCostCovered,
       assumeNoPriorLimitUsage,
       assumeEachOccurrenceSeparate,
-    });
-
-    setProductCalculationSelections({
-      gen1Product,
-      gen1ContractBasis,
-      gen1D1Coverage,
-      gen4NonCoveredRider,
-      gen5ContractType,
-      gen5SevereRider,
-      gen5NonSevereRider,
     });
 
     navigate("/confirm");
@@ -1791,154 +1751,39 @@ function M02InputPage() {
           샘플을 불러온 경우 실제 계산 전 사용자가 내용을 다시 확인해야 합니다.
         </div>
 
-        {generation === 1 && (
-          <fieldset className="form-card" style={{ marginTop: "16px" }}>
-            <legend>1세대 삼성화재 계약 확인</legend>
-            <p className="card-description">보험증권을 기준으로 상품과 D1 담보를 선택해주세요.</p>
-
-            <label>
-              삼성화재 대표 상품
-              <select
-                value={gen1Product}
-                onChange={(event) => {
-                  const value = event.target.value as typeof gen1Product;
-                  setGen1Product(value);
-                  if (value === "SAMSUNG_0904_2") {
-                    setInsurer("삼성화재");
-                    setProductName("삼성 올라이프 100세 건강파트너보험(0904.2)");
-                  }
-                }}
-              >
-                <option value="UNKNOWN">확인할 수 없음</option>
-                <option value="SAMSUNG_0904_2">삼성 올라이프 100세 건강파트너보험(0904.2)</option>
-                <option value="OTHER">다른 상품</option>
-              </select>
-            </label>
-
-            {gen1Product === "SAMSUNG_0904_2" && (
-              <>
-                <fieldset className="nested-fieldset">
-                  <legend>보험증권에 표시된 담보</legend>
-                  {([
-                    ["INJURY", "상해 입·통원의료비(D1)"],
-                    ["DISEASE", "질병 입·통원의료비(D1)"],
-                    ["BOTH", "두 담보 모두"],
-                    ["UNKNOWN", "확인할 수 없음"],
-                  ] as const).map(([value, label]) => (
-                    <label key={value} style={{ marginRight: "16px" }}>
-                      <input type="radio" name="gen1-d1" checked={gen1D1Coverage === value} onChange={() => setGen1D1Coverage(value)} /> {label}
-                    </label>
-                  ))}
-                </fieldset>
-
-                <div className="gen1-conditional-inputs">
-                  <h3>0904.2 D1 계산 조건</h3>
-                  <div className="form-grid">
-                    <label>질병 / 상해<select value={claimCause} onChange={(event) => setClaimCause(event.target.value as ClaimCause)}><option value="UNKNOWN">확인할 수 없음</option><option value="INJURY">상해</option><option value="DISEASE">질병</option></select></label>
-                    <label>입원 / 통원<select value={careSetting} onChange={(event) => setCareSetting(event.target.value as CareSetting)}><option value="INPATIENT">입원</option><option value="OUTPATIENT">통원</option></select></label>
-                    <label>이번 진료의 국민건강보험 적용 여부<select value={nationalHealthInsuranceStatus} onChange={(event) => setNationalHealthInsuranceStatus(event.target.value as NationalHealthInsuranceStatus)}><option value="UNKNOWN">확인할 수 없음</option><option value="APPLIED">적용됨</option><option value="NOT_APPLIED">적용되지 않음</option><option value="PARTIAL">일부 적용</option></select></label>
-                  </div>
-                  {nationalHealthInsuranceStatus === "PARTIAL" && <div className="notice-box warning">일부 적용 조합은 RULE_NOT_VERIFIED로 처리됩니다.</div>}
-                  {careSetting === "INPATIENT" && nationalHealthInsuranceStatus === "APPLIED" && <div className="form-grid">
-                    <label>실제 부담액<input type="text" inputMode="numeric" value={formatWonInput(gen1CoveredRoomAndTreatment)} onChange={(event) => setGen1CoveredRoomAndTreatment(getWonInputValue(event.target.value))} />원</label>
-                    <label>병실료 차액<input type="text" inputMode="numeric" value={formatWonInput(gen1RoomDifference)} onChange={(event) => setGen1RoomDifference(getWonInputValue(event.target.value))} placeholder="없으면 0" />원</label>
-                  </div>}
-                  {careSetting === "INPATIENT" && nationalHealthInsuranceStatus === "NOT_APPLIED" && <label>입원의료비 총액<input type="text" inputMode="numeric" value={formatWonInput(gen1NonNhiInpatientTotal)} onChange={(event) => setGen1NonNhiInpatientTotal(getWonInputValue(event.target.value))} />원</label>}
-                  {careSetting === "OUTPATIENT" && (nationalHealthInsuranceStatus === "APPLIED" || nationalHealthInsuranceStatus === "NOT_APPLIED") && <label>통원의료비<input type="text" inputMode="numeric" value={formatWonInput(unitCost)} onChange={(event) => setUnitCost(getWonInputValue(event.target.value))} />원</label>}
-                  <div className="form-grid">
-                    <label>이전 지급액<input type="text" inputMode="numeric" value={formatWonInput(gen1PriorPaidBenefit)} onChange={(event) => setGen1PriorPaidBenefit(getWonInputValue(event.target.value))} />원</label>
-                    {careSetting === "OUTPATIENT" && <label>이전 이용일수<input type="number" min="0" step="1" value={gen1PriorServiceDays} onChange={(event) => setGen1PriorServiceDays(event.target.value)} />일</label>}
-                  </div>
-                  <label className="no-treatment-option"><input type="checkbox" checked={gen1PolicyExclusionsCleared} onChange={(event) => setGen1PolicyExclusionsCleared(event.target.checked)} /><span><strong>보상하지 않는 사항에 해당하지 않음을 확인했습니다.</strong></span></label>
-                </div>
-
-                <fieldset className="nested-fieldset">
-                  <legend>계산 기준</legend>
-                  <label style={{ marginRight: "16px" }}><input type="radio" name="gen1-basis" checked={gen1ContractBasis === "SAMPLE_SIMULATION"} onChange={() => setGen1ContractBasis("SAMPLE_SIMULATION")} /> 대표 상품 샘플 시뮬레이션</label>
-                  <label><input type="radio" name="gen1-basis" checked={gen1ContractBasis === "ACTUAL_CONTRACT"} onChange={() => setGen1ContractBasis("ACTUAL_CONTRACT")} /> 실제 가입 계약</label>
-                </fieldset>
-
-                <div className="notice-box">
-                  {gen1ContractBasis === "SAMPLE_SIMULATION"
-                    ? "SAMPLE_SIMULATION · 삼성화재 대표 상품을 가정한 계산 예시입니다."
-                    : "ACTUAL_CONTRACT · 독립검수 전이므로 현재 실제 계약 계산은 RULE_NOT_VERIFIED로 표시됩니다."}
-                </div>
-              </>
-            )}
-          </fieldset>
-        )}
-
-        {generation === 4 && (
-          <fieldset className="form-card generation-classification" style={{ marginTop: "16px" }}>
-            <legend>4세대 계약 분류</legend>
-            <p className="card-description">
-              보험증권에 표시된 비급여 특약 가입 여부를 기준으로 현재 계약을 선택해주세요.
-            </p>
-
-            <div className="generation-classification__options">
-              <label className="generation-classification__option">
-                <input
-                  type="radio"
-                  name="gen4-rider"
-                  checked={gen4NonCoveredRider === "ENROLLED"}
-                  onChange={() => setGen4NonCoveredRider("ENROLLED")}
-                />
-                <span>
-                  <strong>급여·비급여형</strong>
-                  <small>급여 주계약과 비급여 특약에 모두 가입</small>
-                </span>
-              </label>
-
-              <label className="generation-classification__option">
-                <input
-                  type="radio"
-                  name="gen4-rider"
-                  checked={gen4NonCoveredRider === "NOT_ENROLLED"}
-                  onChange={() => setGen4NonCoveredRider("NOT_ENROLLED")}
-                />
-                <span>
-                  <strong>급여형</strong>
-                  <small>급여 주계약만 가입하고 비급여 특약은 미가입</small>
-                </span>
-              </label>
-
-              <label className="generation-classification__option">
-                <input
-                  type="radio"
-                  name="gen4-rider"
-                  checked={gen4NonCoveredRider === "UNKNOWN"}
-                  onChange={() => setGen4NonCoveredRider("UNKNOWN")}
-                />
-                <span>
-                  <strong>확인 필요</strong>
-                  <small>비급여 특약 가입 여부를 알 수 없음</small>
-                </span>
-              </label>
-            </div>
-
-            {gen4NonCoveredRider === "UNKNOWN" && <div className="notice-box">비급여 계산을 중단합니다. 보험증권에서 특약 가입 여부를 확인해주세요.</div>}
-          </fieldset>
-        )}
-
         {generation === 5 && (
-          <fieldset className="form-card" style={{ marginTop: "16px" }}>
-            <legend>5세대 현재 계약 구성</legend>
-            <p>급여 기본계약: 가입 확인됨</p>
-            <label>계약 유형{" "}
-              <select value={gen5ContractType} onChange={(event) => setGen5ContractType(event.target.value as "GENERAL" | "CONVERSION")}>
-                <option value="GENERAL">일반형</option><option value="CONVERSION">계약전환형</option>
-              </select>
-            </label>
-            <p>특약1: 중증 비급여</p>
-            {(["ENROLLED", "NOT_ENROLLED", "UNKNOWN"] as const).map((value) => (
-              <label key={`severe-${value}`} style={{ marginRight: "16px" }}><input type="radio" name="gen5-severe" checked={gen5SevereRider === value} onChange={() => setGen5SevereRider(value)} /> {value === "ENROLLED" ? "가입함" : value === "NOT_ENROLLED" ? "가입하지 않음" : "확인할 수 없음"}</label>
-            ))}
-            <p>특약2: 비중증 비급여</p>
-            {(["ENROLLED", "NOT_ENROLLED", "UNKNOWN"] as const).map((value) => (
-              <label key={`non-severe-${value}`} style={{ marginRight: "16px" }}><input type="radio" name="gen5-non-severe" checked={gen5NonSevereRider === value} onChange={() => setGen5NonSevereRider(value)} /> {value === "ENROLLED" ? "가입함" : value === "NOT_ENROLLED" ? "가입하지 않음" : "확인할 수 없음"}</label>
-            ))}
-          </fieldset>
+          <label>
+            <input
+              type="checkbox"
+              checked={
+                hasCurrentSpecialRider1
+              }
+              onChange={(e) =>
+                setHasCurrentSpecialRider1(
+                  e.target.checked
+                )
+              }
+            />{" "}
+            현재 중증 비급여 특약1 가입
+          </label>
         )}
+
+        <label>
+          <input
+            type="checkbox"
+            checked={
+              hasCurrentSpecialRider2
+            }
+            onChange={(e) =>
+              setHasCurrentSpecialRider2(
+                e.target.checked
+              )
+            }
+          />{" "}
+          {generation === 5
+            ? "현재 비중증 비급여 특약2 가입"
+            : "현재 비급여 특약 가입"}
+        </label>
       </section>
       </div>
 
@@ -2001,16 +1846,18 @@ function M02InputPage() {
               }}
             >
               <input
-                type="radio"
-                name="target-gen5-severe"
+                type="checkbox"
                 checked={
-                  gen5SevereRider === "ENROLLED"
+                  hasTarget5GSpecialRider1
                 }
-                onChange={() => { setGen5SevereRider("ENROLLED"); setHasTarget5GSpecialRider1(true); }}
+                onChange={(e) =>
+                  setHasTarget5GSpecialRider1(
+                    e.target.checked
+                  )
+                }
               />
               <span>5세대 중증 비급여 특약1 가입</span>
             </label>
-            <label><input type="radio" name="target-gen5-severe" checked={gen5SevereRider === "NOT_ENROLLED"} onChange={() => { setGen5SevereRider("NOT_ENROLLED"); setHasTarget5GSpecialRider1(false); }} /> 미가입</label>
 
             <button
               type="button"
@@ -2063,16 +1910,18 @@ function M02InputPage() {
               }}
             >
               <input
-                type="radio"
-                name="target-gen5-non-severe"
+                type="checkbox"
                 checked={
-                  gen5NonSevereRider === "ENROLLED"
+                  hasTarget5GSpecialRider2
                 }
-                onChange={() => { setGen5NonSevereRider("ENROLLED"); setHasTarget5GSpecialRider2(true); }}
+                onChange={(e) =>
+                  setHasTarget5GSpecialRider2(
+                    e.target.checked
+                  )
+                }
               />
               <span>5세대 비급여 특약2 가입</span>
             </label>
-            <label><input type="radio" name="target-gen5-non-severe" checked={gen5NonSevereRider === "NOT_ENROLLED"} onChange={() => { setGen5NonSevereRider("NOT_ENROLLED"); setHasTarget5GSpecialRider2(false); }} /> 미가입</label>
 
             <button
               type="button"
@@ -2274,7 +2123,7 @@ function M02InputPage() {
           </label>
 
           <label>
-            산정특례 및 치료 관련성
+            중증 여부
             <select
               value={
                 severityClass
@@ -2291,11 +2140,11 @@ function M02InputPage() {
               </option>
 
               <option value="SEVERE">
-                산정특례 질환 치료 또는 관련 합병증으로 확인됨
+                중증
               </option>
 
               <option value="NON_SEVERE">
-                산정특례 미적용 또는 다른 질환 치료로 확인됨
+                비중증
               </option>
             </select>
           </label>

@@ -22,9 +22,6 @@ import type {
   AnnualCalculationResult,
   ClaimCalculationItem,
 } from "../../domain/calculation";
-import { routeSamsungGen4Rule, type SamsungGen4TreatmentType } from "../../engine/calculateSamsungGen4";
-import { routeSamsungGen5Coverage } from "../../engine/calculateSamsungGen5";
-import { calculateSamsungGen1Sample } from "../../engine/calculateSamsungGen1";
 
 function formatMoney(
   value: number | null
@@ -769,8 +766,6 @@ function M04ResultPage() {
         state.calculationAssumptions
     );
 
-  const productCalculationSelections = useAnalysisStore((state) => state.productCalculationSelections);
-
   const resetAnalysis =
     useAnalysisStore(
       (state) => state.resetAnalysis
@@ -1027,70 +1022,6 @@ function M04ResultPage() {
         ),
     }));
 
-  const productRuleRouting = usages.map((usage) => {
-    const treatmentType: SamsungGen4TreatmentType = /MRI|MRA/i.test(usage.treatmentCategory ?? usage.treatmentName)
-      ? "MRI_MRA"
-      : /주사/.test(usage.treatmentName) ? "INJECTION"
-      : /도수|체외충격파|증식/.test(usage.treatmentName) ? "MANUAL_THERAPY" : "GENERAL";
-    const gen4 = contract.generation === 4 && usage.benefitClass !== "UNKNOWN"
-      ? routeSamsungGen4Rule({
-          baseCoveredConfirmed: true,
-          nonCoveredRider: productCalculationSelections.gen4NonCoveredRider,
-          benefitClass: usage.benefitClass,
-          careSetting: usage.careSetting,
-          claimCause: "DISEASE",
-          treatmentType,
-        })
-      : null;
-    const gen5 = usage.benefitClass !== "UNKNOWN"
-      ? routeSamsungGen5Coverage(
-          {
-            baseCovered: "ENROLLED",
-            severeNonCoveredRider: productCalculationSelections.gen5SevereRider,
-            nonSevereNonCoveredRider: productCalculationSelections.gen5NonSevereRider,
-          },
-          {
-            benefitClass: usage.benefitClass,
-            careSetting: usage.careSetting,
-            specialCaseDisease: usage.severityClass === "SEVERE" ? "YES" : usage.severityClass === "NON_SEVERE" ? "NO" : "UNKNOWN",
-            treatmentRelatedness: usage.severityClass === "SEVERE" ? "RELATED" : usage.severityClass === "NON_SEVERE" ? "NOT_RELATED" : "UNKNOWN",
-            policyExcludedTreatment: "UNKNOWN",
-            threeNonCoveredCategory: treatmentType === "MRI_MRA" ? "MRI" : treatmentType === "INJECTION" ? "INJECTION" : treatmentType === "MANUAL_THERAPY" ? "MANUAL_THERAPY" : undefined,
-          },
-        )
-      : null;
-    return { usage, gen4, gen5 };
-  });
-
-  const gen1Results = contract.generation === 1
-    ? usages.map((usage) => ({
-        usage,
-        result: calculateSamsungGen1Sample(
-          {
-            product: productCalculationSelections.gen1Product,
-            contractBasis: productCalculationSelections.gen1ContractBasis,
-            d1Coverage: productCalculationSelections.gen1D1Coverage,
-            claimCause: usage.claimCause ?? "UNKNOWN",
-            careSetting: usage.careSetting,
-            nhiStatus: usage.nationalHealthInsuranceStatus ?? "UNKNOWN",
-          },
-          {
-            requiredCoverageConfirmed: productCalculationSelections.gen1D1Coverage !== "UNKNOWN",
-            policyExclusionsCleared: usage.gen1PolicyExclusionsCleared,
-            nhiApplied: usage.nationalHealthInsuranceStatus === "APPLIED"
-              ? true
-              : usage.nationalHealthInsuranceStatus === "NOT_APPLIED" ? false : undefined,
-            coveredRoomAndTreatment: usage.gen1CoveredRoomAndTreatment,
-            roomDifference: usage.gen1RoomDifference,
-            nonNhiInpatientTotal: usage.gen1NonNhiInpatientTotal,
-            outpatientExpense: usage.unitCost,
-            priorPaidBenefit: usage.gen1PriorPaidBenefit,
-            priorServiceDays: usage.gen1PriorServiceDays,
-          },
-        ),
-      }))
-    : [];
-
   const handleStartOver = () => {
     setIsResetModalOpen(true);
   };
@@ -1249,45 +1180,6 @@ function M04ResultPage() {
           </div>
         </div>
       </header>
-
-      <section className="app-card" style={{ marginTop: "18px" }}>
-        <h2>상품별 Rule 연결 확인</h2>
-        <p className="page-description">입력 화면의 계약·특약·치료 정보를 4·5세대 전용 룰 엔진에 연결한 결과입니다. 운영 활성화 전 검증용 표시입니다.</p>
-        {productRuleRouting.length === 0 ? <div className="notice-box">등록된 치료가 없습니다.</div> : productRuleRouting.map(({ usage, gen4, gen5 }) => (
-          <div key={usage.id} className="notice-box" style={{ marginTop: "10px" }}>
-            <strong>{usage.treatmentName}</strong>
-            {contract.generation === 4 && <p>4세대: {gen4 ? (gen4.status === "ROUTED" ? `${gen4.ruleId} 적용` : gen4.reason) : "급여·비급여 확인 필요"}</p>}
-            <p>5세대 {productCalculationSelections.gen5ContractType === "CONVERSION" ? "계약전환형" : "일반형"}: {gen5 ? (gen5.status === "ROUTED" ? `${gen5.coverage} 규칙 적용` : gen5.status === "CONDITIONAL_SIMULATION" ? gen5.notice : gen5.reason) : "급여·비급여 확인 필요"}</p>
-          </div>
-        ))}
-      </section>
-
-      {contract.generation === 1 && (
-        <section className="app-card" style={{ marginTop: "18px" }}>
-          <h2>1세대 삼성화재 0904.2 Rule 결과</h2>
-          <p className="page-description">
-            {productCalculationSelections.gen1ContractBasis === "SAMPLE_SIMULATION"
-              ? "SAMPLE_SIMULATION · 삼성화재 대표 상품을 가정한 계산 예시"
-              : "ACTUAL_CONTRACT · 독립검수 전이므로 실제 계약 계산은 비활성화"}
-          </p>
-          {gen1Results.map(({ usage, result }) => (
-            <article key={usage.id} className="notice-box" style={{ marginTop: "12px" }}>
-              <strong>{usage.treatmentName}</strong>
-              {"reason" in result ? (
-                <><p>{result.status}</p><p>{result.reason}</p></>
-              ) : (
-                <>
-                  <p>{result.ruleId} · {result.status}</p>
-                  <p>예상금액: {result.claim === null ? "확인 필요" : `${result.claim.toLocaleString()}원`}</p>
-                  <p>계산식: {result.appliedFormula}</p>
-                  <p>근거: {result.evidenceIds.join(", ")} · {result.source.article} {result.source.paragraph} · PDF {result.source.pdfPage}쪽</p>
-                  {result.warnings.map((warning) => <p key={warning}>{warning}</p>)}
-                </>
-              )}
-            </article>
-          ))}
-        </section>
-      )}
 
       <section
         className="app-card"

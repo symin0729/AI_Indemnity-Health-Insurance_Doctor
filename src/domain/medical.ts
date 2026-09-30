@@ -24,13 +24,6 @@ export type SeverityClass =
   | "NON_SEVERE"
   | "UNKNOWN";
 
-export type ClaimCause = "INJURY" | "DISEASE" | "UNKNOWN";
-export type NationalHealthInsuranceStatus =
-  | "APPLIED"
-  | "NOT_APPLIED"
-  | "PARTIAL"
-  | "UNKNOWN";
-
 /**
  * 5세대 급여 통원 최소공제액 D 선택에 필요한
  * 의료기관 종별.
@@ -175,14 +168,4 @@ export interface MedicalUsage {
    * 화면/샘플에서 명시한 가정 또는 확인 메모.
    */
   note?: string;
-
-  /** 1세대 삼성화재 0904.2 D1 룰 라우팅용 확인값. */
-  claimCause?: ClaimCause;
-  nationalHealthInsuranceStatus?: NationalHealthInsuranceStatus;
-  gen1CoveredRoomAndTreatment?: number;
-  gen1RoomDifference?: number;
-  gen1NonNhiInpatientTotal?: number;
-  gen1PriorPaidBenefit?: number;
-  gen1PriorServiceDays?: number;
-  gen1PolicyExclusionsCleared?: boolean;
 }
