@@ -265,6 +265,25 @@ function M03ConfirmPage() {
                 <strong>{productCalculationSelections.gen1ContractBasis}</strong>
               </div>
             </>
+          ) : contract.generation === 2 ||
+            contract.generation === 3 ? (
+            <>
+              <div>
+                <p className="amount-label">
+                  상품 종형
+                </p>
+
+                <strong>
+                  {productCalculationSelections.samsungGen23Variant ===
+                  "standard"
+                    ? "1종 표준형"
+                    : productCalculationSelections.samsungGen23Variant ===
+                      "selected2"
+                    ? "2종 선택형Ⅱ"
+                    : "확인 필요"}
+                </strong>
+              </div>
+            </>
           ) : contract.generation === 5 ? (
             <>
               <div>

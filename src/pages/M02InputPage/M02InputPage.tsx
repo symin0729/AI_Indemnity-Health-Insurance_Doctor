@@ -24,7 +24,11 @@ import {
   sampleScenarioService,
 } from "../../services/sampleScenarioService";
 
-import { useAnalysisStore, type RiderEnrollmentStatus } from "../../store/useAnalysisStore";
+import {
+  useAnalysisStore,
+  type RiderEnrollmentStatus,
+  type SamsungGen23Variant,
+} from "../../store/useAnalysisStore";
 
 
 function isValidIsoDate(value: string): boolean {
@@ -259,13 +263,45 @@ function M02InputPage() {
       savedContract?.generation ?? 3
     );
 
-  const [gen4NonCoveredRider, setGen4NonCoveredRider] = useState<RiderEnrollmentStatus>(savedProductCalculationSelections.gen4NonCoveredRider);
-  const [gen1Product, setGen1Product] = useState(savedProductCalculationSelections.gen1Product);
-  const [gen1ContractBasis, setGen1ContractBasis] = useState(savedProductCalculationSelections.gen1ContractBasis);
-  const [gen1D1Coverage, setGen1D1Coverage] = useState(savedProductCalculationSelections.gen1D1Coverage);
-  const [gen5ContractType, setGen5ContractType] = useState<"GENERAL" | "CONVERSION">(savedProductCalculationSelections.gen5ContractType);
-  const [gen5SevereRider, setGen5SevereRider] = useState<RiderEnrollmentStatus>(savedProductCalculationSelections.gen5SevereRider);
-  const [gen5NonSevereRider, setGen5NonSevereRider] = useState<RiderEnrollmentStatus>(savedProductCalculationSelections.gen5NonSevereRider);
+  const [gen4NonCoveredRider, setGen4NonCoveredRider] =
+  useState<RiderEnrollmentStatus>(
+    savedProductCalculationSelections.gen4NonCoveredRider
+  );
+
+const [gen1Product, setGen1Product] =
+  useState(
+    savedProductCalculationSelections.gen1Product
+  );
+
+const [samsungGen23Variant, setSamsungGen23Variant] =
+  useState<SamsungGen23Variant>(
+    savedProductCalculationSelections.samsungGen23Variant
+  );
+
+const [gen1ContractBasis, setGen1ContractBasis] =
+  useState(
+    savedProductCalculationSelections.gen1ContractBasis
+  );
+
+const [gen1D1Coverage, setGen1D1Coverage] =
+  useState(
+    savedProductCalculationSelections.gen1D1Coverage
+  );
+
+const [gen5ContractType, setGen5ContractType] =
+  useState<"GENERAL" | "CONVERSION">(
+    savedProductCalculationSelections.gen5ContractType
+  );
+
+const [gen5SevereRider, setGen5SevereRider] =
+  useState<RiderEnrollmentStatus>(
+    savedProductCalculationSelections.gen5SevereRider
+  );
+
+const [gen5NonSevereRider, setGen5NonSevereRider] =
+  useState<RiderEnrollmentStatus>(
+    savedProductCalculationSelections.gen5NonSevereRider
+  );
 
   const [monthlyPremium, setMonthlyPremium] =
     useState(
@@ -1357,6 +1393,7 @@ function M02InputPage() {
       gen5ContractType,
       gen5SevereRider,
       gen5NonSevereRider,
+      samsungGen23Variant
     });
 
     navigate("/confirm");
@@ -1720,6 +1757,32 @@ function M02InputPage() {
             </option>
           </select>
         </label>
+        {generation === 2 ||
+        generation === 3 ? (
+          <label>
+            상품 종형
+            <select
+              value={samsungGen23Variant}
+              onChange={(e) =>
+                setSamsungGen23Variant(
+                  e.target.value as SamsungGen23Variant
+                )
+              }
+            >
+              <option value="UNKNOWN">
+                선택해주세요
+              </option>
+
+              <option value="standard">
+                1종 표준형
+              </option>
+
+              <option value="selected2">
+                2종 선택형Ⅱ
+              </option>
+            </select>
+          </label>
+        ) : null}
 
         <label>
           현재 월 보험료

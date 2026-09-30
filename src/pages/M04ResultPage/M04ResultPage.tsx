@@ -12,6 +12,10 @@ import {
   loadRuleSet,
   type RuleSet,
 } from "../../engine/loadRuleSet";
+import {
+  loadProductRuleSet,
+  resolveSamsungGen23Product,
+} from "../../engine/loadProductRuleSet";
 
 import {
   calculationService,
@@ -798,14 +802,40 @@ function M04ResultPage() {
 
   useEffect(() => {
     const fetchRuleSet = async () => {
+      if (!contract) {
+        setRuleSet(null);
+        setIsRuleLoading(false);
+        return;
+      }
+
       try {
         setIsRuleLoading(true);
         setRuleLoadError(null);
 
-        const loadedRuleSet =
-          await loadRuleSet(
-            "mvp-v2"
-          );
+        let loadedRuleSet: RuleSet;
+
+        if (
+          contract.generation === 2 ||
+          contract.generation === 3
+        ) {
+          const routing =
+            resolveSamsungGen23Product({
+              generation: contract.generation,
+              variant:
+                productCalculationSelections.samsungGen23Variant,
+            });
+
+          loadedRuleSet =
+            await loadProductRuleSet(
+              routing.productCode,
+              routing.variant
+            );
+        } else {
+          loadedRuleSet =
+            await loadRuleSet(
+              "mvp-v2"
+            );
+        }
 
         setRuleSet(loadedRuleSet);
       } catch (error) {
@@ -826,7 +856,10 @@ function M04ResultPage() {
     };
 
     fetchRuleSet();
-  }, []);
+  }, [
+    contract,
+    productCalculationSelections.samsungGen23Variant,
+  ]);
 
   if (
     !contract ||
