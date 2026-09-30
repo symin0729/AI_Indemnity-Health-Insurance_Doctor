@@ -1,10 +1,11 @@
 import { gen23CareSettingError } from "../domain/samsungGen23CareSetting";
+import { gen23TermsReference } from "./samsungGen23Sources";
 import type { MedicalUsage } from "../domain/medical";
 import { resolveSamsungGen23Product } from "./loadProductRuleSet";
 import { evaluateSamsungExecutionSpec, type SamsungDraftCalculationInput, type SamsungDraftCalculationResult, type SamsungExecutionRule } from "./evaluateSamsungExecutionSpec";
 
 export type Gen23Variant = "standard" | "selected2" | "UNKNOWN";
-export type Gen23Outcome = (SamsungDraftCalculationResult & { evidenceIds: string[]; resultLabel: "SAMPLE_SIMULATION" })
+export type Gen23Outcome = (SamsungDraftCalculationResult & { evidenceIds: string[]; termsReference: string; resultLabel: "SAMPLE_SIMULATION" })
   | { status: "CONFIRMATION_REQUIRED" | "RULE_NOT_VERIFIED"; claim: null; reason: string };
 export interface Gen23Spec { calculationEnabled: boolean; rules: SamsungExecutionRule[] }
 export function gen23Input(usage: MedicalUsage, variant: Gen23Variant, generation: 2 | 3): SamsungDraftCalculationInput {
@@ -70,5 +71,5 @@ export function calculateGen23Sample(generation: 2 | 3, variant: Gen23Variant, u
   const rule = spec.rules.find(r => r.ruleId === ruleId);
   if (!rule) return { status: "RULE_NOT_VERIFIED", claim: null, reason: `${ruleId} 실행 명세를 찾을 수 없습니다.` };
   // STD-04는 외래 공제 조회 보조 규칙이며 별도의 지급액으로 합산하지 않는다.
-  return { ...evaluateSamsungExecutionSpec(rule, gen23Input(usage, variant, generation)), evidenceIds: [`${product.productCode}_E_${ruleId}`], resultLabel: "SAMPLE_SIMULATION" };
+  return { ...evaluateSamsungExecutionSpec(rule, gen23Input(usage, variant, generation)), evidenceIds: [`${product.productCode}_E_${ruleId}`], termsReference: gen23TermsReference(generation, variant, usage), resultLabel: "SAMPLE_SIMULATION" };
 }

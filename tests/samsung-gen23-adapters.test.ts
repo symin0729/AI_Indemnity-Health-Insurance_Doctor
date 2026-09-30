@@ -126,3 +126,28 @@ describe("M02 care selection → saved usage → M03 → adapter", () => {
     }
   });
 });
+
+describe("Gen23 actual terms references", () => {
+  it.each(["standard", "selected2"] as const)("preserves RuleId and references injury/disease clauses for %s", variant => {
+    for (const calc of [gen2, gen3]) for (const claimCause of ["INJURY", "DISEASE"] as const) {
+      for (const care of ["INPATIENT", "OUTPATIENT", "PRESCRIPTION"] as const) {
+        const result = calc(variant, { ...usage, claimCause, careSetting: genericGen23CareSetting(care)!, gen23CareSetting: care });
+        expect(result.status).toBe("DRAFT_CALCULATED");
+        const reference = "termsReference" in result ? result.termsReference : "";
+        expect(reference).toContain(variant === "standard" ? "1종 표준형" : "2종 선택형Ⅱ");
+        expect(reference).toContain(claimCause === "INJURY" ? care === "INPATIENT" ? "(1) 상해입원" : "(2) 상해통원" : care === "INPATIENT" ? "(3) 질병입원" : "(4) 질병통원");
+        expect(reference).toContain("인쇄");
+      }
+    }
+  });
+  it.each([
+    ["MANUAL_THERAPY", "TREATMENT", "PDF 165~167쪽 / 인쇄 129~131쪽"],
+    ["INJECTION", "VISIT", "PDF 172~174쪽 / 인쇄 136~138쪽"],
+    ["MRI", "DIAGNOSTIC_ACTION", "PDF 180~181쪽 / 인쇄 144~145쪽"],
+  ] as const)("routes both variants to the actual %s rider", (category, unit, pages) => {
+    for (const variant of ["standard", "selected2"] as const) {
+      const result = gen3(variant, { ...usage, gen23TreatmentType: category, gen23AggregationUnit: unit, gen23EligibleExpense: 100000, gen23InjectionRiderEligibleConfirmed: true });
+      expect(result).toMatchObject({ status: "DRAFT_CALCULATED", claim: 70000, termsReference: expect.stringContaining(pages) });
+    }
+  });
+});

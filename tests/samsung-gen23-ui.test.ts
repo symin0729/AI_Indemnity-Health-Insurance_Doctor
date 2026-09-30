@@ -1,3 +1,4 @@
+import { calculateSamsungGen3Sample } from "../src/engine/calculateSamsungGen3";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
@@ -23,4 +24,17 @@ describe("Gen23 input/confirmation/result display", () => {
     expect(html).toContain("SAMPLE_SIMULATION"); expect(html).toContain("반복 횟수를 곱하지 않습니다");
     expect(html).not.toContain("<strong>0원</strong>");
   });
+});
+
+it("labels calculated draft amounts and renders actual clause pages without annualizing", () => {
+  const input: MedicalUsage = { ...usage, careSetting: "OUTPATIENT", gen23CareSetting: "OUTPATIENT", claimCause: "DISEASE", benefitClass: "NON_COVERED", gen23TreatmentType: "MRI", gen23RiderEnrollmentStatus: "ENROLLED", gen23RequiredCoverageConfirmed: true, gen23EligibleExpense: 100000, gen23PriorPaidBenefit: 0, gen23AggregationUnit: "DIAGNOSTIC_ACTION", gen23PolicyExclusionsCleared: true, gen23CoveragePeriod: "ACTIVE", gen23CoveragePeriodConfirmed: true, gen23OtherIndemnityPoliciesExist: false };
+  const result = calculateSamsungGen3Sample("standard", input);
+  expect(result).toMatchObject({ status: "DRAFT_CALCULATED", claim: 70000 });
+  const html = renderToStaticMarkup(createElement(Gen23Results, { generation: 3, variant: "standard", results: [{ usage: input, result }], onEdit: () => {}, onConfirm: () => {} }));
+  for (const text of ["초안 검산액", "실제 보험금 지급액이 아닙니다", "약관 및 계약조건의 최종 확인", "G3-STD-03", "PDF 180~181쪽 / 인쇄 144~145쪽", "70,000원"]) expect(html).toContain(text);
+  expect(html).not.toContain("210,000원");
+  const blocked = calculateSamsungGen3Sample("standard", input, "ACTUAL_CONTRACT");
+  const blockedHtml = renderToStaticMarkup(createElement(Gen23Results, { generation: 3, variant: "standard", results: [{ usage: input, result: blocked }], onEdit: () => {}, onConfirm: () => {} }));
+  expect(blockedHtml).toContain("RULE_NOT_VERIFIED");
+  expect(blockedHtml).not.toContain("70,000원");
 });
