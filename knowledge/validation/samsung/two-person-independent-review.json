@@ -2,8 +2,8 @@
   "schemaVersion": "1.0",
   "status": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING",
   "calculationEnabled": false,
-  "sourcePdfCount": 5,
-  "reviewItemCount": 40,
+  "sourcePdfCount": 6,
+  "reviewItemCount": 49,
   "validationPolicy": "AI가 공식 약관 원문, Rule, Evidence를 교차 대조하고 결정론적 경계값·한도·면책 회귀 테스트를 실행한다. 원문만으로 판단할 수 없으면 필요한 추가 자료와 확인 방법을 기록한다.",
   "approvalRule": "AI 원문 교차검증, 실행 로직, 자동 경계값·한도·면책 테스트가 통과한 Rule만 후속 단계 입력으로 사용한다. RAGFlow·Gemini Guard 승인 전에는 운영 계산을 활성화하지 않는다.",
   "documentReviewItems": [
@@ -61,11 +61,26 @@
     },
     {
       "productCode": "SAMSUNG_2605_1",
-      "documentId": "SAMSUNG_2605_1_TERMS",
-      "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_terms.pdf",
-      "pdfSha256": "db0ed9738c9f59fbb28b678b910e0bdd3ef4bf08bdac52643c2e2dd167003415",
+      "documentId": "SAMSUNG_2605_1_GENERAL_TERMS",
+      "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_general_terms.pdf",
+      "pdfSha256": "126f5b033c77b852e797c58458a025897340b08b511c909d4905cad18ec987e5",
       "checks": [
-        "기존 PDF는 다이렉트 [계약전환용]이며, 추가로 받은 일반형·계약전환용 2605.1 약관의 2~160쪽 원문이 동일하므로 공통 Rule을 동일 적용할 수 있음을 확인한다.",
+        "일반형·계약전환용 2605.1 약관의 2~160쪽 원문이 동일하므로 공통 Rule을 두 계약 유형에 동일 적용할 수 있음을 확인한다.",
+        "계약전환용의 표지 구분과 전환·재개·자녀보험전환 예외를 일반형 계약에 적용하지 않는다.",
+        "중증 비급여 통원 100회와 비중증 비급여 통원 100일의 단위 차이가 원문 의도와 일치하는지 확인한다."
+      ],
+      "validationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING",
+      "findings": [],
+      "requiredAdditionalMaterials": []
+    },
+    {
+      "productCode": "SAMSUNG_2605_1",
+      "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS",
+      "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_conversion_terms.pdf",
+      "pdfSha256": "63b996663c352482402384778b7b23d4e13689b2d1888423d9c33a12597add9e",
+      "checks": [
+        "일반형·계약전환용 2605.1 약관의 2~160쪽 원문이 동일하므로 공통 Rule을 두 계약 유형에 동일 적용할 수 있음을 확인한다.",
+        "계약전환용의 표지 구분과 전환·재개·자녀보험전환 예외를 일반형 계약에 적용하지 않는다.",
         "중증 비급여 통원 100회와 비중증 비급여 통원 100일의 단위 차이가 원문 의도와 일치하는지 확인한다."
       ],
       "validationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING",
@@ -80,6 +95,8 @@
       "ruleId": "G1-01",
       "evidenceId": "SAMSUNG_0904_2_E_G1-01",
       "documentId": "SAMSUNG_0904_2_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [],
       "pdfPath": "knowledge/documents/samsung/gen1/SAMSUNG_0904_2/samsung_gen1_0904_2_terms.pdf",
       "pdfSha256": "ee9b673d2bc222bd91bb66dc799fe0ded106b3aa03b7377b6494273aeb49f10b",
       "pdfPageCount": 315,
@@ -145,6 +162,8 @@
       "ruleId": "G1-02",
       "evidenceId": "SAMSUNG_0904_2_E_G1-02",
       "documentId": "SAMSUNG_0904_2_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [],
       "pdfPath": "knowledge/documents/samsung/gen1/SAMSUNG_0904_2/samsung_gen1_0904_2_terms.pdf",
       "pdfSha256": "ee9b673d2bc222bd91bb66dc799fe0ded106b3aa03b7377b6494273aeb49f10b",
       "pdfPageCount": 315,
@@ -201,6 +220,8 @@
       "ruleId": "G1-03",
       "evidenceId": "SAMSUNG_0904_2_E_G1-03",
       "documentId": "SAMSUNG_0904_2_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [],
       "pdfPath": "knowledge/documents/samsung/gen1/SAMSUNG_0904_2/samsung_gen1_0904_2_terms.pdf",
       "pdfSha256": "ee9b673d2bc222bd91bb66dc799fe0ded106b3aa03b7377b6494273aeb49f10b",
       "pdfPageCount": 315,
@@ -257,6 +278,8 @@
       "ruleId": "G1-04",
       "evidenceId": "SAMSUNG_0904_2_E_G1-04",
       "documentId": "SAMSUNG_0904_2_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [],
       "pdfPath": "knowledge/documents/samsung/gen1/SAMSUNG_0904_2/samsung_gen1_0904_2_terms.pdf",
       "pdfSha256": "ee9b673d2bc222bd91bb66dc799fe0ded106b3aa03b7377b6494273aeb49f10b",
       "pdfPageCount": 315,
@@ -314,6 +337,8 @@
       "ruleId": "G1-05",
       "evidenceId": "SAMSUNG_0904_2_E_G1-05",
       "documentId": "SAMSUNG_0904_2_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [],
       "pdfPath": "knowledge/documents/samsung/gen1/SAMSUNG_0904_2/samsung_gen1_0904_2_terms.pdf",
       "pdfSha256": "ee9b673d2bc222bd91bb66dc799fe0ded106b3aa03b7377b6494273aeb49f10b",
       "pdfPageCount": 315,
@@ -380,6 +405,8 @@
       "ruleId": "G2-STD-01",
       "evidenceId": "SAMSUNG_1611_7_E_G2-STD-01",
       "documentId": "SAMSUNG_1611_7_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [],
       "pdfPath": "knowledge/documents/samsung/gen2/SAMSUNG_1611_7/samsung_gen2_1611_7_terms.pdf",
       "pdfSha256": "2f7c8e6bdfbd9a0b777789e6dc9b88b4d034434133733b00af6bc6bd1623b93c",
       "pdfPageCount": 218,
@@ -447,6 +474,8 @@
       "ruleId": "G2-STD-02",
       "evidenceId": "SAMSUNG_1611_7_E_G2-STD-02",
       "documentId": "SAMSUNG_1611_7_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [],
       "pdfPath": "knowledge/documents/samsung/gen2/SAMSUNG_1611_7/samsung_gen2_1611_7_terms.pdf",
       "pdfSha256": "2f7c8e6bdfbd9a0b777789e6dc9b88b4d034434133733b00af6bc6bd1623b93c",
       "pdfPageCount": 218,
@@ -505,6 +534,8 @@
       "ruleId": "G2-STD-03",
       "evidenceId": "SAMSUNG_1611_7_E_G2-STD-03",
       "documentId": "SAMSUNG_1611_7_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [],
       "pdfPath": "knowledge/documents/samsung/gen2/SAMSUNG_1611_7/samsung_gen2_1611_7_terms.pdf",
       "pdfSha256": "2f7c8e6bdfbd9a0b777789e6dc9b88b4d034434133733b00af6bc6bd1623b93c",
       "pdfPageCount": 218,
@@ -558,6 +589,8 @@
       "ruleId": "G2-STD-04",
       "evidenceId": "SAMSUNG_1611_7_E_G2-STD-04",
       "documentId": "SAMSUNG_1611_7_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [],
       "pdfPath": "knowledge/documents/samsung/gen2/SAMSUNG_1611_7/samsung_gen2_1611_7_terms.pdf",
       "pdfSha256": "2f7c8e6bdfbd9a0b777789e6dc9b88b4d034434133733b00af6bc6bd1623b93c",
       "pdfPageCount": 218,
@@ -615,6 +648,8 @@
       "ruleId": "G2-SEL2-01",
       "evidenceId": "SAMSUNG_1611_7_E_G2-SEL2-01",
       "documentId": "SAMSUNG_1611_7_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [],
       "pdfPath": "knowledge/documents/samsung/gen2/SAMSUNG_1611_7/samsung_gen2_1611_7_terms.pdf",
       "pdfSha256": "2f7c8e6bdfbd9a0b777789e6dc9b88b4d034434133733b00af6bc6bd1623b93c",
       "pdfPageCount": 218,
@@ -686,6 +721,8 @@
       "ruleId": "G2-SEL2-02",
       "evidenceId": "SAMSUNG_1611_7_E_G2-SEL2-02",
       "documentId": "SAMSUNG_1611_7_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [],
       "pdfPath": "knowledge/documents/samsung/gen2/SAMSUNG_1611_7/samsung_gen2_1611_7_terms.pdf",
       "pdfSha256": "2f7c8e6bdfbd9a0b777789e6dc9b88b4d034434133733b00af6bc6bd1623b93c",
       "pdfPageCount": 218,
@@ -752,6 +789,8 @@
       "ruleId": "G2-SEL2-03",
       "evidenceId": "SAMSUNG_1611_7_E_G2-SEL2-03",
       "documentId": "SAMSUNG_1611_7_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [],
       "pdfPath": "knowledge/documents/samsung/gen2/SAMSUNG_1611_7/samsung_gen2_1611_7_terms.pdf",
       "pdfSha256": "2f7c8e6bdfbd9a0b777789e6dc9b88b4d034434133733b00af6bc6bd1623b93c",
       "pdfPageCount": 218,
@@ -814,6 +853,8 @@
       "ruleId": "G3-STD-01",
       "evidenceId": "SAMSUNG_1704_1_E_G3-STD-01",
       "documentId": "SAMSUNG_1704_1_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [],
       "pdfPath": "knowledge/documents/samsung/gen3/SAMSUNG_1704_1/samsung_gen3_1704_1_terms.pdf",
       "pdfSha256": "838a66bd7cdd9991d6ec02f0efa58bf9984fdfafb99f1c4d2f257081e572549b",
       "pdfPageCount": 242,
@@ -868,6 +909,8 @@
       "ruleId": "G3-STD-02",
       "evidenceId": "SAMSUNG_1704_1_E_G3-STD-02",
       "documentId": "SAMSUNG_1704_1_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [],
       "pdfPath": "knowledge/documents/samsung/gen3/SAMSUNG_1704_1/samsung_gen3_1704_1_terms.pdf",
       "pdfSha256": "838a66bd7cdd9991d6ec02f0efa58bf9984fdfafb99f1c4d2f257081e572549b",
       "pdfPageCount": 242,
@@ -922,6 +965,8 @@
       "ruleId": "G3-STD-03",
       "evidenceId": "SAMSUNG_1704_1_E_G3-STD-03",
       "documentId": "SAMSUNG_1704_1_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [],
       "pdfPath": "knowledge/documents/samsung/gen3/SAMSUNG_1704_1/samsung_gen3_1704_1_terms.pdf",
       "pdfSha256": "838a66bd7cdd9991d6ec02f0efa58bf9984fdfafb99f1c4d2f257081e572549b",
       "pdfPageCount": 242,
@@ -976,6 +1021,8 @@
       "ruleId": "G3-SEL2-01",
       "evidenceId": "SAMSUNG_1704_1_E_G3-SEL2-01",
       "documentId": "SAMSUNG_1704_1_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [],
       "pdfPath": "knowledge/documents/samsung/gen3/SAMSUNG_1704_1/samsung_gen3_1704_1_terms.pdf",
       "pdfSha256": "838a66bd7cdd9991d6ec02f0efa58bf9984fdfafb99f1c4d2f257081e572549b",
       "pdfPageCount": 242,
@@ -1047,6 +1094,8 @@
       "ruleId": "G3-SEL2-02",
       "evidenceId": "SAMSUNG_1704_1_E_G3-SEL2-02",
       "documentId": "SAMSUNG_1704_1_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [],
       "pdfPath": "knowledge/documents/samsung/gen3/SAMSUNG_1704_1/samsung_gen3_1704_1_terms.pdf",
       "pdfSha256": "838a66bd7cdd9991d6ec02f0efa58bf9984fdfafb99f1c4d2f257081e572549b",
       "pdfPageCount": 242,
@@ -1101,6 +1150,8 @@
       "ruleId": "G3-STD-BASE-01",
       "evidenceId": "SAMSUNG_1704_1_E_G3-STD-BASE-01",
       "documentId": "SAMSUNG_1704_1_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [],
       "pdfPath": "knowledge/documents/samsung/gen3/SAMSUNG_1704_1/samsung_gen3_1704_1_terms.pdf",
       "pdfSha256": "838a66bd7cdd9991d6ec02f0efa58bf9984fdfafb99f1c4d2f257081e572549b",
       "pdfPageCount": 242,
@@ -1168,6 +1219,8 @@
       "ruleId": "G3-STD-BASE-02",
       "evidenceId": "SAMSUNG_1704_1_E_G3-STD-BASE-02",
       "documentId": "SAMSUNG_1704_1_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [],
       "pdfPath": "knowledge/documents/samsung/gen3/SAMSUNG_1704_1/samsung_gen3_1704_1_terms.pdf",
       "pdfSha256": "838a66bd7cdd9991d6ec02f0efa58bf9984fdfafb99f1c4d2f257081e572549b",
       "pdfPageCount": 242,
@@ -1226,6 +1279,8 @@
       "ruleId": "G3-STD-BASE-03",
       "evidenceId": "SAMSUNG_1704_1_E_G3-STD-BASE-03",
       "documentId": "SAMSUNG_1704_1_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [],
       "pdfPath": "knowledge/documents/samsung/gen3/SAMSUNG_1704_1/samsung_gen3_1704_1_terms.pdf",
       "pdfSha256": "838a66bd7cdd9991d6ec02f0efa58bf9984fdfafb99f1c4d2f257081e572549b",
       "pdfPageCount": 242,
@@ -1279,6 +1334,8 @@
       "ruleId": "G3-SEL2-BASE-02",
       "evidenceId": "SAMSUNG_1704_1_E_G3-SEL2-BASE-02",
       "documentId": "SAMSUNG_1704_1_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [],
       "pdfPath": "knowledge/documents/samsung/gen3/SAMSUNG_1704_1/samsung_gen3_1704_1_terms.pdf",
       "pdfSha256": "838a66bd7cdd9991d6ec02f0efa58bf9984fdfafb99f1c4d2f257081e572549b",
       "pdfPageCount": 242,
@@ -1345,6 +1402,8 @@
       "ruleId": "G3-SEL2-BASE-03",
       "evidenceId": "SAMSUNG_1704_1_E_G3-SEL2-BASE-03",
       "documentId": "SAMSUNG_1704_1_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [],
       "pdfPath": "knowledge/documents/samsung/gen3/SAMSUNG_1704_1/samsung_gen3_1704_1_terms.pdf",
       "pdfSha256": "838a66bd7cdd9991d6ec02f0efa58bf9984fdfafb99f1c4d2f257081e572549b",
       "pdfPageCount": 242,
@@ -1407,6 +1466,8 @@
       "ruleId": "G4-01",
       "evidenceId": "SAMSUNG_2107_1_E_G4-01",
       "documentId": "SAMSUNG_2107_1_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [],
       "pdfPath": "knowledge/documents/samsung/gen4/SAMSUNG_2107_1/samsung_gen4_2107_1_terms.pdf",
       "pdfSha256": "12ef0b100dc8ca42f3033ce068264296f1ec375e4c5278801f1c6220cd149232",
       "pdfPageCount": 220,
@@ -1464,6 +1525,8 @@
       "ruleId": "G4-02",
       "evidenceId": "SAMSUNG_2107_1_E_G4-02",
       "documentId": "SAMSUNG_2107_1_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [],
       "pdfPath": "knowledge/documents/samsung/gen4/SAMSUNG_2107_1/samsung_gen4_2107_1_terms.pdf",
       "pdfSha256": "12ef0b100dc8ca42f3033ce068264296f1ec375e4c5278801f1c6220cd149232",
       "pdfPageCount": 220,
@@ -1521,6 +1584,8 @@
       "ruleId": "G4-08",
       "evidenceId": "SAMSUNG_2107_1_E_G4-08",
       "documentId": "SAMSUNG_2107_1_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [],
       "pdfPath": "knowledge/documents/samsung/gen4/SAMSUNG_2107_1/samsung_gen4_2107_1_terms.pdf",
       "pdfSha256": "12ef0b100dc8ca42f3033ce068264296f1ec375e4c5278801f1c6220cd149232",
       "pdfPageCount": 220,
@@ -1575,6 +1640,8 @@
       "ruleId": "G4-09",
       "evidenceId": "SAMSUNG_2107_1_E_G4-09",
       "documentId": "SAMSUNG_2107_1_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [],
       "pdfPath": "knowledge/documents/samsung/gen4/SAMSUNG_2107_1/samsung_gen4_2107_1_terms.pdf",
       "pdfSha256": "12ef0b100dc8ca42f3033ce068264296f1ec375e4c5278801f1c6220cd149232",
       "pdfPageCount": 220,
@@ -1629,6 +1696,8 @@
       "ruleId": "G4-03",
       "evidenceId": "SAMSUNG_2107_1_E_G4-03",
       "documentId": "SAMSUNG_2107_1_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [],
       "pdfPath": "knowledge/documents/samsung/gen4/SAMSUNG_2107_1/samsung_gen4_2107_1_terms.pdf",
       "pdfSha256": "12ef0b100dc8ca42f3033ce068264296f1ec375e4c5278801f1c6220cd149232",
       "pdfPageCount": 220,
@@ -1690,6 +1759,8 @@
       "ruleId": "G4-04",
       "evidenceId": "SAMSUNG_2107_1_E_G4-04",
       "documentId": "SAMSUNG_2107_1_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [],
       "pdfPath": "knowledge/documents/samsung/gen4/SAMSUNG_2107_1/samsung_gen4_2107_1_terms.pdf",
       "pdfSha256": "12ef0b100dc8ca42f3033ce068264296f1ec375e4c5278801f1c6220cd149232",
       "pdfPageCount": 220,
@@ -1742,6 +1813,8 @@
       "ruleId": "G4-05",
       "evidenceId": "SAMSUNG_2107_1_E_G4-05",
       "documentId": "SAMSUNG_2107_1_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [],
       "pdfPath": "knowledge/documents/samsung/gen4/SAMSUNG_2107_1/samsung_gen4_2107_1_terms.pdf",
       "pdfSha256": "12ef0b100dc8ca42f3033ce068264296f1ec375e4c5278801f1c6220cd149232",
       "pdfPageCount": 220,
@@ -1796,6 +1869,8 @@
       "ruleId": "G4-06",
       "evidenceId": "SAMSUNG_2107_1_E_G4-06",
       "documentId": "SAMSUNG_2107_1_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [],
       "pdfPath": "knowledge/documents/samsung/gen4/SAMSUNG_2107_1/samsung_gen4_2107_1_terms.pdf",
       "pdfSha256": "12ef0b100dc8ca42f3033ce068264296f1ec375e4c5278801f1c6220cd149232",
       "pdfPageCount": 220,
@@ -1848,6 +1923,8 @@
       "ruleId": "G4-07",
       "evidenceId": "SAMSUNG_2107_1_E_G4-07",
       "documentId": "SAMSUNG_2107_1_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [],
       "pdfPath": "knowledge/documents/samsung/gen4/SAMSUNG_2107_1/samsung_gen4_2107_1_terms.pdf",
       "pdfSha256": "12ef0b100dc8ca42f3033ce068264296f1ec375e4c5278801f1c6220cd149232",
       "pdfPageCount": 220,
@@ -1896,13 +1973,17 @@
     },
     {
       "productCode": "SAMSUNG_2605_1",
-      "variant": "default",
+      "variant": "general",
       "ruleId": "G5-01",
-      "evidenceId": "SAMSUNG_2605_1_E_G5-01",
-      "documentId": "SAMSUNG_2605_1_TERMS",
-      "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_terms.pdf",
-      "pdfSha256": "db0ed9738c9f59fbb28b678b910e0bdd3ef4bf08bdac52643c2e2dd167003415",
-      "pdfPageCount": 157,
+      "evidenceId": "SAMSUNG_2605_1_E_GENERAL_G5-01",
+      "documentId": "SAMSUNG_2605_1_GENERAL_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [
+        "GENERAL"
+      ],
+      "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_general_terms.pdf",
+      "pdfSha256": "126f5b033c77b852e797c58458a025897340b08b511c909d4905cad18ec987e5",
+      "pdfPageCount": 160,
       "pdfPage": 8,
       "printedPage": 7,
       "article": "쉽게 이해하는 상품 및 약관 요약서",
@@ -1949,13 +2030,17 @@
     },
     {
       "productCode": "SAMSUNG_2605_1",
-      "variant": "default",
+      "variant": "general",
       "ruleId": "G5-02",
-      "evidenceId": "SAMSUNG_2605_1_E_G5-02",
-      "documentId": "SAMSUNG_2605_1_TERMS",
-      "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_terms.pdf",
-      "pdfSha256": "db0ed9738c9f59fbb28b678b910e0bdd3ef4bf08bdac52643c2e2dd167003415",
-      "pdfPageCount": 157,
+      "evidenceId": "SAMSUNG_2605_1_E_GENERAL_G5-02",
+      "documentId": "SAMSUNG_2605_1_GENERAL_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [
+        "GENERAL"
+      ],
+      "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_general_terms.pdf",
+      "pdfSha256": "126f5b033c77b852e797c58458a025897340b08b511c909d4905cad18ec987e5",
+      "pdfPageCount": 160,
       "pdfPage": 8,
       "printedPage": 7,
       "article": "쉽게 이해하는 상품 및 약관 요약서",
@@ -2005,13 +2090,17 @@
     },
     {
       "productCode": "SAMSUNG_2605_1",
-      "variant": "default",
+      "variant": "general",
       "ruleId": "G5-03",
-      "evidenceId": "SAMSUNG_2605_1_E_G5-03",
-      "documentId": "SAMSUNG_2605_1_TERMS",
-      "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_terms.pdf",
-      "pdfSha256": "db0ed9738c9f59fbb28b678b910e0bdd3ef4bf08bdac52643c2e2dd167003415",
-      "pdfPageCount": 157,
+      "evidenceId": "SAMSUNG_2605_1_E_GENERAL_G5-03",
+      "documentId": "SAMSUNG_2605_1_GENERAL_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [
+        "GENERAL"
+      ],
+      "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_general_terms.pdf",
+      "pdfSha256": "126f5b033c77b852e797c58458a025897340b08b511c909d4905cad18ec987e5",
+      "pdfPageCount": 160,
       "pdfPage": 8,
       "printedPage": 7,
       "article": "쉽게 이해하는 상품 및 약관 요약서",
@@ -2069,13 +2158,17 @@
     },
     {
       "productCode": "SAMSUNG_2605_1",
-      "variant": "default",
+      "variant": "general",
       "ruleId": "G5-04",
-      "evidenceId": "SAMSUNG_2605_1_E_G5-04",
-      "documentId": "SAMSUNG_2605_1_TERMS",
-      "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_terms.pdf",
-      "pdfSha256": "db0ed9738c9f59fbb28b678b910e0bdd3ef4bf08bdac52643c2e2dd167003415",
-      "pdfPageCount": 157,
+      "evidenceId": "SAMSUNG_2605_1_E_GENERAL_G5-04",
+      "documentId": "SAMSUNG_2605_1_GENERAL_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [
+        "GENERAL"
+      ],
+      "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_general_terms.pdf",
+      "pdfSha256": "126f5b033c77b852e797c58458a025897340b08b511c909d4905cad18ec987e5",
+      "pdfPageCount": 160,
       "pdfPage": 8,
       "printedPage": 7,
       "article": "쉽게 이해하는 상품 및 약관 요약서",
@@ -2120,13 +2213,17 @@
     },
     {
       "productCode": "SAMSUNG_2605_1",
-      "variant": "default",
+      "variant": "general",
       "ruleId": "G5-05",
-      "evidenceId": "SAMSUNG_2605_1_E_G5-05",
-      "documentId": "SAMSUNG_2605_1_TERMS",
-      "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_terms.pdf",
-      "pdfSha256": "db0ed9738c9f59fbb28b678b910e0bdd3ef4bf08bdac52643c2e2dd167003415",
-      "pdfPageCount": 157,
+      "evidenceId": "SAMSUNG_2605_1_E_GENERAL_G5-05",
+      "documentId": "SAMSUNG_2605_1_GENERAL_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [
+        "GENERAL"
+      ],
+      "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_general_terms.pdf",
+      "pdfSha256": "126f5b033c77b852e797c58458a025897340b08b511c909d4905cad18ec987e5",
+      "pdfPageCount": 160,
       "pdfPage": 9,
       "printedPage": 8,
       "article": "쉽게 이해하는 상품 및 약관 요약서",
@@ -2173,15 +2270,19 @@
     },
     {
       "productCode": "SAMSUNG_2605_1",
-      "variant": "default",
+      "variant": "general",
       "ruleId": "G5-06",
-      "evidenceId": "SAMSUNG_2605_1_E_G5-06",
-      "documentId": "SAMSUNG_2605_1_TERMS",
-      "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_terms.pdf",
-      "pdfSha256": "db0ed9738c9f59fbb28b678b910e0bdd3ef4bf08bdac52643c2e2dd167003415",
-      "pdfPageCount": 157,
-      "pdfPage": 63,
-      "printedPage": 62,
+      "evidenceId": "SAMSUNG_2605_1_E_GENERAL_G5-06",
+      "documentId": "SAMSUNG_2605_1_GENERAL_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [
+        "GENERAL"
+      ],
+      "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_general_terms.pdf",
+      "pdfSha256": "126f5b033c77b852e797c58458a025897340b08b511c909d4905cad18ec987e5",
+      "pdfPageCount": 160,
+      "pdfPage": 64,
+      "printedPage": 63,
       "article": "제3조",
       "paragraph": "제1항 (1) 상해비급여",
       "coverage": "비중증 비급여 입원",
@@ -2234,15 +2335,19 @@
     },
     {
       "productCode": "SAMSUNG_2605_1",
-      "variant": "default",
+      "variant": "general",
       "ruleId": "G5-07",
-      "evidenceId": "SAMSUNG_2605_1_E_G5-07",
-      "documentId": "SAMSUNG_2605_1_TERMS",
-      "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_terms.pdf",
-      "pdfSha256": "db0ed9738c9f59fbb28b678b910e0bdd3ef4bf08bdac52643c2e2dd167003415",
-      "pdfPageCount": 157,
-      "pdfPage": 63,
-      "printedPage": 62,
+      "evidenceId": "SAMSUNG_2605_1_E_GENERAL_G5-07",
+      "documentId": "SAMSUNG_2605_1_GENERAL_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [
+        "GENERAL"
+      ],
+      "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_general_terms.pdf",
+      "pdfSha256": "126f5b033c77b852e797c58458a025897340b08b511c909d4905cad18ec987e5",
+      "pdfPageCount": 160,
+      "pdfPage": 64,
+      "printedPage": 63,
       "article": "제3조",
       "paragraph": "제1항 (1) 상해비급여",
       "coverage": "비중증 비급여 통원",
@@ -2270,7 +2375,7 @@
         "면책·특약 미가입·필수 입력 누락"
       ],
       "priorityChecks": [
-        "PDF 63쪽의 인쇄 쪽수가 62쪽인지 확인하고, 7쪽으로 기재된 기존 기록을 반려한다.",
+        "PDF 64쪽의 인쇄 쪽수가 63쪽인지 확인하고, 계약 유형에 따른 예외 조항을 섞지 않는다.",
         "한도·횟수·합산 기준을 원문과 대조한다: 상해/질병 각각 연 최대 100일; 가입금액별 1일 한도",
         "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
       ],
@@ -2287,13 +2392,17 @@
     },
     {
       "productCode": "SAMSUNG_2605_1",
-      "variant": "default",
+      "variant": "general",
       "ruleId": "G5-08",
-      "evidenceId": "SAMSUNG_2605_1_E_G5-08",
-      "documentId": "SAMSUNG_2605_1_TERMS",
-      "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_terms.pdf",
-      "pdfSha256": "db0ed9738c9f59fbb28b678b910e0bdd3ef4bf08bdac52643c2e2dd167003415",
-      "pdfPageCount": 157,
+      "evidenceId": "SAMSUNG_2605_1_E_GENERAL_G5-08",
+      "documentId": "SAMSUNG_2605_1_GENERAL_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [
+        "GENERAL"
+      ],
+      "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_general_terms.pdf",
+      "pdfSha256": "126f5b033c77b852e797c58458a025897340b08b511c909d4905cad18ec987e5",
+      "pdfPageCount": 160,
       "pdfPage": 9,
       "printedPage": 8,
       "article": "쉽게 이해하는 상품 및 약관 요약서",
@@ -2339,13 +2448,17 @@
     },
     {
       "productCode": "SAMSUNG_2605_1",
-      "variant": "default",
+      "variant": "general",
       "ruleId": "G5-09",
-      "evidenceId": "SAMSUNG_2605_1_E_G5-09",
-      "documentId": "SAMSUNG_2605_1_TERMS",
-      "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_terms.pdf",
-      "pdfSha256": "db0ed9738c9f59fbb28b678b910e0bdd3ef4bf08bdac52643c2e2dd167003415",
-      "pdfPageCount": 157,
+      "evidenceId": "SAMSUNG_2605_1_E_GENERAL_G5-09",
+      "documentId": "SAMSUNG_2605_1_GENERAL_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [
+        "GENERAL"
+      ],
+      "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_general_terms.pdf",
+      "pdfSha256": "126f5b033c77b852e797c58458a025897340b08b511c909d4905cad18ec987e5",
+      "pdfPageCount": 160,
       "pdfPage": 10,
       "printedPage": 9,
       "article": "쉽게 이해하는 상품 및 약관 요약서",
@@ -2402,6 +2515,581 @@
         "면책·특약 미가입·필수 입력 누락"
       ],
       "priorityChecks": [
+        "한도·횟수·합산 기준을 원문과 대조한다: 2028-05-06부터 적용; 장기요양 1·2등급 관련 비급여는 차등 산정에서 제외",
+        "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
+      ],
+      "itemsToVerify": [
+        "원문이 다음 요약과 일치하는지: 보험료 갱신 전 3개월 말일부터 직전 12개월 비중증 비급여 보험금: 0원=할인, 0원 초과~100만원 미만=100%, 100~150만원 미만=200%, 150~300만원 미만=300%, 300만원 이상=400%",
+        "보장대상과 보상하지 않는 사항의 적용 조건",
+        "자기부담 비율·정액 공제·둘 중 큰 금액의 적용 순서",
+        "금액·횟수·일수 한도와 보험연도/사고/질병별 합산 기준",
+        "필수 특약, 예외, 건강보험 적용 여부 및 의료기관 종별 조건"
+      ],
+      "validationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING",
+      "findings": [],
+      "requiredAdditionalMaterials": []
+    },
+    {
+      "productCode": "SAMSUNG_2605_1",
+      "variant": "conversion",
+      "ruleId": "G5-CONV-01",
+      "evidenceId": "SAMSUNG_2605_1_E_CONVERSION_G5-01",
+      "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [
+        "CONVERSION"
+      ],
+      "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_conversion_terms.pdf",
+      "pdfSha256": "63b996663c352482402384778b7b23d4e13689b2d1888423d9c33a12597add9e",
+      "pdfPageCount": 160,
+      "pdfPage": 8,
+      "printedPage": 7,
+      "article": "쉽게 이해하는 상품 및 약관 요약서",
+      "paragraph": "급여 입원",
+      "coverage": "급여 입원",
+      "calculationType": "RATE_BENEFIT",
+      "calculation": {
+        "type": "RATE_BENEFIT",
+        "components": [
+          {
+            "basis": "ELIGIBLE_EXPENSE",
+            "benefitRate": 0.8
+          }
+        ]
+      },
+      "limitText": "급여 상해/질병 각각 연간 보험가입금액 한도",
+      "requiredCoverages": [],
+      "specialConditions": [
+        "POLICY_EXCLUSIONS_MUST_BE_CLEARED",
+        "MULTIPLE_POLICY_PROPORTIONAL_PAYMENT_REQUIRED_IF_APPLICABLE",
+        "POLICY_YEAR_AMOUNT_AND_COUNT_ACCUMULATION",
+        "CONVERSION_SUBTYPE_AND_ELIGIBILITY_REQUIRED"
+      ],
+      "automatedTestRequirements": [
+        "공제 직전·직후 경계값",
+        "한도 미만·일치·초과값",
+        "건강보험 적용·미적용 분기",
+        "보상기간·횟수·합산 조건",
+        "면책·특약 미가입·필수 입력 누락"
+      ],
+      "priorityChecks": [
+        "계약전환·재개·자녀보험전환 세부유형과 전환 자격·계속 치료 적용 조건을 확인한다.",
+        "한도·횟수·합산 기준을 원문과 대조한다: 급여 상해/질병 각각 연간 보험가입금액 한도",
+        "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
+      ],
+      "itemsToVerify": [
+        "원문이 다음 요약과 일치하는지: 보장대상의료비 × 80% (자기부담 20%)",
+        "보장대상과 보상하지 않는 사항의 적용 조건",
+        "자기부담 비율·정액 공제·둘 중 큰 금액의 적용 순서",
+        "금액·횟수·일수 한도와 보험연도/사고/질병별 합산 기준",
+        "필수 특약, 예외, 건강보험 적용 여부 및 의료기관 종별 조건"
+      ],
+      "validationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING",
+      "findings": [],
+      "requiredAdditionalMaterials": []
+    },
+    {
+      "productCode": "SAMSUNG_2605_1",
+      "variant": "conversion",
+      "ruleId": "G5-CONV-02",
+      "evidenceId": "SAMSUNG_2605_1_E_CONVERSION_G5-02",
+      "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [
+        "CONVERSION"
+      ],
+      "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_conversion_terms.pdf",
+      "pdfSha256": "63b996663c352482402384778b7b23d4e13689b2d1888423d9c33a12597add9e",
+      "pdfPageCount": 160,
+      "pdfPage": 8,
+      "printedPage": 7,
+      "article": "쉽게 이해하는 상품 및 약관 요약서",
+      "paragraph": "급여 통원",
+      "coverage": "급여 통원",
+      "calculationType": "COVERED_OUTPATIENT_MAX_DEDUCTIBLE",
+      "calculation": {
+        "type": "COVERED_OUTPATIENT_MAX_DEDUCTIBLE",
+        "deductibleCandidates": [
+          "ELIGIBLE_EXPENSE_X_20_PERCENT",
+          "ELIGIBLE_EXPENSE_X_NHI_COPAY_RATE",
+          "INSTITUTION_MINIMUM"
+        ],
+        "minimumByInstitution": {
+          "CLINIC_HOSPITAL": 10000,
+          "GENERAL_TERTIARY": 20000
+        }
+      },
+      "limitText": "가입금액별 1회 통원 한도",
+      "requiredCoverages": [],
+      "specialConditions": [
+        "POLICY_EXCLUSIONS_MUST_BE_CLEARED",
+        "MULTIPLE_POLICY_PROPORTIONAL_PAYMENT_REQUIRED_IF_APPLICABLE",
+        "POLICY_YEAR_AMOUNT_AND_COUNT_ACCUMULATION",
+        "CONVERSION_SUBTYPE_AND_ELIGIBILITY_REQUIRED"
+      ],
+      "automatedTestRequirements": [
+        "공제 직전·직후 경계값",
+        "한도 미만·일치·초과값",
+        "건강보험 적용·미적용 분기",
+        "보상기간·횟수·합산 조건",
+        "면책·특약 미가입·필수 입력 누락"
+      ],
+      "priorityChecks": [
+        "계약전환·재개·자녀보험전환 세부유형과 전환 자격·계속 치료 적용 조건을 확인한다.",
+        "한도·횟수·합산 기준을 원문과 대조한다: 가입금액별 1회 통원 한도",
+        "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
+      ],
+      "itemsToVerify": [
+        "원문이 다음 요약과 일치하는지: 보장대상의료비 - MAX(병원급별 공제 10,000~20,000원, 보장대상의료비×20%, 보장대상의료비×건강보험 본인부담률)",
+        "보장대상과 보상하지 않는 사항의 적용 조건",
+        "자기부담 비율·정액 공제·둘 중 큰 금액의 적용 순서",
+        "금액·횟수·일수 한도와 보험연도/사고/질병별 합산 기준",
+        "필수 특약, 예외, 건강보험 적용 여부 및 의료기관 종별 조건"
+      ],
+      "validationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING",
+      "findings": [],
+      "requiredAdditionalMaterials": []
+    },
+    {
+      "productCode": "SAMSUNG_2605_1",
+      "variant": "conversion",
+      "ruleId": "G5-CONV-03",
+      "evidenceId": "SAMSUNG_2605_1_E_CONVERSION_G5-03",
+      "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [
+        "CONVERSION"
+      ],
+      "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_conversion_terms.pdf",
+      "pdfSha256": "63b996663c352482402384778b7b23d4e13689b2d1888423d9c33a12597add9e",
+      "pdfPageCount": 160,
+      "pdfPage": 8,
+      "printedPage": 7,
+      "article": "쉽게 이해하는 상품 및 약관 요약서",
+      "paragraph": "중증 비급여 입원",
+      "coverage": "중증 비급여 입원",
+      "calculationType": "COMPONENT_SUM",
+      "calculation": {
+        "type": "COMPONENT_SUM",
+        "components": [
+          {
+            "basis": "SEVERE_NON_COVERED_INPATIENT_EXCLUDING_ROOM",
+            "benefitRate": 0.7
+          },
+          {
+            "basis": "ROOM_DIFFERENCE",
+            "benefitRate": 0.5,
+            "dailyBenefitCap": 100000
+          }
+        ],
+        "deductibleCap": {
+          "amount": 5000000,
+          "condition": "GENERAL_OR_TERTIARY_HOSPITAL_EXCLUDING_SPECIFIED_THREE"
+        }
+      },
+      "limitText": "상급종합·종합병원 자기부담 최대 5,000,000원(특정 3대 제외)",
+      "requiredCoverages": [
+        "SPECIAL_RIDER_1"
+      ],
+      "specialConditions": [
+        "POLICY_EXCLUSIONS_MUST_BE_CLEARED",
+        "MULTIPLE_POLICY_PROPORTIONAL_PAYMENT_REQUIRED_IF_APPLICABLE",
+        "POLICY_YEAR_AMOUNT_AND_COUNT_ACCUMULATION",
+        "CONVERSION_SUBTYPE_AND_ELIGIBILITY_REQUIRED"
+      ],
+      "automatedTestRequirements": [
+        "공제 직전·직후 경계값",
+        "한도 미만·일치·초과값",
+        "건강보험 적용·미적용 분기",
+        "보상기간·횟수·합산 조건",
+        "면책·특약 미가입·필수 입력 누락"
+      ],
+      "priorityChecks": [
+        "계약전환·재개·자녀보험전환 세부유형과 전환 자격·계속 치료 적용 조건을 확인한다.",
+        "한도·횟수·합산 기준을 원문과 대조한다: 상급종합·종합병원 자기부담 최대 5,000,000원(특정 3대 제외)",
+        "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
+      ],
+      "itemsToVerify": [
+        "원문이 다음 요약과 일치하는지: (중증 비급여 입원의료비(비급여 병실료 제외) × 70%) + MIN(비급여 병실료 × 50%, 입원일수 × 100,000원)",
+        "보장대상과 보상하지 않는 사항의 적용 조건",
+        "자기부담 비율·정액 공제·둘 중 큰 금액의 적용 순서",
+        "금액·횟수·일수 한도와 보험연도/사고/질병별 합산 기준",
+        "필수 특약, 예외, 건강보험 적용 여부 및 의료기관 종별 조건"
+      ],
+      "validationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING",
+      "findings": [],
+      "requiredAdditionalMaterials": []
+    },
+    {
+      "productCode": "SAMSUNG_2605_1",
+      "variant": "conversion",
+      "ruleId": "G5-CONV-04",
+      "evidenceId": "SAMSUNG_2605_1_E_CONVERSION_G5-04",
+      "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [
+        "CONVERSION"
+      ],
+      "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_conversion_terms.pdf",
+      "pdfSha256": "63b996663c352482402384778b7b23d4e13689b2d1888423d9c33a12597add9e",
+      "pdfPageCount": 160,
+      "pdfPage": 8,
+      "printedPage": 7,
+      "article": "쉽게 이해하는 상품 및 약관 요약서",
+      "paragraph": "중증 비급여 통원",
+      "coverage": "중증 비급여 통원",
+      "calculationType": "EXPENSE_MINUS_MAX_DEDUCTIBLE",
+      "calculation": {
+        "type": "EXPENSE_MINUS_MAX_DEDUCTIBLE",
+        "deductibleRate": 0.3,
+        "minimumAmount": 30000
+      },
+      "limitText": "상해/질병 각각 연 최대 100회",
+      "requiredCoverages": [
+        "SPECIAL_RIDER_1"
+      ],
+      "specialConditions": [
+        "POLICY_EXCLUSIONS_MUST_BE_CLEARED",
+        "MULTIPLE_POLICY_PROPORTIONAL_PAYMENT_REQUIRED_IF_APPLICABLE",
+        "POLICY_YEAR_AMOUNT_AND_COUNT_ACCUMULATION",
+        "CONVERSION_SUBTYPE_AND_ELIGIBILITY_REQUIRED"
+      ],
+      "automatedTestRequirements": [
+        "공제 직전·직후 경계값",
+        "한도 미만·일치·초과값",
+        "건강보험 적용·미적용 분기",
+        "보상기간·횟수·합산 조건",
+        "면책·특약 미가입·필수 입력 누락"
+      ],
+      "priorityChecks": [
+        "계약전환·재개·자녀보험전환 세부유형과 전환 자격·계속 치료 적용 조건을 확인한다.",
+        "한도·횟수·합산 기준을 원문과 대조한다: 상해/질병 각각 연 최대 100회",
+        "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
+      ],
+      "itemsToVerify": [
+        "원문이 다음 요약과 일치하는지: 보장대상의료비 - MAX(30,000원, 보장대상의료비 × 30%)",
+        "보장대상과 보상하지 않는 사항의 적용 조건",
+        "자기부담 비율·정액 공제·둘 중 큰 금액의 적용 순서",
+        "금액·횟수·일수 한도와 보험연도/사고/질병별 합산 기준",
+        "필수 특약, 예외, 건강보험 적용 여부 및 의료기관 종별 조건"
+      ],
+      "validationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING",
+      "findings": [],
+      "requiredAdditionalMaterials": []
+    },
+    {
+      "productCode": "SAMSUNG_2605_1",
+      "variant": "conversion",
+      "ruleId": "G5-CONV-05",
+      "evidenceId": "SAMSUNG_2605_1_E_CONVERSION_G5-05",
+      "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [
+        "CONVERSION"
+      ],
+      "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_conversion_terms.pdf",
+      "pdfSha256": "63b996663c352482402384778b7b23d4e13689b2d1888423d9c33a12597add9e",
+      "pdfPageCount": 160,
+      "pdfPage": 9,
+      "printedPage": 8,
+      "article": "쉽게 이해하는 상품 및 약관 요약서",
+      "paragraph": "중증 비급여 3대",
+      "coverage": "중증 비급여 3대",
+      "calculationType": "EXPENSE_MINUS_MAX_DEDUCTIBLE",
+      "calculation": {
+        "type": "EXPENSE_MINUS_MAX_DEDUCTIBLE",
+        "deductibleRate": 0.3,
+        "minimumAmount": 30000
+      },
+      "limitText": "근골격계 이학요법·체외충격파: 350만원/50회(최초 10회 후 증상 개선 확인 시 10회 단위); 주사 250만원/50회; MRI/MRA 300만원",
+      "requiredCoverages": [
+        "SPECIAL_RIDER_1"
+      ],
+      "specialConditions": [
+        "POLICY_EXCLUSIONS_MUST_BE_CLEARED",
+        "MULTIPLE_POLICY_PROPORTIONAL_PAYMENT_REQUIRED_IF_APPLICABLE",
+        "POLICY_YEAR_AMOUNT_AND_COUNT_ACCUMULATION",
+        "AFTER_FIRST_10_TREATMENTS_IMPROVEMENT_EVIDENCE_REQUIRED",
+        "CONVERSION_SUBTYPE_AND_ELIGIBILITY_REQUIRED"
+      ],
+      "automatedTestRequirements": [
+        "공제 직전·직후 경계값",
+        "한도 미만·일치·초과값",
+        "건강보험 적용·미적용 분기",
+        "보상기간·횟수·합산 조건",
+        "면책·특약 미가입·필수 입력 누락"
+      ],
+      "priorityChecks": [
+        "최초 10회 후 검사결과로 증상 개선·병변 호전이 확인된 경우에만 10회 단위로 추가 보장되는지 확인한다.",
+        "계약전환·재개·자녀보험전환 세부유형과 전환 자격·계속 치료 적용 조건을 확인한다.",
+        "한도·횟수·합산 기준을 원문과 대조한다: 근골격계 이학요법·체외충격파: 350만원/50회(최초 10회 후 증상 개선 확인 시 10회 단위); 주사 250만원/50회; MRI/MRA 300만원",
+        "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
+      ],
+      "itemsToVerify": [
+        "원문이 다음 요약과 일치하는지: 각 행위별 보상대상의료비 - MAX(30,000원, 보상대상의료비 × 30%)",
+        "보장대상과 보상하지 않는 사항의 적용 조건",
+        "자기부담 비율·정액 공제·둘 중 큰 금액의 적용 순서",
+        "금액·횟수·일수 한도와 보험연도/사고/질병별 합산 기준",
+        "필수 특약, 예외, 건강보험 적용 여부 및 의료기관 종별 조건"
+      ],
+      "validationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING",
+      "findings": [],
+      "requiredAdditionalMaterials": []
+    },
+    {
+      "productCode": "SAMSUNG_2605_1",
+      "variant": "conversion",
+      "ruleId": "G5-CONV-06",
+      "evidenceId": "SAMSUNG_2605_1_E_CONVERSION_G5-06",
+      "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [
+        "CONVERSION"
+      ],
+      "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_conversion_terms.pdf",
+      "pdfSha256": "63b996663c352482402384778b7b23d4e13689b2d1888423d9c33a12597add9e",
+      "pdfPageCount": 160,
+      "pdfPage": 64,
+      "printedPage": 63,
+      "article": "제3조",
+      "paragraph": "제1항 (1) 상해비급여",
+      "coverage": "비중증 비급여 입원",
+      "calculationType": "COMPONENT_SUM",
+      "calculation": {
+        "type": "COMPONENT_SUM",
+        "components": [
+          {
+            "basis": "NON_SEVERE_NON_COVERED_INPATIENT_EXCLUDING_ROOM",
+            "benefitRate": 0.5
+          },
+          {
+            "basis": "ROOM_DIFFERENCE",
+            "benefitRate": 0.5,
+            "dailyBenefitCap": 100000
+          }
+        ]
+      },
+      "limitText": "(상급)종합병원 외 병·의원은 회당 3,000,000원 한도",
+      "requiredCoverages": [
+        "SPECIAL_RIDER_1",
+        "SPECIAL_RIDER_2"
+      ],
+      "specialConditions": [
+        "POLICY_EXCLUSIONS_MUST_BE_CLEARED",
+        "MULTIPLE_POLICY_PROPORTIONAL_PAYMENT_REQUIRED_IF_APPLICABLE",
+        "POLICY_YEAR_AMOUNT_AND_COUNT_ACCUMULATION",
+        "CONVERSION_SUBTYPE_AND_ELIGIBILITY_REQUIRED"
+      ],
+      "automatedTestRequirements": [
+        "공제 직전·직후 경계값",
+        "한도 미만·일치·초과값",
+        "건강보험 적용·미적용 분기",
+        "보상기간·횟수·합산 조건",
+        "면책·특약 미가입·필수 입력 누락"
+      ],
+      "priorityChecks": [
+        "계약전환·재개·자녀보험전환 세부유형과 전환 자격·계속 치료 적용 조건을 확인한다.",
+        "한도·횟수·합산 기준을 원문과 대조한다: (상급)종합병원 외 병·의원은 회당 3,000,000원 한도",
+        "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
+      ],
+      "itemsToVerify": [
+        "원문이 다음 요약과 일치하는지: (비중증 비급여 입원의료비(비급여 병실료 제외) × 50%) + MIN(비급여 병실료 × 50%, 입원일수 × 100,000원)",
+        "보장대상과 보상하지 않는 사항의 적용 조건",
+        "자기부담 비율·정액 공제·둘 중 큰 금액의 적용 순서",
+        "금액·횟수·일수 한도와 보험연도/사고/질병별 합산 기준",
+        "필수 특약, 예외, 건강보험 적용 여부 및 의료기관 종별 조건"
+      ],
+      "validationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING",
+      "findings": [],
+      "requiredAdditionalMaterials": []
+    },
+    {
+      "productCode": "SAMSUNG_2605_1",
+      "variant": "conversion",
+      "ruleId": "G5-CONV-07",
+      "evidenceId": "SAMSUNG_2605_1_E_CONVERSION_G5-07",
+      "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [
+        "CONVERSION"
+      ],
+      "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_conversion_terms.pdf",
+      "pdfSha256": "63b996663c352482402384778b7b23d4e13689b2d1888423d9c33a12597add9e",
+      "pdfPageCount": 160,
+      "pdfPage": 64,
+      "printedPage": 63,
+      "article": "제3조",
+      "paragraph": "제1항 (1) 상해비급여",
+      "coverage": "비중증 비급여 통원",
+      "calculationType": "EXPENSE_MINUS_MAX_DEDUCTIBLE",
+      "calculation": {
+        "type": "EXPENSE_MINUS_MAX_DEDUCTIBLE",
+        "deductibleRate": 0.5,
+        "minimumAmount": 50000
+      },
+      "limitText": "상해/질병 각각 연 최대 100일; 가입금액별 1일 한도",
+      "requiredCoverages": [
+        "SPECIAL_RIDER_1",
+        "SPECIAL_RIDER_2"
+      ],
+      "specialConditions": [
+        "POLICY_EXCLUSIONS_MUST_BE_CLEARED",
+        "MULTIPLE_POLICY_PROPORTIONAL_PAYMENT_REQUIRED_IF_APPLICABLE",
+        "POLICY_YEAR_AMOUNT_AND_COUNT_ACCUMULATION",
+        "CONVERSION_SUBTYPE_AND_ELIGIBILITY_REQUIRED"
+      ],
+      "automatedTestRequirements": [
+        "공제 직전·직후 경계값",
+        "한도 미만·일치·초과값",
+        "건강보험 적용·미적용 분기",
+        "보상기간·횟수·합산 조건",
+        "면책·특약 미가입·필수 입력 누락"
+      ],
+      "priorityChecks": [
+        "계약전환·재개·자녀보험전환 세부유형과 전환 자격·계속 치료 적용 조건을 확인한다.",
+        "한도·횟수·합산 기준을 원문과 대조한다: 상해/질병 각각 연 최대 100일; 가입금액별 1일 한도",
+        "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
+      ],
+      "itemsToVerify": [
+        "원문이 다음 요약과 일치하는지: 보장대상의료비 - MAX(50,000원, 보장대상의료비 × 50%)",
+        "보장대상과 보상하지 않는 사항의 적용 조건",
+        "자기부담 비율·정액 공제·둘 중 큰 금액의 적용 순서",
+        "금액·횟수·일수 한도와 보험연도/사고/질병별 합산 기준",
+        "필수 특약, 예외, 건강보험 적용 여부 및 의료기관 종별 조건"
+      ],
+      "validationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING",
+      "findings": [],
+      "requiredAdditionalMaterials": []
+    },
+    {
+      "productCode": "SAMSUNG_2605_1",
+      "variant": "conversion",
+      "ruleId": "G5-CONV-08",
+      "evidenceId": "SAMSUNG_2605_1_E_CONVERSION_G5-08",
+      "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [
+        "CONVERSION"
+      ],
+      "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_conversion_terms.pdf",
+      "pdfSha256": "63b996663c352482402384778b7b23d4e13689b2d1888423d9c33a12597add9e",
+      "pdfPageCount": 160,
+      "pdfPage": 9,
+      "printedPage": 8,
+      "article": "쉽게 이해하는 상품 및 약관 요약서",
+      "paragraph": "비중증 비급여 MRI/MRA",
+      "coverage": "비중증 비급여 MRI/MRA",
+      "calculationType": "EXPENSE_MINUS_MAX_DEDUCTIBLE",
+      "calculation": {
+        "type": "EXPENSE_MINUS_MAX_DEDUCTIBLE",
+        "deductibleRate": 0.5,
+        "minimumAmount": 50000
+      },
+      "limitText": "연 2,000,000원",
+      "requiredCoverages": [
+        "SPECIAL_RIDER_1",
+        "SPECIAL_RIDER_2"
+      ],
+      "specialConditions": [
+        "POLICY_EXCLUSIONS_MUST_BE_CLEARED",
+        "MULTIPLE_POLICY_PROPORTIONAL_PAYMENT_REQUIRED_IF_APPLICABLE",
+        "POLICY_YEAR_AMOUNT_AND_COUNT_ACCUMULATION",
+        "CONVERSION_SUBTYPE_AND_ELIGIBILITY_REQUIRED"
+      ],
+      "automatedTestRequirements": [
+        "공제 직전·직후 경계값",
+        "한도 미만·일치·초과값",
+        "건강보험 적용·미적용 분기",
+        "보상기간·횟수·합산 조건",
+        "면책·특약 미가입·필수 입력 누락"
+      ],
+      "priorityChecks": [
+        "계약전환·재개·자녀보험전환 세부유형과 전환 자격·계속 치료 적용 조건을 확인한다.",
+        "한도·횟수·합산 기준을 원문과 대조한다: 연 2,000,000원",
+        "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
+      ],
+      "itemsToVerify": [
+        "원문이 다음 요약과 일치하는지: 보장대상의료비 - MAX(50,000원, 보장대상의료비 × 50%)",
+        "보장대상과 보상하지 않는 사항의 적용 조건",
+        "자기부담 비율·정액 공제·둘 중 큰 금액의 적용 순서",
+        "금액·횟수·일수 한도와 보험연도/사고/질병별 합산 기준",
+        "필수 특약, 예외, 건강보험 적용 여부 및 의료기관 종별 조건"
+      ],
+      "validationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING",
+      "findings": [],
+      "requiredAdditionalMaterials": []
+    },
+    {
+      "productCode": "SAMSUNG_2605_1",
+      "variant": "conversion",
+      "ruleId": "G5-CONV-09",
+      "evidenceId": "SAMSUNG_2605_1_E_CONVERSION_G5-09",
+      "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS",
+      "corroboratingDocumentIds": [],
+      "applicableContractTypes": [
+        "CONVERSION"
+      ],
+      "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_conversion_terms.pdf",
+      "pdfSha256": "63b996663c352482402384778b7b23d4e13689b2d1888423d9c33a12597add9e",
+      "pdfPageCount": 160,
+      "pdfPage": 10,
+      "printedPage": 9,
+      "article": "쉽게 이해하는 상품 및 약관 요약서",
+      "paragraph": "비중증 비급여 보험료 차등",
+      "coverage": "비중증 비급여 보험료 차등",
+      "calculationType": "TIER_LOOKUP",
+      "calculation": {
+        "type": "TIER_LOOKUP",
+        "assessmentWindow": "THREE_MONTHS_BEFORE_RENEWAL_MONTH_END_TO_PRIOR_TWELVE_MONTHS",
+        "tiers": [
+          {
+            "minInclusive": 0,
+            "maxExclusive": 1,
+            "relativeRate": "DISCOUNT"
+          },
+          {
+            "minInclusive": 1,
+            "maxExclusive": 1000000,
+            "relativeRate": 1
+          },
+          {
+            "minInclusive": 1000000,
+            "maxExclusive": 1500000,
+            "relativeRate": 2
+          },
+          {
+            "minInclusive": 1500000,
+            "maxExclusive": 3000000,
+            "relativeRate": 3
+          },
+          {
+            "minInclusive": 3000000,
+            "maxExclusive": null,
+            "relativeRate": 4
+          }
+        ],
+        "effectiveFrom": "2028-05-06"
+      },
+      "limitText": "2028-05-06부터 적용; 장기요양 1·2등급 관련 비급여는 차등 산정에서 제외",
+      "requiredCoverages": [
+        "SPECIAL_RIDER_1",
+        "SPECIAL_RIDER_2"
+      ],
+      "specialConditions": [
+        "POLICY_EXCLUSIONS_MUST_BE_CLEARED",
+        "MULTIPLE_POLICY_PROPORTIONAL_PAYMENT_REQUIRED_IF_APPLICABLE",
+        "POLICY_YEAR_AMOUNT_AND_COUNT_ACCUMULATION",
+        "CONVERSION_SUBTYPE_AND_ELIGIBILITY_REQUIRED"
+      ],
+      "automatedTestRequirements": [
+        "공제 직전·직후 경계값",
+        "한도 미만·일치·초과값",
+        "건강보험 적용·미적용 분기",
+        "보상기간·횟수·합산 조건",
+        "면책·특약 미가입·필수 입력 누락"
+      ],
+      "priorityChecks": [
+        "계약전환·재개·자녀보험전환 세부유형과 전환 자격·계속 치료 적용 조건을 확인한다.",
         "한도·횟수·합산 기준을 원문과 대조한다: 2028-05-06부터 적용; 장기요양 1·2등급 관련 비급여는 차등 산정에서 제외",
         "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
       ],

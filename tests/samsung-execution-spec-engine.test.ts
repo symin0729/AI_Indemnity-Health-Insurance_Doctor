@@ -38,6 +38,7 @@ describe("Samsung execution-spec draft engine", () => {
       policyExclusionsCleared: true,
       otherIndemnityPoliciesExist: false,
       coveragePeriodConfirmed: true,
+      contractType: "GENERAL",
     });
     expect(result.deductible).toBe(30_000);
     expect(result.claim).toBe(70_000);
@@ -61,11 +62,53 @@ describe("Samsung execution-spec draft engine", () => {
       policyExclusionsCleared: true,
       otherIndemnityPoliciesExist: false,
       coveragePeriodConfirmed: true,
+      contractType: "GENERAL",
       claimCause: "INJURY",
       priorServiceDays: 100,
+      priorPaidBenefit: 0,
     });
     expect(result.status).toBe("DRAFT_CALCULATED");
     expect(result.claim).toBe(0);
+  });
+
+  it("keeps general and conversion calculations independent", () => {
+    const general = rules.get("G5-02")!;
+    const conversion = rules.get("G5-CONV-02")!;
+    expect(general.source.documentId).toBe("SAMSUNG_2605_1_GENERAL_TERMS");
+    expect(conversion.source.documentId).toBe("SAMSUNG_2605_1_CONVERSION_TERMS");
+    expect(evaluateSamsungExecutionSpec(general, {
+      contractType: "CONVERSION",
+      eligibleExpense: 100_000,
+    }).status).toBe("CONFIRMATION_REQUIRED");
+    expect(evaluateSamsungExecutionSpec(conversion, {
+      contractType: "GENERAL",
+      eligibleExpense: 100_000,
+    }).status).toBe("CONFIRMATION_REQUIRED");
+  });
+
+  it("requires conversion subtype and eligibility before calculating", () => {
+    const conversion = rules.get("G5-CONV-02")!;
+    const incomplete = evaluateSamsungExecutionSpec(conversion, {
+      contractType: "CONVERSION",
+      eligibleExpense: 100_000,
+    });
+    expect(incomplete.status).toBe("CONFIRMATION_REQUIRED");
+    expect(incomplete.warnings.join(" ")).toContain("전환 세부유형");
+
+    const calculated = evaluateSamsungExecutionSpec(conversion, {
+      contractType: "CONVERSION",
+      conversionContractSubtype: "CONTRACT_CONVERSION",
+      conversionEligibilityConfirmed: true,
+      eligibleExpense: 100_000,
+      healthInsuranceCopayRate: 0.3,
+      institution: "CLINIC_HOSPITAL",
+      nhiApplied: true,
+      policyExclusionsCleared: true,
+      otherIndemnityPoliciesExist: false,
+      coveragePeriodConfirmed: true,
+    });
+    expect(calculated.status).toBe("DRAFT_CALCULATED");
+    expect(calculated.claim).toBe(70_000);
   });
 
   it("applies the second- and third-generation annual deductible ceiling", () => {

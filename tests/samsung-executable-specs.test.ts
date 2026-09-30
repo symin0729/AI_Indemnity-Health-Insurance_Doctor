@@ -24,9 +24,9 @@ const specs = files.map((name) => JSON.parse(fs.readFileSync(path.join(specDir, 
 });
 
 describe("Samsung executable Rule specifications", () => {
-  it("keeps seven generation/variant specs and all 40 Rules disabled", () => {
-    expect(files).toHaveLength(7);
-    expect(specs.flatMap((spec) => spec.rules)).toHaveLength(40);
+  it("keeps eight generation/variant specs and all 49 Rules disabled", () => {
+    expect(files).toHaveLength(8);
+    expect(specs.flatMap((spec) => spec.rules)).toHaveLength(49);
     expect(specs.every((spec) => spec.calculationEnabled === false)).toBe(true);
     for (const spec of specs) {
       expect(spec.status).toBe(
@@ -35,9 +35,16 @@ describe("Samsung executable Rule specifications", () => {
     }
   });
 
+  it("separates fifth-generation general and conversion RuleSets", () => {
+    const fifthGeneration = specs.filter((spec) => spec.generation === 5);
+    expect(fifthGeneration.map((spec) => spec.variant).sort()).toEqual(["conversion", "general"]);
+    expect(fifthGeneration.find((spec) => spec.variant === "general")?.rules.every((rule) => rule.source.documentId === "SAMSUNG_2605_1_GENERAL_TERMS")).toBe(true);
+    expect(fifthGeneration.find((spec) => spec.variant === "conversion")?.rules.every((rule) => rule.source.documentId === "SAMSUNG_2605_1_CONVERSION_TERMS")).toBe(true);
+  });
+
   it("does not mix variants and preserves unique Rule IDs", () => {
     const rules = specs.flatMap((spec) => spec.rules);
-    expect(new Set(rules.map((rule) => rule.ruleId)).size).toBe(40);
+    expect(new Set(rules.map((rule) => rule.ruleId)).size).toBe(49);
     for (const spec of specs) {
       expect(spec.rules.every((rule) => rule.variant === spec.variant)).toBe(true);
     }

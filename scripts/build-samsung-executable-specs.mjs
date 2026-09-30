@@ -18,7 +18,10 @@ const maxDeductible = (deductibleRate, minimumAmount) => ({
   minimumAmount,
 });
 
+const canonicalRuleId = (ruleId) => ruleId.replace(/^G5-CONV-/, "G5-");
+
 function calculation(ruleId) {
+  ruleId = canonicalRuleId(ruleId);
   if (["G1-01", "G1-05"].includes(ruleId)) return {
     type: "COMPONENT_SUM",
     components: [component("COVERED_ROOM_AND_TREATMENT", 1), component("ROOM_DIFFERENCE", 0.5, { roomBasis: "TWO_PERSON_ROOM_FOR_PRIVATE_ROOM" })],
@@ -135,14 +138,22 @@ function requiredCoverages(generation, coverage, variant) {
 }
 
 function specialConditions(generation, ruleId) {
+  const originalRuleId = ruleId;
+  ruleId = canonicalRuleId(ruleId);
   const common = ["POLICY_EXCLUSIONS_MUST_BE_CLEARED", "MULTIPLE_POLICY_PROPORTIONAL_PAYMENT_REQUIRED_IF_APPLICABLE"];
   if (generation === 1) return [...common, "ACCIDENT_OR_DISEASE_365_DAY_WINDOW", "NON_NHI_FALLBACK_40_PERCENT"];
   if ([2, 3].includes(generation)) return [...common, "ANNUAL_DEDUCTIBLE_CAP_2000000_FOR_INPATIENT", "NON_NHI_FALLBACK_40_PERCENT"];
   if (generation === 4) return [...common, "POLICY_YEAR_AMOUNT_AND_COUNT_ACCUMULATION", "NON_NHI_FALLBACK_40_PERCENT_FOR_COVERED_BENEFITS", ...(ruleId === "G4-05" ? ["AFTER_FIRST_10_TREATMENTS_IMPROVEMENT_EVIDENCE_REQUIRED"] : [])];
-  return [...common, "POLICY_YEAR_AMOUNT_AND_COUNT_ACCUMULATION", ...(ruleId === "G5-05" ? ["AFTER_FIRST_10_TREATMENTS_IMPROVEMENT_EVIDENCE_REQUIRED"] : [])];
+  return [
+    ...common,
+    "POLICY_YEAR_AMOUNT_AND_COUNT_ACCUMULATION",
+    ...(ruleId === "G5-05" ? ["AFTER_FIRST_10_TREATMENTS_IMPROVEMENT_EVIDENCE_REQUIRED"] : []),
+    ...(originalRuleId.startsWith("G5-CONV-") ? ["CONVERSION_SUBTYPE_AND_ELIGIBILITY_REQUIRED"] : []),
+  ];
 }
 
 function enforcement(ruleId) {
+  ruleId = canonicalRuleId(ruleId);
   if (["G1-01", "G1-02"].includes(ruleId)) return { windowDays: 365, benefitCap: 50000000 };
   if (ruleId === "G1-04") return { windowDays: 365, maxServiceDays: 30, countUnit: "SERVICE_DAY" };
   if (ruleId === "G1-05") return { windowDays: 365, resetAfterGapDays: 180, benefitCap: 50000000 };
@@ -181,10 +192,18 @@ function enforcement(ruleId) {
     requiresPerOccurrenceBenefitCap: true,
     maxPerOccurrenceBenefitCap: 200000,
   };
-  if (ruleId === "G5-04") return { maxAnnualCount: 100, countUnit: "VISIT", separateBy: "INJURY_OR_DISEASE" };
-  if (ruleId === "G5-03") return { annualDeductibleCap: 5000000, appliesWhen: "GENERAL_OR_TERTIARY_HOSPITAL_EXCLUDING_SPECIFIED_THREE" };
-  if (ruleId === "G5-05") return { aggregationUnitMustBeProvided: true, improvementEvidenceAfterCount: 10 };
-  if (ruleId === "G5-07") return { maxAnnualCount: 100, countUnit: "SERVICE_DAY", separateBy: "INJURY_OR_DISEASE" };
+  if (ruleId === "G5-01") return { annualBenefitCap: 50000000, requiresContractBenefitCap: true };
+  if (ruleId === "G5-03") return { annualBenefitCap: 50000000, annualDeductibleCap: 5000000, appliesWhen: "GENERAL_OR_TERTIARY_HOSPITAL_EXCLUDING_SPECIFIED_THREE" };
+  if (ruleId === "G5-04") return { annualBenefitCap: 50000000, maxAnnualCount: 100, countUnit: "VISIT", separateBy: "INJURY_OR_DISEASE", fixedPerOccurrenceBenefitCap: 200000 };
+  if (ruleId === "G5-05") return {
+    categoryLimits: {
+      MANUAL_THERAPY: { annualBenefitCap: 3500000, maxAnnualCount: 50, countUnit: "TREATMENT", improvementEvidenceAfterCount: 10 },
+      INJECTION: { annualBenefitCap: 2500000, maxAnnualCount: 50, countUnit: "TREATMENT" },
+      MRI: { annualBenefitCap: 3000000, countUnit: "DIAGNOSTIC_ACTION", aggregationUnitMustBeProvided: true },
+    },
+  };
+  if (ruleId === "G5-06") return { annualBenefitCap: 10000000, fixedPerOccurrenceBenefitCap: 3000000, fixedPerOccurrenceCapAppliesWhen: "NON_GENERAL_OR_TERTIARY_HOSPITAL" };
+  if (ruleId === "G5-07") return { annualBenefitCap: 10000000, maxAnnualCount: 100, countUnit: "SERVICE_DAY", separateBy: "INJURY_OR_DISEASE", fixedPerOccurrenceBenefitCap: 200000 };
   if (ruleId === "G5-08") return { annualBenefitCap: 2000000, countUnit: "DIAGNOSTIC_ACTION" };
   return null;
 }
@@ -212,7 +231,15 @@ for (const file of draftFiles) {
       enforcement: enforcement(rule.id),
       specialConditions: specialConditions(draft.generation, rule.id),
       evidenceIds: rule.evidenceIds,
-      source: { documentId: evidence.documentId, article: evidence.article, paragraph: evidence.paragraph, pdfPage: evidence.pdfPage, printedPage: evidence.printedPage },
+      source: {
+        documentId: evidence.documentId,
+        ...(evidence.corroboratingDocumentIds?.length ? { corroboratingDocumentIds: evidence.corroboratingDocumentIds } : {}),
+        ...(evidence.applicableContractTypes?.length ? { applicableContractTypes: evidence.applicableContractTypes } : {}),
+        article: evidence.article,
+        paragraph: evidence.paragraph,
+        pdfPage: evidence.pdfPage,
+        printedPage: evidence.printedPage,
+      },
       verificationStatus: sourceAndEngineValidatedProducts.has(draft.productCode)
         ? "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING"
         : "PENDING_AI_SOURCE_VALIDATION",

@@ -26,6 +26,18 @@ export interface AnalysisCalculationAssumptions {
   assumeEachOccurrenceSeparate: boolean;
 }
 
+export type RiderEnrollmentStatus = "ENROLLED" | "NOT_ENROLLED" | "UNKNOWN";
+
+export interface ProductCalculationSelections {
+  gen1Product: "SAMSUNG_0904_2" | "OTHER" | "UNKNOWN";
+  gen1ContractBasis: "SAMPLE_SIMULATION" | "ACTUAL_CONTRACT";
+  gen1D1Coverage: "INJURY" | "DISEASE" | "BOTH" | "UNKNOWN";
+  gen4NonCoveredRider: RiderEnrollmentStatus;
+  gen5ContractType: "GENERAL" | "CONVERSION";
+  gen5SevereRider: RiderEnrollmentStatus;
+  gen5NonSevereRider: RiderEnrollmentStatus;
+}
+
 interface AnalysisState {
   contract:
     | InsuranceContract
@@ -40,7 +52,9 @@ interface AnalysisState {
   usages: MedicalUsage[];
 
   calculationAssumptions:
-    AnalysisCalculationAssumptions;
+      AnalysisCalculationAssumptions;
+
+  productCalculationSelections: ProductCalculationSelections;
 
   setContract: (
     contract: InsuranceContract
@@ -62,6 +76,8 @@ interface AnalysisState {
     assumptions:
       AnalysisCalculationAssumptions
   ) => void;
+
+  setProductCalculationSelections: (selections: ProductCalculationSelections) => void;
 
   resetAnalysis: () => void;
 }
@@ -85,6 +101,16 @@ const initialState = {
 
     assumeEachOccurrenceSeparate:
       false,
+  },
+
+  productCalculationSelections: {
+    gen1Product: "UNKNOWN" as const,
+    gen1ContractBasis: "SAMPLE_SIMULATION" as const,
+    gen1D1Coverage: "UNKNOWN" as const,
+    gen4NonCoveredRider: "UNKNOWN" as RiderEnrollmentStatus,
+    gen5ContractType: "GENERAL" as const,
+    gen5SevereRider: "UNKNOWN" as RiderEnrollmentStatus,
+    gen5NonSevereRider: "UNKNOWN" as RiderEnrollmentStatus,
   },
 };
 
@@ -127,6 +153,8 @@ export const useAnalysisStore =
             calculationAssumptions:
               assumptions,
           }),
+
+      setProductCalculationSelections: (productCalculationSelections) => set({ productCalculationSelections }),
 
       resetAnalysis: () =>
         set({

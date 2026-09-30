@@ -17,7 +17,11 @@ describe("Samsung product catalog structure", () => {
       expect(product.verificationStatus).toBe("REVIEW_REQUIRED");
       expect(product.calculationEnabled).toBe(false);
       expect(product.ruleSetIds).toEqual([]);
-      expect(product.documentIds).toEqual([`${product.productCode}_TERMS`]);
+      if (product.generation === 5) {
+        expect(product.documentIds).toEqual(["SAMSUNG_2605_1_GENERAL_TERMS", "SAMSUNG_2605_1_CONVERSION_TERMS"]);
+      } else {
+        expect(product.documentIds).toEqual([`${product.productCode}_TERMS`]);
+      }
     }
   });
 
@@ -26,5 +30,7 @@ describe("Samsung product catalog structure", () => {
     expect(products[2].requiredSelections.join(" ")).toContain("3대 비급여");
     expect(products[3].requiredSelections.join(" ")).toContain("비급여 특약");
     expect(products[4].requiredSelections.join(" ")).toContain("비중증 비급여");
+    expect(products[4].variants).toEqual(["general", "conversion"]);
+    expect(products[4].requiredSelections.join(" ")).toContain("계약 유형");
   });
 });

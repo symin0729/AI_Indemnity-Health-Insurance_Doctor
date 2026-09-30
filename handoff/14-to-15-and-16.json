@@ -17,15 +17,15 @@
     "machineReadableChecklist": "knowledge/validation/samsung/two-person-independent-review.json",
     "humanReadableChecklist": "knowledge/validation/samsung/TWO_PERSON_INDEPENDENT_REVIEW_CHECKLIST.md",
     "engine": "src/engine/evaluateSamsungExecutionSpec.ts",
-    "sourcePdfCount": 5,
-    "ruleReviewItemCount": 40
+    "sourcePdfCount": 6,
+    "ruleReviewItemCount": 49
   },
   "artifactSummary": {
-    "officialPdfCount": 5,
-    "evidenceCount": 40,
-    "ruleCandidateCount": 40,
-    "executableSpecCount": 7,
-    "retrievalEvaluationCaseCount": 100,
+    "officialPdfCount": 6,
+    "evidenceCount": 49,
+    "ruleCandidateCount": 49,
+    "executableSpecCount": 8,
+    "retrievalEvaluationCaseCount": 120,
     "scopeQuestionCount": 18
   },
   "aiValidatedRuleIds": [
@@ -68,14 +68,24 @@
     "G5-06",
     "G5-07",
     "G5-08",
-    "G5-09"
+    "G5-09",
+    "G5-CONV-01",
+    "G5-CONV-02",
+    "G5-CONV-03",
+    "G5-CONV-04",
+    "G5-CONV-05",
+    "G5-CONV-06",
+    "G5-CONV-07",
+    "G5-CONV-08",
+    "G5-CONV-09"
   ],
   "verifiedDocumentIds": [
     "SAMSUNG_0904_2_TERMS",
     "SAMSUNG_1611_7_TERMS",
     "SAMSUNG_1704_1_TERMS",
     "SAMSUNG_2107_1_TERMS",
-    "SAMSUNG_2605_1_TERMS"
+    "SAMSUNG_2605_1_GENERAL_TERMS",
+    "SAMSUNG_2605_1_CONVERSION_TERMS"
   ],
   "verifiedEvidenceIds": [
     "SAMSUNG_0904_2_E_G1-01",
@@ -109,15 +119,24 @@
     "SAMSUNG_2107_1_E_G4-05",
     "SAMSUNG_2107_1_E_G4-06",
     "SAMSUNG_2107_1_E_G4-07",
-    "SAMSUNG_2605_1_E_G5-01",
-    "SAMSUNG_2605_1_E_G5-02",
-    "SAMSUNG_2605_1_E_G5-03",
-    "SAMSUNG_2605_1_E_G5-04",
-    "SAMSUNG_2605_1_E_G5-05",
-    "SAMSUNG_2605_1_E_G5-06",
-    "SAMSUNG_2605_1_E_G5-07",
-    "SAMSUNG_2605_1_E_G5-08",
-    "SAMSUNG_2605_1_E_G5-09"
+    "SAMSUNG_2605_1_E_GENERAL_G5-01",
+    "SAMSUNG_2605_1_E_GENERAL_G5-02",
+    "SAMSUNG_2605_1_E_GENERAL_G5-03",
+    "SAMSUNG_2605_1_E_GENERAL_G5-04",
+    "SAMSUNG_2605_1_E_GENERAL_G5-05",
+    "SAMSUNG_2605_1_E_GENERAL_G5-06",
+    "SAMSUNG_2605_1_E_GENERAL_G5-07",
+    "SAMSUNG_2605_1_E_GENERAL_G5-08",
+    "SAMSUNG_2605_1_E_GENERAL_G5-09",
+    "SAMSUNG_2605_1_E_CONVERSION_G5-01",
+    "SAMSUNG_2605_1_E_CONVERSION_G5-02",
+    "SAMSUNG_2605_1_E_CONVERSION_G5-03",
+    "SAMSUNG_2605_1_E_CONVERSION_G5-04",
+    "SAMSUNG_2605_1_E_CONVERSION_G5-05",
+    "SAMSUNG_2605_1_E_CONVERSION_G5-06",
+    "SAMSUNG_2605_1_E_CONVERSION_G5-07",
+    "SAMSUNG_2605_1_E_CONVERSION_G5-08",
+    "SAMSUNG_2605_1_E_CONVERSION_G5-09"
   ],
   "implementableRuleIds": [
     "G1-01",
@@ -159,7 +178,16 @@
     "G5-06",
     "G5-07",
     "G5-08",
-    "G5-09"
+    "G5-09",
+    "G5-CONV-01",
+    "G5-CONV-02",
+    "G5-CONV-03",
+    "G5-CONV-04",
+    "G5-CONV-05",
+    "G5-CONV-06",
+    "G5-CONV-07",
+    "G5-CONV-08",
+    "G5-CONV-09"
   ],
   "blockedRuleIds": [],
   "approvalGates": {

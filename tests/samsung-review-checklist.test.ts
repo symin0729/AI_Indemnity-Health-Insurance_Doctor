@@ -32,15 +32,15 @@ describe("Samsung two-person independent review package", () => {
     };
     expect(review.status).toBe("SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING");
     expect(review.calculationEnabled).toBe(false);
-    expect(review.sourcePdfCount).toBe(5);
-    expect(review.reviewItemCount).toBe(40);
-    expect(review.documentReviewItems).toHaveLength(5);
+    expect(review.sourcePdfCount).toBe(6);
+    expect(review.reviewItemCount).toBe(49);
+    expect(review.documentReviewItems).toHaveLength(6);
     expect(review.documentReviewItems.every((item) => item.checks.length >= 2)).toBe(true);
     expect(review.documentReviewItems.find((item) => item.productCode === "SAMSUNG_0904_2")?.checks.join(" ")).toContain("0904.2");
     expect(review.documentReviewItems.find((item) => item.productCode === "SAMSUNG_2107_1")?.checks.join(" ")).toContain("계약전환용");
     expect(review.documentReviewItems.find((item) => item.productCode === "SAMSUNG_2605_1")?.checks.join(" ")).toContain("100일");
-    expect(review.reviewItems).toHaveLength(40);
-    expect(new Set(review.reviewItems.map((item) => item.ruleId)).size).toBe(40);
+    expect(review.reviewItems).toHaveLength(49);
+    expect(new Set(review.reviewItems.map((item) => item.ruleId)).size).toBe(49);
     for (const item of review.reviewItems) {
       expect(item.pdfPage).toBeGreaterThan(0);
       expect(item.pdfSha256).toMatch(/^[a-f0-9]{64}$/);
@@ -64,9 +64,9 @@ describe("Samsung two-person independent review package", () => {
     expect(byId.get("G1-05")?.printedPage).toBeNull();
     expect(byId.get("G4-05")?.priorityChecks.join(" ")).toContain("최초 10회");
     expect(byId.get("G5-05")?.priorityChecks.join(" ")).toContain("10회 단위");
-    expect(byId.get("G5-07")?.pdfPage).toBe(63);
-    expect(byId.get("G5-07")?.printedPage).toBe(62);
-    expect(byId.get("G5-07")?.priorityChecks.join(" ")).toContain("기존 기록을 반려");
+    expect(byId.get("G5-07")?.pdfPage).toBe(64);
+    expect(byId.get("G5-07")?.printedPage).toBe(63);
+    expect(byId.get("G5-07")?.priorityChecks.join(" ")).toContain("계약 유형");
     for (const item of review.reviewItems.filter((entry) => entry.productCode === "SAMSUNG_1611_7" || entry.productCode === "SAMSUNG_1704_1")) {
       expect(item.priorityChecks.join(" ")).toContain(item.variant);
     }
