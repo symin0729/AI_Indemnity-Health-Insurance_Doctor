@@ -40,6 +40,10 @@ function M03ConfirmPage() {
         state.calculationAssumptions
     );
 
+  const productCalculationSelections = useAnalysisStore(
+    (state) => state.productCalculationSelections
+  );
+
   if (
     !contract ||
     target5GMonthlyPremium === null
@@ -246,7 +250,22 @@ function M03ConfirmPage() {
             </strong>
           </div>
 
-          {contract.generation === 5 ? (
+          {contract.generation === 1 ? (
+            <>
+              <div>
+                <p className="amount-label">0904.2 상품</p>
+                <strong>{productCalculationSelections.gen1Product === "SAMSUNG_0904_2" ? "선택됨" : productCalculationSelections.gen1Product === "OTHER" ? "다른 상품" : "확인 필요"}</strong>
+              </div>
+              <div>
+                <p className="amount-label">D1 담보</p>
+                <strong>{productCalculationSelections.gen1D1Coverage === "BOTH" ? "상해·질병 모두" : productCalculationSelections.gen1D1Coverage === "INJURY" ? "상해 D1" : productCalculationSelections.gen1D1Coverage === "DISEASE" ? "질병 D1" : "확인 필요"}</strong>
+              </div>
+              <div>
+                <p className="amount-label">계산 기준</p>
+                <strong>{productCalculationSelections.gen1ContractBasis}</strong>
+              </div>
+            </>
+          ) : contract.generation === 5 ? (
             <>
               <div>
                 <p className="amount-label">
