@@ -508,6 +508,8 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
   const [isTreatmentFormOpen, setIsTreatmentFormOpen] =
     useState(savedUsages.length === 0);
 
+  const [isStep3Confirmed, setIsStep3Confirmed] = useState(false);
+
   const [hasNoPlannedTreatment, setHasNoPlannedTreatment] =
     useState(false);
 
@@ -692,6 +694,7 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
 
     setPlannedUsages([]);
     setHasNoPlannedTreatment(false);
+    setIsStep3Confirmed(false);
 
     resetTreatmentForm();
     setIsTreatmentFormOpen(true);
@@ -1145,6 +1148,10 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
 
   const handleNext = () => {
     setErrorMessage("");
+    if (!isStep3Confirmed) {
+      setErrorMessage("입력 내용을 확인하고 ‘입력하셨나요?’에 체크해주세요.");
+      return;
+    }
 
     const currentPremiumNumber =
       Number(monthlyPremium);
@@ -1311,7 +1318,7 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
       finalUsages.some((usage) => Boolean(usage.treatmentDate))
     ) {
       setErrorMessage(
-        "진료 예정일을 입력한 치료가 있습니다. ‘진료 예정일을 입력하지 않았나요?’ 선택을 해제해주세요."
+        "진료 예정일을 입력한 치료가 있습니다. ‘각 치료를 별도 방문으로 계산’ 선택을 해제해주세요."
       );
       return;
     }
@@ -2936,7 +2943,7 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
                   fontSize: "1rem",
                 }}
               >
-                [STEP 3 예정 치료 &gt; 진료 예정일]을 입력하지 않았나요?
+                각 치료를 별도 방문으로 계산
               </strong>
               <span
                 style={{
@@ -2948,6 +2955,64 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
               >
                 선택하면 입력한 치료 횟수를 각각 별도의 병원 방문으로 계산합니다.
                 같은 날 여러 치료를 받을 예정이라면 선택하지 마세요.
+              </span>
+            </span>
+          </label>
+
+          <label
+            style={{
+              display: "grid",
+              gridTemplateColumns: "24px 1fr",
+              gap: "12px",
+              alignItems: "start",
+              padding: "18px",
+              border: isStep3Confirmed
+                ? "1.5px solid var(--color-primary-600, #2d6fa8)"
+                : "1px solid var(--color-border)",
+              borderRadius: "16px",
+              background: isStep3Confirmed
+                ? "var(--color-primary-050, #f4f9fe)"
+                : "#ffffff",
+              cursor: "pointer",
+            }}
+          >
+            <input
+              type="checkbox"
+              checked={
+                isStep3Confirmed
+              }
+              onChange={(e) =>
+                setIsStep3Confirmed(
+                  e.target.checked
+                )
+              }
+              style={{
+                width: "20px",
+                height: "20px",
+                marginTop: "2px",
+              }}
+            />
+
+            <span>
+              <strong
+                style={{
+                  display: "block",
+                  marginBottom: "6px",
+                  fontSize: "1rem",
+                }}
+              >
+                입력하셨나요?
+              </strong>
+              <span
+                style={{
+                  display: "block",
+                  color: "var(--color-text-sub)",
+                  lineHeight: 1.6,
+                  fontSize: "0.9rem",
+                }}
+              >
+                예정 치료와 진료 예정일을 포함한 입력 내용을 확인했습니다.
+                예정 치료가 없는 경우에는 해당 선택을 확인해주세요.
               </span>
             </span>
           </label>
@@ -2983,6 +3048,7 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
         <button
           type="button"
           className="primary-button"
+          disabled={activeStep === 3 && !isStep3Confirmed}
           onClick={() => {
             if (activeStep === 1) handleStep1Next();
             else if (activeStep === 2) goToInputStep(3);
