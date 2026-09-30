@@ -1,0 +1,6 @@
+{
+  "rulesetVersion": "samsung-gen1-0904-2-review-required",
+  "sourceDate": "2026-09-28",
+  "description": "1세대 default 종형. AI 원문 검증은 완료했으나 RAGFlow·Gemini Guard 승인 전이므로 운영 계산에 사용하지 않습니다.",
+  "rules": []
+}

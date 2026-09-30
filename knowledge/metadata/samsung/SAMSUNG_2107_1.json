@@ -1,1 +1,19 @@
-{"productCode":"SAMSUNG_2107_1","generation":4,"publisher":"삼성화재","status":"PENDING_EVIDENCE","documents":[],"verifiedAt":null}
+{
+  "productCode": "SAMSUNG_2107_1",
+  "generation": 4,
+  "productName": "무배당 삼성화재 실손의료비보험(2107.1)",
+  "publisher": "삼성화재",
+  "variants": [
+    "default"
+  ],
+  "status": "AI_SOURCE_VALIDATED",
+  "calculationEnabled": false,
+  "documentIds": [
+    "SAMSUNG_2107_1_TERMS"
+  ],
+  "aiReviewedAt": "2026-09-29",
+  "verifiedAt": "2026-09-29",
+  "verifiedBy": [
+    "Codex AI"
+  ]
+}

@@ -1,12 +1,6 @@
 import { z } from "zod";
-import { buildCalculationPrompt } from "./lib/buildCalculationPrompt";
-import { callLlm } from "./lib/callLlm";
-import { callRagFlow } from "./lib/callRagFlow";
-import { getConfig, hasLlmConfig, hasRagConfig } from "./lib/config";
-import { fallback } from "./lib/fallback";
+import { getConfig } from "./lib/config";
 import { jsonResponse } from "./lib/http";
-import type { ChatResponse } from "./lib/types";
-import { validateCalculationAnswer } from "./lib/validateCalculationAnswer";
 import { ConsentValidationError, validateConsent } from "./lib/validateConsent";
 
 const requestSchema = z.object({
@@ -28,39 +22,23 @@ export default async function handler(request: Request): Promise<Response> {
     const input = requestSchema.parse(await request.json());
     const config = getConfig();
     validateConsent(input, config.consentPolicyVersion);
-    if (!hasRagConfig(config) || !hasLlmConfig(config)) return jsonResponse(fallback("FALLBACK", requestId));
 
-    const evidence = await callRagFlow(`${input.productCode} 실손보험 계산 근거`, {
-      baseUrl: config.ragflowBaseUrl,
-      apiKey: config.ragflowApiKey,
-      datasetId: config.ragflowDatasetId,
-      timeoutMs: config.timeoutMs,
-      filters: { productCode: input.productCode, generation: input.generation },
-    });
-    if (evidence.length === 0) return jsonResponse(fallback("INSUFFICIENT_EVIDENCE", requestId));
-
-    const answer = await callLlm(buildCalculationPrompt(input.calculation, evidence), {
-      provider: config.llmProvider,
-      apiKey: config.llmApiKey,
-      model: config.llmModel,
-      thinkingLevel: config.llmThinkingLevel,
-      timeoutMs: config.timeoutMs,
-    });
-    if (!validateCalculationAnswer(answer, input.calculation, evidence)) return jsonResponse(fallback("FALLBACK", requestId));
-
-    const usedIds = new Set(answer.sourceDocumentIds);
-    const response: ChatResponse = {
-      ...answer,
-      sources: evidence.filter((item) => usedIds.has(item.source.documentId)).map((item) => item.source),
-      status: "ANSWERED",
-      fallback: false,
+    // Calculation data can contain contract and treatment details. Keep this
+    // endpoint closed until a local/template-based explanation path exists.
+    return jsonResponse({
+      error: {
+        code: "FEATURE_DISABLED",
+        message: "계산 결과의 외부 AI 전송을 막기 위해 설명 생성 기능을 임시로 중지했습니다.",
+      },
       requestId,
-    };
-    return jsonResponse(response);
+    }, 503);
   } catch (error) {
     if (error instanceof ConsentValidationError) {
       return jsonResponse({ error: { code: error.code, message: error.message }, requestId }, 400);
     }
-    return jsonResponse(fallback("FALLBACK", requestId));
+    return jsonResponse({
+      error: { code: "INVALID_REQUEST", message: "계산 설명 요청을 확인해주세요." },
+      requestId,
+    }, 400);
   }
 }

@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "1.0",
+  "ruleSetId": "SAMSUNG_1611_7_STANDARD_RULES_DRAFT",
+  "productCode": "SAMSUNG_1611_7",
+  "generation": 2,
+  "variant": "standard",
+  "documentId": "SAMSUNG_1611_7_TERMS",
+  "verificationStatus": "RULE_DRAFTED",
+  "calculationEnabled": false,
+  "rules": [
+    {
+      "id": "G2-STD-01",
+      "coverage": "입원",
+      "page": 16,
+      "formula": "(입원실료·입원제비용·입원수술비의 본인 실제부담액 × 80%) + MIN(상급병실료 차액 × 50%, 입원일수 × 100,000원)",
+      "limit": "나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
+      "variant": "standard",
+      "status": "RULE_DRAFTED",
+      "sourceCorrection": "PDF 요약서의 상급병실료 차액 50%(일평균 10만원 한도) 구성요소를 추가",
+      "evidenceIds": [
+        "SAMSUNG_1611_7_E_G2-STD-01"
+      ],
+      "aiSourceValidated": true
+    },
+    {
+      "id": "G2-STD-02",
+      "coverage": "외래",
+      "page": 16,
+      "formula": "보상대상의료비 - MAX(기관별 정액공제, 보상대상의료비 × 20%)",
+      "limit": "연간 방문 180회",
+      "variant": "standard",
+      "status": "RULE_DRAFTED",
+      "evidenceIds": [
+        "SAMSUNG_1611_7_E_G2-STD-02"
+      ],
+      "aiSourceValidated": true
+    },
+    {
+      "id": "G2-STD-03",
+      "coverage": "처방조제비",
+      "page": 16,
+      "formula": "보상대상의료비 - MAX(약국 8,000원, 보상대상의료비 × 20%)",
+      "limit": "연간 처방전 180건",
+      "variant": "standard",
+      "status": "RULE_DRAFTED",
+      "evidenceIds": [
+        "SAMSUNG_1611_7_E_G2-STD-03"
+      ],
+      "aiSourceValidated": true
+    },
+    {
+      "id": "G2-STD-04",
+      "coverage": "기관별 외래 공제",
+      "page": 16,
+      "formula": "의원 등 10,000원 / 병원 등 15,000원 / 종합전문·상급종합 20,000원",
+      "limit": "공제금액과 20% 중 큰 금액",
+      "variant": "standard",
+      "status": "RULE_DRAFTED",
+      "evidenceIds": [
+        "SAMSUNG_1611_7_E_G2-STD-04"
+      ],
+      "aiSourceValidated": true
+    }
+  ]
+}
