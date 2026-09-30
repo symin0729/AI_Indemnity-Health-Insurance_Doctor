@@ -1,3 +1,6 @@
+import { calculateSamsungGen2Sample } from "../../engine/calculateSamsungGen2";
+import { calculateSamsungGen3Sample } from "../../engine/calculateSamsungGen3";
+import { Gen23Results } from "../../components/samsung/Gen23Results";
 import AppShell from "../../components/AppShell";
 import {
   useEffect,
@@ -892,6 +895,13 @@ function M04ResultPage() {
         </div>
       </main></AppShell>
     );
+  }
+
+  if (contract.generation === 2 || contract.generation === 3) {
+    const calculate = contract.generation === 2 ? calculateSamsungGen2Sample : calculateSamsungGen3Sample;
+    const results = usages.map(usage => ({ usage, result: calculate(productCalculationSelections.samsungGen23Variant, usage) }));
+    return <AppShell currentStep={5}><Gen23Results generation={contract.generation} variant={productCalculationSelections.samsungGen23Variant}
+      results={results} onEdit={() => navigate("/input")} onConfirm={() => navigate("/confirm")} /></AppShell>;
   }
 
   if (isRuleLoading) {

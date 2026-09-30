@@ -1,3 +1,6 @@
+import { genericGen23CareSetting, syncGen23CareSetting, gen23CareSettingError } from "../../domain/samsungGen23CareSetting";
+import { Gen23Inputs } from "../../components/samsung/Gen23Inputs";
+import { parseGen23Form, restoreGen23Form, type Gen23FormState } from "../../domain/samsungGen23Form";
 import AppShell from "../../components/AppShell";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -478,6 +481,7 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
   const [claimCause, setClaimCause] = useState<ClaimCause>("UNKNOWN");
   const [nationalHealthInsuranceStatus, setNationalHealthInsuranceStatus] =
     useState<NationalHealthInsuranceStatus>("UNKNOWN");
+  const [gen23Form, setGen23Form] = useState<Gen23FormState>({});
   const [gen1CoveredRoomAndTreatment, setGen1CoveredRoomAndTreatment] = useState("");
   const [gen1RoomDifference, setGen1RoomDifference] = useState("");
   const [gen1NonNhiInpatientTotal, setGen1NonNhiInpatientTotal] = useState("");
@@ -631,6 +635,7 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
   // ========================================
 
   const resetTreatmentForm = () => {
+    setGen23Form({});
     setTreatmentName("");
     setCareSetting("OUTPATIENT");
     setBenefitClass("UNKNOWN");
@@ -662,6 +667,7 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
     setProductName("");
     setInceptionDate("");
     setGeneration(3);
+    setSamsungGen23Variant("UNKNOWN");
     setGen1Product("UNKNOWN");
     setGen1ContractBasis("SAMPLE_SIMULATION");
     setGen1D1Coverage("UNKNOWN");
@@ -822,7 +828,17 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
       return null;
     }
 
+    let gen23Values: Partial<MedicalUsage> = {};
+    if (generation === 2 || generation === 3) {
+      try {
+        gen23Values = parseGen23Form(gen23Form);
+        const careError = gen23CareSettingError({ careSetting, gen23CareSetting: gen23Values.gen23CareSetting });
+        if (careError) throw new Error(careError);
+      }
+      catch (error) { setErrorMessage(error instanceof Error ? error.message : "계산 입력을 확인해주세요."); return null; }
+    }
     const usage: MedicalUsage = {
+      ...gen23Values,
       id:
         id ??
         crypto.randomUUID(),
@@ -957,6 +973,7 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
       }
 
       resetTreatmentForm();
+      setGen23Form(restoreGen23Form(sampleUsage));
       setTreatmentName(sampleUsage.treatmentName);
       setTreatmentCategory(sampleUsage.treatmentCategory ?? "");
       setTreatmentDate(sampleUsage.treatmentDate ?? "");
@@ -1054,6 +1071,7 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
             usage.coveredAmount
           )
     );
+    setGen23Form(restoreGen23Form(usage));
     setClaimCause(usage.claimCause ?? "UNKNOWN");
     setNationalHealthInsuranceStatus(usage.nationalHealthInsuranceStatus ?? "UNKNOWN");
     setGen1CoveredRoomAndTreatment(usage.gen1CoveredRoomAndTreatment === undefined ? "" : String(usage.gen1CoveredRoomAndTreatment));
@@ -2235,6 +2253,11 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
         )}
 
         {isTreatmentFormOpen && <>
+          {(generation === 2 || generation === 3) && <Gen23Inputs generation={generation} value={gen23Form} onChange={(values) => {
+            setGen23Form(values);
+            const selectedCare = genericGen23CareSetting(values.gen23CareSetting);
+            if (selectedCare) setCareSetting(selectedCare);
+          }} />}
         {editingUsageId && (
           <div className="notice-box">
             현재 선택한 치료를 수정하고
@@ -2292,12 +2315,13 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
               value={
                 careSetting
               }
-              onChange={(e) =>
-                setCareSetting(
-                  e.target
-                    .value as CareSetting
-                )
-              }
+              onChange={(e) => {
+                const nextCare = e.target.value as CareSetting;
+                setCareSetting(nextCare);
+                if (generation === 2 || generation === 3) {
+                  setGen23Form(previous => ({ ...previous, gen23CareSetting: syncGen23CareSetting(nextCare, previous.gen23CareSetting) }));
+                }
+              }}
             >
               <option value="OUTPATIENT">
                 통원

@@ -1,3 +1,5 @@
+import { gen23CareSettingLabel } from "../../domain/samsungGen23CareSetting";
+import { Gen23Summary } from "../../components/samsung/Gen23Inputs";
 import AppShell from "../../components/AppShell";
 import { useState } from "react";
 import { createPortal } from "react-dom";
@@ -473,11 +475,11 @@ function M03ConfirmPage() {
                   </strong>
                 </div>
 
+                {(contract.generation === 2 || contract.generation === 3) && <Gen23Summary generation={contract.generation} usage={usage} />}
                 <p className="treatment-meta">
-                  {usage.careSetting ===
-                  "OUTPATIENT"
-                    ? "통원"
-                    : "입원"}
+                  {contract.generation === 2 || contract.generation === 3
+                    ? gen23CareSettingLabel(usage)
+                    : usage.careSetting === "OUTPATIENT" ? "통원" : "입원"}
                   {" · "}
                   {usage.benefitClass ===
                   "COVERED"
