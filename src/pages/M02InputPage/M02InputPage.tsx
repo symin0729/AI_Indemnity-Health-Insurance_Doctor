@@ -1,4 +1,6 @@
 import { InputHelp } from "../../components/InputHelp";
+import { shouldDisableAddTreatmentButton } from "./treatmentButtonState";
+import { createDraftFromUsage, createEmptyTreatmentDraft, getSeparateVisitWarningMessage, getTreatmentAddButtonLabel, getTreatmentAdditionalInfoFields, getTreatmentAddLabel, type TreatmentDraft } from "./treatmentSequence";
 import { generationForInceptionDate, generalPatientCopayPercent, type CopayInstitution, type CopayRegion } from "../../domain/insuranceInputDefaults";
 import { genericGen23CareSetting, syncGen23CareSetting, gen23CareSettingError } from "../../domain/samsungGen23CareSetting";
 import { Gen23Inputs } from "../../components/samsung/Gen23Inputs";
@@ -523,6 +525,11 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
   const [isTreatmentFormOpen, setIsTreatmentFormOpen] =
     useState(savedUsages.length === 0);
 
+  const [currentTreatmentSlotIndex, setCurrentTreatmentSlotIndex] =
+    useState(0);
+
+  const [treatmentDrafts, setTreatmentDrafts] = useState<Record<number, TreatmentDraft>>({});
+
   const [isStep3Confirmed, setIsStep3Confirmed] = useState(false);
 
   const [hasNoPlannedTreatment, setHasNoPlannedTreatment] =
@@ -647,35 +654,98 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
     }
   };
 
+  const buildCurrentTreatmentDraft = (): TreatmentDraft => ({
+    treatmentName,
+    careSetting,
+    benefitClass,
+    severityClass,
+    frequency,
+    unitCost,
+    treatmentDate,
+    treatmentCategory,
+    institutionType,
+    healthInsuranceCopayRatePercent,
+    copayInstitution,
+    copayRegion,
+    coveredAmount,
+    claimCause,
+    nationalHealthInsuranceStatus,
+    gen23Form,
+    gen1CoveredRoomAndTreatment,
+    gen1RoomDifference,
+    gen1NonNhiInpatientTotal,
+    gen1PriorPaidBenefit,
+    gen1PriorServiceDays,
+    gen1PolicyExclusionsCleared,
+  });
+
+  const applyTreatmentDraft = (draft: TreatmentDraft) => {
+    setGen23Form(draft.gen23Form ?? {});
+    setTreatmentSampleNotice("");
+    setTreatmentName(draft.treatmentName);
+    setCareSetting(draft.careSetting);
+    setBenefitClass(draft.benefitClass as BenefitClass);
+    setSeverityClass(draft.severityClass as SeverityClass);
+    setFrequency(draft.frequency);
+    setUnitCost(draft.unitCost);
+    setTreatmentDate(draft.treatmentDate);
+    setTreatmentCategory(draft.treatmentCategory);
+    setInstitutionType(draft.institutionType as typeof institutionType);
+    setCopayInstitution(draft.copayInstitution as CopayInstitution | "");
+    setCopayRegion(draft.copayRegion as CopayRegion | "");
+    setHealthInsuranceCopayRatePercent(draft.healthInsuranceCopayRatePercent);
+    setCoveredAmount(draft.coveredAmount);
+    setClaimCause(draft.claimCause as ClaimCause);
+    setNationalHealthInsuranceStatus(draft.nationalHealthInsuranceStatus as NationalHealthInsuranceStatus);
+    setGen1CoveredRoomAndTreatment(draft.gen1CoveredRoomAndTreatment);
+    setGen1RoomDifference(draft.gen1RoomDifference);
+    setGen1NonNhiInpatientTotal(draft.gen1NonNhiInpatientTotal);
+    setGen1PriorPaidBenefit(draft.gen1PriorPaidBenefit);
+    setGen1PriorServiceDays(draft.gen1PriorServiceDays);
+    setGen1PolicyExclusionsCleared(draft.gen1PolicyExclusionsCleared);
+  };
+
+  const saveCurrentTreatmentDraft = (slotIndex = currentTreatmentSlotIndex) => {
+    setTreatmentDrafts((previous) => ({
+      ...previous,
+      [slotIndex]: buildCurrentTreatmentDraft(),
+    }));
+  };
+
   // ========================================
   // 치료 입력칸 초기화
   // ========================================
 
   const resetTreatmentForm = () => {
-    setGen23Form({});
+    const emptyDraft = createEmptyTreatmentDraft();
+    setGen23Form(emptyDraft.gen23Form);
     setTreatmentSampleNotice("");
-    setTreatmentName("");
-    setCareSetting("OUTPATIENT");
-    setBenefitClass("UNKNOWN");
-    setSeverityClass("UNKNOWN");
-    setFrequency("1");
-    setUnitCost("");
-    setTreatmentDate("");
-    setTreatmentCategory("");
-    setInstitutionType("");
-    setCopayInstitution("");
-    setCopayRegion("");
-    setHealthInsuranceCopayRatePercent("");
-    setCoveredAmount("");
-    setClaimCause("UNKNOWN");
-    setNationalHealthInsuranceStatus("UNKNOWN");
-    setGen1CoveredRoomAndTreatment("");
-    setGen1RoomDifference("");
-    setGen1NonNhiInpatientTotal("");
-    setGen1PriorPaidBenefit("");
-    setGen1PriorServiceDays("");
-    setGen1PolicyExclusionsCleared(false);
+    setTreatmentName(emptyDraft.treatmentName);
+    setCareSetting(emptyDraft.careSetting);
+    setBenefitClass(emptyDraft.benefitClass as BenefitClass);
+    setSeverityClass(emptyDraft.severityClass as SeverityClass);
+    setFrequency(emptyDraft.frequency);
+    setUnitCost(emptyDraft.unitCost);
+    setTreatmentDate(emptyDraft.treatmentDate);
+    setTreatmentCategory(emptyDraft.treatmentCategory);
+    setInstitutionType(emptyDraft.institutionType as typeof institutionType);
+    setCopayInstitution(emptyDraft.copayInstitution as CopayInstitution | "");
+    setCopayRegion(emptyDraft.copayRegion as CopayRegion | "");
+    setHealthInsuranceCopayRatePercent(emptyDraft.healthInsuranceCopayRatePercent);
+    setCoveredAmount(emptyDraft.coveredAmount);
+    setClaimCause(emptyDraft.claimCause as ClaimCause);
+    setNationalHealthInsuranceStatus(emptyDraft.nationalHealthInsuranceStatus as NationalHealthInsuranceStatus);
+    setGen1CoveredRoomAndTreatment(emptyDraft.gen1CoveredRoomAndTreatment);
+    setGen1RoomDifference(emptyDraft.gen1RoomDifference);
+    setGen1NonNhiInpatientTotal(emptyDraft.gen1NonNhiInpatientTotal);
+    setGen1PriorPaidBenefit(emptyDraft.gen1PriorPaidBenefit);
+    setGen1PriorServiceDays(emptyDraft.gen1PriorServiceDays);
+    setGen1PolicyExclusionsCleared(emptyDraft.gen1PolicyExclusionsCleared);
     setEditingUsageId(null);
+    setTreatmentDrafts((previous) => ({
+      ...previous,
+      [currentTreatmentSlotIndex]: emptyDraft,
+    }));
   };
 
   // ========================================
@@ -973,16 +1043,34 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
     setIsTreatmentFormOpen(false);
   };
 
-  const handleStartNewTreatment = () => {
+  const handleStartNewTreatment = (slotIndex = 0) => {
+    const targetDraft = treatmentDrafts[slotIndex] ?? createEmptyTreatmentDraft();
+
+    if (isTreatmentFormOpen && !editingUsageId) {
+      saveCurrentTreatmentDraft();
+      setCurrentTreatmentSlotIndex(slotIndex);
+      setIsTreatmentFormOpen(true);
+      applyTreatmentDraft(targetDraft);
+      setErrorMessage("");
+      setHasNoPlannedTreatment(false);
+      return;
+    }
+
     if (plannedUsages.length >= MAX_TREATMENTS) {
       setErrorMessage(`예정 치료는 최대 ${MAX_TREATMENTS}건까지 등록할 수 있습니다.`);
       return;
     }
 
-    resetTreatmentForm();
+    saveCurrentTreatmentDraft();
+    setCurrentTreatmentSlotIndex(slotIndex);
     setErrorMessage("");
     setHasNoPlannedTreatment(false);
     setIsTreatmentFormOpen(true);
+    if (targetDraft) {
+      applyTreatmentDraft(targetDraft);
+    } else {
+      resetTreatmentForm();
+    }
   };
 
   const [treatmentSampleNotice, setTreatmentSampleNotice] = useState("");
@@ -1002,7 +1090,13 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
         return;
       }
 
-      resetTreatmentForm();
+      const nextDraft = createDraftFromUsage(sampleUsage);
+      saveCurrentTreatmentDraft();
+      setTreatmentDrafts((previous) => ({
+        ...previous,
+        [currentTreatmentSlotIndex]: nextDraft,
+      }));
+
       setGen23Form(restoreGen23Form(sampleUsage));
       if ((generation === 2 || generation === 3) && samsungGen23Variant === "UNKNOWN") setSamsungGen23Variant("standard");
       setAssumeEntireMedicalCostCovered(scenario.calculationAssumptions.assumeEntireMedicalCostCovered);
@@ -1010,27 +1104,8 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
       setAssumeEachOccurrenceSeparate(scenario.calculationAssumptions.assumeEachOccurrenceSeparate);
       setIsStep3Confirmed(false);
       setTreatmentSampleNotice(scenario.notice + ((generation === 2 || generation === 3) && samsungGen23Variant === "UNKNOWN" ? " 종형 미선택으로 표준형 예제를 불러왔습니다." : ""));
-      setTreatmentName(sampleUsage.treatmentName);
-      setTreatmentCategory(sampleUsage.treatmentCategory ?? "");
-      setTreatmentDate(sampleUsage.treatmentDate ?? "");
-      setCareSetting(sampleUsage.careSetting);
-      setBenefitClass("UNKNOWN");
-      setSeverityClass(sampleUsage.severityClass);
-      setFrequency("");
-      setUnitCost(String(sampleUsage.unitCost));
-      setInstitutionType(sampleUsage.institutionType ?? "");
-      setCopayInstitution(sampleUsage.copayInstitution ?? "");
-      setCopayRegion(sampleUsage.copayRegion ?? "");
-      setHealthInsuranceCopayRatePercent(
-        sampleUsage.healthInsuranceCopayRate === undefined
-          ? ""
-          : String(sampleUsage.healthInsuranceCopayRate * 100)
-      );
-      setCoveredAmount(
-        sampleUsage.coveredAmount === undefined
-          ? ""
-          : String(sampleUsage.coveredAmount)
-      );
+
+      applyTreatmentDraft(nextDraft);
       setHasNoPlannedTreatment(false);
       setIsTreatmentFormOpen(true);
       setSampleScenarioNotice(scenario.notice);
@@ -1174,6 +1249,10 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
   // ========================================
   // 다음
   // ========================================
+
+  useEffect(() => {
+    setUsages(plannedUsages);
+  }, [plannedUsages, setUsages]);
 
   useEffect(() => {
     if (errorMessage) {
@@ -1350,12 +1429,18 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
       }
     }
 
+    const distinctTreatmentDates = new Set(
+      finalUsages
+        .map((usage) => usage.treatmentDate)
+        .filter((value): value is string => Boolean(value))
+    );
+
     if (
-      assumeEachOccurrenceSeparate &&
-      finalUsages.some((usage) => Boolean(usage.treatmentDate))
+      distinctTreatmentDates.size > 1 &&
+      !assumeEachOccurrenceSeparate
     ) {
       setErrorMessage(
-        "진료 예정일을 입력한 치료가 있습니다. ‘각 치료를 별도 방문으로 계산’ 선택을 해제해주세요."
+        getSeparateVisitWarningMessage()
       );
       return;
     }
@@ -2249,7 +2334,17 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
           <div className="treatment-compact-actions">
             <button type="button" className="sample-button" aria-haspopup="dialog" onClick={() => treatmentHelpDialogRef.current?.showModal()}>필수 입력 안내 확인</button>
             <button type="button" className="sample-button" aria-haspopup="dialog" onClick={() => treatmentSampleDialogRef.current?.showModal()} disabled={isTreatmentLimitReached}>치료 샘플 불러오기</button>
-            <button type="button" className="primary-button" onClick={handleStartNewTreatment} disabled={isTreatmentFormOpen || isTreatmentLimitReached}>+ 치료 추가</button>
+            {[0, 1, 2].map((slotIndex) => (
+              <button
+                key={slotIndex}
+                type="button"
+                className="primary-button"
+                onClick={() => handleStartNewTreatment(slotIndex)}
+                disabled={shouldDisableAddTreatmentButton({ isTreatmentFormOpen, isTreatmentLimitReached })}
+              >
+                {slotIndex === 0 ? getTreatmentAddButtonLabel() : getTreatmentAddLabel(slotIndex)}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -2284,7 +2379,11 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
 
         {isTreatmentFormOpen && <>
           <fieldset className="form-card">
-            <legend><h3>{generation}세대 {insurer === "INS_001" ? "삼성화재" : insurer || "보험사"} 계산 조건</h3></legend>
+            <legend>
+              <h3>
+                {editingUsageId ? "치료 수정" : getTreatmentAddLabel(currentTreatmentSlotIndex)}
+              </h3>
+            </legend>
 
         {editingUsageId && (
           <div className="notice-box">
@@ -2459,79 +2558,72 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
           </label>
         </div>
 
-        <h4>추가 진료 정보</h4>
         <div className="form-grid">
-          <label>
-            치료 분류
-            <input
-              type="text"
-              value={
-                treatmentCategory
-              }
-              onChange={(e) =>
-                setTreatmentCategory(
-                  e.target.value
-                )
-              }
-              placeholder="예: MRI"
-            />
-          </label>
-
-          <label>
-            진료 예정일
-            <IsoDateInput
-              value={treatmentDate}
-              onChange={setTreatmentDate}
-              placeholder="YYYY-MM-DD"
-            />
-          </label>
-        </div>
-
-        <div className="form-grid">
-          <label>
-            산정특례 및 치료 관련성
-            <select
-              value={
-                severityClass
-              }
-              onChange={(e) =>
-                setSeverityClass(
-                  e.target
-                    .value as SeverityClass
-                )
-              }
-            >
-              <option value="UNKNOWN">
-                모름
-              </option>
-
-              <option value="SEVERE">
-                산정특례 질환 치료 또는 관련 합병증으로 확인됨
-              </option>
-
-              <option value="NON_SEVERE">
-                산정특례 미적용 또는 다른 질환 치료로 확인됨
-              </option>
-            </select>
-          </label>
-        </div>
-
-        <label>
-          회당 보장대상 인정금액 (C)
-          <span className="input-unit-row"><input
-            type="text"
-            inputMode="numeric"
-            value={
-              formatWonInput(coveredAmount)
+          {getTreatmentAdditionalInfoFields().map((field) => {
+            if (field.key === "treatmentDate") {
+              return (
+                <label key={field.key}>
+                  {field.label}
+                  <IsoDateInput
+                    value={treatmentDate}
+                    onChange={setTreatmentDate}
+                    placeholder="YYYY-MM-DD"
+                  />
+                </label>
+              );
             }
-            onChange={(e) =>
-              setCoveredAmount(
-                getWonInputValue(e.target.value)
-              )
+
+            if (field.key === "severityClass") {
+              return (
+                <label key={field.key}>
+                  {field.label}
+                  <select
+                    value={
+                      severityClass
+                    }
+                    onChange={(e) =>
+                      setSeverityClass(
+                        e.target
+                          .value as SeverityClass
+                      )
+                    }
+                  >
+                    <option value="UNKNOWN">
+                      모름
+                    </option>
+
+                    <option value="SEVERE">
+                      산정특례 질환 치료 또는 관련 합병증으로 확인됨
+                    </option>
+
+                    <option value="NON_SEVERE">
+                      산정특례 미적용 또는 다른 질환 치료로 확인됨
+                    </option>
+                  </select>
+                </label>
+              );
             }
-            placeholder="모르면 비워두세요"
-          /><span className="input-unit-label">원</span></span>
-        </label>
+
+            return (
+              <label key={field.key}>
+                {field.label}
+                <span className="input-unit-row"><input
+                  type="text"
+                  inputMode="numeric"
+                  value={
+                    formatWonInput(coveredAmount)
+                  }
+                  onChange={(e) =>
+                    setCoveredAmount(
+                      getWonInputValue(e.target.value)
+                    )
+                  }
+                  placeholder="모르면 비워두세요"
+                /><span className="input-unit-label">원</span></span>
+              </label>
+            );
+          })}
+        </div>
 
           {(generation === 2 || generation === 3) && <Gen23Inputs generation={generation} variant={samsungGen23Variant} insurerName={insurer === "INS_001" ? "삼성화재" : insurer || "보험사"} embedded institutionManaged value={gen23Form} onChange={(values) => {
             setGen23Form(values);
@@ -2561,9 +2653,7 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
               isTreatmentLimitReached
             }
           >
-            {editingUsageId
-              ? "수정 확인"
-              : "확인"}
+            {editingUsageId ? "수정 확인" : "추가하기"}
           </button>
 
           {editingUsageId && (
@@ -2598,6 +2688,13 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
                   editingUsageId ===
                   usage.id;
 
+                const severityLabel =
+                  usage.severityClass === "SEVERE"
+                    ? "산정특례 질환 치료 또는 관련 합병증으로 확인됨"
+                    : usage.severityClass === "NON_SEVERE"
+                      ? "산정특례 미적용 또는 다른 질환 치료로 확인됨"
+                      : "산정특례 여부 확인 필요";
+
                 return (
                   <article
                     className="treatment-card"
@@ -2614,7 +2711,7 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
                         >
                           {isEditing
                             ? "수정 중"
-                            : `치료 ${index + 1}`}
+                            : getTreatmentAddLabel(index)}
                         </span>
 
                         <h3>
@@ -2635,13 +2732,35 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
                       회 ×{" "}
                       {usage.unitCost.toLocaleString()}
                       원
-                      {usage.treatmentCategory
-                        ? ` · ${usage.treatmentCategory}`
-                        : ""}
-                      {usage.treatmentDate
-                        ? ` · ${usage.treatmentDate}`
-                        : ""}
                     </p>
+
+                    <div className="treatment-meta" style={{ display: "grid", gap: "6px" }}>
+                      {usage.treatmentCategory && (
+                        <div>
+                          <strong style={{ marginRight: "8px" }}>치료 분류:</strong>
+                          {usage.treatmentCategory}
+                        </div>
+                      )}
+
+                      {usage.treatmentDate && (
+                        <div>
+                          <strong style={{ marginRight: "8px" }}>진료 예정일:</strong>
+                          {usage.treatmentDate}
+                        </div>
+                      )}
+
+                      <div>
+                        <strong style={{ marginRight: "8px" }}>산정특례 및 치료 관련성:</strong>
+                        {severityLabel}
+                      </div>
+
+                      {usage.coveredAmount !== undefined && (
+                        <div>
+                          <strong style={{ marginRight: "8px" }}>회당 보장대상 인정금액 (C):</strong>
+                          {usage.coveredAmount.toLocaleString()}원
+                        </div>
+                      )}
+                    </div>
 
                     {(usage.institutionType ||
                       usage.healthInsuranceCopayRate !==
