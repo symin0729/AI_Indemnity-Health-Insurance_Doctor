@@ -1,19 +1,51 @@
+import { useId } from "react";
+import { InputHelp } from "../InputHelp";
+import { gen23InputHelp } from "./gen23InputHelp";
 import { gen23Fields, type Gen23FormState } from "../../domain/samsungGen23Form";
 import type { MedicalUsage } from "../../domain/medical";
-export function Gen23Inputs({ generation, value, onChange }: { generation: 2 | 3; value: Gen23FormState; onChange: (value: Gen23FormState) => void }) {
+export function Gen23Inputs({ generation, value, onChange, insurerName = "삼성화재", variant, embedded = false, institutionManaged = false }: { embedded?: boolean; insurerName?: string; variant?: "standard" | "selected2" | "UNKNOWN"; institutionManaged?: boolean; generation: 2 | 3; value: Gen23FormState; onChange: (value: Gen23FormState) => void }) {
+  const fieldId = useId();
   const care = value.gen23CareSetting;
   const special = generation === 3 && value.gen23TreatmentType && value.gen23TreatmentType !== "BASE";
-  return <fieldset className="form-card"><legend>{generation}세대 삼성화재 계산 조건</legend>
-    <p>입력한 한 계산단위의 초안 예상액을 계산합니다. 모르는 값은 비워두세요. 누적액은 이 청구 이전, 해당 담보·보험기간 기준입니다.</p>
-    <p>중복보험 계수는 산출 근거가 확인된 값만 입력하세요. 반복 치료의 연간 합계와 확정 보험금은 계산하지 않습니다.</p>
-    <div className="form-grid">{gen23Fields.filter(f => (!f.generation || f.generation === generation)
+  const requiredFields = new Set<keyof MedicalUsage>(["gen23CareSetting", "claimCause", "gen23RequiredCoverageConfirmed", "gen23PolicyExclusionsCleared", "gen23OtherIndemnityPoliciesExist", "gen23CoveragePeriod", "gen23CoveragePeriodConfirmed"]);
+  if (generation === 3) { requiredFields.add("gen23TreatmentType"); requiredFields.add("gen23RiderEnrollmentStatus"); }
+  if (!special) {
+    requiredFields.add("nationalHealthInsuranceStatus");
+    if (generation === 3) requiredFields.add("gen23ThreeNonCoveredExcludedFromBaseConfirmed");
+    if (care === "OUTPATIENT" || care === "PRESCRIPTION") {
+      for (const key of ["gen23CoveredCopay", "gen23NonCoveredExpense", "gen23OutpatientBenefitCap", "gen23PrescriptionBenefitCap", "gen23SameDayAggregationConfirmed"] as const) requiredFields.add(key);
+      requiredFields.add(value.gen23CoveragePeriod === "POST_TERMINATION" ? "gen23PriorContinuationCount" : "gen23PriorAnnualCount");
+      if (care === "OUTPATIENT") requiredFields.add("gen23Institution");
+    }
+    if (care === "INPATIENT") {
+      requiredFields.add("gen23ContractBenefitCap"); requiredFields.add("gen23PriorPaidBenefit");
+      if (value.nationalHealthInsuranceStatus === "NOT_APPLIED") requiredFields.add("gen23NonNhiInpatientTotal");
+      else {
+        requiredFields.add("gen23RoomDifference");
+        requiredFields.add("gen23PriorEligibleDeductible");
+        if (variant === "selected2") { requiredFields.add("gen23CoveredCopay"); requiredFields.add("gen23NonCoveredExpense"); }
+        else if (variant === "standard") requiredFields.add("gen23InpatientExcludingRoomDifference");
+        if (Number(value.gen23RoomDifference) > 0) requiredFields.add("gen23InpatientDays");
+      }
+      if (value.gen23CoveragePeriod === "ACTIVE" && Number(value.gen23ContractBenefitCap) > 0 && Number(value.gen23PriorPaidBenefit) >= Number(value.gen23ContractBenefitCap)) requiredFields.add("gen23BenefitLimitRestored");
+    }
+  } else {
+    requiredFields.add("gen23EligibleExpense"); requiredFields.add("gen23AggregationUnit"); requiredFields.add("gen23PriorPaidBenefit");
+    if (value.gen23TreatmentType !== "MRI") requiredFields.add("gen23PriorAnnualCount");
+    if (value.gen23TreatmentType === "INJECTION") requiredFields.add("gen23InjectionRiderEligibleConfirmed");
+  }
+  if (value.gen23OtherIndemnityPoliciesExist === "true") requiredFields.add("gen23ProportionalPaymentFactor");
+  if (value.gen23CoveragePeriod === "POST_TERMINATION") { requiredFields.add("gen23PostTerminationContinuationConfirmed"); requiredFields.add("gen23DaysSinceTermination"); }
+  return <fieldset className="form-card" aria-label="추가 입력 항목">
+    <legend><h3>{embedded ? "세부 보장 및 계약 확인" : `${generation}세대 ${insurerName} 계산 조건`}</h3></legend>
+    <div className="form-grid">{gen23Fields.filter(f => (!institutionManaged || f.key !== "gen23Institution") && (!f.generation || f.generation === generation)
       && (!f.scope || (f.scope === "inpatient" ? care === "INPATIENT" && !special : f.scope === "special" ? special : care !== "INPATIENT" && !special))).map(f =>
-      <label key={f.key}>{f.label}{f.kind === "number"
-        ? <input type="text" inputMode="decimal" value={value[f.key] ?? ""} onChange={e => onChange({ ...value, [f.key]: e.target.value })} placeholder="미확인 시 비워두기" />
-        : <select value={value[f.key] ?? ""} onChange={e => onChange({ ...value, [f.key]: e.target.value })}>
+      <div key={f.key}><div style={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}><label htmlFor={`${fieldId}-${f.key}`} style={{ marginBottom: 0 }}>{f.label}{requiredFields.has(f.key) && <span> (필수)</span>}</label>{requiredFields.has(f.key) && gen23InputHelp[f.key] && <InputHelp title={f.label} {...gen23InputHelp[f.key]!} />}</div>{f.kind === "number"
+        ? <input id={`${fieldId}-${f.key}`} type="text" inputMode="decimal" value={value[f.key] ?? ""} onChange={e => onChange({ ...value, [f.key]: e.target.value })} placeholder="미확인 시 비워두기" />
+        : <select id={`${fieldId}-${f.key}`} value={value[f.key] ?? ""} onChange={e => onChange({ ...value, [f.key]: e.target.value })}>
           <option value="">확인 필요</option>
           {(f.kind === "boolean" ? [["true", "예 / 확인"], ["false", "아니요"]] : f.options ?? []).map(([v,l]) => <option key={v} value={v}>{l}</option>)}
-        </select>}</label>)}</div>
+        </select>}</div>)}</div>
   </fieldset>;
 }
 export function Gen23Summary({ usage, generation }: { usage: MedicalUsage; generation: 2 | 3 }) {

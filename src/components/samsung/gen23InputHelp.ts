@@ -1,0 +1,38 @@
+import type { MedicalUsage } from "../../domain/medical";
+const receipt = "진료비 영수증·세부내역서 또는 병원 원무과";
+const policy = "보험증권·가입내역 또는 보험사 상담";
+const history = "해당 계약의 보험금 지급내역 또는 보험사 상담";
+export const gen23InputHelp: Partial<Record<keyof MedicalUsage, { description: string; source: string }>> = {
+  gen23CareSetting: { description: "이번에 계산할 의료비가 입원, 외래 진료, 약국 처방조제 중 어디에 해당하는지 선택하세요.", source: receipt },
+  claimCause: { description: "치료 원인이 질병인지, 사고로 인한 상해인지 확인하세요.", source: "진료기록·진단서 및 보험사 상담" },
+  nationalHealthInsuranceStatus: { description: "이번 진료에 국민건강보험이 적용됐는지 확인하세요. 비급여 항목이 있다는 이유만으로 건강보험 미적용을 선택하지 마세요.", source: receipt },
+  gen23TreatmentType: { description: "이번 비용이 기본형 또는 어떤 비급여 특약의 계산 대상인지 확인하세요. 치료명만 보고 보장 여부를 단정하지 마세요.", source: `${receipt}, ${policy}` },
+  gen23CoveredCopay: { description: "급여 항목 중 환자가 부담한 금액을 입력하세요. 건강보험공단 부담금은 포함하지 않습니다.", source: receipt },
+  gen23NonCoveredExpense: { description: "이번 계산 대상의 비급여 금액을 입력하세요. 별도로 입력하는 병실료 차액은 제외하세요.", source: receipt },
+  gen23EligibleExpense: { description: "선택한 특약의 계산 대상 의료비만 입력하세요. 다른 치료비를 함께 넣지 마세요.", source: `${receipt}, ${policy}` },
+  gen23InpatientExcludingRoomDifference: { description: "입원 계산 대상 의료비에서 별도로 입력하는 병실료 차액을 제외한 금액입니다.", source: receipt },
+  gen23RoomDifference: { description: "실제로 이용한 병실과 기준병실의 병실료 차액을 입력하세요. 총 입원비와 혼동하지 마세요.", source: receipt },
+  gen23InpatientDays: { description: "입원기간의 실제 일수를 확인해 입력하세요.", source: "입퇴원 확인서·병원 원무과" },
+  gen23NonNhiInpatientTotal: { description: "건강보험 미적용 입원 건의 계산 대상 의료비 총액을 확인하세요.", source: `${receipt}, ${policy}` },
+  gen23PriorEligibleDeductible: { description: "이번 청구 이전에 쌓인 연간 자기부담 상한 적용 대상액입니다. 영수증의 환자부담금 전체를 합한 값과 다를 수 있습니다.", source: history },
+  gen23PriorPaidBenefit: { description: "이번 청구를 제외하고 해당 담보·보장기간에 이미 지급받은 보험금입니다. 다른 담보나 다른 보험사의 금액을 합치지 마세요.", source: history },
+  gen23PriorAnnualCount: { description: "이번 건을 제외한 해당 담보의 기존 이용 횟수입니다. 외래·처방·특약별 계산 단위를 구분해주세요.", source: history },
+  gen23PriorContinuationCount: { description: "계약 종료 후 계속 치료 기간에 이미 사용한 외래 횟수 또는 처방 건수입니다. 이번 건은 제외하세요.", source: history },
+  gen23ContractBenefitCap: { description: "계약에 정해진 입원 보장한도입니다. 납입 보험료나 이번 병원비가 아닙니다.", source: policy },
+  gen23OutpatientBenefitCap: { description: "계약에 정해진 외래 1회당 가입금액을 입력하세요. 처방조제비 한도와 구분해주세요.", source: policy },
+  gen23PrescriptionBenefitCap: { description: "계약에 정해진 처방조제비 1건당 가입금액을 입력하세요. 외래 한도와 구분해주세요.", source: policy },
+  gen23RequiredCoverageConfirmed: { description: "선택한 상품 유형과 계산에 필요한 담보 가입을 실제 가입내역에서 확인한 경우에만 확인을 선택하세요.", source: policy },
+  gen23RiderEnrollmentStatus: { description: "현재 선택한 기본형 또는 특약의 가입 여부를 선택하세요. 확인하지 못한 상태와 미가입은 다릅니다.", source: policy },
+  gen23PolicyExclusionsCleared: { description: "이번 비용이 보상하지 않는 사항에 해당하지 않는지 확인하는 항목입니다. 계산을 진행하기 위해 임의로 ‘예’를 선택하지 마세요.", source: policy },
+  gen23OtherIndemnityPoliciesExist: { description: "같은 의료비를 보장하는 다른 실손보험 계약이 있는지 확인하세요.", source: "전체 보험 가입내역 또는 보험사 상담" },
+  gen23ProportionalPaymentFactor: { description: "여러 실손보험 사이의 분담 계산에 사용하는 계수입니다. 보험 개수로 나누어 직접 추측하지 말고 산출 근거가 확인된 값만 입력하세요.", source: "보험사의 계약별 보상책임액·비례보상 산출내역" },
+  gen23CoveragePeriod: { description: "현재 정상 보장기간인지, 계약 종료 후 계속 치료에 해당하는지 선택하세요. 갱신·재가입 여부도 확인해주세요.", source: policy },
+  gen23CoveragePeriodConfirmed: { description: "이번 진료일이 계약의 보장기간 또는 확인된 계속 치료 보상기간에 해당하는지 확인해주세요.", source: `${policy}, 진료일자` },
+  gen23PostTerminationContinuationConfirmed: { description: "보험 종료 당시 계속 중이던 치료로서 종료 후 보상 조건을 충족하는지 확인해주세요.", source: policy },
+  gen23DaysSinceTermination: { description: "계약 종료 다음 날을 1일로 하여 이번 진료일까지의 경과일을 입력하세요.", source: "보험 종료일·진료일자" },
+  gen23SameDayAggregationConfirmed: { description: "같은 날 같은 목적의 중복 통원·처방을 약관상 한 단위로 합산했는지 확인해주세요.", source: `${receipt}, ${policy}` },
+  gen23AggregationUnit: { description: "선택한 특약의 비용을 어떤 단위로 묶었는지 확인하세요. 도수 등은 치료행위, MRI는 진단행위, 주사는 확인된 1입원 또는 1통원 단위입니다.", source: `${receipt}, ${policy}` },
+  gen23ThreeNonCoveredExcludedFromBaseConfirmed: { description: "기본형 금액에서 3대 비급여 특약 대상 비용을 분리했는지 확인하세요. 같은 비용을 중복 입력하지 않도록 하는 항목입니다.", source: `${receipt}, ${policy}` },
+  gen23InjectionRiderEligibleConfirmed: { description: "이번 주사료가 선택한 주사 특약의 계산 대상인지 확인하세요. 약제 분류를 모르면 병원과 보험사에 확인해주세요.", source: `${receipt}, ${policy}` },
+  gen23BenefitLimitRestored: { description: "입원 한도를 소진한 뒤 보상한도가 다시 적용되는 조건을 충족했는지 확인하세요.", source: history },
+};

@@ -887,7 +887,7 @@ function M04ResultPage() {
             type="button"
             className="primary-button"
             onClick={() =>
-              navigate("/input")
+              navigate("/input#input-step-2")
             }
           >
             입력 화면으로
@@ -901,7 +901,7 @@ function M04ResultPage() {
     const calculate = contract.generation === 2 ? calculateSamsungGen2Sample : calculateSamsungGen3Sample;
     const results = usages.map(usage => ({ usage, result: calculate(productCalculationSelections.samsungGen23Variant, usage) }));
     return <AppShell currentStep={5}><Gen23Results generation={contract.generation} variant={productCalculationSelections.samsungGen23Variant}
-      results={results} onEdit={() => navigate("/input")} onConfirm={() => navigate("/confirm")} /></AppShell>;
+      results={results} onEdit={() => navigate("/input#input-step-2")} onConfirm={() => navigate("/input#input-step-2")} /></AppShell>;
   }
 
   if (isRuleLoading) {
@@ -944,7 +944,7 @@ function M04ResultPage() {
             type="button"
             className="secondary-button"
             onClick={() =>
-              navigate("/confirm")
+              navigate("/input#input-step-2")
             }
           >
             이전
@@ -1007,7 +1007,7 @@ function M04ResultPage() {
             type="button"
             className="primary-button"
             onClick={() =>
-              navigate("/input")
+              navigate("/input#input-step-2")
             }
           >
             입력 수정하기
@@ -2030,7 +2030,7 @@ function M04ResultPage() {
       >
         <button
           type="button"
-          onClick={() => navigate("/confirm")}
+          onClick={() => navigate("/input#input-step-2")}
           style={{
             minHeight: "48px",
             border: "1px solid var(--color-border)",
@@ -2046,7 +2046,7 @@ function M04ResultPage() {
 
         <button
           type="button"
-          onClick={() => navigate("/input")}
+          onClick={() => navigate("/input#input-step-2")}
           style={{
             minHeight: "48px",
             border: "1px solid var(--color-primary-200, #b9d1ea)",

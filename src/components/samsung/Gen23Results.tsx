@@ -23,6 +23,6 @@ export function Gen23Results({ generation, variant, results, onEdit, onConfirm }
           {result.warnings.map((w, i) => <p key={i}>{w}</p>)}
         </>}
       </article>)}
-    </section><div className="button-group"><button type="button" className="secondary-button" onClick={onConfirm}>입력 확인으로</button><button type="button" className="primary-button" onClick={onEdit}>입력 수정하기</button></div>
+    </section><div className="button-group"><button type="button" className="secondary-button" onClick={onConfirm}>5세대와 치료 수정</button><button type="button" className="primary-button" onClick={onEdit}>치료 입력 수정</button></div>
   </main>;
 }
