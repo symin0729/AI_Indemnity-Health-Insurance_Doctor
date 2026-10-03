@@ -2,7 +2,7 @@ import { SamsungPrecisionInputs } from '../../components/samsung/SamsungPrecisio
 import { InputHelp } from "../../components/InputHelp";
 import { shouldDisableAddTreatmentButton } from "./treatmentButtonState";
 import { createDraftFromUsage, createEmptyTreatmentDraft, getSeparateVisitWarningMessage, getTreatmentAddButtonLabel, getTreatmentAdditionalInfoFields, getTreatmentAddLabel, type TreatmentDraft } from "./treatmentSequence";
-import { generationForInceptionDate, generalPatientCopayPercent, type CopayInstitution, type CopayRegion } from "../../domain/insuranceInputDefaults";
+import { formatInceptionDateInput, generationForInceptionDate, generationSalesPeriod, generalPatientCopayPercent, inceptionDateForGeneration, type CopayInstitution, type CopayRegion } from "../../domain/insuranceInputDefaults";
 import { genericGen23CareSetting, syncGen23CareSetting, gen23CareSettingError } from "../../domain/samsungGen23CareSetting";
 import { Gen23Inputs } from "../../components/samsung/Gen23Inputs";
 import { parseGen23Form, restoreGen23Form, type Gen23FormState } from "../../domain/samsungGen23Form";
@@ -162,6 +162,28 @@ function IsoDateInput({
   );
 }
 
+const generationBrief: Record<1 | 2 | 3 | 4, string> = {
+  1: "표준화 이전 상품으로 보장 범위와 자기부담 조건이 보험사·상품별로 다릅니다. 보장이 넓은 경우가 많지만 갱신 보험료와 세부 약관을 함께 확인해야 합니다.",
+  2: "보장 기준이 표준화된 세대로 입원·통원 보장 구조가 비교적 일정합니다. 표준형·선택형 등 가입 유형에 따라 자기부담 조건이 달라질 수 있습니다.",
+  3: "기본형과 비급여 3개 특약으로 보장이 분리된 세대입니다. 도수치료·비급여 주사·비급여 MRI 이용 여부에 따라 실제 부담 차이가 커질 수 있습니다.",
+  4: "급여와 비급여 보장이 분리되고 비급여 이용량에 따른 보험료 차등 구조가 적용됩니다. 보험료는 낮아질 수 있지만 자기부담 비율은 이전 세대보다 높습니다.",
+};
+
+const gen23VariantBrief: Record<SamsungGen23Variant, { label: string; description: string }> = {
+  UNKNOWN: {
+    label: "상품 종형 선택이 필요합니다",
+    description: "1종 표준형은 입원 보상대상 의료비의 80%를 보장하는 구조입니다. 2종 선택형Ⅱ는 입원 급여 90%·비급여 80%를 보장하는 구조이므로 보험증권에 표시된 종형을 확인해 선택해주세요.",
+  },
+  standard: {
+    label: "선택한 상품 종형 · 1종 표준형",
+    description: "입원 시 보상대상 의료비의 80%를 보장하는 구조입니다. 상급병실료 차액에는 별도 보장 비율과 한도가 적용되므로 보험증권의 가입 조건을 함께 확인해주세요.",
+  },
+  selected2: {
+    label: "선택한 상품 종형 · 2종 선택형Ⅱ",
+    description: "입원 시 급여 의료비의 90%, 비급여 의료비의 80%를 보장하는 구조입니다. 급여와 비급여의 자기부담 기준이 서로 다르므로 실제 의료비 구분이 중요합니다.",
+  },
+};
+
 function M02InputPage() {
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState<1 | 2 | 3>(() => {
@@ -270,8 +292,10 @@ function M02InputPage() {
 
   const [generation, setGeneration] =
     useState<InsuranceGeneration>(
-      savedContract?.generation ?? 3
+      generationForInceptionDate(savedContract?.inceptionDate ?? "") ?? savedContract?.generation ?? 3
     );
+
+  const detectedGeneration = generationForInceptionDate(inceptionDate);
 
   const [gen4NonCoveredRider, setGen4NonCoveredRider] =
   useState<RiderEnrollmentStatus>(
@@ -532,6 +556,8 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
   const [treatmentDrafts, setTreatmentDrafts] = useState<Record<number, TreatmentDraft>>({});
 
   const [isStep3Confirmed, setIsStep3Confirmed] = useState(false);
+  const [isTargetPremiumHelpConfirmed, setIsTargetPremiumHelpConfirmed] = useState(false);
+  const [isTreatmentHelpConfirmed, setIsTreatmentHelpConfirmed] = useState(false);
 
   const [hasNoPlannedTreatment, setHasNoPlannedTreatment] =
     useState(false);
@@ -784,6 +810,8 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
     setPlannedUsages([]);
     setHasNoPlannedTreatment(false);
     setIsStep3Confirmed(false);
+    setIsTargetPremiumHelpConfirmed(false);
+    setIsTreatmentHelpConfirmed(false);
 
     resetTreatmentForm();
     setIsTreatmentFormOpen(true);
@@ -1264,8 +1292,29 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
     }
   }, [errorMessage]);
 
+  const showTargetPremiumHelp = () => {
+    setErrorMessage("");
+    goToInputStep(2);
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        document.getElementById("target-premium-help-area")?.scrollIntoView({
+          block: "center",
+          behavior: "smooth",
+        });
+      });
+    });
+  };
+
   const handleNext = () => {
     setErrorMessage("");
+    if (!isTargetPremiumHelpConfirmed) {
+      showTargetPremiumHelp();
+      return;
+    }
+    if (!isTreatmentHelpConfirmed) {
+      setErrorMessage("STEP 3의 필수 입력 안내를 읽고 확인해주세요.");
+      return;
+    }
     if (!isStep3Confirmed) {
       setErrorMessage("입력 내용을 확인하고 ‘예정치료를 입력하셨나요?’에 체크해주세요.");
       return;
@@ -1318,6 +1367,17 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
       setErrorMessage(
         "보험 가입일은 YYYY-MM-DD 형식의 실제 날짜로 입력해주세요."
       );
+      return;
+    }
+
+    if (
+      (generation === 2 || generation === 3) &&
+      samsungGen23Variant === "UNKNOWN"
+    ) {
+      setErrorMessage(
+        `${generation}세대 실손보험의 상품 종형을 반드시 선택해주세요.`
+      );
+      document.getElementById("samsung-gen23-variant")?.focus();
       return;
     }
 
@@ -1561,6 +1621,15 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
       return;
     }
 
+    if (
+      (generation === 2 || generation === 3) &&
+      samsungGen23Variant === "UNKNOWN"
+    ) {
+      setErrorMessage(`${generation}세대 실손보험의 상품 종형을 반드시 선택해주세요.`);
+      document.getElementById("samsung-gen23-variant")?.focus();
+      return;
+    }
+
     goToInputStep(2);
   };
 
@@ -1571,6 +1640,19 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
       ...prev,
       [type]: !prev[type],
     }));
+  };
+
+  const handleStep2Next = () => {
+    setErrorMessage("");
+    if (!target5GMonthlyPremium || Number(target5GMonthlyPremium) <= 0) {
+      setErrorMessage("비교용 5세대 월 보험료를 올바르게 입력해주세요.");
+      return;
+    }
+    if (!isTargetPremiumHelpConfirmed) {
+      showTargetPremiumHelp();
+      return;
+    }
+    goToInputStep(3);
   };
 
   const selectedSample =
@@ -1592,6 +1674,11 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
     <AppShell currentStep={activeStep} onReset={handleConfirmResetAll}
       onStepChange={(step) => {
         if (step === 4) { handleNext(); return; }
+        if (step === 3 && activeStep === 2) { handleStep2Next(); return; }
+        if (step === 3 && !isTargetPremiumHelpConfirmed) {
+          showTargetPremiumHelp();
+          return;
+        }
         if (step === 1 || step === 2 || step === 3) goToInputStep(step);
       }}>
     <main className="navy-page navy-input-page">
@@ -1869,11 +1956,12 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
           <IsoDateInput
             value={inceptionDate}
             onChange={(value) => {
-              setInceptionDate(value);
-              const detected = generationForInceptionDate(value);
+              const formattedValue = formatInceptionDateInput(value);
+              setInceptionDate(formattedValue);
+              const detected = generationForInceptionDate(formattedValue);
               if (detected !== undefined) setGeneration(detected);
             }}
-            placeholder="예: 2018-03-01"
+            placeholder="YYYY-MM-DD (예: 2018-03-01)"
           />
         </label>
 
@@ -1881,41 +1969,28 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
           실손 세대
           <select
             value={generation}
-            onChange={(e) =>
-              setGeneration(
-                Number(
-                  e.target.value
-                ) as InsuranceGeneration
-              )
-            }
+            onChange={(e) => {
+              const selectedGeneration = Number(e.target.value) as Exclude<InsuranceGeneration, 5>;
+              setGeneration(selectedGeneration);
+              setInceptionDate(inceptionDateForGeneration(selectedGeneration));
+            }}
           >
-            <option value={1}>
-              1세대
-            </option>
-
-            <option value={2}>
-              2세대
-            </option>
-
-            <option value={3}>
-              3세대
-            </option>
-
-            <option value={4}>
-              4세대
-            </option>
-
-            <option value={5}>
-              5세대
-            </option>
+            <option value={1}>1세대</option>
+            <option value={2}>2세대</option>
+            <option value={3}>3세대</option>
+            <option value={4}>4세대</option>
           </select>
         </label>
         {generation === 2 ||
         generation === 3 ? (
           <label>
-            상품 종형
+            상품 종형 <span className="required-mark">필수</span>
             <select
+              id="samsung-gen23-variant"
               value={samsungGen23Variant}
+              required
+              aria-required="true"
+              aria-invalid={samsungGen23Variant === "UNKNOWN"}
               onChange={(e) =>
                 setSamsungGen23Variant(
                   e.target.value as SamsungGen23Variant
@@ -1923,7 +1998,7 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
               }
             >
               <option value="UNKNOWN">
-                선택해주세요
+                필수 선택
               </option>
 
               <option value="standard">
@@ -2003,6 +2078,26 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
           공모전 MVP에서는 사전에 검증한 샘플 정보를 사용할 수 있습니다.
           샘플을 불러온 경우 실제 계산 전 사용자가 내용을 다시 확인해야 합니다.
         </div>
+
+        {detectedGeneration !== undefined && (
+          <section className="generation-match-card" role="status" aria-live="polite">
+            <div className="generation-match-card__icon" aria-hidden="true">✓</div>
+            <div>
+              <span className="generation-match-card__eyebrow">가입일 자동 판독 결과</span>
+              <strong>
+                입력한 가입일은 실손보험 {detectedGeneration}세대 ({generationSalesPeriod(detectedGeneration)})에 해당합니다.
+              </strong>
+              <p>{generationBrief[detectedGeneration as 1 | 2 | 3 | 4]}</p>
+              {(detectedGeneration === 2 || detectedGeneration === 3) && (
+                <div className={`generation-match-card__variant${samsungGen23Variant === "UNKNOWN" ? " is-required" : ""}`}>
+                  <b>{gen23VariantBrief[samsungGen23Variant].label}</b>
+                  <span>{gen23VariantBrief[samsungGen23Variant].description}</span>
+                </div>
+              )}
+              <small>가입일을 변경하면 실손 세대도 자동으로 다시 선택됩니다.</small>
+            </div>
+          </section>
+        )}
 
         {generation === 1 && (
           <fieldset className="form-card" style={{ marginTop: "16px" }}>
@@ -2171,9 +2266,9 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
           사용할 비교 조건입니다.
         </p>
 
-        <label htmlFor="target-premium">
+        <label id="target-premium-help-area" htmlFor="target-premium">
           비교용 5세대 월 보험료 (필수)
-            <InputHelp title="비교용 5세대 월 보험료" description="5세대 전환 시 예상되는 월 보험료입니다. 현재 보험료와 구분하고, 보험사에서 받은 견적을 입력하세요." source="보험사의 전환 견적 또는 상담" />
+            <InputHelp title="비교용 5세대 월 보험료" description="5세대 전환 시 예상되는 월 보험료입니다. 현재 보험료와 구분하고, 보험사에서 받은 견적을 입력하세요." source="보험사의 전환 견적 또는 상담" attention confirmed={isTargetPremiumHelpConfirmed} onConfirm={() => setIsTargetPremiumHelpConfirmed(true)} />
           <span className="input-unit-row"><input id="target-premium"
             type="text"
             inputMode="numeric"
@@ -2334,7 +2429,7 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
         <div className="treatment-heading-row">
           <h2 className="card-title" style={{ margin: 0 }}>예정 치료</h2>
           <div className="treatment-compact-actions">
-            <button type="button" className="sample-button" aria-haspopup="dialog" onClick={() => treatmentHelpDialogRef.current?.showModal()}>필수 입력 안내 확인</button>
+            <button type="button" className={`sample-button required-confirm-button${isTreatmentHelpConfirmed ? " is-confirmed" : ""}`} aria-haspopup="dialog" onClick={() => treatmentHelpDialogRef.current?.showModal()}>{isTreatmentHelpConfirmed ? "✓ 필수 입력 안내 확인 완료" : "필수 입력 안내 확인"}</button>
             <button type="button" className="sample-button" aria-haspopup="dialog" onClick={() => treatmentSampleDialogRef.current?.showModal()} disabled={isTreatmentLimitReached}>치료 샘플 불러오기</button>
             {[0, 1, 2].map((slotIndex) => (
               <button
@@ -3207,10 +3302,10 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
         <button
           type="button"
           className="primary-button"
-          disabled={activeStep === 3 && !isStep3Confirmed}
+          disabled={activeStep === 3 && (!isStep3Confirmed || !isTreatmentHelpConfirmed)}
           onClick={() => {
             if (activeStep === 1) handleStep1Next();
-            else if (activeStep === 2) goToInputStep(3);
+            else if (activeStep === 2) handleStep2Next();
             else handleNext();
           }}
         >
@@ -3260,7 +3355,7 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
           <p>진료비는 영수증이나 병원의 예상 비용을 참고하고, 모르는 값은 임의로 채우지 마세요. 샘플을 불러왔다면 본인의 치료·계약 정보로 수정해주세요.</p>
           <p>입력을 모두 완료해도 실제 보험금 지급액이 확정되는 것은 아닙니다.</p>
           <div className="button-group">
-            <button type="button" className="primary-button" autoFocus onClick={() => treatmentHelpDialogRef.current?.close()}>확인</button>
+            <button type="button" className="primary-button" autoFocus onClick={() => { setIsTreatmentHelpConfirmed(true); treatmentHelpDialogRef.current?.close(); }}>확인</button>
           </div>
         </section>
       </dialog>
