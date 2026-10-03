@@ -213,3 +213,51 @@ export const sampleScenarioService = {
     };
   },
 };
+
+/** 사용자가 치료 샘플 버튼을 누른 경우에만 쓰는 입력 연습용 가정값. */
+export type TreatmentSampleKind = "OUTPATIENT" | "EXAM" | "MRI";
+export function loadTreatmentSample(sampleId: SampleId, generation: number, kind: TreatmentSampleKind = "MRI"): SampleScenario {
+  if (kind !== "MRI") {
+    const scenario = loadTreatmentSample(sampleId, generation, "MRI");
+    const amount = kind === "OUTPATIENT" ? 15000 : 50000;
+    const name = kind === "OUTPATIENT" ? "일반 외래 진료" : "외래 검사";
+    const usage: MedicalUsage = { ...scenario.plannedUsages[0], id: `example-${kind.toLowerCase()}`, treatmentName: name,
+      treatmentCategory: "", benefitClass: "COVERED", severityClass: "UNKNOWN", frequency: 1,
+      unitCost: amount, coveredAmount: amount,
+      note: "입력 연습용 가상 예제이며 실제 의료비나 평균 진료비가 아닙니다.",
+      ...(generation === 2 || generation === 3 ? { gen23CoveredCopay: amount, gen23NonCoveredExpense: 0,
+        gen23EligibleExpense: undefined, gen23AggregationUnit: undefined,
+        ...(generation === 3 ? { gen23TreatmentType: "BASE", gen23ThreeNonCoveredExcludedFromBaseConfirmed: true } : {}),
+      } : {}),
+    };
+    return { ...scenario, plannedUsages: [usage], target5GSpecialRider2: null,
+      notice: `${name} 입력 예제입니다. 의원, 환자부담금 ${amount.toLocaleString("ko-KR")}원과 가입·누적 상태는 설명용 가정이며 평균 진료비가 아닙니다. 실제 정보로 수정해주세요.` };
+  }
+  const scenario = sampleScenarioService.load(sampleId === "LOW_USAGE" ? "NON_COVERED" : sampleId);
+  const usage: MedicalUsage = {
+    ...scenario.plannedUsages[0],
+    id: "example-treatment-mri",
+    institutionType: "CLINIC_HOSPITAL", copayInstitution: "CLINIC",
+    healthInsuranceCopayRate: 0.3,
+    coveredAmount: 400000,
+    claimCause: "DISEASE", nationalHealthInsuranceStatus: "APPLIED",
+    // 보장대상액 및 계약·누적 상태는 사실 확인값이 아니라 이 예제만의 가정이다.
+    evidenceStatus: undefined,
+    note: "입력 연습용 예제: 보장대상 40만원, 담보 가입·보장기간·면책 확인, 기존 지급/이용 0, 중복보험 없음 가정. 실제 계약에 사용하기 전 확인 필요.",
+    ...(generation === 2 || generation === 3 ? {
+      gen23CareSetting: "OUTPATIENT" as const, gen23Institution: "CLINIC" as const,
+      gen23CoveredCopay: 0, gen23NonCoveredExpense: 400000,
+      gen23PriorPaidBenefit: 0, gen23PriorAnnualCount: 0,
+      gen23OutpatientBenefitCap: 250000, gen23PrescriptionBenefitCap: 50000,
+      gen23OtherIndemnityPoliciesExist: false,
+      gen23CoveragePeriod: "ACTIVE" as const, gen23CoveragePeriodConfirmed: true,
+      gen23RequiredCoverageConfirmed: true, gen23PolicyExclusionsCleared: true,
+      gen23SameDayAggregationConfirmed: true,
+      ...(generation === 3 ? {
+        gen23TreatmentType: "MRI" as const, gen23RiderEnrollmentStatus: "ENROLLED" as const,
+        gen23EligibleExpense: 400000, gen23AggregationUnit: "DIAGNOSTIC_ACTION" as const,
+      } : {}),
+    } : {}),
+  };
+  return { ...scenario, plannedUsages: [usage], notice: "입력 연습용 MRI 샘플입니다. 의료비 40만원, 의원, 담보 가입·보장기간·면책 확인, 기존 지급·이용 0, 중복보험 없음은 예제 가정입니다. 실제 정보로 수정한 뒤 치료를 추가하고 확인해주세요." };
+}

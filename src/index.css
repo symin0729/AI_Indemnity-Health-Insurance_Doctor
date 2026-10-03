@@ -2212,3 +2212,59 @@ body > #root > main > section {
   .navy-page > .page-header { border: 0 !important; padding: 0 !important; }
   .navy-page { color: #101828; }
 }
+
+/* Keep input units alongside compact fields, including on narrow screens. */
+.input-unit-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 24rem;
+  margin-top: 8px;
+}
+.input-unit-row > input:not([type="checkbox"]):not([type="radio"]) {
+  flex: 1 1 0;
+  width: 0;
+  min-width: 0;
+  margin-top: 0;
+}
+.input-unit-label {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.treatment-help-dialog {
+  width: min(100% - 32px, 480px);
+  max-height: calc(100dvh - 32px);
+  padding: 0;
+  border: 0;
+  border-radius: 16px;
+  color: var(--ink);
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.24);
+}
+.treatment-help-dialog::backdrop {
+  background: rgba(15, 23, 42, 0.48);
+  backdrop-filter: blur(4px);
+}
+
+.treatment-heading-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.treatment-compact-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  overflow-x: auto;
+}
+.treatment-compact-actions > button {
+  flex: 0 0 auto;
+  min-height: 34px;
+  min-width: 0;
+  padding: 6px 9px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}

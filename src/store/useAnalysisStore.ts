@@ -27,6 +27,10 @@ export interface AnalysisCalculationAssumptions {
 }
 
 export type RiderEnrollmentStatus = "ENROLLED" | "NOT_ENROLLED" | "UNKNOWN";
+export type SamsungGen23Variant =
+  | "standard"
+  | "selected2"
+  | "UNKNOWN";
 
 export interface ProductCalculationSelections {
   gen1Product: "SAMSUNG_0904_2" | "OTHER" | "UNKNOWN";
@@ -36,6 +40,7 @@ export interface ProductCalculationSelections {
   gen5ContractType: "GENERAL" | "CONVERSION";
   gen5SevereRider: RiderEnrollmentStatus;
   gen5NonSevereRider: RiderEnrollmentStatus;
+  samsungGen23Variant: SamsungGen23Variant;
 }
 
 interface AnalysisState {
@@ -111,6 +116,7 @@ const initialState = {
     gen5ContractType: "GENERAL" as const,
     gen5SevereRider: "UNKNOWN" as RiderEnrollmentStatus,
     gen5NonSevereRider: "UNKNOWN" as RiderEnrollmentStatus,
+    samsungGen23Variant: "UNKNOWN" as const,
   },
 };
 
