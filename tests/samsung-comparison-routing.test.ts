@@ -1,7 +1,7 @@
 import { expect, it } from 'vitest';
 import { calculateSamsungGen5 } from '../src/engine/calculateSamsungGen5';
 import { calculateSamsungGen1Sample } from '../src/engine/calculateSamsungGen1';
-import { calculateSamsungAnnualBreakEven, calculateSamsungAnnualComparison, calculateSamsungComparisonItem } from '../src/engine/calculateSamsungComparison';
+import { calculateSamsungAnnualBreakEven, calculateSamsungAnnualComparison, calculateSamsungComparisonItem, SAMSUNG_BREAK_EVEN_MAX_FREQUENCY } from '../src/engine/calculateSamsungComparison';
 import { useAnalysisStore } from '../src/store/useAnalysisStore';
 const common={policyExclusionsCleared:true,otherIndemnityPoliciesExist:false,coveragePeriodConfirmed:true};
 it('rejects invalid outpatient rates including NaN',()=>{for(const rate of [NaN,Infinity,-0.3,1.1]) expect(calculateSamsungGen5('GENERAL','COVERED_OUTPATIENT',{...common,eligibleExpense:100000,institution:'CLINIC_HOSPITAL',healthInsuranceCopayRate:rate}).claim).toBeNull();});
@@ -57,7 +57,7 @@ it('carries a shared rule annual benefit limit into the next treatment',()=>{
 });
 it('finds break-even by rerunning the Samsung annual engine for each frequency',()=>{
  const result=calculateSamsungAnnualBreakEven({...contract,generation:4},35000,[],selections,[baseUsage],{...assumptions,assumeEachOccurrenceSeparate:true},baseUsage.id);
-  expect(result).toMatchObject({status:'AVAILABLE',threshold:30,exactTieFrequencies:[30]});
+  expect(result).toMatchObject({status:'AVAILABLE',threshold:30,exactTieFrequencies:[30],rangeChecked:{min:0,max:SAMSUNG_BREAK_EVEN_MAX_FREQUENCY}});
 });
 it('holds repeated treatment until separate occurrences are confirmed',()=>{
  const result=calculateSamsungAnnualComparison(contract,35000,[],selections,[{...baseUsage,frequency:2}],assumptions);

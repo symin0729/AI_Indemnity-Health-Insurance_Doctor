@@ -463,7 +463,11 @@ export function calculateBreakEvenBySimulation({
       maxFrequency
     ) ||
     minFrequency < 0 ||
-    maxFrequency < minFrequency
+    maxFrequency < minFrequency ||
+    !Number.isFinite(
+      equalityTolerance
+    ) ||
+    equalityTolerance < 0
   ) {
     return {
       status:
@@ -501,7 +505,7 @@ export function calculateBreakEvenBySimulation({
       points: [],
 
       warnings: [
-        "손익분기 탐색 범위를 확인해주세요.",
+        "손익분기 탐색 범위와 동률 허용치를 확인해주세요.",
       ],
 
       message:

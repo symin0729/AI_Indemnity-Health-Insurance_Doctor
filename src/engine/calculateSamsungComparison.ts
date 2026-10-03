@@ -9,6 +9,12 @@ import { calculateSamsungGen5Claim } from './calculateSamsungGen5';
 import type { SamsungDraftCalculationInput } from './evaluateSamsungExecutionSpec';
 import { calculateBreakEvenBySimulation } from './calculateBreakEven';
 
+/**
+ * 5세대 통원 보장은 상해·질병별 연 100회 한도가 있으므로
+ * 한도 직후의 총부담 변화까지 확인할 수 있게 120회까지 탐색한다.
+ */
+export const SAMSUNG_BREAK_EVEN_MAX_FREQUENCY = 120;
+
 export const samsungCalculationLabel = (generation: number) => `삼성 ${generation}세대 · 상품별 실행 스펙 · 초안 검산`;
 
 function normalizeGen23Usage(usage: MedicalUsage, assumptions: AnalysisCalculationAssumptions): MedicalUsage {
@@ -298,7 +304,7 @@ export function calculateSamsungAnnualBreakEven(
   if (!usages.some((usage) => usage.id === usageId)) return null;
   return calculateBreakEvenBySimulation({
     minFrequency: 0,
-    maxFrequency: 50,
+    maxFrequency: SAMSUNG_BREAK_EVEN_MAX_FREQUENCY,
     evaluate: (frequency) => {
       const simulated = frequency === 0
         ? usages.filter((usage) => usage.id !== usageId)
