@@ -53,6 +53,9 @@ export type EvidenceStatus =
   | "NOT_PROVIDED";
 
 export interface MedicalUsage {
+  /** 삼성 상품별 계산에 필요한 확인된 값만 전달합니다. */
+  samsungCalculationInput?: import('../engine/evaluateSamsungExecutionSpec').SamsungDraftCalculationInput;
+  samsungGen5Facts?: Omit<import('../engine/calculateSamsungGen5').SamsungGen5ObjectiveFacts, 'benefitClass' | 'careSetting'>;
   /* =====================================================
    * 기존 MVP 필드
    * =================================================== */

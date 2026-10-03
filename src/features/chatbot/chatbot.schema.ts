@@ -7,6 +7,9 @@ export const chatRequestSchema = z.object({
   consentPolicyVersion: z.literal("ai-chat-1.0"),
   context: z.object({
     screen: z.enum(["START", "INPUT", "CONFIRM", "RESULT"]),
+    productCode: z.string().min(1).optional(),
+    generation: z.number().int().min(1).max(5).optional(),
+    coverageCode: z.string().min(1).optional(),
   }).optional(),
 });
 

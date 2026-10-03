@@ -7,7 +7,12 @@ export interface ChatRequest {
   mode: "GENERAL";
   consentGranted: boolean;
   consentPolicyVersion: string;
-  context?: { screen: ChatScreen };
+  context?: {
+    screen: ChatScreen;
+    productCode?: string;
+    generation?: number;
+    coverageCode?: string;
+  };
 }
 
 export type ChatStatus =

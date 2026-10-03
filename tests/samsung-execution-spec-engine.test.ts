@@ -239,6 +239,7 @@ describe("Samsung execution-spec draft engine", () => {
 
   it("stops a first-generation outpatient claim after the 30 service-day limit", () => {
     const result = evaluateSamsungExecutionSpec(rules.get("G1-04")!, {
+      daysSinceAccidentOrDiagnosis: 1,
       outpatientExpense: 20_000,
       nhiApplied: true,
       priorServiceDays: 30,
@@ -250,6 +251,7 @@ describe("Samsung execution-spec draft engine", () => {
 
   it("requires first-generation rider and exclusion confirmation", () => {
     const result = evaluateSamsungExecutionSpec(rules.get("G1-01")!, {
+      daysSinceAccidentOrDiagnosis: 1,
       coveredRoomAndTreatment: 100_000,
       roomDifference: 0,
       nhiApplied: true,
@@ -260,6 +262,7 @@ describe("Samsung execution-spec draft engine", () => {
 
   it("applies the first-generation non-NHI inpatient fallback rate", () => {
     const result = evaluateSamsungExecutionSpec(rules.get("G1-01")!, {
+      daysSinceAccidentOrDiagnosis: 1,
       nonNhiInpatientTotal: 100_000,
       nhiApplied: false,
       priorPaidBenefit: 0,
@@ -271,6 +274,7 @@ describe("Samsung execution-spec draft engine", () => {
 
   it("caps first-generation inpatient benefits at 50 million won", () => {
     const result = evaluateSamsungExecutionSpec(rules.get("G1-01")!, {
+      daysSinceAccidentOrDiagnosis: 1,
       coveredRoomAndTreatment: 1_000_000,
       roomDifference: 0,
       nhiApplied: true,

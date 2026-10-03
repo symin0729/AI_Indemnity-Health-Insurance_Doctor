@@ -15,5 +15,6 @@ export const validateAnswer = (
   if (answer.sourceDocumentIds.some((id) => !sourceIds.has(id))) return false;
 
   const evidenceText = `${evidence.map((item) => item.content).join(" ")} ${additionalNumericEvidence}`;
-  return numbers(combined).every((number) => evidenceText.includes(number));
+  const allowedNumbers = new Set(numbers(evidenceText));
+  return numbers(combined).every((number) => allowedNumbers.has(number));
 };

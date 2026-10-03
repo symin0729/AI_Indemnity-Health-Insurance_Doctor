@@ -10,7 +10,8 @@ import QuestionChips from "./QuestionChips";
 
 export default function ResultChatbot() {
   const navigate = useNavigate();
-  const hasResultState = useAnalysisStore((state) => state.contract !== null);
+  const contract = useAnalysisStore((state) => state.contract);
+  const hasResultState = contract !== null;
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState<ChatResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -39,7 +40,11 @@ export default function ResultChatbot() {
         mode: "GENERAL",
         consentGranted: true,
         consentPolicyVersion: "ai-chat-1.0",
-        context: { screen: "RESULT" },
+        context: contract ? {
+          screen: "RESULT",
+          productCode: ({1:"SAMSUNG_0904_2",2:"SAMSUNG_1611_7",3:"SAMSUNG_1704_1",4:"SAMSUNG_2107_1",5:"SAMSUNG_2605_1"} as const)[contract.generation],
+          generation: contract.generation,
+        } : { screen: "RESULT" },
       }, controller.signal);
       setAnswer(response);
     } catch (error) {

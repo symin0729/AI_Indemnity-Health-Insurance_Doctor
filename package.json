@@ -11,6 +11,8 @@
     "build:samsung-specs": "node scripts/build-samsung-executable-specs.mjs",
     "build:samsung-review": "node scripts/build-samsung-review-checklist.mjs",
     "test:gemini": "node scripts/test-gemini.mjs",
+    "audit:production": "node scripts/check-production-readiness.mjs",
+    "gate:production": "node scripts/check-production-readiness.mjs --require-ready",
     "preview": "vite preview"
   },
   "dependencies": {

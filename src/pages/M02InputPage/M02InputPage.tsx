@@ -1,3 +1,4 @@
+import { SamsungPrecisionInputs } from '../../components/samsung/SamsungPrecisionInputs';
 import { InputHelp } from "../../components/InputHelp";
 import { shouldDisableAddTreatmentButton } from "./treatmentButtonState";
 import { createDraftFromUsage, createEmptyTreatmentDraft, getSeparateVisitWarningMessage, getTreatmentAddButtonLabel, getTreatmentAdditionalInfoFields, getTreatmentAddLabel, type TreatmentDraft } from "./treatmentSequence";
@@ -929,6 +930,7 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
       catch (error) { setErrorMessage(error instanceof Error ? error.message : "계산 입력을 확인해주세요."); return null; }
     }
     const usage: MedicalUsage = {
+      ...(id ? plannedUsages.find(item => item.id === id) : {}),
       ...gen23Values,
       id:
         id ??
@@ -3479,6 +3481,7 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
           </section>
         </div>
       )}
+      {activeStep === 2 && plannedUsages.map(usage => <SamsungPrecisionInputs key={usage.id} usage={usage} onChange={updated => setPlannedUsages(previous => previous.map(item => item.id === updated.id ? updated : item))} />)}
     </main>
     </AppShell>
   );

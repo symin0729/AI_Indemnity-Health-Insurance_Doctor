@@ -30,4 +30,13 @@ describe("answer guard", () => {
       confirmations: [],
     }, evidence)).toBe(false);
   });
+
+  it("근거 숫자의 일부 문자열을 다른 수치로 사용하는 답변을 차단한다", () => {
+    expect(validateAnswer({
+      answer: "자기부담률은 2%입니다.",
+      keyPoints: [],
+      sourceDocumentIds: ["DOC-1"],
+      confirmations: [],
+    }, evidence)).toBe(false);
+  });
 });

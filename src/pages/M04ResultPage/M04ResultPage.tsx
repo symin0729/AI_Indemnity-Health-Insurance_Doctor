@@ -1,3 +1,4 @@
+import SamsungComparisonResults from '../../components/samsung/SamsungComparisonResults';
 import AppShell from "../../components/AppShell";
 import {
   useEffect,
@@ -2077,4 +2078,5 @@ function M04ResultPage() {
   );
 }
 
-export default M04ResultPage;
+export { M04ResultPage as LegacyMvpResultPage };
+export default SamsungComparisonResults;

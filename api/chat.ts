@@ -36,6 +36,15 @@ export default async function handler(request: Request): Promise<Response> {
       apiKey: config.ragflowApiKey,
       datasetId: config.ragflowDatasetId,
       timeoutMs: config.timeoutMs,
+      ...(input.context?.productCode
+        ? {
+            filters: {
+              productCode: input.context.productCode,
+              generation: input.context.generation,
+              coverageCode: input.context.coverageCode,
+            },
+          }
+        : {}),
     });
     if (evidence.length === 0) return jsonResponse(fallback("INSUFFICIENT_EVIDENCE", requestId));
 

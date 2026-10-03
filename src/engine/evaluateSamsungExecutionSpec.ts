@@ -112,6 +112,11 @@ export interface SamsungDraftCalculationResult {
     enforcedDeductible: number | null;
     enforcedClaim: number;
   };
+  /** 연속 회차 계산기가 다음 회차의 연간 상한 상태를 이어가기 위한 값입니다. */
+  enforcementTrace?: {
+    capEligibleDeductible: number | null;
+    restoredDeductible: number;
+  };
 }
 
 type AmountKey = Exclude<
@@ -334,6 +339,10 @@ function calculated(
     ...(rule.generation === 2 ? { gen2Trace: {
       deductible, capEligibleDeductible, restored, enforcedDeductible, enforcedClaim,
     } } : {}),
+    enforcementTrace: {
+      capEligibleDeductible: capBasis,
+      restoredDeductible: restored,
+    },
     claim: enforcedClaim,
     deductible: enforcedDeductible,
     status: "DRAFT_CALCULATED",
@@ -356,6 +365,9 @@ export function evaluateSamsungExecutionSpec(
   input: SamsungDraftCalculationInput,
 ): SamsungDraftCalculationResult {
   const calculation = rule.calculation;
+  if (input.healthInsuranceCopayRate !== undefined && (!Number.isFinite(input.healthInsuranceCopayRate) || input.healthInsuranceCopayRate < 0 || input.healthInsuranceCopayRate > 1)) return confirmation(rule, "건강보험 본인부담률은 0~1 범위여야 합니다.");
+  if (rule.generation === 1 && rule.enforcement?.windowDays !== undefined && (input.daysSinceAccidentOrDiagnosis === undefined || !Number.isInteger(input.daysSinceAccidentOrDiagnosis))) return confirmation(rule, "사고·발병일부터의 경과일 확인이 필요합니다.");
+  if (rule.generation === 1 && rule.enforcement?.maxServiceDays !== undefined && (input.priorServiceDays === undefined || !Number.isInteger(input.priorServiceDays))) return confirmation(rule, "기존 통원 이용일수 확인이 필요합니다.");
   if ([2, 3].includes(rule.generation ?? 0)) {
     // Validate supplied numbers even if this branch would not consume them.
     for (const [key, value] of Object.entries(input)) {
@@ -488,7 +500,7 @@ export function evaluateSamsungExecutionSpec(
         return confirmation(rule, "일반 비급여 계산에서 3대 비급여 대상 의료비를 제외했는지 확인해야 합니다.");
       }
     }
-    if (rule.generation === 5 && ["G5-04", "G5-07"].includes(rule.ruleId) && !input.claimCause) {
+    if (rule.generation === 5 && ["G5-04", "G5-07", "G5-CONV-04", "G5-CONV-07"].includes(rule.ruleId) && !input.claimCause) {
       return confirmation(rule, "연간 통원 횟수·일수 한도를 적용하려면 상해·질병 구분이 필요합니다.");
     }
     if (rule.ruleId === "G1-02" && input.nhiApplied !== false) {

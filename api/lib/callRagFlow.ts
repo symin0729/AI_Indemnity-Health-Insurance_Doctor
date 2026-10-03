@@ -23,6 +23,15 @@ export const callRagFlow = async (
   question: string,
   options: RagFlowOptions,
 ): Promise<RetrievedEvidence[]> => {
+  const metadataConditions = options.filters
+    ? Object.entries(options.filters)
+        .filter(([, filterValue]) => filterValue !== undefined)
+        .map(([name, filterValue]) => ({
+          name,
+          comparison_operator: "is",
+          value: filterValue,
+        }))
+    : [];
   const response = await fetchWithTimeout(
     `${options.baseUrl}/api/v1/retrieval`,
     {
@@ -38,6 +47,14 @@ export const callRagFlow = async (
         page_size: 6,
         similarity_threshold: 0.2,
         vector_similarity_weight: 0.3,
+        ...(metadataConditions.length > 0
+          ? {
+              metadata_condition: {
+                logic: "and",
+                conditions: metadataConditions,
+              },
+            }
+          : {}),
       }),
     },
     options.timeoutMs,

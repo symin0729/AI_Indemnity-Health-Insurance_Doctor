@@ -7,6 +7,7 @@ import {
 import {
   calculateAnnualPremium,
 } from "../src/engine/calculateAnnualPremium";
+import { analyzeCoverageGap } from "../src/engine/analyzeCoverageGap";
 
 import {
   calculateSelfPayment,
@@ -669,6 +670,25 @@ describe(
         ).toBe(540000);
       }
     );
+
+    it("급여 치료는 중증 구분이 없어도 보장 공백을 비교한다", () => {
+      const result = analyzeCoverageGap({
+        usage: {
+          id: "covered-unknown-severity",
+          treatmentName: "급여 통원",
+          careSetting: "OUTPATIENT",
+          benefitClass: "COVERED",
+          severityClass: "UNKNOWN",
+          frequency: 1,
+          unitCost: 100000,
+        },
+        treatmentCost: 100000,
+        currentSelfPaymentResult: { amount: 10000, ruleId: "CURRENT", warning: null },
+        targetSelfPaymentResult: { amount: 30000, ruleId: "TARGET", warning: null },
+      });
+      expect(result.type).toBe("SELF_PAYMENT_INCREASE");
+      expect(result.differenceAmount).toBe(20000);
+    });
 
     it(
       "연 보험료 540,000원, ΣM=1,000,000원, ΣI=700,000원이면 총부담은 840,000원이다",
