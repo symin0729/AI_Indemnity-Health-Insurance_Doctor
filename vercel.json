@@ -1,4 +1,7 @@
 {
+  "functions": {
+    "api/chat.ts": { "maxDuration": 120 }
+  },
   "rewrites": [
     {
       "source": "/((?!api(?:/|$)).*)",

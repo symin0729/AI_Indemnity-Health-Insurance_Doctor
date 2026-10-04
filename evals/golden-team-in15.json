@@ -1,0 +1,260 @@
+{
+  "purpose": "팀이 확정(또는 사용자 결정으로 추가)한 IN-01~15 질문 원문 그대로. Gemini 종단 평가용",
+  "questions": [
+    {
+      "questionId": "GQ-001",
+      "question": "유지할지 바꿀지 판단하려면 무엇을 비교해야 하나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-01",
+      "expectedPages": [
+        "FSC-5G-01 p.13",
+        "FSC-5G-01 p.14",
+        "FSC-5G-02 p.3",
+        "FSC-5G-02 p.5",
+        "FSC-5G-02 p.6",
+        "FSC-5G-02 p.8"
+      ],
+      "split": "team15",
+      "origin": "팀 확정(문구 변경 승인)",
+      "note": "원문: 저는 가입한 실손보험을 유지하는 게 좋을까요, 5세대로 바꾸는 게 좋을까요?",
+      "boundaryNo": 1
+    },
+    {
+      "questionId": "GQ-007",
+      "question": "예전 실손보험이 보장 범위가 더 넓다는데, 계속 유지하는 게 더 유리한가요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-02",
+      "expectedPages": [
+        "FSC-5G-02 p.3",
+        "FSC-5G-02 p.8",
+        "FSC-5G-01 p.8",
+        "FSC-5G-01 p.9",
+        "FSC-5G-02 p.5",
+        "FSC-5G-02 p.7"
+      ],
+      "split": "team15",
+      "origin": "팀 확정",
+      "note": "A-중 예외(보장이 넓다는데)",
+      "boundaryNo": 13
+    },
+    {
+      "questionId": "GQ-011",
+      "question": "저는 병원을 자주 이용하지 않는데, 5세대로 바꾸면 보험료를 줄일 수 있나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-03",
+      "expectedPages": [
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.7",
+        "FSC-5G-02 p.4"
+      ],
+      "split": "team15",
+      "origin": "팀 확정",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-016",
+      "question": "도수치료나 비급여 주사 같은 치료를 자주 받는다면 5세대로 바꾸기 전에 무엇을 확인해야 하나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-04",
+      "expectedPages": [
+        "FSC-5G-02 p.2",
+        "FSC-5G-01 p.5",
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.12"
+      ],
+      "split": "team15",
+      "origin": "팀 확정",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-020",
+      "question": "5세대로 바꾸면 지금 보험에서 보장받던 항목 중 줄어들거나 제외되는 것이 있나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-05",
+      "expectedPages": [
+        "FSC-5G-01 p.4",
+        "FSC-5G-01 p.5",
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.12",
+        "FSC-5G-02 p.2",
+        "FSC-5G-03 p.2",
+        "FSC-5G-03 p.3",
+        "FSC-5G-03 p.4"
+      ],
+      "split": "team15",
+      "origin": "팀 확정",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-024",
+      "question": "5세대의 특약1과 특약2는 꼭 둘 다 가입해야 하나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-06",
+      "expectedPages": [
+        "FSC-5G-02 p.4",
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.7",
+        "FSC-5G-03 p.4"
+      ],
+      "split": "team15",
+      "origin": "팀 확정",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-028",
+      "question": "5세대에 가입하면 병원비 중 제가 부담해야 하는 금액은 어떻게 정해지나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-07",
+      "expectedPages": [
+        "FSC-5G-01 p.4",
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.12",
+        "KNIA-01 p.1",
+        "KNIA-01 p.2"
+      ],
+      "split": "team15",
+      "origin": "팀 확정",
+      "note": "개인 금액 계산 요구가 아닌 방법 설명"
+    },
+    {
+      "questionId": "GQ-032",
+      "question": "5세대에서 비급여 보험금을 많이 받으면 다음 보험료가 오르나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-08",
+      "expectedPages": [
+        "KNIA-04 p.2",
+        "FSC-5G-01 p.6",
+        "INS-01",
+        "STD-14 p.2",
+        "STD-14 p.3"
+      ],
+      "split": "team15",
+      "origin": "팀 확정",
+      "note": "답변에 '아직 적용 전' 표시 필요"
+    },
+    {
+      "questionId": "GQ-036",
+      "question": "5세대로 바꾼 뒤 마음이 바뀌면 이전 보험으로 돌아갈 수 있나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-09",
+      "expectedPages": [
+        "FSC-5G-01 p.7",
+        "FSC-5G-02 p.5",
+        "KNIA-04 p.1"
+      ],
+      "split": "team15",
+      "origin": "팀 확정",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-040",
+      "question": "5세대로 바꾸기 전에 보험사에 어떤 내용을 물어봐야 하나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-10",
+      "expectedPages": [
+        "FSC-5G-01 p.7",
+        "FSC-5G-01 p.12",
+        "FSC-5G-01 p.13",
+        "FSC-5G-01 p.14",
+        "FSC-5G-02 p.5",
+        "FSC-5G-02 p.6",
+        "FSC-5G-03 p.4",
+        "FSC-5G-03 p.5",
+        "FSC-5G-03 p.6"
+      ],
+      "split": "team15",
+      "origin": "팀 확정",
+      "note": "'서면 권고' 삭제 반영"
+    },
+    {
+      "questionId": "GQ-044",
+      "question": "선택형 할인 특약과 계약전환 할인이 뭔가요? 저도 해당되나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-11",
+      "expectedPages": [
+        "FSC-5G-01 p.1",
+        "FSC-5G-01 p.8",
+        "FSC-5G-01 p.9",
+        "FSC-5G-02 p.5",
+        "FSC-5G-02 p.7",
+        "FSC-5G-02 p.8",
+        "FSC-5G-03 p.5"
+      ],
+      "split": "team15",
+      "origin": "사용자 결정 추가",
+      "note": "'시행 전' 표시, 할인율 수치 제외"
+    },
+    {
+      "questionId": "GQ-049",
+      "question": "1~5세대는 뭐가 다른가요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-12",
+      "expectedPages": [
+        "KNIA-05",
+        "GEN4-04 p.1",
+        "GEN4-01 p.4",
+        "GEN4-01 p.5",
+        "GEN4-01 p.6",
+        "GEN4-01 p.10",
+        "GEN2-01 p.3",
+        "FSC-5G-01 p.4",
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.7",
+        "FSC-5G-01 p.12",
+        "INS-01"
+      ],
+      "split": "team15",
+      "origin": "사용자 결정 추가(필수)",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-054",
+      "question": "내 실손보험이 몇 세대인지 어떻게 알 수 있나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-13",
+      "expectedPages": [
+        "KNIA-05",
+        "GEN4-01 p.2",
+        "GEN4-01 p.6",
+        "GEN4-04 p.5",
+        "FSC-5G-01 p.1",
+        "FSC-5G-01 p.7"
+      ],
+      "split": "team15",
+      "origin": "사용자 결정 추가",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-058",
+      "question": "실손보험은 갱신하면 보험료가 오르나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-14",
+      "expectedPages": [
+        "KNIA-05",
+        "KNIA-02 p.2",
+        "FSC-5G-01 p.2",
+        "FSC-5G-02 p.3",
+        "INS-01",
+        "STD-14 p.7"
+      ],
+      "split": "team15",
+      "origin": "사용자 결정 추가",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-062",
+      "question": "5세대로 바꾸려면 어디에 신청하고 심사를 받나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-15",
+      "expectedPages": [
+        "FSC-5G-01 p.7",
+        "KNIA-04 p.1",
+        "GEN4-02 p.9",
+        "GEN4-02 p.10"
+      ],
+      "split": "team15",
+      "origin": "사용자 결정 추가",
+      "note": ""
+    }
+  ]
+}

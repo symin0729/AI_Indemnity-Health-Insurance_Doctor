@@ -1,0 +1,338 @@
+{
+  "schemaVersion": "1.0",
+  "purpose": "근거 맵 라우터 검증용. 라우터 규칙을 고정한 뒤 처음 사용. 이 결과로 규칙을 다시 조정하지 않는다.",
+  "createdAt": "2026-10-03",
+  "positive": [
+    {
+      "questionId": "C-Q01",
+      "question": "1세대 가입자가 사고로 입원하면 건강보험이 되는 경우 입원비는 어떻게 지급되나요?",
+      "productCode": "SAMSUNG_0904_2",
+      "expectedAnyOf": [
+        "SAMSUNG_0904_2_E_G1-01"
+      ]
+    },
+    {
+      "questionId": "C-Q02",
+      "question": "1세대에서 건강보험이 안 되는 상해 입원비는 몇 %를 보상하나요?",
+      "productCode": "SAMSUNG_0904_2",
+      "expectedAnyOf": [
+        "SAMSUNG_0904_2_E_G1-02"
+      ]
+    },
+    {
+      "questionId": "C-Q03",
+      "question": "1세대 병실료 차액은 얼마나 보상되나요?",
+      "productCode": "SAMSUNG_0904_2",
+      "expectedAnyOf": [
+        "SAMSUNG_0904_2_E_G1-03"
+      ]
+    },
+    {
+      "questionId": "C-Q04",
+      "question": "1세대에서 상해로 통원하면 보험금이 얼마나 나오나요?",
+      "productCode": "SAMSUNG_0904_2",
+      "expectedAnyOf": [
+        "SAMSUNG_0904_2_E_G1-04"
+      ]
+    },
+    {
+      "questionId": "C-Q05",
+      "question": "1세대에서 병으로 입원하면 입원의료비가 어떻게 계산되나요?",
+      "productCode": "SAMSUNG_0904_2",
+      "expectedAnyOf": [
+        "SAMSUNG_0904_2_E_G1-05"
+      ]
+    },
+    {
+      "questionId": "C-Q06",
+      "question": "2세대 표준형에서 입원하면 얼마를 보상하나요?",
+      "productCode": "SAMSUNG_1611_7",
+      "expectedAnyOf": [
+        "SAMSUNG_1611_7_E_G2-STD-01"
+      ]
+    },
+    {
+      "questionId": "C-Q07",
+      "question": "2세대 표준형 외래 진료의 공제금액은 어떻게 되나요?",
+      "productCode": "SAMSUNG_1611_7",
+      "expectedAnyOf": [
+        "SAMSUNG_1611_7_E_G2-STD-02"
+      ]
+    },
+    {
+      "questionId": "C-Q08",
+      "question": "2세대 표준형 약국 조제비는 얼마를 빼고 보상하나요?",
+      "productCode": "SAMSUNG_1611_7",
+      "expectedAnyOf": [
+        "SAMSUNG_1611_7_E_G2-STD-03"
+      ]
+    },
+    {
+      "questionId": "C-Q09",
+      "question": "2세대에서 병원 종류별 외래 공제 금액이 얼마인가요?",
+      "productCode": "SAMSUNG_1611_7",
+      "expectedAnyOf": [
+        "SAMSUNG_1611_7_E_G2-STD-04"
+      ]
+    },
+    {
+      "questionId": "C-Q10",
+      "question": "2세대 선택형Ⅱ로 입원하면 어떻게 보상되나요?",
+      "productCode": "SAMSUNG_1611_7",
+      "expectedAnyOf": [
+        "SAMSUNG_1611_7_E_G2-SEL2-01"
+      ]
+    },
+    {
+      "questionId": "C-Q11",
+      "question": "2세대 선택형Ⅱ 외래 보험금은 어떻게 계산하나요?",
+      "productCode": "SAMSUNG_1611_7",
+      "expectedAnyOf": [
+        "SAMSUNG_1611_7_E_G2-SEL2-02"
+      ]
+    },
+    {
+      "questionId": "C-Q12",
+      "question": "2세대 선택형Ⅱ 약국 처방조제비 공제는 어떻게 되나요?",
+      "productCode": "SAMSUNG_1611_7",
+      "expectedAnyOf": [
+        "SAMSUNG_1611_7_E_G2-SEL2-03"
+      ]
+    },
+    {
+      "questionId": "C-Q13",
+      "question": "3세대 표준형 가입자의 입원비 보상 방법을 알려주세요.",
+      "productCode": "SAMSUNG_1704_1",
+      "expectedAnyOf": [
+        "SAMSUNG_1704_1_E_G3-STD-BASE-01"
+      ]
+    },
+    {
+      "questionId": "C-Q14",
+      "question": "3세대 선택형Ⅱ 외래 진료비 보상은 어떻게 되나요?",
+      "productCode": "SAMSUNG_1704_1",
+      "expectedAnyOf": [
+        "SAMSUNG_1704_1_E_G3-SEL2-BASE-02"
+      ]
+    },
+    {
+      "questionId": "C-Q15",
+      "question": "3세대 선택형Ⅱ 약국 조제비 공제 기준이 궁금해요.",
+      "productCode": "SAMSUNG_1704_1",
+      "expectedAnyOf": [
+        "SAMSUNG_1704_1_E_G3-SEL2-BASE-03"
+      ]
+    },
+    {
+      "questionId": "C-Q16",
+      "question": "3세대에서 도수치료 특약 보상은 어떻게 되나요?",
+      "productCode": "SAMSUNG_1704_1",
+      "expectedAnyOf": [
+        "SAMSUNG_1704_1_E_G3-STD-01"
+      ]
+    },
+    {
+      "questionId": "C-Q17",
+      "question": "3세대 표준형 MRI 촬영 비용은 얼마나 보상되나요?",
+      "productCode": "SAMSUNG_1704_1",
+      "expectedAnyOf": [
+        "SAMSUNG_1704_1_E_G3-STD-03"
+      ]
+    },
+    {
+      "questionId": "C-Q18",
+      "question": "4세대에서 병으로 통원하면 급여 부분은 어떻게 보상되나요?",
+      "productCode": "SAMSUNG_2107_1",
+      "expectedAnyOf": [
+        "SAMSUNG_2107_1_E_G4-09"
+      ]
+    },
+    {
+      "questionId": "C-Q19",
+      "question": "4세대 상해 급여 통원 보상 방식이 궁금합니다.",
+      "productCode": "SAMSUNG_2107_1",
+      "expectedAnyOf": [
+        "SAMSUNG_2107_1_E_G4-08"
+      ]
+    },
+    {
+      "questionId": "C-Q20",
+      "question": "4세대 비급여 입원 보상은 몇 퍼센트인가요?",
+      "productCode": "SAMSUNG_2107_1",
+      "expectedAnyOf": [
+        "SAMSUNG_2107_1_E_G4-03"
+      ]
+    },
+    {
+      "questionId": "C-Q21",
+      "question": "4세대 3대 비급여 중 MRI 한도는 얼마인가요?",
+      "productCode": "SAMSUNG_2107_1",
+      "expectedAnyOf": [
+        "SAMSUNG_2107_1_E_G4-07"
+      ]
+    },
+    {
+      "questionId": "C-Q22",
+      "question": "5세대 급여 입원은 몇 퍼센트 보상되나요?",
+      "productCode": "SAMSUNG_2605_1",
+      "expectedAnyOf": [
+        "SAMSUNG_2605_1_E_GENERAL_G5-01",
+        "SAMSUNG_2605_1_E_CONVERSION_G5-01"
+      ]
+    },
+    {
+      "questionId": "C-Q23",
+      "question": "5세대 중증 비급여로 통원하면 공제는 얼마인가요?",
+      "productCode": "SAMSUNG_2605_1",
+      "expectedAnyOf": [
+        "SAMSUNG_2605_1_E_GENERAL_G5-04",
+        "SAMSUNG_2605_1_E_CONVERSION_G5-04"
+      ]
+    },
+    {
+      "questionId": "C-Q24",
+      "question": "5세대 비중증 비급여 입원 보상 비율이 궁금해요.",
+      "productCode": "SAMSUNG_2605_1",
+      "expectedAnyOf": [
+        "SAMSUNG_2605_1_E_GENERAL_G5-06",
+        "SAMSUNG_2605_1_E_CONVERSION_G5-06"
+      ]
+    },
+    {
+      "questionId": "C-Q25",
+      "question": "5세대에서 비중증 비급여 MRI 자기부담은 어떻게 되나요?",
+      "productCode": "SAMSUNG_2605_1",
+      "expectedAnyOf": [
+        "SAMSUNG_2605_1_E_GENERAL_G5-08",
+        "SAMSUNG_2605_1_E_CONVERSION_G5-08"
+      ]
+    },
+    {
+      "questionId": "C-Q26",
+      "question": "5세대 비중증 비급여 보험료는 어떻게 할인·할증되나요?",
+      "productCode": "SAMSUNG_2605_1",
+      "expectedAnyOf": [
+        "SAMSUNG_2605_1_E_GENERAL_G5-09",
+        "SAMSUNG_2605_1_E_CONVERSION_G5-09"
+      ]
+    },
+    {
+      "questionId": "C-Q27",
+      "question": "5세대 중증 비급여 3대 항목 공제금액이 얼마인가요?",
+      "productCode": "SAMSUNG_2605_1",
+      "expectedAnyOf": [
+        "SAMSUNG_2605_1_E_GENERAL_G5-05",
+        "SAMSUNG_2605_1_E_CONVERSION_G5-05"
+      ]
+    },
+    {
+      "questionId": "C-Q28",
+      "question": "5세대 급여 통원 공제금액은 병원마다 다른가요?",
+      "productCode": "SAMSUNG_2605_1",
+      "expectedAnyOf": [
+        "SAMSUNG_2605_1_E_GENERAL_G5-02",
+        "SAMSUNG_2605_1_E_CONVERSION_G5-02"
+      ]
+    },
+    {
+      "questionId": "C-Q29",
+      "question": "5세대 중증 비급여로 입원하면 병실료는 어떻게 보상하나요?",
+      "productCode": "SAMSUNG_2605_1",
+      "expectedAnyOf": [
+        "SAMSUNG_2605_1_E_GENERAL_G5-03",
+        "SAMSUNG_2605_1_E_CONVERSION_G5-03"
+      ]
+    },
+    {
+      "questionId": "C-Q30",
+      "question": "5세대 비중증 비급여 통원은 얼마를 빼고 보상하나요?",
+      "productCode": "SAMSUNG_2605_1",
+      "expectedAnyOf": [
+        "SAMSUNG_2605_1_E_GENERAL_G5-07",
+        "SAMSUNG_2605_1_E_CONVERSION_G5-07"
+      ]
+    }
+  ],
+  "negative": [
+    {
+      "questionId": "N-Q01",
+      "question": "입원이라는 말은 정확히 어떤 뜻인가요?"
+    },
+    {
+      "questionId": "N-Q02",
+      "question": "보험금 청구할 때 어떤 서류가 필요한가요?"
+    },
+    {
+      "questionId": "N-Q03",
+      "question": "보험료는 매년 어떻게 갱신되나요?"
+    },
+    {
+      "questionId": "N-Q04",
+      "question": "성형수술은 보장되나요?"
+    },
+    {
+      "questionId": "N-Q05",
+      "question": "계약을 해지하면 환급금이 나오나요?"
+    },
+    {
+      "questionId": "N-Q06",
+      "question": "입원할 때 병원에서 먼저 확인해야 하는 것이 있나요?"
+    },
+    {
+      "questionId": "N-Q07",
+      "question": "상해와 질병은 약관에서 어떻게 구분하나요?"
+    },
+    {
+      "questionId": "N-Q08",
+      "question": "실손보험을 두 개 가입하면 중복으로 보상받을 수 있나요?"
+    },
+    {
+      "questionId": "N-Q09",
+      "question": "외래와 통원은 같은 말인가요?"
+    },
+    {
+      "questionId": "N-Q10",
+      "question": "MRI 검사는 어떤 경우에 비급여로 분류되나요?"
+    },
+    {
+      "questionId": "N-Q11",
+      "question": "입원 중에 다른 병원으로 옮기면 보험 적용은 어떻게 되나요?"
+    },
+    {
+      "questionId": "N-Q12",
+      "question": "약관에서 보상하지 않는 사항에는 뭐가 있나요?"
+    },
+    {
+      "questionId": "N-Q13",
+      "question": "가입 후 면책 기간이 있나요?"
+    },
+    {
+      "questionId": "N-Q14",
+      "question": "해외에서 치료받은 비용도 청구할 수 있나요?"
+    },
+    {
+      "questionId": "N-Q15",
+      "question": "도수치료를 받기 전에 의사에게 확인할 점이 있나요?"
+    },
+    {
+      "questionId": "N-Q16",
+      "question": "3세대와 4세대의 가장 큰 차이는 뭔가요?"
+    },
+    {
+      "questionId": "N-Q17",
+      "question": "보험 가입 나이 제한이 있나요?"
+    },
+    {
+      "questionId": "N-Q18",
+      "question": "입원 일수를 계산하는 기준은 무엇인가요?"
+    },
+    {
+      "questionId": "N-Q19",
+      "question": "청구 후 보험금은 언제까지 받을 수 있나요?"
+    },
+    {
+      "questionId": "N-Q20",
+      "question": "보험금을 신청하는 방법은 무엇인가요?"
+    }
+  ]
+}
