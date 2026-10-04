@@ -51,7 +51,7 @@ export interface SampleScenario {
  * 예정 의료이용 샘플.
  *
  * MRI / 통원 / 비급여 / 비중증
- * 연 2회 / 회당 400,000원
+ * 연 8회 / 회당 400,000원
  *
  * 새 엔진의 치료군 전용 룰이 정확히 매칭되도록
  * treatmentCategory="MRI"를 함께 저장한다.
@@ -78,7 +78,7 @@ const VERIFIED_MRI_USAGE:
   severityClass:
     "NON_SEVERE",
 
-  frequency: 2,
+  frequency: 8,
 
   unitCost: 400000,
 
@@ -86,7 +86,7 @@ const VERIFIED_MRI_USAGE:
     "CONFIRMED",
 
   note:
-    "공모전 제출 문서의 시연용 MRI 의료이용: 통원·비급여·비중증, 연 2회, 회당 400,000원.",
+    "결과 화면 시연용 MRI 의료이용: 통원·비급여·비중증, 연 8회, 회당 400,000원.",
 };
 
 const VERIFIED_MRI_ASSUMPTIONS:
@@ -106,7 +106,7 @@ const VERIFIED_MRI_ASSUMPTIONS:
     true,
 
   /**
-   * '연 2회' 시연값은 동일 일자 2회가 아니라
+   * '연 8회' 시연값은 동일 일자 반복이 아니라
    * 서로 다른 통원 회차로 비교하는 데모 가정이다.
    */
   assumeEachOccurrenceSeparate:
@@ -155,7 +155,7 @@ export const sampleScenarioService = {
         },
 
         notice:
-          "문서에 확인된 MRI 시연값(통원·비급여·비중증, 연 2회, 회당 400,000원)을 자동 입력합니다. C=M, 기존 한도 사용량 0, 각 회차 별도 통원은 데모용 계산 가정으로 함께 제안되며 다음 화면에서 사용자가 확인합니다.",
+          "결과 화면 사례용 MRI 시연값(통원·비급여·비중증, 연 8회, 회당 400,000원)을 자동 입력합니다. C=M, 기존 한도 사용량 0, 각 회차 별도 통원은 데모용 계산 가정으로 함께 제안되며 다음 화면에서 사용자가 확인합니다.",
       };
     }
 
@@ -216,37 +216,137 @@ export const sampleScenarioService = {
 
 /** 사용자가 치료 샘플 버튼을 누른 경우에만 쓰는 입력 연습용 가정값. */
 export type TreatmentSampleKind = "OUTPATIENT" | "EXAM" | "MRI";
+
+const SAMPLE_TREATMENT_PROFILES = {
+  LOW_USAGE: {
+    OUTPATIENT: { amount: 120_000, frequency: 4 },
+    EXAM: { amount: 220_000, frequency: 3 },
+    MRI: { amount: 350_000, frequency: 3 },
+  },
+  NON_COVERED: {
+    OUTPATIENT: { amount: 180_000, frequency: 10 },
+    EXAM: { amount: 300_000, frequency: 8 },
+    MRI: { amount: 400_000, frequency: 8 },
+  },
+  COVERAGE_GAP: {
+    OUTPATIENT: { amount: 250_000, frequency: 8 },
+    EXAM: { amount: 500_000, frequency: 10 },
+    MRI: { amount: 650_000, frequency: 6 },
+  },
+} as const;
+
+const GENERATION_SAMPLE_AMOUNT_FACTOR: Record<number, number> = {
+  1: 0.9,
+  2: 0.95,
+  3: 1,
+  4: 1.1,
+  5: 1.2,
+};
+
+function treatmentSampleProfile(sampleId: SampleId, generation: number, kind: TreatmentSampleKind) {
+  const base = SAMPLE_TREATMENT_PROFILES[sampleId][kind];
+  const factor = GENERATION_SAMPLE_AMOUNT_FACTOR[generation] ?? 1;
+  return {
+    amount: Math.round((base.amount * factor) / 10_000) * 10_000,
+    frequency: base.frequency,
+  };
+}
+
 export function loadTreatmentSample(sampleId: SampleId, generation: number, kind: TreatmentSampleKind = "MRI"): SampleScenario {
   if (kind !== "MRI") {
     const scenario = loadTreatmentSample(sampleId, generation, "MRI");
-    const amount = kind === "OUTPATIENT" ? 15000 : 50000;
+    const { amount, frequency } = treatmentSampleProfile(sampleId, generation, kind);
     const name = kind === "OUTPATIENT" ? "일반 외래 진료" : "외래 검사";
     const usage: MedicalUsage = { ...scenario.plannedUsages[0], id: `example-${kind.toLowerCase()}`, treatmentName: name,
-      treatmentCategory: "", benefitClass: "COVERED", severityClass: "UNKNOWN", frequency: 1,
-      unitCost: amount, coveredAmount: amount,
+      treatmentCategory: "", benefitClass: "COVERED", severityClass: "UNKNOWN", frequency,
+      unitCost: amount, patientPaidAmount: amount, coveredAmount: amount,
+      institutionType: "CLINIC_HOSPITAL", copayInstitution: "CLINIC",
+      healthInsuranceCopayRate: 0.3,
+      claimCause: "DISEASE", nationalHealthInsuranceStatus: "APPLIED",
+      samsungCalculationInput: {
+        eligibleExpense: amount,
+        requiredCoverageConfirmed: true,
+        policyExclusionsCleared: true,
+        otherIndemnityPoliciesExist: false,
+        coveragePeriodConfirmed: true,
+        sameDayAggregationConfirmed: true,
+        priorPaidBenefit: 0,
+        priorAnnualCount: 0,
+        priorServiceDays: 0,
+        priorEligibleDeductible: 0,
+        contractBenefitCap: 50_000_000,
+        perOccurrenceBenefitCap: 200_000,
+        outpatientBenefitCap: 250_000,
+        prescriptionBenefitCap: 50_000,
+        daysSinceAccidentOrDiagnosis: 1,
+        aggregationUnit: "VISIT",
+      },
+      samsungGen5Facts: undefined,
       note: "입력 연습용 가상 예제이며 실제 의료비나 평균 진료비가 아닙니다.",
-      ...(generation === 2 || generation === 3 ? { gen23CoveredCopay: amount, gen23NonCoveredExpense: 0,
+      ...(generation === 2 || generation === 3 ? {
+        gen23CareSetting: "OUTPATIENT", gen23Institution: "CLINIC",
+        gen23CoveredCopay: amount, gen23NonCoveredExpense: 0,
         gen23EligibleExpense: undefined, gen23AggregationUnit: undefined,
-        ...(generation === 3 ? { gen23TreatmentType: "BASE", gen23ThreeNonCoveredExcludedFromBaseConfirmed: true } : {}),
+        gen23PriorPaidBenefit: 0, gen23PriorAnnualCount: 0,
+        gen23PriorEligibleDeductible: 0,
+        gen23OutpatientBenefitCap: 250000, gen23PrescriptionBenefitCap: 50000,
+        gen23OtherIndemnityPoliciesExist: false,
+        gen23CoveragePeriod: "ACTIVE", gen23CoveragePeriodConfirmed: true,
+        gen23RequiredCoverageConfirmed: true, gen23PolicyExclusionsCleared: true,
+        gen23SameDayAggregationConfirmed: true,
+        ...(generation === 3 ? {
+          gen23TreatmentType: "BASE", gen23RiderEnrollmentStatus: "ENROLLED",
+          gen23ThreeNonCoveredExcludedFromBaseConfirmed: true,
+        } : {}),
       } : {}),
     };
     return { ...scenario, plannedUsages: [usage], target5GSpecialRider2: null,
-      notice: `${name} 입력 예제입니다. 의원, 환자부담금 ${amount.toLocaleString("ko-KR")}원과 가입·누적 상태는 설명용 가정이며 평균 진료비가 아닙니다. 실제 정보로 수정해주세요.` };
+      notice: `${name} 입력 예제입니다. ${generation}세대·${sampleId} 프로필 기준 연 ${frequency}회, 의원, 회당 환자부담금 ${amount.toLocaleString("ko-KR")}원과 가입·누적 상태는 설명용 가정이며 평균 진료비가 아닙니다. 실제 정보로 수정해주세요.` };
   }
   const scenario = sampleScenarioService.load(sampleId === "LOW_USAGE" ? "NON_COVERED" : sampleId);
+  const { amount, frequency } = treatmentSampleProfile(sampleId, generation, "MRI");
   const usage: MedicalUsage = {
     ...scenario.plannedUsages[0],
     id: "example-treatment-mri",
     institutionType: "CLINIC_HOSPITAL", copayInstitution: "CLINIC",
     healthInsuranceCopayRate: 0.3,
-    coveredAmount: 400000,
+    frequency,
+    unitCost: amount,
+    coveredAmount: amount,
     claimCause: "DISEASE", nationalHealthInsuranceStatus: "APPLIED",
+    patientPaidAmount: amount,
+    samsungCalculationInput: {
+      eligibleExpense: amount,
+      requiredCoverageConfirmed: true,
+      policyExclusionsCleared: true,
+      otherIndemnityPoliciesExist: false,
+      coveragePeriodConfirmed: true,
+      sameDayAggregationConfirmed: true,
+      priorPaidBenefit: 0,
+      priorAnnualCount: 0,
+      priorServiceDays: 0,
+      priorEligibleDeductible: 0,
+      contractBenefitCap: 50_000_000,
+      perOccurrenceBenefitCap: 200_000,
+      outpatientBenefitCap: 250_000,
+      prescriptionBenefitCap: 50_000,
+      daysSinceAccidentOrDiagnosis: 1,
+      aggregationUnit: "DIAGNOSTIC_ACTION",
+      threeNonCoveredCategory: "MRI",
+      threeNonCoveredExcludedFromBaseConfirmed: true,
+    },
+    samsungGen5Facts: {
+      specialCaseDisease: "NO",
+      treatmentRelatedness: "UNKNOWN",
+      policyExcludedTreatment: "NO",
+      threeNonCoveredCategory: "MRI",
+    },
     // 보장대상액 및 계약·누적 상태는 사실 확인값이 아니라 이 예제만의 가정이다.
     evidenceStatus: undefined,
     note: "입력 연습용 예제: 보장대상 40만원, 담보 가입·보장기간·면책 확인, 기존 지급/이용 0, 중복보험 없음 가정. 실제 계약에 사용하기 전 확인 필요.",
     ...(generation === 2 || generation === 3 ? {
       gen23CareSetting: "OUTPATIENT" as const, gen23Institution: "CLINIC" as const,
-      gen23CoveredCopay: 0, gen23NonCoveredExpense: 400000,
+      gen23CoveredCopay: 0, gen23NonCoveredExpense: amount,
       gen23PriorPaidBenefit: 0, gen23PriorAnnualCount: 0,
       gen23OutpatientBenefitCap: 250000, gen23PrescriptionBenefitCap: 50000,
       gen23OtherIndemnityPoliciesExist: false,
@@ -255,9 +355,9 @@ export function loadTreatmentSample(sampleId: SampleId, generation: number, kind
       gen23SameDayAggregationConfirmed: true,
       ...(generation === 3 ? {
         gen23TreatmentType: "MRI" as const, gen23RiderEnrollmentStatus: "ENROLLED" as const,
-        gen23EligibleExpense: 400000, gen23AggregationUnit: "DIAGNOSTIC_ACTION" as const,
+        gen23EligibleExpense: amount, gen23AggregationUnit: "DIAGNOSTIC_ACTION" as const,
       } : {}),
     } : {}),
   };
-  return { ...scenario, plannedUsages: [usage], notice: "입력 연습용 MRI 샘플입니다. 의료비 40만원, 의원, 담보 가입·보장기간·면책 확인, 기존 지급·이용 0, 중복보험 없음은 예제 가정입니다. 실제 정보로 수정한 뒤 치료를 추가하고 확인해주세요." };
+  return { ...scenario, plannedUsages: [usage], notice: `결과 화면 사례용 MRI 샘플입니다. ${generation}세대·${sampleId} 프로필 기준 연 ${frequency}회·회당 의료비 ${amount.toLocaleString("ko-KR")}원, 의원, 담보·보장기간·면책 확인, 기존 지급·이용 0, 중복보험 없음은 예제 가정입니다. 실제 정보로 수정한 뒤 치료를 추가하고 확인해주세요.` };
 }

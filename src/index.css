@@ -491,9 +491,23 @@ a {
   background: linear-gradient(180deg, #ffffff 0%, #f6f9fc 100%);
 }
 
+.generation-guide-heading {
+  padding-inline: clamp(22px, 4vw, 32px);
+  margin-bottom: 14px;
+}
+
+.generation-guide-heading .step-badge {
+  display: inline-flex;
+  margin-bottom: 10px;
+}
+
+.generation-guide-heading h2 {
+  margin: 0;
+}
+
 .generation-classification__options {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
   margin-top: 18px;
 }
@@ -2452,6 +2466,214 @@ body > #root > main > section {
   color: #65778a;
   text-align: center;
 }
+.burden-chart__pending {
+  margin: 12px 0 0;
+  color: #687b8c;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.break-even-chart {
+  margin-top: 18px;
+  padding: clamp(16px, 2.5vw, 22px);
+  border: 1px solid #d9e2ea;
+  border-radius: 18px;
+  background: #f8fafc;
+}
+.break-even-chart__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  margin-bottom: 10px;
+  color: #526474;
+  font-size: 0.76rem;
+  font-weight: 850;
+}
+.break-even-chart__legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.break-even-chart__legend i {
+  width: 20px;
+  height: 4px;
+  border-radius: 999px;
+}
+.break-even-chart__legend .is-current { background: #173f67; }
+.break-even-chart__legend .is-target { background: #58a4d8; }
+.break-even-chart__legend .is-threshold {
+  height: 12px;
+  width: 2px;
+  border-radius: 0;
+  background: #e18a3b;
+}
+.break-even-chart__canvas {
+  overflow: hidden;
+  border: 1px solid #e2e8ee;
+  border-radius: 14px;
+  background: #ffffff;
+}
+.break-even-chart__canvas svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 230px;
+}
+.break-even-chart__grid {
+  stroke: #e7edf2;
+  stroke-width: 1;
+}
+.break-even-chart__grid--vertical { stroke: #f0f3f6; }
+.break-even-chart__axis-label {
+  fill: #738292;
+  font-size: 11px;
+  font-weight: 700;
+}
+.break-even-chart__axis-title {
+  fill: #526474;
+  font-size: 11px;
+  font-weight: 850;
+}
+.break-even-chart__line {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 4;
+}
+.break-even-chart__line--current { stroke: #173f67; }
+.break-even-chart__line--target { stroke: #58a4d8; }
+.break-even-chart__threshold {
+  stroke: #e18a3b;
+  stroke-dasharray: 7 5;
+  stroke-width: 2;
+}
+.break-even-chart__threshold-label-bg { fill: #fff1df; }
+.break-even-chart__threshold-label {
+  fill: #a75b1d;
+  font-size: 11px;
+  font-weight: 900;
+}
+.break-even-chart__point {
+  stroke: #ffffff;
+  stroke-width: 3;
+}
+.break-even-chart__point--current { fill: #173f67; }
+.break-even-chart__point--target { fill: #58a4d8; }
+.break-even-chart__summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+.break-even-chart__summary > div {
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid #dde5ec;
+  border-radius: 12px;
+  background: #ffffff;
+}
+.break-even-chart__summary span,
+.break-even-chart__summary strong { display: block; }
+.break-even-chart__summary span {
+  margin-bottom: 4px;
+  color: #718092;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+.break-even-chart__summary strong {
+  overflow-wrap: anywhere;
+  color: #173650;
+  font-size: 0.9rem;
+}
+.break-even-chart__summary .is-highlighted {
+  border-color: #efc393;
+  background: #fff7ed;
+}
+.break-even-chart__summary .is-highlighted strong { color: #a75b1d; }
+.break-even-chart__summary .is-muted strong { color: #667789; }
+.break-even-chart__difference-panel {
+  margin-top: 12px;
+  padding: 14px;
+  border: 1px solid #d8e3ec;
+  border-radius: 14px;
+  background: #ffffff;
+}
+.break-even-chart__difference-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.break-even-chart__difference-heading strong,
+.break-even-chart__difference-heading span { display: block; }
+.break-even-chart__difference-heading strong { color: #173650; font-size: 0.9rem; }
+.break-even-chart__difference-heading span,
+.break-even-chart__difference-heading small { margin-top: 3px; color: #6c7e8f; font-size: 0.72rem; }
+.break-even-chart__difference-canvas { overflow-x: auto; }
+.break-even-chart__difference-canvas svg { display: block; width: 100%; min-width: 620px; height: auto; }
+.break-even-chart__difference-zero { stroke: #8c9aa7; stroke-dasharray: 5 4; stroke-width: 1.5; }
+.break-even-chart__difference-line { fill: none; stroke: #d86f2d; stroke-linecap: round; stroke-linejoin: round; stroke-width: 3; }
+.break-even-chart__difference-point { fill: #d86f2d; stroke: #ffffff; stroke-width: 1.5; }
+.break-even-chart__numbers {
+  max-height: 340px;
+  margin-top: 12px;
+  overflow: auto;
+  border: 1px solid #dce5ed;
+  border-radius: 12px;
+  background: #ffffff;
+}
+.break-even-chart__numbers-head,
+.break-even-chart__numbers-row {
+  display: grid;
+  grid-template-columns: minmax(72px, 0.7fr) repeat(3, minmax(118px, 1fr));
+  gap: 10px;
+  align-items: center;
+  min-width: 520px;
+  padding: 9px 12px;
+  text-align: right;
+}
+.break-even-chart__numbers-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #edf3f8;
+  color: #53687a;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+.break-even-chart__numbers-head span:first-child,
+.break-even-chart__numbers-row strong { text-align: left; }
+.break-even-chart__numbers-row {
+  border-top: 1px solid #edf1f4;
+  color: #40586d;
+  font-size: 0.78rem;
+}
+.break-even-chart__numbers-row strong { color: #173f67; }
+.break-even-chart__numbers-row.is-threshold {
+  background: #fff5e9;
+  color: #8f551f;
+  font-weight: 850;
+}
+.break-even-chart--unavailable {
+  color: #65778a;
+  text-align: center;
+}
+.break-even-empty-state {
+  display: grid;
+  gap: 6px;
+  padding: 24px;
+  border: 1px dashed #b9c8d6;
+  border-radius: 16px;
+  background: #f8fafc;
+  color: #637486;
+  text-align: center;
+}
+.break-even-empty-state strong { color: #294b67; }
+.break-even-empty-state span {
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
 
 @media (max-width: 620px) {
   .burden-chart__heading { display: grid; }
@@ -2465,6 +2687,10 @@ body > #root > main > section {
     font-size: 0.88rem;
     text-align: left;
   }
+  .break-even-chart__summary { grid-template-columns: 1fr; }
+  .break-even-chart__difference-heading { display: grid; }
+  .break-even-chart__canvas { overflow-x: auto; }
+  .break-even-chart__canvas svg { min-width: 620px; }
 }
 
 .treatment-help-dialog {
