@@ -1,4 +1,4 @@
-import type { RetrievedEvidence } from "./types";
+import type { RetrievedEvidence } from "./types.js";
 
 export const buildCalculationPrompt = (
   calculation: unknown,

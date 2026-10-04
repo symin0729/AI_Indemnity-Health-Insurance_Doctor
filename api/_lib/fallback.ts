@@ -1,4 +1,4 @@
-import type { ChatResponse, ChatStatus } from "./types";
+import type { ChatResponse, ChatStatus } from "./types.js";
 
 const messages: Record<Exclude<ChatStatus, "ANSWERED" | "PRIVACY_BLOCKED">, string> = {
   INSUFFICIENT_EVIDENCE:

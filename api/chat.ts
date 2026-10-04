@@ -1,18 +1,18 @@
-import { callLlm } from "./_lib/callLlm";
-import { bundledRetrieve } from "./_lib/bundledRetrieval";
-import { callRagFlow } from "./_lib/callRagFlow";
-import { fiveGenerationCondition } from "./_lib/generationScope";
-import { withRetrievalGlossary } from "./_lib/retrievalGlossary";
-import { buildGeneralPrompt } from "./_lib/buildGeneralPrompt";
-import { classifyQuestion } from "./_lib/classifyQuestion";
-import { chatbotDatasetId, getConfig, hasLlmConfig, hasRagConfig } from "./_lib/config";
-import { fallback, outNotice } from "./_lib/fallback";
-import { jsonResponse } from "./_lib/http";
-import { redactPersonalData } from "./_lib/redactPersonalData";
-import type { ApiErrorBody, ChatResponse } from "./_lib/types";
-import { ConsentValidationError, validateConsent } from "./_lib/validateConsent";
-import { answerFailureReasons, validateAnswer } from "./_lib/validateAnswer";
-import { InputValidationError, validateInput } from "./_lib/validateInput";
+import { callLlm } from "./_lib/callLlm.js";
+import { bundledRetrieve } from "./_lib/bundledRetrieval.js";
+import { callRagFlow } from "./_lib/callRagFlow.js";
+import { fiveGenerationCondition } from "./_lib/generationScope.js";
+import { withRetrievalGlossary } from "./_lib/retrievalGlossary.js";
+import { buildGeneralPrompt } from "./_lib/buildGeneralPrompt.js";
+import { classifyQuestion } from "./_lib/classifyQuestion.js";
+import { chatbotDatasetId, getConfig, hasLlmConfig, hasRagConfig } from "./_lib/config.js";
+import { fallback, outNotice } from "./_lib/fallback.js";
+import { jsonResponse } from "./_lib/http.js";
+import { redactPersonalData } from "./_lib/redactPersonalData.js";
+import type { ApiErrorBody, ChatResponse } from "./_lib/types.js";
+import { ConsentValidationError, validateConsent } from "./_lib/validateConsent.js";
+import { answerFailureReasons, validateAnswer } from "./_lib/validateAnswer.js";
+import { InputValidationError, validateInput } from "./_lib/validateInput.js";
 
 async function handler(request: Request): Promise<Response> {
   const requestId = crypto.randomUUID();

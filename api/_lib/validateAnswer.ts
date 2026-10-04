@@ -1,4 +1,4 @@
-import type { LlmAnswer, RetrievedEvidence } from "./types";
+import type { LlmAnswer, RetrievedEvidence } from "./types.js";
 
 // 항상 막는 표현: 행동 권유, 보험금 단정, 의료 행위 표현
 const forbidden = /가입하세요|해지하세요|전환하세요|추천합니다|지급됩니다|확실히|반드시(?!\s*(?:보험사|해당|가입|본인|계약|약관)?\s*(?:에\s*)?(?:확인|문의|참고|살펴|알아|물어|점검|비교|상담|읽어))|진단(합니다|해|하세요|드립니다|할 수)|처방(합니다|해|하세요|드립니다)|치료하세요|좋은 선택|하는 것이 좋습니다|하는 게 좋습니다/;

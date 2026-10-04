@@ -1,6 +1,6 @@
-import manifestJson from "../../knowledge/manifest.json";
-import { lookupEvidence, type EvidenceMapEntry } from "./evidenceMap";
-import type { RetrievedEvidence } from "./types";
+import manifestJson from "../../knowledge/manifest.json" with { type: "json" };
+import { lookupEvidence, type EvidenceMapEntry } from "./evidenceMap.js";
+import type { RetrievedEvidence } from "./types.js";
 
 interface ManifestDocument {
   documentId: string;

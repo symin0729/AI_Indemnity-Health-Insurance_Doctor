@@ -1,5 +1,5 @@
-import evidenceMapJson from "../../knowledge/rule-evidence-map.json";
-import queryRules from "./retrieval-query-rules.json";
+import evidenceMapJson from "../../knowledge/rule-evidence-map.json" with { type: "json" };
+import queryRules from "./retrieval-query-rules.json" with { type: "json" };
 
 export interface EvidenceMapEntry {
   evidenceId: string;
