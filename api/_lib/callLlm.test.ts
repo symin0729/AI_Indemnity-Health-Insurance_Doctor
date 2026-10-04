@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { callLlm, type LlmOptions } from "./callLlm";
-import { getConfig } from "./config";
+import { callLlm, type LlmOptions } from "./callLlm.js";
+import { getConfig } from "./config.js";
 
 const options: LlmOptions = {
   provider: "gemini", apiKey: "test-key", model: "gemini-3.8-flash", thinkingLevel: "low", timeoutMs: 100,

@@ -1,10 +1,10 @@
 import { z } from "zod";
-import { callRagFlow } from "./_lib/callRagFlow";
-import { getConfig } from "./_lib/config";
-import { evidenceFromMap } from "./_lib/evidenceFromMap";
-import { jsonResponse } from "./_lib/http";
-import { redactPersonalData } from "./_lib/redactPersonalData";
-import { ConsentValidationError, validateConsent } from "./_lib/validateConsent";
+import { callRagFlow } from "./_lib/callRagFlow.js";
+import { getConfig } from "./_lib/config.js";
+import { evidenceFromMap } from "./_lib/evidenceFromMap.js";
+import { jsonResponse } from "./_lib/http.js";
+import { redactPersonalData } from "./_lib/redactPersonalData.js";
+import { ConsentValidationError, validateConsent } from "./_lib/validateConsent.js";
 
 const requestSchema = z.object({
   question: z.string().trim().min(1).max(300),

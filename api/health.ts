@@ -1,5 +1,5 @@
-import { getConfig, hasLlmConfig, hasRagConfig } from "./_lib/config";
-import { jsonResponse } from "./_lib/http";
+import { getConfig, hasLlmConfig, hasRagConfig } from "./_lib/config.js";
+import { jsonResponse } from "./_lib/http.js";
 
 type ConfigurationStatus = "configured" | "unconfigured";
 type HealthStatus = "ready" | "degraded";

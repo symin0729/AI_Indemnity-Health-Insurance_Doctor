@@ -1,4 +1,4 @@
-import rules from "./retrieval-query-rules.json";
+import rules from "./retrieval-query-rules.json" with { type: "json" };
 
 export interface RetrievalQueryRules {
   benefitIntentPattern: string;
