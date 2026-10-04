@@ -11,7 +11,7 @@ const requestSchema = z.object({
   consentPolicyVersion: z.string().min(1),
 }).strict();
 
-export default async function handler(request: Request): Promise<Response> {
+async function handler(request: Request): Promise<Response> {
   const requestId = crypto.randomUUID();
   if (request.method !== "POST") return jsonResponse({ error: { code: "METHOD_NOT_ALLOWED", message: "POST 요청만 허용됩니다." }, requestId }, 405);
   if (!request.headers.get("content-type")?.toLowerCase().includes("application/json")) {
@@ -42,3 +42,6 @@ export default async function handler(request: Request): Promise<Response> {
     }, 400);
   }
 }
+
+// Vercel 실행기는 default 함수에 fetch 속성이 있으면 웹 표준 핸들러로 인식한다. 로컬 플러그인·테스트는 함수 호출 그대로 쓴다.
+export default Object.assign(handler, { fetch: handler })

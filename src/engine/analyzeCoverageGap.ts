@@ -93,8 +93,10 @@ export function analyzeCoverageGap({
   if (
     usage.benefitClass ===
       "UNKNOWN" ||
-    usage.severityClass ===
-      "UNKNOWN"
+    (usage.benefitClass ===
+      "NON_COVERED" &&
+      usage.severityClass ===
+        "UNKNOWN")
   ) {
     const reasons: string[] =
       [];
@@ -109,8 +111,10 @@ export function analyzeCoverageGap({
     }
 
     if (
+      usage.benefitClass ===
+        "NON_COVERED" &&
       usage.severityClass ===
-      "UNKNOWN"
+        "UNKNOWN"
     ) {
       reasons.push(
         "중증/비중증 여부 확인이 필요합니다."

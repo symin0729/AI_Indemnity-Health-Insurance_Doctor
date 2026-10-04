@@ -1,6 +1,12 @@
 import type { ChatResponse } from "./chatbot.schema";
 import SourceList from "./SourceList";
 
+const headingLabel = (response: ChatResponse): string => {
+  if (response.status === "PRIVACY_BLOCKED") return "개인정보 보호 안내";
+  if (response.status === "OUT_OF_SCOPE") return "답변할 수 없는 질문 안내";
+  return response.fallback ? "정형 안내" : "공식 근거 기반 답변";
+};
+
 interface AnswerCardProps {
   response: ChatResponse;
 }
@@ -12,7 +18,7 @@ export default function AnswerCard({ response }: AnswerCardProps) {
         <span className="chat-answer__mark" aria-hidden="true">AI</span>
         <div>
           <span>보험 이해 도우미</span>
-          <small>{response.fallback ? "정형 안내" : "공식 근거 기반 답변"}</small>
+          <small>{headingLabel(response)}</small>
         </div>
       </div>
 

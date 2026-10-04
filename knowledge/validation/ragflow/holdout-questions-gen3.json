@@ -1,0 +1,307 @@
+{
+  "schemaVersion": "1.0",
+  "purpose": "3세대 정제본 시험용 독립 질문 세트. 정제본·검색 규칙을 만들 때 쓰지 않았다. 공식 평가 원본이 아니며 이 결과로 규칙을 다시 튜닝하지 않는다.",
+  "createdAt": "2026-10-03",
+  "cases": [
+    {
+      "questionId": "H3-Q01",
+      "question": "표준형에서 도수치료를 한 번 받으면 얼마를 제하고 보상해 주나요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G3-STD-01",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-01"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "H3-Q02",
+      "question": "체외충격파나 증식치료는 표준형 특약에서 연간 몇 회까지 보상되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G3-STD-01",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-01"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "H3-Q03",
+      "question": "표준형 비급여 주사 치료비의 공제금액이 얼마인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G3-STD-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "H3-Q04",
+      "question": "표준형 주사료 비급여는 연간 보상 한도가 어떻게 되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G3-STD-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "H3-Q05",
+      "question": "표준형 가입자가 MRI를 찍으면 본인이 먼저 내는 금액은 얼마인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G3-STD-03",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-03"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "H3-Q06",
+      "question": "MRI와 MRA 검사 비용은 표준형에서 보상 한도가 얼마인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G3-STD-03",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-03"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "H3-Q07",
+      "question": "선택형Ⅱ로 입원하면 급여 본인부담금은 몇 %를 돌려받나요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "selected2"
+      },
+      "expectedRuleId": "G3-SEL2-01",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-SEL2-01"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "H3-Q08",
+      "question": "선택형Ⅱ에서 입원 중 비급여 치료비 보상 비율이 어떻게 되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "selected2"
+      },
+      "expectedRuleId": "G3-SEL2-01",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-SEL2-01"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "H3-Q09",
+      "question": "선택형Ⅱ에서 도수치료, 주사, MRI 같은 특약은 공제금액이 얼마인가요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "selected2"
+      },
+      "expectedRuleId": "G3-SEL2-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-SEL2-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "H3-Q10",
+      "question": "선택형Ⅱ 3대 비급여 특약의 보상 방식을 알려주세요.",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "selected2"
+      },
+      "expectedRuleId": "G3-SEL2-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-SEL2-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "H3-Q11",
+      "question": "표준형으로 입원하면 입원비를 몇 %까지 보상받나요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G3-STD-BASE-01",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-BASE-01"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "H3-Q12",
+      "question": "표준형 입원 시 상급병실료 차액은 어떻게 보상하나요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G3-STD-BASE-01",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-BASE-01"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "H3-Q13",
+      "question": "표준형 가입자가 외래 진료를 받으면 공제금액이 얼마예요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G3-STD-BASE-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-BASE-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "H3-Q14",
+      "question": "표준형에서 병원 외래 통원 보험금은 어떻게 계산되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G3-STD-BASE-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-BASE-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "H3-Q15",
+      "question": "표준형 약국 처방조제비의 공제 기준이 어떻게 되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G3-STD-BASE-03",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-BASE-03"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "H3-Q16",
+      "question": "표준형에서 약값(처방조제비)은 얼마를 빼고 보상되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "standard"
+      },
+      "expectedRuleId": "G3-STD-BASE-03",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-STD-BASE-03"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "H3-Q17",
+      "question": "선택형Ⅱ에서 통원 외래 보험금의 공제는 어떻게 하나요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "selected2"
+      },
+      "expectedRuleId": "G3-SEL2-BASE-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-SEL2-BASE-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "H3-Q18",
+      "question": "선택형Ⅱ 외래 진료 시 급여와 비급여를 어떻게 나눠서 보상하나요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "selected2"
+      },
+      "expectedRuleId": "G3-SEL2-BASE-02",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-SEL2-BASE-02"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "H3-Q19",
+      "question": "선택형Ⅱ 처방조제비는 약국에서 얼마를 공제하나요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "selected2"
+      },
+      "expectedRuleId": "G3-SEL2-BASE-03",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-SEL2-BASE-03"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    },
+    {
+      "questionId": "H3-Q20",
+      "question": "선택형Ⅱ로 약을 조제하면 보험금이 어떻게 산정되나요?",
+      "filters": {
+        "productCode": "SAMSUNG_1704_1",
+        "generation": 3,
+        "variant": "selected2"
+      },
+      "expectedRuleId": "G3-SEL2-BASE-03",
+      "expectedEvidenceIds": [
+        "SAMSUNG_1704_1_E_G3-SEL2-BASE-03"
+      ],
+      "expectedStatus": "RAG_ALLOWED",
+      "executionStatus": "NOT_EXECUTED"
+    }
+  ]
+}

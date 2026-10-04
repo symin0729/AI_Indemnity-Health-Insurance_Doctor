@@ -1,3 +1,11 @@
+import { SamsungPrecisionInputs } from '../../components/samsung/SamsungPrecisionInputs';
+import { InputHelp } from "../../components/InputHelp";
+import { shouldDisableAddTreatmentButton } from "./treatmentButtonState";
+import { createDraftFromUsage, createEmptyTreatmentDraft, getSeparateVisitWarningMessage, getTreatmentAddButtonLabel, getTreatmentAdditionalInfoFields, getTreatmentAddLabel, type TreatmentDraft } from "./treatmentSequence";
+import { formatInceptionDateInput, generationForInceptionDate, generationSalesPeriod, generalPatientCopayPercent, inceptionDateForGeneration, type CopayInstitution, type CopayRegion } from "../../domain/insuranceInputDefaults";
+import { genericGen23CareSetting, syncGen23CareSetting, gen23CareSettingError } from "../../domain/samsungGen23CareSetting";
+import { Gen23Inputs } from "../../components/samsung/Gen23Inputs";
+import { parseGen23Form, restoreGen23Form, type Gen23FormState } from "../../domain/samsungGen23Form";
 import AppShell from "../../components/AppShell";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -22,9 +30,15 @@ import {
 
 import {
   sampleScenarioService,
+  loadTreatmentSample,
+  type TreatmentSampleKind,
 } from "../../services/sampleScenarioService";
 
-import { useAnalysisStore, type RiderEnrollmentStatus } from "../../store/useAnalysisStore";
+import {
+  useAnalysisStore,
+  type RiderEnrollmentStatus,
+  type SamsungGen23Variant,
+} from "../../store/useAnalysisStore";
 
 
 function isValidIsoDate(value: string): boolean {
@@ -148,6 +162,28 @@ function IsoDateInput({
   );
 }
 
+const generationBrief: Record<1 | 2 | 3 | 4, string> = {
+  1: "표준화 이전 상품으로 보장 범위와 자기부담 조건이 보험사·상품별로 다릅니다. 보장이 넓은 경우가 많지만 갱신 보험료와 세부 약관을 함께 확인해야 합니다.",
+  2: "보장 기준이 표준화된 세대로 입원·통원 보장 구조가 비교적 일정합니다. 표준형·선택형 등 가입 유형에 따라 자기부담 조건이 달라질 수 있습니다.",
+  3: "기본형과 비급여 3개 특약으로 보장이 분리된 세대입니다. 도수치료·비급여 주사·비급여 MRI 이용 여부에 따라 실제 부담 차이가 커질 수 있습니다.",
+  4: "급여와 비급여 보장이 분리되고 비급여 이용량에 따른 보험료 차등 구조가 적용됩니다. 보험료는 낮아질 수 있지만 자기부담 비율은 이전 세대보다 높습니다.",
+};
+
+const gen23VariantBrief: Record<SamsungGen23Variant, { label: string; description: string }> = {
+  UNKNOWN: {
+    label: "상품 종형 선택이 필요합니다",
+    description: "1종 표준형은 입원 보상대상 의료비의 80%를 보장하는 구조입니다. 2종 선택형Ⅱ는 입원 급여 90%·비급여 80%를 보장하는 구조이므로 보험증권에 표시된 종형을 확인해 선택해주세요.",
+  },
+  standard: {
+    label: "선택한 상품 종형 · 1종 표준형",
+    description: "입원 시 보상대상 의료비의 80%를 보장하는 구조입니다. 상급병실료 차액에는 별도 보장 비율과 한도가 적용되므로 보험증권의 가입 조건을 함께 확인해주세요.",
+  },
+  selected2: {
+    label: "선택한 상품 종형 · 2종 선택형Ⅱ",
+    description: "입원 시 급여 의료비의 90%, 비급여 의료비의 80%를 보장하는 구조입니다. 급여와 비급여의 자기부담 기준이 서로 다르므로 실제 의료비 구분이 중요합니다.",
+  },
+};
+
 function M02InputPage() {
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState<1 | 2 | 3>(() => {
@@ -256,16 +292,50 @@ function M02InputPage() {
 
   const [generation, setGeneration] =
     useState<InsuranceGeneration>(
-      savedContract?.generation ?? 3
+      generationForInceptionDate(savedContract?.inceptionDate ?? "") ?? savedContract?.generation ?? 3
     );
 
-  const [gen4NonCoveredRider, setGen4NonCoveredRider] = useState<RiderEnrollmentStatus>(savedProductCalculationSelections.gen4NonCoveredRider);
-  const [gen1Product, setGen1Product] = useState(savedProductCalculationSelections.gen1Product);
-  const [gen1ContractBasis, setGen1ContractBasis] = useState(savedProductCalculationSelections.gen1ContractBasis);
-  const [gen1D1Coverage, setGen1D1Coverage] = useState(savedProductCalculationSelections.gen1D1Coverage);
-  const [gen5ContractType, setGen5ContractType] = useState<"GENERAL" | "CONVERSION">(savedProductCalculationSelections.gen5ContractType);
-  const [gen5SevereRider, setGen5SevereRider] = useState<RiderEnrollmentStatus>(savedProductCalculationSelections.gen5SevereRider);
-  const [gen5NonSevereRider, setGen5NonSevereRider] = useState<RiderEnrollmentStatus>(savedProductCalculationSelections.gen5NonSevereRider);
+  const detectedGeneration = generationForInceptionDate(inceptionDate);
+
+  const [gen4NonCoveredRider, setGen4NonCoveredRider] =
+  useState<RiderEnrollmentStatus>(
+    savedProductCalculationSelections.gen4NonCoveredRider
+  );
+
+const [gen1Product, setGen1Product] =
+  useState(
+    savedProductCalculationSelections.gen1Product
+  );
+
+const [samsungGen23Variant, setSamsungGen23Variant] =
+  useState<SamsungGen23Variant>(
+    savedProductCalculationSelections.samsungGen23Variant
+  );
+
+const [gen1ContractBasis, setGen1ContractBasis] =
+  useState(
+    savedProductCalculationSelections.gen1ContractBasis
+  );
+
+const [gen1D1Coverage, setGen1D1Coverage] =
+  useState(
+    savedProductCalculationSelections.gen1D1Coverage
+  );
+
+const [gen5ContractType, setGen5ContractType] =
+  useState<"GENERAL" | "CONVERSION">(
+    savedProductCalculationSelections.gen5ContractType
+  );
+
+const [gen5SevereRider, setGen5SevereRider] =
+  useState<RiderEnrollmentStatus>(
+    savedProductCalculationSelections.gen5SevereRider
+  );
+
+const [gen5NonSevereRider, setGen5NonSevereRider] =
+  useState<RiderEnrollmentStatus>(
+    savedProductCalculationSelections.gen5NonSevereRider
+  );
 
   const [monthlyPremium, setMonthlyPremium] =
     useState(
@@ -430,6 +500,17 @@ function M02InputPage() {
     setHealthInsuranceCopayRatePercent,
   ] = useState("");
 
+  const [copayInstitution, setCopayInstitution] = useState<CopayInstitution | "">("");
+  const [copayRegion, setCopayRegion] = useState<CopayRegion | "">("");
+  const applyCopayDefault = (care: CareSetting, institution = copayInstitution, region = copayRegion) => {
+    const rate = generalPatientCopayPercent(care, institution || undefined, region || undefined);
+    setHealthInsuranceCopayRatePercent(rate === undefined ? "" : String(rate));
+  };
+  const changeCareSetting = (care: CareSetting) => {
+    setCareSetting(care);
+    applyCopayDefault(care);
+  };
+
   /**
    * C: 해당 비교안에서 약관상 보장대상으로 인정되는 금액.
    * 모르면 비워두고 결과에서 확인 필요로 처리한다.
@@ -442,6 +523,7 @@ function M02InputPage() {
   const [claimCause, setClaimCause] = useState<ClaimCause>("UNKNOWN");
   const [nationalHealthInsuranceStatus, setNationalHealthInsuranceStatus] =
     useState<NationalHealthInsuranceStatus>("UNKNOWN");
+  const [gen23Form, setGen23Form] = useState<Gen23FormState>({});
   const [gen1CoveredRoomAndTreatment, setGen1CoveredRoomAndTreatment] = useState("");
   const [gen1RoomDifference, setGen1RoomDifference] = useState("");
   const [gen1NonNhiInpatientTotal, setGen1NonNhiInpatientTotal] = useState("");
@@ -467,6 +549,15 @@ function M02InputPage() {
 
   const [isTreatmentFormOpen, setIsTreatmentFormOpen] =
     useState(savedUsages.length === 0);
+
+  const [currentTreatmentSlotIndex, setCurrentTreatmentSlotIndex] =
+    useState(0);
+
+  const [treatmentDrafts, setTreatmentDrafts] = useState<Record<number, TreatmentDraft>>({});
+
+  const [isStep3Confirmed, setIsStep3Confirmed] = useState(false);
+  const [isTargetPremiumHelpConfirmed, setIsTargetPremiumHelpConfirmed] = useState(false);
+  const [isTreatmentHelpConfirmed, setIsTreatmentHelpConfirmed] = useState(false);
 
   const [hasNoPlannedTreatment, setHasNoPlannedTreatment] =
     useState(false);
@@ -590,31 +681,98 @@ function M02InputPage() {
     }
   };
 
+  const buildCurrentTreatmentDraft = (): TreatmentDraft => ({
+    treatmentName,
+    careSetting,
+    benefitClass,
+    severityClass,
+    frequency,
+    unitCost,
+    treatmentDate,
+    treatmentCategory,
+    institutionType,
+    healthInsuranceCopayRatePercent,
+    copayInstitution,
+    copayRegion,
+    coveredAmount,
+    claimCause,
+    nationalHealthInsuranceStatus,
+    gen23Form,
+    gen1CoveredRoomAndTreatment,
+    gen1RoomDifference,
+    gen1NonNhiInpatientTotal,
+    gen1PriorPaidBenefit,
+    gen1PriorServiceDays,
+    gen1PolicyExclusionsCleared,
+  });
+
+  const applyTreatmentDraft = (draft: TreatmentDraft) => {
+    setGen23Form(draft.gen23Form ?? {});
+    setTreatmentSampleNotice("");
+    setTreatmentName(draft.treatmentName);
+    setCareSetting(draft.careSetting);
+    setBenefitClass(draft.benefitClass as BenefitClass);
+    setSeverityClass(draft.severityClass as SeverityClass);
+    setFrequency(draft.frequency);
+    setUnitCost(draft.unitCost);
+    setTreatmentDate(draft.treatmentDate);
+    setTreatmentCategory(draft.treatmentCategory);
+    setInstitutionType(draft.institutionType as typeof institutionType);
+    setCopayInstitution(draft.copayInstitution as CopayInstitution | "");
+    setCopayRegion(draft.copayRegion as CopayRegion | "");
+    setHealthInsuranceCopayRatePercent(draft.healthInsuranceCopayRatePercent);
+    setCoveredAmount(draft.coveredAmount);
+    setClaimCause(draft.claimCause as ClaimCause);
+    setNationalHealthInsuranceStatus(draft.nationalHealthInsuranceStatus as NationalHealthInsuranceStatus);
+    setGen1CoveredRoomAndTreatment(draft.gen1CoveredRoomAndTreatment);
+    setGen1RoomDifference(draft.gen1RoomDifference);
+    setGen1NonNhiInpatientTotal(draft.gen1NonNhiInpatientTotal);
+    setGen1PriorPaidBenefit(draft.gen1PriorPaidBenefit);
+    setGen1PriorServiceDays(draft.gen1PriorServiceDays);
+    setGen1PolicyExclusionsCleared(draft.gen1PolicyExclusionsCleared);
+  };
+
+  const saveCurrentTreatmentDraft = (slotIndex = currentTreatmentSlotIndex) => {
+    setTreatmentDrafts((previous) => ({
+      ...previous,
+      [slotIndex]: buildCurrentTreatmentDraft(),
+    }));
+  };
+
   // ========================================
   // 치료 입력칸 초기화
   // ========================================
 
   const resetTreatmentForm = () => {
-    setTreatmentName("");
-    setCareSetting("OUTPATIENT");
-    setBenefitClass("UNKNOWN");
-    setSeverityClass("UNKNOWN");
-    setFrequency("1");
-    setUnitCost("");
-    setTreatmentDate("");
-    setTreatmentCategory("");
-    setInstitutionType("");
-    setHealthInsuranceCopayRatePercent("");
-    setCoveredAmount("");
-    setClaimCause("UNKNOWN");
-    setNationalHealthInsuranceStatus("UNKNOWN");
-    setGen1CoveredRoomAndTreatment("");
-    setGen1RoomDifference("");
-    setGen1NonNhiInpatientTotal("");
-    setGen1PriorPaidBenefit("");
-    setGen1PriorServiceDays("");
-    setGen1PolicyExclusionsCleared(false);
+    const emptyDraft = createEmptyTreatmentDraft();
+    setGen23Form(emptyDraft.gen23Form);
+    setTreatmentSampleNotice("");
+    setTreatmentName(emptyDraft.treatmentName);
+    setCareSetting(emptyDraft.careSetting);
+    setBenefitClass(emptyDraft.benefitClass as BenefitClass);
+    setSeverityClass(emptyDraft.severityClass as SeverityClass);
+    setFrequency(emptyDraft.frequency);
+    setUnitCost(emptyDraft.unitCost);
+    setTreatmentDate(emptyDraft.treatmentDate);
+    setTreatmentCategory(emptyDraft.treatmentCategory);
+    setInstitutionType(emptyDraft.institutionType as typeof institutionType);
+    setCopayInstitution(emptyDraft.copayInstitution as CopayInstitution | "");
+    setCopayRegion(emptyDraft.copayRegion as CopayRegion | "");
+    setHealthInsuranceCopayRatePercent(emptyDraft.healthInsuranceCopayRatePercent);
+    setCoveredAmount(emptyDraft.coveredAmount);
+    setClaimCause(emptyDraft.claimCause as ClaimCause);
+    setNationalHealthInsuranceStatus(emptyDraft.nationalHealthInsuranceStatus as NationalHealthInsuranceStatus);
+    setGen1CoveredRoomAndTreatment(emptyDraft.gen1CoveredRoomAndTreatment);
+    setGen1RoomDifference(emptyDraft.gen1RoomDifference);
+    setGen1NonNhiInpatientTotal(emptyDraft.gen1NonNhiInpatientTotal);
+    setGen1PriorPaidBenefit(emptyDraft.gen1PriorPaidBenefit);
+    setGen1PriorServiceDays(emptyDraft.gen1PriorServiceDays);
+    setGen1PolicyExclusionsCleared(emptyDraft.gen1PolicyExclusionsCleared);
     setEditingUsageId(null);
+    setTreatmentDrafts((previous) => ({
+      ...previous,
+      [currentTreatmentSlotIndex]: emptyDraft,
+    }));
   };
 
   // ========================================
@@ -626,6 +784,7 @@ function M02InputPage() {
     setProductName("");
     setInceptionDate("");
     setGeneration(3);
+    setSamsungGen23Variant("UNKNOWN");
     setGen1Product("UNKNOWN");
     setGen1ContractBasis("SAMPLE_SIMULATION");
     setGen1D1Coverage("UNKNOWN");
@@ -650,6 +809,9 @@ function M02InputPage() {
 
     setPlannedUsages([]);
     setHasNoPlannedTreatment(false);
+    setIsStep3Confirmed(false);
+    setIsTargetPremiumHelpConfirmed(false);
+    setIsTreatmentHelpConfirmed(false);
 
     resetTreatmentForm();
     setIsTreatmentFormOpen(true);
@@ -786,7 +948,18 @@ function M02InputPage() {
       return null;
     }
 
+    let gen23Values: Partial<MedicalUsage> = {};
+    if (generation === 2 || generation === 3) {
+      try {
+        gen23Values = parseGen23Form(gen23Form);
+        const careError = gen23CareSettingError({ careSetting, gen23CareSetting: gen23Values.gen23CareSetting });
+        if (careError) throw new Error(careError);
+      }
+      catch (error) { setErrorMessage(error instanceof Error ? error.message : "계산 입력을 확인해주세요."); return null; }
+    }
     const usage: MedicalUsage = {
+      ...(id ? plannedUsages.find(item => item.id === id) : {}),
+      ...gen23Values,
       id:
         id ??
         crypto.randomUUID(),
@@ -815,6 +988,8 @@ function M02InputPage() {
           }
         : {}),
 
+      ...(copayInstitution ? { copayInstitution } : {}),
+      ...(copayRegion ? { copayRegion } : {}),
       ...(institutionType
         ? { institutionType }
         : {}),
@@ -898,21 +1073,46 @@ function M02InputPage() {
     setIsTreatmentFormOpen(false);
   };
 
-  const handleStartNewTreatment = () => {
+  const handleStartNewTreatment = (slotIndex = 0) => {
+    const targetDraft = treatmentDrafts[slotIndex] ?? createEmptyTreatmentDraft();
+
+    if (isTreatmentFormOpen && !editingUsageId) {
+      saveCurrentTreatmentDraft();
+      setCurrentTreatmentSlotIndex(slotIndex);
+      setIsTreatmentFormOpen(true);
+      applyTreatmentDraft(targetDraft);
+      setErrorMessage("");
+      setHasNoPlannedTreatment(false);
+      return;
+    }
+
     if (plannedUsages.length >= MAX_TREATMENTS) {
       setErrorMessage(`예정 치료는 최대 ${MAX_TREATMENTS}건까지 등록할 수 있습니다.`);
       return;
     }
 
-    resetTreatmentForm();
+    saveCurrentTreatmentDraft();
+    setCurrentTreatmentSlotIndex(slotIndex);
     setErrorMessage("");
     setHasNoPlannedTreatment(false);
     setIsTreatmentFormOpen(true);
+    if (targetDraft) {
+      applyTreatmentDraft(targetDraft);
+    } else {
+      resetTreatmentForm();
+    }
   };
 
-  const handleLoadSampleTreatments = () => {
+  const [treatmentSampleNotice, setTreatmentSampleNotice] = useState("");
+  const treatmentHelpDialogRef = useRef<HTMLDialogElement>(null);
+  const patientCostHelpDialogRef = useRef<HTMLDialogElement>(null);
+
+  const treatmentSampleDialogRef = useRef<HTMLDialogElement>(null);
+
+  const handleLoadSampleTreatments = (kind: TreatmentSampleKind) => {
     try {
-      const scenario = sampleScenarioService.load(selectedSampleId ?? "NON_COVERED");
+      const scenario = loadTreatmentSample(selectedSampleId ?? "NON_COVERED", generation, kind);
+      treatmentSampleDialogRef.current?.close();
       const sampleUsage = scenario.plannedUsages[0];
 
       if (!sampleUsage) {
@@ -920,26 +1120,22 @@ function M02InputPage() {
         return;
       }
 
-      resetTreatmentForm();
-      setTreatmentName(sampleUsage.treatmentName);
-      setTreatmentCategory(sampleUsage.treatmentCategory ?? "");
-      setTreatmentDate(sampleUsage.treatmentDate ?? "");
-      setCareSetting(sampleUsage.careSetting);
-      setBenefitClass(sampleUsage.benefitClass);
-      setSeverityClass(sampleUsage.severityClass);
-      setFrequency(String(sampleUsage.frequency));
-      setUnitCost(String(sampleUsage.unitCost));
-      setInstitutionType(sampleUsage.institutionType ?? "");
-      setHealthInsuranceCopayRatePercent(
-        sampleUsage.healthInsuranceCopayRate === undefined
-          ? ""
-          : String(sampleUsage.healthInsuranceCopayRate * 100)
-      );
-      setCoveredAmount(
-        sampleUsage.coveredAmount === undefined
-          ? ""
-          : String(sampleUsage.coveredAmount)
-      );
+      const nextDraft = createDraftFromUsage(sampleUsage);
+      saveCurrentTreatmentDraft();
+      setTreatmentDrafts((previous) => ({
+        ...previous,
+        [currentTreatmentSlotIndex]: nextDraft,
+      }));
+
+      setGen23Form(restoreGen23Form(sampleUsage));
+      if ((generation === 2 || generation === 3) && samsungGen23Variant === "UNKNOWN") setSamsungGen23Variant("standard");
+      setAssumeEntireMedicalCostCovered(scenario.calculationAssumptions.assumeEntireMedicalCostCovered);
+      setAssumeNoPriorLimitUsage(scenario.calculationAssumptions.assumeNoPriorLimitUsage);
+      setAssumeEachOccurrenceSeparate(scenario.calculationAssumptions.assumeEachOccurrenceSeparate);
+      setIsStep3Confirmed(false);
+      setTreatmentSampleNotice(scenario.notice + ((generation === 2 || generation === 3) && samsungGen23Variant === "UNKNOWN" ? " 종형 미선택으로 표준형 예제를 불러왔습니다." : ""));
+
+      applyTreatmentDraft(nextDraft);
       setHasNoPlannedTreatment(false);
       setIsTreatmentFormOpen(true);
       setSampleScenarioNotice(scenario.notice);
@@ -1000,6 +1196,8 @@ function M02InputPage() {
     setInstitutionType(
       usage.institutionType ?? ""
     );
+    setCopayInstitution(usage.copayInstitution ?? "");
+    setCopayRegion(usage.copayRegion ?? "");
 
     setHealthInsuranceCopayRatePercent(
       usage.healthInsuranceCopayRate ===
@@ -1018,6 +1216,7 @@ function M02InputPage() {
             usage.coveredAmount
           )
     );
+    setGen23Form(restoreGen23Form(usage));
     setClaimCause(usage.claimCause ?? "UNKNOWN");
     setNationalHealthInsuranceStatus(usage.nationalHealthInsuranceStatus ?? "UNKNOWN");
     setGen1CoveredRoomAndTreatment(usage.gen1CoveredRoomAndTreatment === undefined ? "" : String(usage.gen1CoveredRoomAndTreatment));
@@ -1082,6 +1281,10 @@ function M02InputPage() {
   // ========================================
 
   useEffect(() => {
+    setUsages(plannedUsages);
+  }, [plannedUsages, setUsages]);
+
+  useEffect(() => {
     if (errorMessage) {
       const error = document.getElementById("input-errors");
       error?.scrollIntoView({ block: "center", behavior: "smooth" });
@@ -1089,8 +1292,33 @@ function M02InputPage() {
     }
   }, [errorMessage]);
 
+  const showTargetPremiumHelp = () => {
+    setErrorMessage("");
+    goToInputStep(2);
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        document.getElementById("target-premium-help-area")?.scrollIntoView({
+          block: "center",
+          behavior: "smooth",
+        });
+      });
+    });
+  };
+
   const handleNext = () => {
     setErrorMessage("");
+    if (!isTargetPremiumHelpConfirmed) {
+      showTargetPremiumHelp();
+      return;
+    }
+    if (!isTreatmentHelpConfirmed) {
+      setErrorMessage("STEP 3의 필수 입력 안내를 읽고 확인해주세요.");
+      return;
+    }
+    if (!isStep3Confirmed) {
+      setErrorMessage("입력 내용을 확인하고 ‘예정치료를 입력하셨나요?’에 체크해주세요.");
+      return;
+    }
 
     const currentPremiumNumber =
       Number(monthlyPremium);
@@ -1139,6 +1367,17 @@ function M02InputPage() {
       setErrorMessage(
         "보험 가입일은 YYYY-MM-DD 형식의 실제 날짜로 입력해주세요."
       );
+      return;
+    }
+
+    if (
+      (generation === 2 || generation === 3) &&
+      samsungGen23Variant === "UNKNOWN"
+    ) {
+      setErrorMessage(
+        `${generation}세대 실손보험의 상품 종형을 반드시 선택해주세요.`
+      );
+      document.getElementById("samsung-gen23-variant")?.focus();
       return;
     }
 
@@ -1252,12 +1491,18 @@ function M02InputPage() {
       }
     }
 
+    const distinctTreatmentDates = new Set(
+      finalUsages
+        .map((usage) => usage.treatmentDate)
+        .filter((value): value is string => Boolean(value))
+    );
+
     if (
-      assumeEachOccurrenceSeparate &&
-      finalUsages.some((usage) => Boolean(usage.treatmentDate))
+      distinctTreatmentDates.size > 1 &&
+      !assumeEachOccurrenceSeparate
     ) {
       setErrorMessage(
-        "진료 예정일을 입력한 치료가 있습니다. ‘진료 예정일을 입력하지 않았나요?’ 선택을 해제해주세요."
+        getSeparateVisitWarningMessage()
       );
       return;
     }
@@ -1357,6 +1602,7 @@ function M02InputPage() {
       gen5ContractType,
       gen5SevereRider,
       gen5NonSevereRider,
+      samsungGen23Variant
     });
 
     navigate("/confirm");
@@ -1375,6 +1621,15 @@ function M02InputPage() {
       return;
     }
 
+    if (
+      (generation === 2 || generation === 3) &&
+      samsungGen23Variant === "UNKNOWN"
+    ) {
+      setErrorMessage(`${generation}세대 실손보험의 상품 종형을 반드시 선택해주세요.`);
+      document.getElementById("samsung-gen23-variant")?.focus();
+      return;
+    }
+
     goToInputStep(2);
   };
 
@@ -1385,6 +1640,19 @@ function M02InputPage() {
       ...prev,
       [type]: !prev[type],
     }));
+  };
+
+  const handleStep2Next = () => {
+    setErrorMessage("");
+    if (!target5GMonthlyPremium || Number(target5GMonthlyPremium) <= 0) {
+      setErrorMessage("비교용 5세대 월 보험료를 올바르게 입력해주세요.");
+      return;
+    }
+    if (!isTargetPremiumHelpConfirmed) {
+      showTargetPremiumHelp();
+      return;
+    }
+    goToInputStep(3);
   };
 
   const selectedSample =
@@ -1406,6 +1674,11 @@ function M02InputPage() {
     <AppShell currentStep={activeStep} onReset={handleConfirmResetAll}
       onStepChange={(step) => {
         if (step === 4) { handleNext(); return; }
+        if (step === 3 && activeStep === 2) { handleStep2Next(); return; }
+        if (step === 3 && !isTargetPremiumHelpConfirmed) {
+          showTargetPremiumHelp();
+          return;
+        }
         if (step === 1 || step === 2 || step === 3) goToInputStep(step);
       }}>
     <main className="navy-page navy-input-page">
@@ -1682,8 +1955,13 @@ function M02InputPage() {
           가입일
           <IsoDateInput
             value={inceptionDate}
-            onChange={setInceptionDate}
-            placeholder="예: 2018-03-01"
+            onChange={(value) => {
+              const formattedValue = formatInceptionDateInput(value);
+              setInceptionDate(formattedValue);
+              const detected = generationForInceptionDate(formattedValue);
+              if (detected !== undefined) setGeneration(detected);
+            }}
+            placeholder="YYYY-MM-DD (예: 2018-03-01)"
           />
         </label>
 
@@ -1691,39 +1969,52 @@ function M02InputPage() {
           실손 세대
           <select
             value={generation}
-            onChange={(e) =>
-              setGeneration(
-                Number(
-                  e.target.value
-                ) as InsuranceGeneration
-              )
-            }
+            onChange={(e) => {
+              const selectedGeneration = Number(e.target.value) as Exclude<InsuranceGeneration, 5>;
+              setGeneration(selectedGeneration);
+              setInceptionDate(inceptionDateForGeneration(selectedGeneration));
+            }}
           >
-            <option value={1}>
-              1세대
-            </option>
-
-            <option value={2}>
-              2세대
-            </option>
-
-            <option value={3}>
-              3세대
-            </option>
-
-            <option value={4}>
-              4세대
-            </option>
-
-            <option value={5}>
-              5세대
-            </option>
+            <option value={1}>1세대</option>
+            <option value={2}>2세대</option>
+            <option value={3}>3세대</option>
+            <option value={4}>4세대</option>
           </select>
         </label>
+        {generation === 2 ||
+        generation === 3 ? (
+          <label>
+            상품 종형 <span className="required-mark">필수</span>
+            <select
+              id="samsung-gen23-variant"
+              value={samsungGen23Variant}
+              required
+              aria-required="true"
+              aria-invalid={samsungGen23Variant === "UNKNOWN"}
+              onChange={(e) =>
+                setSamsungGen23Variant(
+                  e.target.value as SamsungGen23Variant
+                )
+              }
+            >
+              <option value="UNKNOWN">
+                필수 선택
+              </option>
+
+              <option value="standard">
+                1종 표준형
+              </option>
+
+              <option value="selected2">
+                2종 선택형Ⅱ
+              </option>
+            </select>
+          </label>
+        ) : null}
 
         <label>
           현재 월 보험료
-          <input
+          <span className="input-unit-row"><input
             type="text"
             inputMode="numeric"
             value={
@@ -1735,13 +2026,12 @@ function M02InputPage() {
               )
             }
             placeholder="예: 60,000"
-          />
-          원
+          /><span className="input-unit-label">원</span></span>
         </label>
 
           <label>
             갱신 주기
-            <input
+            <span className="input-unit-row"><input
               type="number"
               onWheel={(e) => e.currentTarget.blur()}
               min="1"
@@ -1755,13 +2045,12 @@ function M02InputPage() {
                 )
               }
               placeholder="모르면 비워두기"
-            />
-            개월
+            /><span className="input-unit-label">개월</span></span>
           </label>
 
           <label>
             재가입 주기 (년)
-            <input
+            <span className="input-unit-row"><input
               type="number"
               onWheel={(e) => e.currentTarget.blur()}
               min="1"
@@ -1775,8 +2064,7 @@ function M02InputPage() {
                 )
               }
               placeholder="모르면 비워두기"
-            />
-            년
+            /><span className="input-unit-label">년</span></span>
           </label>
         </div>
 
@@ -1790,6 +2078,26 @@ function M02InputPage() {
           공모전 MVP에서는 사전에 검증한 샘플 정보를 사용할 수 있습니다.
           샘플을 불러온 경우 실제 계산 전 사용자가 내용을 다시 확인해야 합니다.
         </div>
+
+        {detectedGeneration !== undefined && (
+          <section className="generation-match-card" role="status" aria-live="polite">
+            <div className="generation-match-card__icon" aria-hidden="true">✓</div>
+            <div>
+              <span className="generation-match-card__eyebrow">가입일 자동 판독 결과</span>
+              <strong>
+                입력한 가입일은 실손보험 {detectedGeneration}세대 ({generationSalesPeriod(detectedGeneration)})에 해당합니다.
+              </strong>
+              <p>{generationBrief[detectedGeneration as 1 | 2 | 3 | 4]}</p>
+              {(detectedGeneration === 2 || detectedGeneration === 3) && (
+                <div className={`generation-match-card__variant${samsungGen23Variant === "UNKNOWN" ? " is-required" : ""}`}>
+                  <b>{gen23VariantBrief[samsungGen23Variant].label}</b>
+                  <span>{gen23VariantBrief[samsungGen23Variant].description}</span>
+                </div>
+              )}
+              <small>가입일을 변경하면 실손 세대도 자동으로 다시 선택됩니다.</small>
+            </div>
+          </section>
+        )}
 
         {generation === 1 && (
           <fieldset className="form-card" style={{ marginTop: "16px" }}>
@@ -1835,7 +2143,7 @@ function M02InputPage() {
                   <h3>0904.2 D1 계산 조건</h3>
                   <div className="form-grid">
                     <label>질병 / 상해<select value={claimCause} onChange={(event) => setClaimCause(event.target.value as ClaimCause)}><option value="UNKNOWN">확인할 수 없음</option><option value="INJURY">상해</option><option value="DISEASE">질병</option></select></label>
-                    <label>입원 / 통원<select value={careSetting} onChange={(event) => setCareSetting(event.target.value as CareSetting)}><option value="INPATIENT">입원</option><option value="OUTPATIENT">통원</option></select></label>
+                    <label>입원 / 통원<select value={careSetting} onChange={(event) => changeCareSetting(event.target.value as CareSetting)}><option value="INPATIENT">입원</option><option value="OUTPATIENT">통원</option></select></label>
                     <label>이번 진료의 국민건강보험 적용 여부<select value={nationalHealthInsuranceStatus} onChange={(event) => setNationalHealthInsuranceStatus(event.target.value as NationalHealthInsuranceStatus)}><option value="UNKNOWN">확인할 수 없음</option><option value="APPLIED">적용됨</option><option value="NOT_APPLIED">적용되지 않음</option><option value="PARTIAL">일부 적용</option></select></label>
                   </div>
                   {nationalHealthInsuranceStatus === "PARTIAL" && <div className="notice-box warning">일부 적용 조합은 RULE_NOT_VERIFIED로 처리됩니다.</div>}
@@ -1958,9 +2266,10 @@ function M02InputPage() {
           사용할 비교 조건입니다.
         </p>
 
-        <label>
-          비교용 5세대 월 보험료
-          <input
+        <label id="target-premium-help-area" htmlFor="target-premium">
+          비교용 5세대 월 보험료 (필수)
+            <InputHelp title="비교용 5세대 월 보험료" description="5세대 전환 시 예상되는 월 보험료입니다. 현재 보험료와 구분하고, 보험사에서 받은 견적을 입력하세요." source="보험사의 전환 견적 또는 상담" attention confirmed={isTargetPremiumHelpConfirmed} onConfirm={() => setIsTargetPremiumHelpConfirmed(true)} />
+          <span className="input-unit-row"><input id="target-premium"
             type="text"
             inputMode="numeric"
             value={
@@ -1972,8 +2281,7 @@ function M02InputPage() {
               )
             }
             placeholder="예: 35,000"
-          />
-          원
+          /><span className="input-unit-label">원</span></span>
         </label>
 
         <div
@@ -2116,33 +2424,28 @@ function M02InputPage() {
 
       {/* STEP 3 */}
       <section className="form-card">
-        <div className="treatment-section-header">
-          <div>
-            <span className="step-badge">STEP 3</span>
-            <h2 className="card-title">예정 치료</h2>
-          </div>
-
-          <div className="treatment-section-actions">
-            <button
-              type="button"
-              className="sample-button"
-              onClick={handleLoadSampleTreatments}
-              disabled={isTreatmentLimitReached}
-            >
-              치료 샘플 불러오기
-            </button>
-            <button
-              type="button"
-              className="primary-button treatment-add-button"
-              onClick={handleStartNewTreatment}
-              disabled={isTreatmentFormOpen || isTreatmentLimitReached}
-            >
-              + 치료 추가
-            </button>
+        {treatmentSampleNotice && <p className="notice-box" role="status">{treatmentSampleNotice}</p>}
+        <span className="step-badge">STEP 3</span>
+        <div className="treatment-heading-row">
+          <h2 className="card-title" style={{ margin: 0 }}>예정 치료</h2>
+          <div className="treatment-compact-actions">
+            <button type="button" className={`sample-button required-confirm-button${isTreatmentHelpConfirmed ? " is-confirmed" : ""}`} aria-haspopup="dialog" onClick={() => treatmentHelpDialogRef.current?.showModal()}>{isTreatmentHelpConfirmed ? "✓ 필수 입력 안내 확인 완료" : "필수 입력 안내 확인"}</button>
+            <button type="button" className="sample-button" aria-haspopup="dialog" onClick={() => treatmentSampleDialogRef.current?.showModal()} disabled={isTreatmentLimitReached}>치료 샘플 불러오기</button>
+            {[0, 1, 2].map((slotIndex) => (
+              <button
+                key={slotIndex}
+                type="button"
+                className="primary-button"
+                onClick={() => handleStartNewTreatment(slotIndex)}
+                disabled={shouldDisableAddTreatmentButton({ isTreatmentFormOpen, isTreatmentLimitReached })}
+              >
+                {slotIndex === 0 ? getTreatmentAddButtonLabel() : getTreatmentAddLabel(slotIndex)}
+              </button>
+            ))}
           </div>
         </div>
 
-        <p className="card-description">
+        <p className="card-description" style={{ fontSize: "0.85rem" }}>
           앞으로 예상되는 의료이용을
           선택적으로 입력합니다. 치료는 최대 3건까지
           추가하거나 수정할 수 있습니다.
@@ -2172,6 +2475,13 @@ function M02InputPage() {
         )}
 
         {isTreatmentFormOpen && <>
+          <fieldset className="form-card">
+            <legend>
+              <h3>
+                {editingUsageId ? "치료 수정" : getTreatmentAddLabel(currentTreatmentSlotIndex)}
+              </h3>
+            </legend>
+
         {editingUsageId && (
           <div className="notice-box">
             현재 선택한 치료를 수정하고
@@ -2180,7 +2490,7 @@ function M02InputPage() {
         )}
 
         <label>
-          치료명
+          치료명 (필수)
           <input
             type="text"
             value={
@@ -2197,44 +2507,18 @@ function M02InputPage() {
 
         <div className="form-grid">
           <label>
-            치료 분류
-            <input
-              type="text"
-              value={
-                treatmentCategory
-              }
-              onChange={(e) =>
-                setTreatmentCategory(
-                  e.target.value
-                )
-              }
-              placeholder="예: MRI"
-            />
-          </label>
-
-          <label>
-            진료 예정일
-            <IsoDateInput
-              value={treatmentDate}
-              onChange={setTreatmentDate}
-              placeholder="YYYY-MM-DD"
-            />
-          </label>
-        </div>
-
-        <div className="form-grid">
-          <label>
-            입원 / 통원
+            입원 / 통원 (필수)
             <select
               value={
                 careSetting
               }
-              onChange={(e) =>
-                setCareSetting(
-                  e.target
-                    .value as CareSetting
-                )
-              }
+              onChange={(e) => {
+                const nextCare = e.target.value as CareSetting;
+                changeCareSetting(nextCare);
+                if (generation === 2 || generation === 3) {
+                  setGen23Form(previous => ({ ...previous, gen23CareSetting: syncGen23CareSetting(nextCare, previous.gen23CareSetting) }));
+                }
+              }}
             >
               <option value="OUTPATIENT">
                 통원
@@ -2247,7 +2531,7 @@ function M02InputPage() {
           </label>
 
           <label>
-            급여 여부
+            급여 여부 (필수)
             <select
               value={
                 benefitClass
@@ -2273,38 +2557,13 @@ function M02InputPage() {
             </select>
           </label>
 
-          <label>
-            산정특례 및 치료 관련성
-            <select
-              value={
-                severityClass
-              }
-              onChange={(e) =>
-                setSeverityClass(
-                  e.target
-                    .value as SeverityClass
-                )
-              }
-            >
-              <option value="UNKNOWN">
-                모름
-              </option>
 
-              <option value="SEVERE">
-                산정특례 질환 치료 또는 관련 합병증으로 확인됨
-              </option>
-
-              <option value="NON_SEVERE">
-                산정특례 미적용 또는 다른 질환 치료로 확인됨
-              </option>
-            </select>
-          </label>
         </div>
 
         <div className="form-grid">
           <label>
-            예상 횟수
-            <input
+            예상 횟수 (필수)
+            <span className="input-unit-row"><input
               type="number"
               onWheel={(e) => e.currentTarget.blur()}
               min="1"
@@ -2315,13 +2574,16 @@ function M02InputPage() {
                   e.target.value
                 )
               }
-            />
-            회
+            /><span className="input-unit-label">회</span></span>
           </label>
 
-          <label>
-            회당 환자부담 의료비 (M)
-            <input
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+              <label htmlFor="patient-unit-cost" style={{ marginBottom: 0 }}>한 번 진료받을 때 내가 내는 금액 (필수)</label>
+              <button type="button" className="sample-button" style={{ minHeight: "30px", padding: "4px 9px", fontSize: "0.8rem" }} aria-label="진료비 입력 안내 확인" aria-haspopup="dialog" aria-controls="patient-cost-dialog" onClick={() => patientCostHelpDialogRef.current?.showModal()}>확인</button>
+            </div>
+            <span className="input-unit-row"><input
+              id="patient-unit-cost"
               type="text"
               inputMode="numeric"
               value={formatWonInput(unitCost)}
@@ -2331,46 +2593,50 @@ function M02InputPage() {
                 )
               }
               placeholder="예: 400,000"
-            />
-            원
-          </label>
-        </div>
-
-        <div className="notice-box">
-          아래 정밀 계산 항목은 확인되는 값만 입력하세요.
-          모르는 값은 비워두면 임의로 추정하지 않고 결과에서 확인 필요로 표시합니다.
+            /><span className="input-unit-label">원</span></span>
+          </div>
         </div>
 
         <div className="form-grid">
-          <label>
-            의료기관 종별
-            <select
-              value={
-                institutionType
+          <label htmlFor="copay-institution">
+            의료기관 종별 {careSetting === "OUTPATIENT" && (generation === 2 || generation === 3 || benefitClass === "COVERED") && <span>(필수)</span>}
+            <InputHelp title="의료기관 종별" description="병원 이름만 보고 판단하지 말고 등록된 의료기관 종류를 선택하세요. 종합병원과 상급종합병원은 서로 다른 선택지입니다." source="병원 안내·원무과" />
+            <select id="copay-institution" value={copayInstitution || institutionType} onChange={(e) => {
+              const value = e.target.value as CopayInstitution | "";
+              setCopayInstitution(value);
+              setInstitutionType(value === "TERTIARY" || value === "GENERAL" ? "GENERAL_TERTIARY" : value === "CLINIC" || value === "HOSPITAL" ? "CLINIC_HOSPITAL" : "");
+              applyCopayDefault(careSetting, value);
+              if (generation === 2 || generation === 3) {
+                const institution = value === "TERTIARY" ? "GENERAL_TERTIARY" : value === "GENERAL" || value === "HOSPITAL" ? "HOSPITAL" : value === "CLINIC" ? "CLINIC" : "";
+                setGen23Form(previous => ({ ...previous, gen23Institution: institution }));
               }
-              onChange={(e) =>
-                setInstitutionType(
-                  e.target.value as
-                    | ""
-                    | MedicalInstitutionType
-                )
-              }
-            >
-              <option value="">
-                모름 / 해당 없음
-              </option>
-              <option value="CLINIC_HOSPITAL">
-                병·의원
-              </option>
-              <option value="GENERAL_TERTIARY">
-                종합·상급종합병원
-              </option>
+            }}>
+              <option value="">모름 / 해당 없음</option>
+              {!copayInstitution && institutionType && <option value={institutionType}>기존 분류 — 세부 종별을 선택해주세요</option>}
+              <option value="TERTIARY">상급종합병원</option>
+              <option value="GENERAL">종합병원</option>
+              <option value="HOSPITAL">병원급</option>
+              <option value="CLINIC">의원급</option>
+              <option value="PUBLIC_HEALTH">보건기관</option>
             </select>
           </label>
+          {(copayInstitution === "GENERAL" || copayInstitution === "HOSPITAL") && careSetting === "OUTPATIENT" && <label htmlFor="institution-region">
+            의료기관 소재 지역 (필수)
+            <InputHelp title="의료기관 소재 지역" description="거주지가 아니라 진료받는 의료기관의 주소를 기준으로 동지역 또는 읍·면지역을 선택하세요." source="의료기관 주소·병원 원무과" />
+            <select id="institution-region" value={copayRegion} onChange={(e) => {
+              const value = e.target.value as CopayRegion | "";
+              setCopayRegion(value);
+              applyCopayDefault(careSetting, copayInstitution, value);
+            }}>
+              <option value="">선택해주세요</option>
+              <option value="DONG">동지역</option>
+              <option value="EUP_MYEON">읍·면지역</option>
+            </select>
+          </label>}
 
           <label>
             건강보험 본인부담률 (r)
-            <input
+            <span className="input-unit-row"><input
               type="number"
               onWheel={(e) => e.currentTarget.blur()}
               min="0"
@@ -2385,28 +2651,82 @@ function M02InputPage() {
                 )
               }
               placeholder="예: 40"
-            />
-            %
+            /><span className="input-unit-label">%</span></span>
           </label>
         </div>
 
-        <label>
-          회당 보장대상 인정금액 (C)
-          <input
-            type="text"
-            inputMode="numeric"
-            value={
-              formatWonInput(coveredAmount)
+        <div className="form-grid">
+          {getTreatmentAdditionalInfoFields().map((field) => {
+            if (field.key === "treatmentDate") {
+              return (
+                <label key={field.key}>
+                  {field.label}
+                  <IsoDateInput
+                    value={treatmentDate}
+                    onChange={setTreatmentDate}
+                    placeholder="YYYY-MM-DD"
+                  />
+                </label>
+              );
             }
-            onChange={(e) =>
-              setCoveredAmount(
-                getWonInputValue(e.target.value)
-              )
+
+            if (field.key === "severityClass") {
+              return (
+                <label key={field.key}>
+                  {field.label}
+                  <select
+                    value={
+                      severityClass
+                    }
+                    onChange={(e) =>
+                      setSeverityClass(
+                        e.target
+                          .value as SeverityClass
+                      )
+                    }
+                  >
+                    <option value="UNKNOWN">
+                      모름
+                    </option>
+
+                    <option value="SEVERE">
+                      산정특례 질환 치료 또는 관련 합병증으로 확인됨
+                    </option>
+
+                    <option value="NON_SEVERE">
+                      산정특례 미적용 또는 다른 질환 치료로 확인됨
+                    </option>
+                  </select>
+                </label>
+              );
             }
-            placeholder="모르면 비워두세요"
-          />
-          원
-        </label>
+
+            return (
+              <label key={field.key}>
+                {field.label}
+                <span className="input-unit-row"><input
+                  type="text"
+                  inputMode="numeric"
+                  value={
+                    formatWonInput(coveredAmount)
+                  }
+                  onChange={(e) =>
+                    setCoveredAmount(
+                      getWonInputValue(e.target.value)
+                    )
+                  }
+                  placeholder="모르면 비워두세요"
+                /><span className="input-unit-label">원</span></span>
+              </label>
+            );
+          })}
+        </div>
+
+          {(generation === 2 || generation === 3) && <Gen23Inputs generation={generation} variant={samsungGen23Variant} insurerName={insurer === "INS_001" ? "삼성화재" : insurer || "보험사"} embedded institutionManaged value={gen23Form} onChange={(values) => {
+            setGen23Form(values);
+            const selectedCare = genericGen23CareSetting(values.gen23CareSetting);
+            if (selectedCare && selectedCare !== careSetting) changeCareSetting(selectedCare);
+          }} />}
 
         {isTreatmentLimitReached && (
           <div className="notice-box">
@@ -2430,9 +2750,7 @@ function M02InputPage() {
               isTreatmentLimitReached
             }
           >
-            {editingUsageId
-              ? "수정 확인"
-              : "확인"}
+            {editingUsageId ? "수정 확인" : "추가하기"}
           </button>
 
           {editingUsageId && (
@@ -2447,6 +2765,7 @@ function M02InputPage() {
             </button>
           )}
         </div>
+          </fieldset>
         </>}
 
         {plannedUsages.length >
@@ -2466,6 +2785,13 @@ function M02InputPage() {
                   editingUsageId ===
                   usage.id;
 
+                const severityLabel =
+                  usage.severityClass === "SEVERE"
+                    ? "산정특례 질환 치료 또는 관련 합병증으로 확인됨"
+                    : usage.severityClass === "NON_SEVERE"
+                      ? "산정특례 미적용 또는 다른 질환 치료로 확인됨"
+                      : "산정특례 여부 확인 필요";
+
                 return (
                   <article
                     className="treatment-card"
@@ -2482,7 +2808,7 @@ function M02InputPage() {
                         >
                           {isEditing
                             ? "수정 중"
-                            : `치료 ${index + 1}`}
+                            : getTreatmentAddLabel(index)}
                         </span>
 
                         <h3>
@@ -2503,13 +2829,35 @@ function M02InputPage() {
                       회 ×{" "}
                       {usage.unitCost.toLocaleString()}
                       원
-                      {usage.treatmentCategory
-                        ? ` · ${usage.treatmentCategory}`
-                        : ""}
-                      {usage.treatmentDate
-                        ? ` · ${usage.treatmentDate}`
-                        : ""}
                     </p>
+
+                    <div className="treatment-meta" style={{ display: "grid", gap: "6px" }}>
+                      {usage.treatmentCategory && (
+                        <div>
+                          <strong style={{ marginRight: "8px" }}>치료 분류:</strong>
+                          {usage.treatmentCategory}
+                        </div>
+                      )}
+
+                      {usage.treatmentDate && (
+                        <div>
+                          <strong style={{ marginRight: "8px" }}>진료 예정일:</strong>
+                          {usage.treatmentDate}
+                        </div>
+                      )}
+
+                      <div>
+                        <strong style={{ marginRight: "8px" }}>산정특례 및 치료 관련성:</strong>
+                        {severityLabel}
+                      </div>
+
+                      {usage.coveredAmount !== undefined && (
+                        <div>
+                          <strong style={{ marginRight: "8px" }}>회당 보장대상 인정금액 (C):</strong>
+                          {usage.coveredAmount.toLocaleString()}원
+                        </div>
+                      )}
+                    </div>
 
                     {(usage.institutionType ||
                       usage.healthInsuranceCopayRate !==
@@ -2849,7 +3197,7 @@ function M02InputPage() {
                   fontSize: "1rem",
                 }}
               >
-                [STEP 3 예정 치료 &gt; 진료 예정일]을 입력하지 않았나요?
+                각 치료를 별도 방문으로 계산
               </strong>
               <span
                 style={{
@@ -2861,6 +3209,64 @@ function M02InputPage() {
               >
                 선택하면 입력한 치료 횟수를 각각 별도의 병원 방문으로 계산합니다.
                 같은 날 여러 치료를 받을 예정이라면 선택하지 마세요.
+              </span>
+            </span>
+          </label>
+
+          <label
+            style={{
+              display: "grid",
+              gridTemplateColumns: "24px 1fr",
+              gap: "12px",
+              alignItems: "start",
+              padding: "18px",
+              border: isStep3Confirmed
+                ? "1.5px solid var(--color-primary-600, #2d6fa8)"
+                : "1px solid var(--color-border)",
+              borderRadius: "16px",
+              background: isStep3Confirmed
+                ? "var(--color-primary-050, #f4f9fe)"
+                : "#ffffff",
+              cursor: "pointer",
+            }}
+          >
+            <input
+              type="checkbox"
+              checked={
+                isStep3Confirmed
+              }
+              onChange={(e) =>
+                setIsStep3Confirmed(
+                  e.target.checked
+                )
+              }
+              style={{
+                width: "20px",
+                height: "20px",
+                marginTop: "2px",
+              }}
+            />
+
+            <span>
+              <strong
+                style={{
+                  display: "block",
+                  marginBottom: "6px",
+                  fontSize: "1rem",
+                }}
+              >
+                예정치료를 입력하셨나요?
+              </strong>
+              <span
+                style={{
+                  display: "block",
+                  color: "var(--color-text-sub)",
+                  lineHeight: 1.6,
+                  fontSize: "0.9rem",
+                }}
+              >
+                예정 치료와 진료 예정일을 포함한 입력 내용을 확인했습니다.
+                예정 치료가 없는 경우에는 해당 선택을 확인해주세요.
               </span>
             </span>
           </label>
@@ -2896,15 +3302,63 @@ function M02InputPage() {
         <button
           type="button"
           className="primary-button"
+          disabled={activeStep === 3 && (!isStep3Confirmed || !isTreatmentHelpConfirmed)}
           onClick={() => {
             if (activeStep === 1) handleStep1Next();
-            else if (activeStep === 2) goToInputStep(3);
+            else if (activeStep === 2) handleStep2Next();
             else handleNext();
           }}
         >
           {activeStep < 3 ? "다음 단계" : "입력 정보 확인하기"}
         </button>
       </div>
+
+      <dialog id="patient-cost-dialog" ref={patientCostHelpDialogRef} className="treatment-help-dialog" aria-labelledby="patient-cost-title" aria-describedby="patient-cost-help" onClick={(event) => {
+        if (event.target === event.currentTarget) patientCostHelpDialogRef.current?.close();
+      }}>
+        <section className="app-card" style={{ margin: 0 }}>
+          <h2 id="patient-cost-title" className="card-title">한 번 진료받을 때 내가 내는 금액</h2>
+          <p id="patient-cost-help">진료비 영수증의 환자부담금 합계(급여 본인부담금 + 비급여)를 입력하세요. 보험사에서 돌려받을 금액은 빼지 않습니다. 진료 전이라면 병원에서 안내받은 예상 금액을 입력하세요.</p>
+          <p>정밀 계산 항목은 확인되는 값만 입력하세요. 모르는 값은 비워두면 임의로 추정하지 않고 결과에서 확인 필요로 표시합니다.</p>
+          <div className="button-group"><button type="button" className="primary-button" autoFocus onClick={() => patientCostHelpDialogRef.current?.close()}>닫기</button></div>
+        </section>
+      </dialog>
+
+      <dialog ref={treatmentSampleDialogRef} className="treatment-help-dialog" aria-labelledby="treatment-sample-title">
+        <section className="app-card" style={{ margin: 0 }}>
+          <h2 id="treatment-sample-title" className="card-title">치료 샘플 선택</h2>
+          <p>내 상황과 가까운 입력 예제를 선택하세요. 금액과 계약 조건은 연습용 가정입니다. 횟수와 급여 여부는 불러온 뒤 직접 입력해주세요.</p>
+          <div style={{ display: "grid", gap: "12px" }}>
+            <button type="button" className="sample-button" onClick={() => handleLoadSampleTreatments("OUTPATIENT")}>일반 외래 진료</button>
+            <button type="button" className="sample-button" onClick={() => handleLoadSampleTreatments("EXAM")}>외래 검사</button>
+            <button type="button" className="sample-button" onClick={() => handleLoadSampleTreatments("MRI")}>MRI 검사</button>
+            <button type="button" className="secondary-button" onClick={() => treatmentSampleDialogRef.current?.close()}>닫기</button>
+          </div>
+        </section>
+      </dialog>
+
+      <dialog
+        ref={treatmentHelpDialogRef}
+        className="treatment-help-dialog"
+        aria-labelledby="treatment-help-title"
+        aria-describedby="treatment-help-description"
+        onClick={(event) => {
+          if (event.target === event.currentTarget) treatmentHelpDialogRef.current?.close();
+        }}
+      >
+        <section className="app-card" style={{ margin: 0 }}>
+          <h2 id="treatment-help-title" className="card-title">필수 항목을 정확하게 입력해주세요</h2>
+          <p id="treatment-help-description" className="card-description">
+            ‘필수’로 표시된 항목을 실제 정보에 맞게 입력할수록, 내 상황에 맞는 비교 결과를 확인하는 데 도움이 됩니다.
+            항목이 비어 있거나 실제와 다른 값을 입력하면 계산이 제한되거나 결과가 달라질 수 있습니다.
+          </p>
+          <p>진료비는 영수증이나 병원의 예상 비용을 참고하고, 모르는 값은 임의로 채우지 마세요. 샘플을 불러왔다면 본인의 치료·계약 정보로 수정해주세요.</p>
+          <p>입력을 모두 완료해도 실제 보험금 지급액이 확정되는 것은 아닙니다.</p>
+          <div className="button-group">
+            <button type="button" className="primary-button" autoFocus onClick={() => { setIsTreatmentHelpConfirmed(true); treatmentHelpDialogRef.current?.close(); }}>확인</button>
+          </div>
+        </section>
+      </dialog>
 
       {isResetModalOpen && (
         <div
@@ -3122,6 +3576,7 @@ function M02InputPage() {
           </section>
         </div>
       )}
+      {activeStep === 2 && plannedUsages.map(usage => <SamsungPrecisionInputs key={usage.id} usage={usage} onChange={updated => setPlannedUsages(previous => previous.map(item => item.id === updated.id ? updated : item))} />)}
     </main>
     </AppShell>
   );

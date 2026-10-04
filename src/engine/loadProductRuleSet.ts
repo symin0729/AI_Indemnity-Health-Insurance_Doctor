@@ -17,8 +17,49 @@ const ruleSets: Record<string, unknown> = {
   "SAMSUNG_2605_1:default": gen5,
 };
 
-export const loadProductRuleSet = async (productCode: string, variant = "default"): Promise<RuleSet> => {
-  const candidate = ruleSets[`${productCode}:${variant}`] as RuleSet | undefined;
-  if (!candidate) throw new Error(`지원하지 않는 상품·종형입니다: ${productCode}/${variant}`);
+export type SamsungGen23RoutingInput = {
+  generation: 2 | 3;
+  variant: "standard" | "selected2" | "UNKNOWN";
+};
+
+export const resolveSamsungGen23Product = ({
+  generation,
+  variant,
+}: SamsungGen23RoutingInput): {
+  productCode: "SAMSUNG_1611_7" | "SAMSUNG_1704_1";
+  variant: "standard" | "selected2";
+} => {
+  if (variant === "UNKNOWN") {
+    throw new Error(
+      `${generation}세대 상품 종형을 선택해주세요.`
+    );
+  }
+
+  if (generation === 2) {
+    return {
+      productCode: "SAMSUNG_1611_7",
+      variant,
+    };
+  }
+
+  return {
+    productCode: "SAMSUNG_1704_1",
+    variant,
+  };
+};
+
+export const loadProductRuleSet = async (
+  productCode: string,
+  variant = "default"
+): Promise<RuleSet> => {
+  const candidate =
+    ruleSets[`${productCode}:${variant}`] as RuleSet | undefined;
+
+  if (!candidate) {
+    throw new Error(
+      `지원하지 않는 상품·종형입니다: ${productCode}/${variant}`
+    );
+  }
+
   return structuredClone(candidate);
 };

@@ -1,0 +1,2215 @@
+{
+  "executedAt": "2026-10-04T00:42:55+09:00",
+  "split": "dev",
+  "settings": {
+    "pageSize": 6,
+    "vectorWeight": 0.5,
+    "similarityThreshold": 0.1
+  },
+  "summary": {
+    "questions": 40,
+    "hits": 21,
+    "rate": 0.525,
+    "passRate": 0.9,
+    "verdict": "미달",
+    "skipped": [
+      "GQ-101",
+      "GQ-103"
+    ]
+  },
+  "results": [
+    {
+      "questionId": "GQ-001",
+      "expectedId": "IN-01",
+      "hit": true,
+      "firstHitRank": 1,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-02",
+          "pages": [
+            5
+          ],
+          "similarity": 0.47
+        },
+        {
+          "rank": 2,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5
+          ],
+          "similarity": 0.461
+        },
+        {
+          "rank": 3,
+          "doc": "KNIA-04",
+          "pages": [
+            1
+          ],
+          "similarity": 0.458
+        },
+        {
+          "rank": 4,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.453
+        },
+        {
+          "rank": 5,
+          "doc": "KNIA-02",
+          "pages": [
+            1
+          ],
+          "similarity": 0.452
+        },
+        {
+          "rank": 6,
+          "doc": "FSC-5G-03",
+          "pages": [
+            4
+          ],
+          "similarity": 0.449
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-003",
+      "expectedId": "IN-01",
+      "hit": true,
+      "firstHitRank": 1,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-02",
+          "pages": [
+            5
+          ],
+          "similarity": 0.491
+        },
+        {
+          "rank": 2,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.483
+        },
+        {
+          "rank": 3,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5
+          ],
+          "similarity": 0.481
+        },
+        {
+          "rank": 4,
+          "doc": "KNIA-04",
+          "pages": [
+            1
+          ],
+          "similarity": 0.475
+        },
+        {
+          "rank": 5,
+          "doc": "FSC-5G-03",
+          "pages": [
+            4
+          ],
+          "similarity": 0.472
+        },
+        {
+          "rank": 6,
+          "doc": "KNIA-02",
+          "pages": [
+            1
+          ],
+          "similarity": 0.472
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-005",
+      "expectedId": "IN-01",
+      "hit": true,
+      "firstHitRank": 1,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-02",
+          "pages": [
+            5
+          ],
+          "similarity": 0.462
+        },
+        {
+          "rank": 2,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5
+          ],
+          "similarity": 0.459
+        },
+        {
+          "rank": 3,
+          "doc": "KNIA-02",
+          "pages": [
+            1
+          ],
+          "similarity": 0.455
+        },
+        {
+          "rank": 4,
+          "doc": "FSC-5G-03",
+          "pages": [
+            4
+          ],
+          "similarity": 0.454
+        },
+        {
+          "rank": 5,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.454
+        },
+        {
+          "rank": 6,
+          "doc": "KNIA-04",
+          "pages": [
+            1
+          ],
+          "similarity": 0.452
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-006",
+      "expectedId": "IN-01",
+      "hit": false,
+      "firstHitRank": null,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5
+          ],
+          "similarity": 0.461
+        },
+        {
+          "rank": 2,
+          "doc": "GEN4-04",
+          "pages": [
+            5
+          ],
+          "similarity": 0.458
+        },
+        {
+          "rank": 3,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5,
+            6
+          ],
+          "similarity": 0.446
+        },
+        {
+          "rank": 4,
+          "doc": "FSC-5G-01",
+          "pages": [
+            1
+          ],
+          "similarity": 0.44
+        },
+        {
+          "rank": 5,
+          "doc": "GEN4-01",
+          "pages": [
+            7
+          ],
+          "similarity": 0.43
+        },
+        {
+          "rank": 6,
+          "doc": "GEN4-01",
+          "pages": [
+            8
+          ],
+          "similarity": 0.425
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-007",
+      "expectedId": "IN-02",
+      "hit": true,
+      "firstHitRank": 1,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-02",
+          "pages": [
+            5
+          ],
+          "similarity": 0.477
+        },
+        {
+          "rank": 2,
+          "doc": "GEN4-04",
+          "pages": [
+            5
+          ],
+          "similarity": 0.456
+        },
+        {
+          "rank": 3,
+          "doc": "FSC-5G-01",
+          "pages": [
+            1
+          ],
+          "similarity": 0.454
+        },
+        {
+          "rank": 4,
+          "doc": "KNIA-01",
+          "pages": [
+            4
+          ],
+          "similarity": 0.45
+        },
+        {
+          "rank": 5,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.448
+        },
+        {
+          "rank": 6,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.444
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-009",
+      "expectedId": "IN-02",
+      "hit": true,
+      "firstHitRank": 1,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-02",
+          "pages": [
+            3
+          ],
+          "similarity": 0.501
+        },
+        {
+          "rank": 2,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.48
+        },
+        {
+          "rank": 3,
+          "doc": "FSC-5G-02",
+          "pages": [
+            8
+          ],
+          "similarity": 0.476
+        },
+        {
+          "rank": 4,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.475
+        },
+        {
+          "rank": 5,
+          "doc": "FSC-5G-03",
+          "pages": [
+            4
+          ],
+          "similarity": 0.474
+        },
+        {
+          "rank": 6,
+          "doc": "FSC-5G-01",
+          "pages": [
+            1
+          ],
+          "similarity": 0.472
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-011",
+      "expectedId": "IN-03",
+      "hit": false,
+      "firstHitRank": null,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5
+          ],
+          "similarity": 0.478
+        },
+        {
+          "rank": 2,
+          "doc": "FSC-5G-01",
+          "pages": [
+            1
+          ],
+          "similarity": 0.476
+        },
+        {
+          "rank": 3,
+          "doc": "FSC-5G-01",
+          "pages": [
+            9
+          ],
+          "similarity": 0.472
+        },
+        {
+          "rank": 4,
+          "doc": "FSC-5G-03",
+          "pages": [
+            4
+          ],
+          "similarity": 0.47
+        },
+        {
+          "rank": 5,
+          "doc": "GEN4-02",
+          "pages": [
+            4
+          ],
+          "similarity": 0.455
+        },
+        {
+          "rank": 6,
+          "doc": "GEN4-01",
+          "pages": [
+            2
+          ],
+          "similarity": 0.429
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-013",
+      "expectedId": "IN-03",
+      "hit": false,
+      "firstHitRank": null,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5
+          ],
+          "similarity": 0.491
+        },
+        {
+          "rank": 2,
+          "doc": "GEN3-01",
+          "pages": [],
+          "similarity": 0.49
+        },
+        {
+          "rank": 3,
+          "doc": "FSC-5G-01",
+          "pages": [
+            1
+          ],
+          "similarity": 0.489
+        },
+        {
+          "rank": 4,
+          "doc": "FSC-5G-02",
+          "pages": [
+            5
+          ],
+          "similarity": 0.48
+        },
+        {
+          "rank": 5,
+          "doc": "FSC-5G-03",
+          "pages": [
+            4
+          ],
+          "similarity": 0.478
+        },
+        {
+          "rank": 6,
+          "doc": "FSC-5G-02",
+          "pages": [
+            3
+          ],
+          "similarity": 0.475
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-015",
+      "expectedId": "IN-03",
+      "hit": false,
+      "firstHitRank": null,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-03",
+          "pages": [
+            4
+          ],
+          "similarity": 0.508
+        },
+        {
+          "rank": 2,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.501
+        },
+        {
+          "rank": 3,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.492
+        },
+        {
+          "rank": 4,
+          "doc": "FSC-5G-02",
+          "pages": [
+            5
+          ],
+          "similarity": 0.484
+        },
+        {
+          "rank": 5,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5,
+            6
+          ],
+          "similarity": 0.481
+        },
+        {
+          "rank": 6,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5
+          ],
+          "similarity": 0.479
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-016",
+      "expectedId": "IN-04",
+      "hit": false,
+      "firstHitRank": null,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "KNIA-04",
+          "pages": [
+            1
+          ],
+          "similarity": 0.474
+        },
+        {
+          "rank": 2,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5
+          ],
+          "similarity": 0.466
+        },
+        {
+          "rank": 3,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5,
+            6
+          ],
+          "similarity": 0.461
+        },
+        {
+          "rank": 4,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.461
+        },
+        {
+          "rank": 5,
+          "doc": "FSC-5G-01",
+          "pages": [
+            1
+          ],
+          "similarity": 0.453
+        },
+        {
+          "rank": 6,
+          "doc": "FSC-5G-03",
+          "pages": [
+            4
+          ],
+          "similarity": 0.446
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-018",
+      "expectedId": "IN-04",
+      "hit": false,
+      "firstHitRank": null,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.511
+        },
+        {
+          "rank": 2,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5,
+            6
+          ],
+          "similarity": 0.5
+        },
+        {
+          "rank": 3,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5
+          ],
+          "similarity": 0.498
+        },
+        {
+          "rank": 4,
+          "doc": "FSC-5G-02",
+          "pages": [
+            5
+          ],
+          "similarity": 0.495
+        },
+        {
+          "rank": 5,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.493
+        },
+        {
+          "rank": 6,
+          "doc": "FSC-5G-01",
+          "pages": [
+            1
+          ],
+          "similarity": 0.491
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-020",
+      "expectedId": "IN-05",
+      "hit": true,
+      "firstHitRank": 5,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5,
+            6
+          ],
+          "similarity": 0.459
+        },
+        {
+          "rank": 2,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5
+          ],
+          "similarity": 0.458
+        },
+        {
+          "rank": 3,
+          "doc": "FSC-5G-01",
+          "pages": [
+            1
+          ],
+          "similarity": 0.45
+        },
+        {
+          "rank": 4,
+          "doc": "KNIA-04",
+          "pages": [
+            1
+          ],
+          "similarity": 0.441
+        },
+        {
+          "rank": 5,
+          "doc": "FSC-5G-01",
+          "pages": [
+            5
+          ],
+          "similarity": 0.427
+        },
+        {
+          "rank": 6,
+          "doc": "FSC-5G-02",
+          "pages": [
+            2
+          ],
+          "similarity": 0.419
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-022",
+      "expectedId": "IN-05",
+      "hit": false,
+      "firstHitRank": null,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-02",
+          "pages": [
+            5
+          ],
+          "similarity": 0.514
+        },
+        {
+          "rank": 2,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.493
+        },
+        {
+          "rank": 3,
+          "doc": "GEN4-04",
+          "pages": [
+            5
+          ],
+          "similarity": 0.487
+        },
+        {
+          "rank": 4,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5,
+            6
+          ],
+          "similarity": 0.478
+        },
+        {
+          "rank": 5,
+          "doc": "KNIA-01",
+          "pages": [
+            4
+          ],
+          "similarity": 0.477
+        },
+        {
+          "rank": 6,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.476
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-024",
+      "expectedId": "IN-06",
+      "hit": true,
+      "firstHitRank": 4,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5,
+            6
+          ],
+          "similarity": 0.475
+        },
+        {
+          "rank": 2,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5
+          ],
+          "similarity": 0.472
+        },
+        {
+          "rank": 3,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.471
+        },
+        {
+          "rank": 4,
+          "doc": "FSC-5G-02",
+          "pages": [
+            4
+          ],
+          "similarity": 0.469
+        },
+        {
+          "rank": 5,
+          "doc": "FSC-5G-01",
+          "pages": [
+            1
+          ],
+          "similarity": 0.466
+        },
+        {
+          "rank": 6,
+          "doc": "FSC-5G-02",
+          "pages": [
+            5
+          ],
+          "similarity": 0.463
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-026",
+      "expectedId": "IN-06",
+      "hit": true,
+      "firstHitRank": 6,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-02",
+          "pages": [
+            5
+          ],
+          "similarity": 0.525
+        },
+        {
+          "rank": 2,
+          "doc": "GEN3-01",
+          "pages": [],
+          "similarity": 0.525
+        },
+        {
+          "rank": 3,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.513
+        },
+        {
+          "rank": 4,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5
+          ],
+          "similarity": 0.497
+        },
+        {
+          "rank": 5,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.494
+        },
+        {
+          "rank": 6,
+          "doc": "FSC-5G-02",
+          "pages": [
+            4
+          ],
+          "similarity": 0.491
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-028",
+      "expectedId": "IN-07",
+      "hit": true,
+      "firstHitRank": 3,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5,
+            6
+          ],
+          "similarity": 0.462
+        },
+        {
+          "rank": 2,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5
+          ],
+          "similarity": 0.458
+        },
+        {
+          "rank": 3,
+          "doc": "KNIA-01",
+          "pages": [
+            1,
+            2,
+            3
+          ],
+          "similarity": 0.428
+        },
+        {
+          "rank": 4,
+          "doc": "FSC-5G-01",
+          "pages": [
+            8
+          ],
+          "similarity": 0.421
+        },
+        {
+          "rank": 5,
+          "doc": "GEN4-03",
+          "pages": [
+            1
+          ],
+          "similarity": 0.4
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-030",
+      "expectedId": "IN-07",
+      "hit": false,
+      "firstHitRank": null,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5
+          ],
+          "similarity": 0.503
+        },
+        {
+          "rank": 2,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.502
+        },
+        {
+          "rank": 3,
+          "doc": "FSC-5G-01",
+          "pages": [
+            1
+          ],
+          "similarity": 0.5
+        },
+        {
+          "rank": 4,
+          "doc": "FSC-5G-01",
+          "pages": [
+            3
+          ],
+          "similarity": 0.5
+        },
+        {
+          "rank": 5,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5,
+            6
+          ],
+          "similarity": 0.499
+        },
+        {
+          "rank": 6,
+          "doc": "KNIA-04",
+          "pages": [
+            1
+          ],
+          "similarity": 0.499
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-032",
+      "expectedId": "IN-08",
+      "hit": false,
+      "firstHitRank": null,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.488
+        },
+        {
+          "rank": 2,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5,
+            6
+          ],
+          "similarity": 0.484
+        },
+        {
+          "rank": 3,
+          "doc": "FSC-5G-03",
+          "pages": [
+            4
+          ],
+          "similarity": 0.484
+        },
+        {
+          "rank": 4,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.481
+        },
+        {
+          "rank": 5,
+          "doc": "KNIA-04",
+          "pages": [
+            1
+          ],
+          "similarity": 0.474
+        },
+        {
+          "rank": 6,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5
+          ],
+          "similarity": 0.468
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-034",
+      "expectedId": "IN-08",
+      "hit": false,
+      "firstHitRank": null,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.53
+        },
+        {
+          "rank": 2,
+          "doc": "FSC-5G-03",
+          "pages": [
+            4
+          ],
+          "similarity": 0.523
+        },
+        {
+          "rank": 3,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5
+          ],
+          "similarity": 0.522
+        },
+        {
+          "rank": 4,
+          "doc": "KNIA-04",
+          "pages": [
+            1
+          ],
+          "similarity": 0.521
+        },
+        {
+          "rank": 5,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.52
+        },
+        {
+          "rank": 6,
+          "doc": "FSC-5G-01",
+          "pages": [
+            1
+          ],
+          "similarity": 0.519
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-036",
+      "expectedId": "IN-09",
+      "hit": true,
+      "firstHitRank": 1,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-02",
+          "pages": [
+            5
+          ],
+          "similarity": 0.542
+        },
+        {
+          "rank": 2,
+          "doc": "FSC-5G-02",
+          "pages": [
+            1
+          ],
+          "similarity": 0.482
+        },
+        {
+          "rank": 3,
+          "doc": "KNIA-04",
+          "pages": [
+            1
+          ],
+          "similarity": 0.477
+        },
+        {
+          "rank": 4,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5
+          ],
+          "similarity": 0.458
+        },
+        {
+          "rank": 5,
+          "doc": "FSC-5G-01",
+          "pages": [
+            7
+          ],
+          "similarity": 0.454
+        },
+        {
+          "rank": 6,
+          "doc": "FSC-5G-01",
+          "pages": [
+            1
+          ],
+          "similarity": 0.443
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-038",
+      "expectedId": "IN-09",
+      "hit": true,
+      "firstHitRank": 1,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-02",
+          "pages": [
+            5
+          ],
+          "similarity": 0.559
+        },
+        {
+          "rank": 2,
+          "doc": "KNIA-04",
+          "pages": [
+            1
+          ],
+          "similarity": 0.489
+        },
+        {
+          "rank": 3,
+          "doc": "GEN3-01",
+          "pages": [],
+          "similarity": 0.489
+        },
+        {
+          "rank": 4,
+          "doc": "KNIA-04",
+          "pages": [
+            1
+          ],
+          "similarity": 0.48
+        },
+        {
+          "rank": 5,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5
+          ],
+          "similarity": 0.479
+        },
+        {
+          "rank": 6,
+          "doc": "FSC-5G-01",
+          "pages": [
+            7
+          ],
+          "similarity": 0.477
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-040",
+      "expectedId": "IN-10",
+      "hit": true,
+      "firstHitRank": 2,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "GEN4-04",
+          "pages": [
+            5
+          ],
+          "similarity": 0.477
+        },
+        {
+          "rank": 2,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5
+          ],
+          "similarity": 0.461
+        },
+        {
+          "rank": 3,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5,
+            6
+          ],
+          "similarity": 0.456
+        },
+        {
+          "rank": 4,
+          "doc": "FSC-5G-01",
+          "pages": [
+            1
+          ],
+          "similarity": 0.449
+        },
+        {
+          "rank": 5,
+          "doc": "GEN4-01",
+          "pages": [
+            8
+          ],
+          "similarity": 0.437
+        },
+        {
+          "rank": 6,
+          "doc": "GEN4-02",
+          "pages": [
+            11
+          ],
+          "similarity": 0.436
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-042",
+      "expectedId": "IN-10",
+      "hit": true,
+      "firstHitRank": 2,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "KNIA-04",
+          "pages": [
+            1
+          ],
+          "similarity": 0.503
+        },
+        {
+          "rank": 2,
+          "doc": "FSC-5G-02",
+          "pages": [
+            5
+          ],
+          "similarity": 0.501
+        },
+        {
+          "rank": 3,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5
+          ],
+          "similarity": 0.499
+        },
+        {
+          "rank": 4,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5,
+            6
+          ],
+          "similarity": 0.495
+        },
+        {
+          "rank": 5,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.494
+        },
+        {
+          "rank": 6,
+          "doc": "FSC-5G-02",
+          "pages": [
+            6
+          ],
+          "similarity": 0.48
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-044",
+      "expectedId": "IN-11",
+      "hit": true,
+      "firstHitRank": 1,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5
+          ],
+          "similarity": 0.558
+        },
+        {
+          "rank": 2,
+          "doc": "FSC-5G-02",
+          "pages": [
+            7
+          ],
+          "similarity": 0.541
+        },
+        {
+          "rank": 3,
+          "doc": "FSC-5G-02",
+          "pages": [
+            1
+          ],
+          "similarity": 0.536
+        },
+        {
+          "rank": 4,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5,
+            6
+          ],
+          "similarity": 0.536
+        },
+        {
+          "rank": 5,
+          "doc": "FSC-5G-02",
+          "pages": [
+            8
+          ],
+          "similarity": 0.533
+        },
+        {
+          "rank": 6,
+          "doc": "FSC-5G-01",
+          "pages": [
+            1
+          ],
+          "similarity": 0.531
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-046",
+      "expectedId": "IN-11",
+      "hit": true,
+      "firstHitRank": 1,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5
+          ],
+          "similarity": 0.541
+        },
+        {
+          "rank": 2,
+          "doc": "FSC-5G-01",
+          "pages": [
+            1
+          ],
+          "similarity": 0.54
+        },
+        {
+          "rank": 3,
+          "doc": "FSC-5G-02",
+          "pages": [
+            5
+          ],
+          "similarity": 0.533
+        },
+        {
+          "rank": 4,
+          "doc": "FSC-5G-02",
+          "pages": [
+            6
+          ],
+          "similarity": 0.528
+        },
+        {
+          "rank": 5,
+          "doc": "FSC-5G-01",
+          "pages": [
+            14
+          ],
+          "similarity": 0.528
+        },
+        {
+          "rank": 6,
+          "doc": "FSC-5G-01",
+          "pages": [
+            8
+          ],
+          "similarity": 0.525
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-048",
+      "expectedId": "IN-11",
+      "hit": true,
+      "firstHitRank": 1,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-02",
+          "pages": [
+            5
+          ],
+          "similarity": 0.526
+        },
+        {
+          "rank": 2,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5
+          ],
+          "similarity": 0.522
+        },
+        {
+          "rank": 3,
+          "doc": "FSC-5G-01",
+          "pages": [
+            1
+          ],
+          "similarity": 0.511
+        },
+        {
+          "rank": 4,
+          "doc": "FSC-5G-02",
+          "pages": [
+            6
+          ],
+          "similarity": 0.509
+        },
+        {
+          "rank": 5,
+          "doc": "FSC-5G-01",
+          "pages": [
+            14
+          ],
+          "similarity": 0.509
+        },
+        {
+          "rank": 6,
+          "doc": "FSC-5G-02",
+          "pages": [
+            5
+          ],
+          "similarity": 0.505
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-049",
+      "expectedId": "IN-12",
+      "hit": false,
+      "firstHitRank": null,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.532
+        },
+        {
+          "rank": 2,
+          "doc": "FSC-5G-01",
+          "pages": [
+            1
+          ],
+          "similarity": 0.527
+        },
+        {
+          "rank": 3,
+          "doc": "FSC-5G-02",
+          "pages": [
+            5
+          ],
+          "similarity": 0.517
+        },
+        {
+          "rank": 4,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.516
+        },
+        {
+          "rank": 5,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5,
+            6
+          ],
+          "similarity": 0.513
+        },
+        {
+          "rank": 6,
+          "doc": "KNIA-04",
+          "pages": [
+            1
+          ],
+          "similarity": 0.508
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-051",
+      "expectedId": "IN-12",
+      "hit": false,
+      "firstHitRank": null,
+      "docLevelHit": false,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.501
+        },
+        {
+          "rank": 2,
+          "doc": "FSC-5G-02",
+          "pages": [
+            5
+          ],
+          "similarity": 0.493
+        },
+        {
+          "rank": 3,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5
+          ],
+          "similarity": 0.489
+        },
+        {
+          "rank": 4,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5,
+            6
+          ],
+          "similarity": 0.487
+        },
+        {
+          "rank": 5,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.485
+        },
+        {
+          "rank": 6,
+          "doc": "FSC-5G-03",
+          "pages": [
+            4
+          ],
+          "similarity": 0.484
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-053",
+      "expectedId": "IN-12",
+      "hit": false,
+      "firstHitRank": null,
+      "docLevelHit": false,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-02",
+          "pages": [
+            5
+          ],
+          "similarity": 0.499
+        },
+        {
+          "rank": 2,
+          "doc": "KNIA-02",
+          "pages": [
+            1
+          ],
+          "similarity": 0.49
+        },
+        {
+          "rank": 3,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.477
+        },
+        {
+          "rank": 4,
+          "doc": "FSC-5G-03",
+          "pages": [
+            4
+          ],
+          "similarity": 0.476
+        },
+        {
+          "rank": 5,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5
+          ],
+          "similarity": 0.473
+        },
+        {
+          "rank": 6,
+          "doc": "KNIA-04",
+          "pages": [
+            1
+          ],
+          "similarity": 0.472
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-054",
+      "expectedId": "IN-13",
+      "hit": true,
+      "firstHitRank": 2,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-02",
+          "pages": [
+            5
+          ],
+          "similarity": 0.485
+        },
+        {
+          "rank": 2,
+          "doc": "FSC-5G-01",
+          "pages": [
+            1
+          ],
+          "similarity": 0.482
+        },
+        {
+          "rank": 3,
+          "doc": "GEN3-01",
+          "pages": [],
+          "similarity": 0.472
+        },
+        {
+          "rank": 4,
+          "doc": "KNIA-04",
+          "pages": [
+            1
+          ],
+          "similarity": 0.471
+        },
+        {
+          "rank": 5,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.465
+        },
+        {
+          "rank": 6,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5
+          ],
+          "similarity": 0.459
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-056",
+      "expectedId": "IN-13",
+      "hit": true,
+      "firstHitRank": 4,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.524
+        },
+        {
+          "rank": 2,
+          "doc": "FSC-5G-03",
+          "pages": [
+            4
+          ],
+          "similarity": 0.522
+        },
+        {
+          "rank": 3,
+          "doc": "FSC-5G-02",
+          "pages": [
+            5
+          ],
+          "similarity": 0.51
+        },
+        {
+          "rank": 4,
+          "doc": "FSC-5G-01",
+          "pages": [
+            1
+          ],
+          "similarity": 0.503
+        },
+        {
+          "rank": 5,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.499
+        },
+        {
+          "rank": 6,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5,
+            6
+          ],
+          "similarity": 0.486
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-058",
+      "expectedId": "IN-14",
+      "hit": false,
+      "firstHitRank": null,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "KNIA-04",
+          "pages": [
+            1
+          ],
+          "similarity": 0.493
+        },
+        {
+          "rank": 2,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.492
+        },
+        {
+          "rank": 3,
+          "doc": "GEN4-04",
+          "pages": [
+            5
+          ],
+          "similarity": 0.487
+        },
+        {
+          "rank": 4,
+          "doc": "FSC-5G-03",
+          "pages": [
+            4
+          ],
+          "similarity": 0.485
+        },
+        {
+          "rank": 5,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.484
+        },
+        {
+          "rank": 6,
+          "doc": "FSC-5G-02",
+          "pages": [
+            5
+          ],
+          "similarity": 0.482
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-060",
+      "expectedId": "IN-14",
+      "hit": true,
+      "firstHitRank": 2,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.511
+        },
+        {
+          "rank": 2,
+          "doc": "FSC-5G-02",
+          "pages": [
+            3
+          ],
+          "similarity": 0.501
+        },
+        {
+          "rank": 3,
+          "doc": "FSC-5G-02",
+          "pages": [
+            5
+          ],
+          "similarity": 0.5
+        },
+        {
+          "rank": 4,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5
+          ],
+          "similarity": 0.497
+        },
+        {
+          "rank": 5,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.494
+        },
+        {
+          "rank": 6,
+          "doc": "FSC-5G-01",
+          "pages": [
+            1
+          ],
+          "similarity": 0.494
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-062",
+      "expectedId": "IN-15",
+      "hit": true,
+      "firstHitRank": 1,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "KNIA-04",
+          "pages": [
+            1
+          ],
+          "similarity": 0.483
+        },
+        {
+          "rank": 2,
+          "doc": "FSC-5G-02",
+          "pages": [
+            5
+          ],
+          "similarity": 0.474
+        },
+        {
+          "rank": 3,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.47
+        },
+        {
+          "rank": 4,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5
+          ],
+          "similarity": 0.465
+        },
+        {
+          "rank": 5,
+          "doc": "FSC-5G-01",
+          "pages": [
+            1
+          ],
+          "similarity": 0.46
+        },
+        {
+          "rank": 6,
+          "doc": "GEN4-01",
+          "pages": [
+            7
+          ],
+          "similarity": 0.455
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-064",
+      "expectedId": "IN-15",
+      "hit": true,
+      "firstHitRank": 3,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-02",
+          "pages": [
+            5
+          ],
+          "similarity": 0.503
+        },
+        {
+          "rank": 2,
+          "doc": "GEN3-01",
+          "pages": [],
+          "similarity": 0.49
+        },
+        {
+          "rank": 3,
+          "doc": "FSC-5G-01",
+          "pages": [
+            7
+          ],
+          "similarity": 0.489
+        },
+        {
+          "rank": 4,
+          "doc": "KNIA-04",
+          "pages": [
+            1
+          ],
+          "similarity": 0.487
+        },
+        {
+          "rank": 5,
+          "doc": "GEN4-02",
+          "pages": [
+            2
+          ],
+          "similarity": 0.478
+        },
+        {
+          "rank": 6,
+          "doc": "GEN4-01",
+          "pages": [
+            8
+          ],
+          "similarity": 0.473
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-105",
+      "expectedId": "IN-04",
+      "hit": false,
+      "firstHitRank": null,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.496
+        },
+        {
+          "rank": 2,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5
+          ],
+          "similarity": 0.489
+        },
+        {
+          "rank": 3,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5,
+            6
+          ],
+          "similarity": 0.488
+        },
+        {
+          "rank": 4,
+          "doc": "FSC-5G-02",
+          "pages": [
+            5
+          ],
+          "similarity": 0.488
+        },
+        {
+          "rank": 5,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.483
+        },
+        {
+          "rank": 6,
+          "doc": "FSC-5G-01",
+          "pages": [
+            1
+          ],
+          "similarity": 0.48
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-106",
+      "expectedId": "IN-08",
+      "hit": false,
+      "firstHitRank": null,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "GEN2-01",
+          "pages": [
+            3
+          ],
+          "similarity": 0.477
+        },
+        {
+          "rank": 2,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.477
+        },
+        {
+          "rank": 3,
+          "doc": "FSC-5G-02",
+          "pages": [
+            5
+          ],
+          "similarity": 0.467
+        },
+        {
+          "rank": 4,
+          "doc": "KNIA-04",
+          "pages": [
+            1
+          ],
+          "similarity": 0.465
+        },
+        {
+          "rank": 5,
+          "doc": "FSC-5G-03",
+          "pages": [
+            4
+          ],
+          "similarity": 0.463
+        },
+        {
+          "rank": 6,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5
+          ],
+          "similarity": 0.463
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-107",
+      "expectedId": "IN-05",
+      "hit": false,
+      "firstHitRank": null,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.505
+        },
+        {
+          "rank": 2,
+          "doc": "FSC-5G-02",
+          "pages": [
+            5
+          ],
+          "similarity": 0.495
+        },
+        {
+          "rank": 3,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5,
+            6
+          ],
+          "similarity": 0.492
+        },
+        {
+          "rank": 4,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.488
+        },
+        {
+          "rank": 5,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5
+          ],
+          "similarity": 0.488
+        },
+        {
+          "rank": 6,
+          "doc": "FSC-5G-01",
+          "pages": [
+            1
+          ],
+          "similarity": 0.483
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-108",
+      "expectedId": "IN-05",
+      "hit": false,
+      "firstHitRank": null,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-01",
+          "pages": [
+            1
+          ],
+          "similarity": 0.53
+        },
+        {
+          "rank": 2,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.492
+        },
+        {
+          "rank": 3,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5
+          ],
+          "similarity": 0.472
+        },
+        {
+          "rank": 4,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5,
+            6
+          ],
+          "similarity": 0.462
+        },
+        {
+          "rank": 5,
+          "doc": "FSC-5G-02",
+          "pages": [
+            5
+          ],
+          "similarity": 0.462
+        },
+        {
+          "rank": 6,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.458
+        }
+      ]
+    },
+    {
+      "questionId": "GQ-110",
+      "expectedId": "IN-15",
+      "hit": false,
+      "firstHitRank": null,
+      "docLevelHit": true,
+      "top": [
+        {
+          "rank": 1,
+          "doc": "FSC-5G-02",
+          "pages": [
+            5
+          ],
+          "similarity": 0.483
+        },
+        {
+          "rank": 2,
+          "doc": "FSC-5G-03",
+          "pages": [
+            5
+          ],
+          "similarity": 0.471
+        },
+        {
+          "rank": 3,
+          "doc": "FSC-5G-03",
+          "pages": [],
+          "similarity": 0.47
+        },
+        {
+          "rank": 4,
+          "doc": "GEN3-01",
+          "pages": [],
+          "similarity": 0.469
+        },
+        {
+          "rank": 5,
+          "doc": "KNIA-01",
+          "pages": [
+            4
+          ],
+          "similarity": 0.463
+        },
+        {
+          "rank": 6,
+          "doc": "FSC-5G-01",
+          "pages": [
+            1
+          ],
+          "similarity": 0.458
+        }
+      ]
+    }
+  ]
+}

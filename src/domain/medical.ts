@@ -1,3 +1,4 @@
+import type { CopayInstitution, CopayRegion } from "./insuranceInputDefaults";
 /**
  * AI 실손 닥터 - 의료이용 도메인 (mvp-v2)
  *
@@ -52,6 +53,9 @@ export type EvidenceStatus =
   | "NOT_PROVIDED";
 
 export interface MedicalUsage {
+  /** 삼성 상품별 계산에 필요한 확인된 값만 전달합니다. */
+  samsungCalculationInput?: import('../engine/evaluateSamsungExecutionSpec').SamsungDraftCalculationInput;
+  samsungGen5Facts?: Omit<import('../engine/calculateSamsungGen5').SamsungGen5ObjectiveFacts, 'benefitClass' | 'careSetting'>;
   /* =====================================================
    * 기존 MVP 필드
    * =================================================== */
@@ -107,6 +111,8 @@ export interface MedicalUsage {
    * 급여 통원 최소공제액 D 판정용 의료기관 종별.
    */
   institutionType?: MedicalInstitutionType;
+  copayInstitution?: CopayInstitution;
+  copayRegion?: CopayRegion;
 
   /**
    * 급여 통원에 적용되는 건강보험 본인부담률 r.
@@ -185,4 +191,80 @@ export interface MedicalUsage {
   gen1PriorPaidBenefit?: number;
   gen1PriorServiceDays?: number;
   gen1PolicyExclusionsCleared?: boolean;
+    /* =====================================================
+   * 삼성 2·3세대 정밀 계산용 입력
+   *
+   * 확인되지 않은 값은 undefined로 유지한다.
+   * 계산 엔진에서 임의로 0을 채우지 않는다.
+   * =================================================== */
+
+  /** 급여 본인부담금 */
+  gen23CoveredCopay?: number;
+
+  /** 비급여 금액 */
+  gen23NonCoveredExpense?: number;
+
+  /** 병실차액을 제외한 입원 계산 대상 금액 */
+  gen23InpatientExcludingRoomDifference?: number;
+
+  /** 병실차액 */
+  gen23RoomDifference?: number;
+
+  /** 입원일수 */
+  gen23InpatientDays?: number;
+
+  /** 계산 시작 전 연간 자기부담 누적액 */
+  gen23PriorEligibleDeductible?: number;
+
+  /** 계산 시작 전 누적 지급 보험금 */
+  gen23PriorPaidBenefit?: number;
+
+  /** 계산 시작 전 연간 통원/처방 횟수 */
+  gen23PriorAnnualCount?: number;
+
+  /** 계약 종료 후 계속보장 계산 시 기존 이용 횟수 */
+  gen23PriorContinuationCount?: number;
+
+  /** 계약상 1회당 보장한도 */
+  gen23ContractBenefitCap?: number;
+
+  /** 통원 특약 1회당 보장한도 */
+  gen23OutpatientBenefitCap?: number;
+
+  /** 처방 특약 1회당 보장한도 */
+  gen23PrescriptionBenefitCap?: number;
+
+  /** 다른 실손보험 등 중복 보장 여부 */
+  gen23OtherIndemnityPoliciesExist?: boolean;
+
+  /** 다른 보험이 있을 때의 비례보상 계수 */
+  gen23ProportionalPaymentFactor?: number;
+
+  /** 보장기간 */
+  gen23CoveragePeriod?: "ACTIVE" | "POST_TERMINATION" | "UNKNOWN";
+
+  /** 보장기간 상태 확인 여부 */
+  gen23CoveragePeriodConfirmed?: boolean;
+
+  /** 계약 종료 후 계속보장 확인 여부 */
+  gen23PostTerminationContinuationConfirmed?: boolean;
+
+  /** 계약 종료 후 경과일 */
+  gen23DaysSinceTermination?: number;
+
+  /** 동일 날짜 합산 확인 여부 */
+  gen23SameDayAggregationConfirmed?: boolean;
+  /** 2·3세대 전용 분류: 기존 careSetting/institutionType의 의미는 유지한다. */
+  gen23CareSetting?: "INPATIENT" | "OUTPATIENT" | "PRESCRIPTION";
+  gen23Institution?: "CLINIC" | "HOSPITAL" | "GENERAL_TERTIARY";
+  gen23RequiredCoverageConfirmed?: boolean;
+  gen23PolicyExclusionsCleared?: boolean;
+  gen23NonNhiInpatientTotal?: number;
+  gen23BenefitLimitRestored?: boolean;
+  gen23TreatmentType?: "BASE" | "MANUAL_THERAPY" | "INJECTION" | "MRI" | "UNKNOWN";
+  gen23RiderEnrollmentStatus?: "ENROLLED" | "NOT_ENROLLED" | "UNKNOWN";
+  gen23EligibleExpense?: number;
+  gen23AggregationUnit?: "VISIT" | "TREATMENT" | "DIAGNOSTIC_ACTION";
+  gen23ThreeNonCoveredExcludedFromBaseConfirmed?: boolean;
+  gen23InjectionRiderEligibleConfirmed?: boolean;
 }

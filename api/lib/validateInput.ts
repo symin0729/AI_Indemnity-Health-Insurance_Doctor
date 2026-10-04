@@ -7,7 +7,12 @@ const chatRequestSchema = z.object({
   consentGranted: z.boolean(),
   consentPolicyVersion: z.string().min(1),
   context: z
-    .object({ screen: z.enum(["START", "INPUT", "CONFIRM", "RESULT"]) })
+    .object({
+      screen: z.enum(["START", "INPUT", "CONFIRM", "RESULT"]),
+      productCode: z.string().trim().min(1).optional(),
+      generation: z.number().int().min(1).max(5).optional(),
+      coverageCode: z.string().trim().min(1).optional(),
+    })
     .optional(),
 }).strict();
 

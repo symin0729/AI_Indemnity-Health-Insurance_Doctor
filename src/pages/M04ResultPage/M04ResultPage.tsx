@@ -1,3 +1,5 @@
+import SamsungComparisonResults from '../../components/samsung/SamsungComparisonResults';
+import headerLogo from '../../assets/header-logo.png';
 import AppShell from "../../components/AppShell";
 import {
   useEffect,
@@ -12,6 +14,10 @@ import {
   loadRuleSet,
   type RuleSet,
 } from "../../engine/loadRuleSet";
+import {
+  loadProductRuleSet,
+  resolveSamsungGen23Product,
+} from "../../engine/loadProductRuleSet";
 
 import {
   calculationService,
@@ -22,9 +28,6 @@ import type {
   AnnualCalculationResult,
   ClaimCalculationItem,
 } from "../../domain/calculation";
-import { routeSamsungGen4Rule, type SamsungGen4TreatmentType } from "../../engine/calculateSamsungGen4";
-import { routeSamsungGen5Coverage } from "../../engine/calculateSamsungGen5";
-import { calculateSamsungGen1Sample } from "../../engine/calculateSamsungGen1";
 
 function formatMoney(
   value: number | null
@@ -34,6 +37,99 @@ function formatMoney(
   }
 
   return `${value.toLocaleString()}원`;
+}
+
+function BurdenComparisonChart({
+  currentBurden,
+  targetBurden,
+}: {
+  currentBurden: number | null;
+  targetBurden: number | null;
+}) {
+  if (currentBurden === null || targetBurden === null) {
+    return (
+      <div className="burden-chart burden-chart--unavailable">
+        계산에 필요한 항목을 확인하면 금액 비교 그래프가 표시됩니다.
+      </div>
+    );
+  }
+
+  const maximumBurden = Math.max(currentBurden, targetBurden, 1);
+  const difference = currentBurden - targetBurden;
+  const absoluteDifference = Math.abs(difference);
+  const savingRate =
+    currentBurden > 0
+      ? (absoluteDifference / currentBurden) * 100
+      : 0;
+
+  const rows = [
+    {
+      label: "현재 계약 유지",
+      shortLabel: "유지",
+      value: currentBurden,
+      width: (currentBurden / maximumBurden) * 100,
+      tone: "current",
+    },
+    {
+      label: "5세대 비교안",
+      shortLabel: "전환",
+      value: targetBurden,
+      width: (targetBurden / maximumBurden) * 100,
+      tone: "target",
+    },
+  ];
+
+  const conclusion =
+    difference > 0
+      ? `5세대 전환 시 연간 ${absoluteDifference.toLocaleString()}원 절감`
+      : difference < 0
+        ? `현재 계약 유지 시 연간 ${absoluteDifference.toLocaleString()}원 절감`
+        : "두 선택지의 연간 총부담이 같습니다";
+
+  return (
+    <div className="burden-chart" aria-label="연간 총부담 금액 비교 그래프">
+      <div className="burden-chart__heading">
+        <div>
+          <span className="burden-chart__eyebrow">금액 차이 시각화</span>
+          <h3>연간 총부담 비교</h3>
+          <p>룰엔진 계산 결과를 기준으로 막대 길이가 자동 반영됩니다.</p>
+        </div>
+        <div className="burden-chart__difference">
+          <small>연간 차이</small>
+          <strong>{absoluteDifference.toLocaleString()}원</strong>
+          {difference !== 0 && currentBurden > 0 && (
+            <span>{savingRate.toFixed(1)}% 차이</span>
+          )}
+        </div>
+      </div>
+
+      <div className="burden-chart__plot">
+        {rows.map((row) => (
+          <div className="burden-chart__row" key={row.tone}>
+            <span className="burden-chart__label" title={row.label}>
+              {row.shortLabel}
+            </span>
+            <div className="burden-chart__track">
+              <div
+                className={`burden-chart__bar burden-chart__bar--${row.tone}`}
+                style={{ width: `${row.width}%` }}
+                role="meter"
+                aria-label={`${row.label} ${row.value.toLocaleString()}원`}
+                aria-valuemin={0}
+                aria-valuemax={maximumBurden}
+                aria-valuenow={row.value}
+              />
+            </div>
+            <strong className="burden-chart__value">
+              {row.value.toLocaleString()}원
+            </strong>
+          </div>
+        ))}
+      </div>
+
+      <p className="burden-chart__conclusion">{conclusion}</p>
+    </div>
+  );
 }
 
 function getStatusLabel(
@@ -798,14 +894,40 @@ function M04ResultPage() {
 
   useEffect(() => {
     const fetchRuleSet = async () => {
+      if (!contract) {
+        setRuleSet(null);
+        setIsRuleLoading(false);
+        return;
+      }
+
       try {
         setIsRuleLoading(true);
         setRuleLoadError(null);
 
-        const loadedRuleSet =
-          await loadRuleSet(
-            "mvp-v2"
-          );
+        let loadedRuleSet: RuleSet;
+
+        if (
+          contract.generation === 2 ||
+          contract.generation === 3
+        ) {
+          const routing =
+            resolveSamsungGen23Product({
+              generation: contract.generation,
+              variant:
+                productCalculationSelections.samsungGen23Variant,
+            });
+
+          loadedRuleSet =
+            await loadProductRuleSet(
+              routing.productCode,
+              routing.variant
+            );
+        } else {
+          loadedRuleSet =
+            await loadRuleSet(
+              "mvp-v2"
+            );
+        }
 
         setRuleSet(loadedRuleSet);
       } catch (error) {
@@ -826,7 +948,10 @@ function M04ResultPage() {
     };
 
     fetchRuleSet();
-  }, []);
+  }, [
+    contract,
+    productCalculationSelections.samsungGen23Variant,
+  ]);
 
   if (
     !contract ||
@@ -851,7 +976,7 @@ function M04ResultPage() {
             type="button"
             className="primary-button"
             onClick={() =>
-              navigate("/input")
+              navigate("/input#input-step-2")
             }
           >
             입력 화면으로
@@ -901,7 +1026,7 @@ function M04ResultPage() {
             type="button"
             className="secondary-button"
             onClick={() =>
-              navigate("/confirm")
+              navigate("/input#input-step-2")
             }
           >
             이전
@@ -964,7 +1089,7 @@ function M04ResultPage() {
             type="button"
             className="primary-button"
             onClick={() =>
-              navigate("/input")
+              navigate("/input#input-step-2")
             }
           >
             입력 수정하기
@@ -1026,70 +1151,6 @@ function M04ResultPage() {
           }
         ),
     }));
-
-  const productRuleRouting = usages.map((usage) => {
-    const treatmentType: SamsungGen4TreatmentType = /MRI|MRA/i.test(usage.treatmentCategory ?? usage.treatmentName)
-      ? "MRI_MRA"
-      : /주사/.test(usage.treatmentName) ? "INJECTION"
-      : /도수|체외충격파|증식/.test(usage.treatmentName) ? "MANUAL_THERAPY" : "GENERAL";
-    const gen4 = contract.generation === 4 && usage.benefitClass !== "UNKNOWN"
-      ? routeSamsungGen4Rule({
-          baseCoveredConfirmed: true,
-          nonCoveredRider: productCalculationSelections.gen4NonCoveredRider,
-          benefitClass: usage.benefitClass,
-          careSetting: usage.careSetting,
-          claimCause: "DISEASE",
-          treatmentType,
-        })
-      : null;
-    const gen5 = usage.benefitClass !== "UNKNOWN"
-      ? routeSamsungGen5Coverage(
-          {
-            baseCovered: "ENROLLED",
-            severeNonCoveredRider: productCalculationSelections.gen5SevereRider,
-            nonSevereNonCoveredRider: productCalculationSelections.gen5NonSevereRider,
-          },
-          {
-            benefitClass: usage.benefitClass,
-            careSetting: usage.careSetting,
-            specialCaseDisease: usage.severityClass === "SEVERE" ? "YES" : usage.severityClass === "NON_SEVERE" ? "NO" : "UNKNOWN",
-            treatmentRelatedness: usage.severityClass === "SEVERE" ? "RELATED" : usage.severityClass === "NON_SEVERE" ? "NOT_RELATED" : "UNKNOWN",
-            policyExcludedTreatment: "UNKNOWN",
-            threeNonCoveredCategory: treatmentType === "MRI_MRA" ? "MRI" : treatmentType === "INJECTION" ? "INJECTION" : treatmentType === "MANUAL_THERAPY" ? "MANUAL_THERAPY" : undefined,
-          },
-        )
-      : null;
-    return { usage, gen4, gen5 };
-  });
-
-  const gen1Results = contract.generation === 1
-    ? usages.map((usage) => ({
-        usage,
-        result: calculateSamsungGen1Sample(
-          {
-            product: productCalculationSelections.gen1Product,
-            contractBasis: productCalculationSelections.gen1ContractBasis,
-            d1Coverage: productCalculationSelections.gen1D1Coverage,
-            claimCause: usage.claimCause ?? "UNKNOWN",
-            careSetting: usage.careSetting,
-            nhiStatus: usage.nationalHealthInsuranceStatus ?? "UNKNOWN",
-          },
-          {
-            requiredCoverageConfirmed: productCalculationSelections.gen1D1Coverage !== "UNKNOWN",
-            policyExclusionsCleared: usage.gen1PolicyExclusionsCleared,
-            nhiApplied: usage.nationalHealthInsuranceStatus === "APPLIED"
-              ? true
-              : usage.nationalHealthInsuranceStatus === "NOT_APPLIED" ? false : undefined,
-            coveredRoomAndTreatment: usage.gen1CoveredRoomAndTreatment,
-            roomDifference: usage.gen1RoomDifference,
-            nonNhiInpatientTotal: usage.gen1NonNhiInpatientTotal,
-            outpatientExpense: usage.unitCost,
-            priorPaidBenefit: usage.gen1PriorPaidBenefit,
-            priorServiceDays: usage.gen1PriorServiceDays,
-          },
-        ),
-      }))
-    : [];
 
   const handleStartOver = () => {
     setIsResetModalOpen(true);
@@ -1237,7 +1298,7 @@ function M04ResultPage() {
             }}
           >
             <img
-              src="/ai-insurance-result.png"
+              src={headerLogo}
               alt="AI 실손 닥터 보험 비교 결과 안내"
               style={{
                 width: "min(100%, 260px)",
@@ -1250,54 +1311,15 @@ function M04ResultPage() {
         </div>
       </header>
 
-      <section className="app-card" style={{ marginTop: "18px" }}>
-        <h2>상품별 Rule 연결 확인</h2>
-        <p className="page-description">입력 화면의 계약·특약·치료 정보를 4·5세대 전용 룰 엔진에 연결한 결과입니다. 운영 활성화 전 검증용 표시입니다.</p>
-        {productRuleRouting.length === 0 ? <div className="notice-box">등록된 치료가 없습니다.</div> : productRuleRouting.map(({ usage, gen4, gen5 }) => (
-          <div key={usage.id} className="notice-box" style={{ marginTop: "10px" }}>
-            <strong>{usage.treatmentName}</strong>
-            {contract.generation === 4 && <p>4세대: {gen4 ? (gen4.status === "ROUTED" ? `${gen4.ruleId} 적용` : gen4.reason) : "급여·비급여 확인 필요"}</p>}
-            <p>5세대 {productCalculationSelections.gen5ContractType === "CONVERSION" ? "계약전환형" : "일반형"}: {gen5 ? (gen5.status === "ROUTED" ? `${gen5.coverage} 규칙 적용` : gen5.status === "CONDITIONAL_SIMULATION" ? gen5.notice : gen5.reason) : "급여·비급여 확인 필요"}</p>
-          </div>
-        ))}
-      </section>
-
-      {contract.generation === 1 && (
-        <section className="app-card" style={{ marginTop: "18px" }}>
-          <h2>1세대 삼성화재 0904.2 Rule 결과</h2>
-          <p className="page-description">
-            {productCalculationSelections.gen1ContractBasis === "SAMPLE_SIMULATION"
-              ? "SAMPLE_SIMULATION · 삼성화재 대표 상품을 가정한 계산 예시"
-              : "ACTUAL_CONTRACT · 독립검수 전이므로 실제 계약 계산은 비활성화"}
-          </p>
-          {gen1Results.map(({ usage, result }) => (
-            <article key={usage.id} className="notice-box" style={{ marginTop: "12px" }}>
-              <strong>{usage.treatmentName}</strong>
-              {"reason" in result ? (
-                <><p>{result.status}</p><p>{result.reason}</p></>
-              ) : (
-                <>
-                  <p>{result.ruleId} · {result.status}</p>
-                  <p>예상금액: {result.claim === null ? "확인 필요" : `${result.claim.toLocaleString()}원`}</p>
-                  <p>계산식: {result.appliedFormula}</p>
-                  <p>근거: {result.evidenceIds.join(", ")} · {result.source.article} {result.source.paragraph} · PDF {result.source.pdfPage}쪽</p>
-                  {result.warnings.map((warning) => <p key={warning}>{warning}</p>)}
-                </>
-              )}
-            </article>
-          ))}
-        </section>
-      )}
-
       <section
         className="app-card"
         style={{
           padding: "clamp(22px, 4vw, 34px)",
           borderRadius: "24px",
           background:
-            "linear-gradient(135deg, #0f4778 0%, #1f659f 58%, #2f77b0 100%)",
+            "linear-gradient(135deg, #173d5f 0%, #255578 58%, #326887 100%)",
           color: "#ffffff",
-          boxShadow: "0 18px 44px rgba(18, 72, 120, 0.18)",
+          boxShadow: "0 18px 44px rgba(15, 43, 67, 0.17)",
         }}
       >
         <div
@@ -1387,6 +1409,11 @@ function M04ResultPage() {
             </strong>
           </div>
         </div>
+
+        <BurdenComparisonChart
+          currentBurden={current.totalBurden}
+          targetBurden={target5G.totalBurden}
+        />
 
         {!isComparisonAvailable && (
           <div
@@ -1987,7 +2014,7 @@ function M04ResultPage() {
       >
         <button
           type="button"
-          onClick={() => navigate("/confirm")}
+          onClick={() => navigate("/input#input-step-2")}
           style={{
             minHeight: "48px",
             border: "1px solid var(--color-border)",
@@ -2003,7 +2030,7 @@ function M04ResultPage() {
 
         <button
           type="button"
-          onClick={() => navigate("/input")}
+          onClick={() => navigate("/input#input-step-2")}
           style={{
             minHeight: "48px",
             border: "1px solid var(--color-primary-200, #b9d1ea)",
@@ -2150,4 +2177,5 @@ function M04ResultPage() {
   );
 }
 
-export default M04ResultPage;
+export { M04ResultPage as LegacyMvpResultPage };
+export default SamsungComparisonResults;

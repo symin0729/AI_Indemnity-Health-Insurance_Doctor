@@ -27,25 +27,25 @@ describe("Samsung 0904.2 generation 1 routing", () => {
 
   it("calculates normal, minimum, cap, and missing-input sample cases", () => {
     const normal = calculateSamsungGen1Sample(base, {
-      requiredCoverageConfirmed: true, policyExclusionsCleared: true, nhiApplied: true,
+      daysSinceAccidentOrDiagnosis: 1, requiredCoverageConfirmed: true, policyExclusionsCleared: true, nhiApplied: true,
       coveredRoomAndTreatment: 100_000, roomDifference: 20_000, priorPaidBenefit: 0,
     });
     expect("claim" in normal && normal.claim).toBe(110_000);
 
     const minimum = calculateSamsungGen1Sample({ ...base, careSetting: "OUTPATIENT" }, {
-      requiredCoverageConfirmed: true, policyExclusionsCleared: true, nhiApplied: true,
+      daysSinceAccidentOrDiagnosis: 1, requiredCoverageConfirmed: true, policyExclusionsCleared: true, nhiApplied: true,
       outpatientExpense: 3_000, priorServiceDays: 0,
     });
     expect("claim" in minimum && minimum.claim).toBe(0);
 
     const capped = calculateSamsungGen1Sample(base, {
-      requiredCoverageConfirmed: true, policyExclusionsCleared: true, nhiApplied: true,
+      daysSinceAccidentOrDiagnosis: 1, requiredCoverageConfirmed: true, policyExclusionsCleared: true, nhiApplied: true,
       coveredRoomAndTreatment: 200_000, roomDifference: 0, priorPaidBenefit: 49_950_000,
     });
     expect("claim" in capped && capped.claim).toBe(50_000);
 
     const missing = calculateSamsungGen1Sample(base, {
-      requiredCoverageConfirmed: true, policyExclusionsCleared: true, nhiApplied: true,
+      daysSinceAccidentOrDiagnosis: 1, requiredCoverageConfirmed: true, policyExclusionsCleared: true, nhiApplied: true,
       priorPaidBenefit: 0,
     });
     expect("status" in missing && missing.status).toBe("CONFIRMATION_REQUIRED");

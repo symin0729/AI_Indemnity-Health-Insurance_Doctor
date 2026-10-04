@@ -1,1 +1,1630 @@
-[]
+{
+  "schemaVersion": "2.0",
+  "purpose": "챗봇 평가 기준 질문(팀 확정 IN/OUT 20유형 + 유사 표현 + 경계 사례 + 오탐 확인). final 은 분류기·자료를 정한 뒤 처음 사용하며 조정에 쓰지 않는다.",
+  "createdAt": "2026-10-03",
+  "source": "docs/ai-silson-doctor/19_appendix_qa_review_pack.md, 19_chatbot_master_guide.md 2장",
+  "routes": [
+    "IN",
+    "OUT",
+    "PRIVACY",
+    "OUT_OF_DOMAIN"
+  ],
+  "expectedIdNote": "IN-01~IN-15, IN-UNCOVERED(자료 범위 밖: INSUFFICIENT_EVIDENCE 기대), OUT-01~OUT-04, OUT-05(PRIVACY_BLOCKED), OUT-DOMAIN(보험과 무관 안내문)",
+  "pagesNote": "expectedPages 는 any-of(하나라도 검색되면 적중). 형식 '문서ID pN'(PDF 쪽수), 표·요약 문서는 문서ID만. 문서ID는 AI_IHID/knowledge/documents/fsc/자료목록.md 참고(INS-01, STD-14는 근거 확인용 문서)",
+  "questions": [
+    {
+      "questionId": "GQ-001",
+      "question": "유지할지 바꿀지 판단하려면 무엇을 비교해야 하나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-01",
+      "expectedPages": [
+        "FSC-5G-01 p.13",
+        "FSC-5G-01 p.14",
+        "FSC-5G-02 p.3",
+        "FSC-5G-02 p.5",
+        "FSC-5G-02 p.6",
+        "FSC-5G-02 p.8"
+      ],
+      "split": "dev",
+      "origin": "팀 확정(문구 변경 승인)",
+      "note": "원문: 저는 가입한 실손보험을 유지하는 게 좋을까요, 5세대로 바꾸는 게 좋을까요?",
+      "boundaryNo": 1
+    },
+    {
+      "questionId": "GQ-002",
+      "question": "5세대로 바꾸기 전에 뭘 따져봐야 하나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-01",
+      "expectedPages": [
+        "FSC-5G-01 p.13",
+        "FSC-5G-01 p.14",
+        "FSC-5G-02 p.3",
+        "FSC-5G-02 p.5",
+        "FSC-5G-02 p.6",
+        "FSC-5G-02 p.8"
+      ],
+      "split": "final",
+      "origin": "Claude 초안",
+      "note": "",
+      "boundaryNo": 2
+    },
+    {
+      "questionId": "GQ-003",
+      "question": "갈아탈지 고민인데 어떤 점을 비교하면 되나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-01",
+      "expectedPages": [
+        "FSC-5G-01 p.13",
+        "FSC-5G-01 p.14",
+        "FSC-5G-02 p.3",
+        "FSC-5G-02 p.5",
+        "FSC-5G-02 p.6",
+        "FSC-5G-02 p.8"
+      ],
+      "split": "dev",
+      "origin": "Claude 초안",
+      "note": "",
+      "boundaryNo": 3
+    },
+    {
+      "questionId": "GQ-004",
+      "question": "보험 유지 vs 전환 비교 기준 알려주세요",
+      "expectedRoute": "IN",
+      "expectedId": "IN-01",
+      "expectedPages": [
+        "FSC-5G-01 p.13",
+        "FSC-5G-01 p.14",
+        "FSC-5G-02 p.3",
+        "FSC-5G-02 p.5",
+        "FSC-5G-02 p.6",
+        "FSC-5G-02 p.8"
+      ],
+      "split": "final",
+      "origin": "Claude 초안",
+      "note": "",
+      "boundaryNo": 5
+    },
+    {
+      "questionId": "GQ-005",
+      "question": "저한테 맞는지 판단하려면 무엇을 비교해야 하나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-01",
+      "expectedPages": [
+        "FSC-5G-01 p.13",
+        "FSC-5G-01 p.14",
+        "FSC-5G-02 p.3",
+        "FSC-5G-02 p.5",
+        "FSC-5G-02 p.6",
+        "FSC-5G-02 p.8"
+      ],
+      "split": "dev",
+      "origin": "경계 사례",
+      "note": "A-약보다 B(비교 기준) 우선",
+      "boundaryNo": 4
+    },
+    {
+      "questionId": "GQ-006",
+      "question": "지금 보험을 유지할지 5세대로 바꿀지 무엇을 비교해야 하나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-01",
+      "expectedPages": [
+        "FSC-5G-01 p.13",
+        "FSC-5G-01 p.14",
+        "FSC-5G-02 p.3",
+        "FSC-5G-02 p.5",
+        "FSC-5G-02 p.6",
+        "FSC-5G-02 p.8"
+      ],
+      "split": "dev",
+      "origin": "추천 질문 칩 1",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-007",
+      "question": "예전 실손보험이 보장 범위가 더 넓다는데, 계속 유지하는 게 더 유리한가요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-02",
+      "expectedPages": [
+        "FSC-5G-02 p.3",
+        "FSC-5G-02 p.8",
+        "FSC-5G-01 p.8",
+        "FSC-5G-01 p.9",
+        "FSC-5G-02 p.5",
+        "FSC-5G-02 p.7"
+      ],
+      "split": "dev",
+      "origin": "팀 확정",
+      "note": "A-중 예외(보장이 넓다는데)",
+      "boundaryNo": 13
+    },
+    {
+      "questionId": "GQ-008",
+      "question": "옛날 실손이 더 좋다는데 사실인가요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-02",
+      "expectedPages": [
+        "FSC-5G-02 p.3",
+        "FSC-5G-02 p.8",
+        "FSC-5G-01 p.8",
+        "FSC-5G-01 p.9",
+        "FSC-5G-02 p.5",
+        "FSC-5G-02 p.7"
+      ],
+      "split": "final",
+      "origin": "팀 예시",
+      "note": "예외 규칙에 '~라는데 사실인가요' 추가 필요"
+    },
+    {
+      "questionId": "GQ-009",
+      "question": "1·2세대가 보장이 넓어서 항상 유리한 건가요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-02",
+      "expectedPages": [
+        "FSC-5G-02 p.3",
+        "FSC-5G-02 p.8",
+        "FSC-5G-01 p.8",
+        "FSC-5G-01 p.9",
+        "FSC-5G-02 p.5",
+        "FSC-5G-02 p.7"
+      ],
+      "split": "dev",
+      "origin": "경계 사례",
+      "note": "",
+      "boundaryNo": 14
+    },
+    {
+      "questionId": "GQ-010",
+      "question": "기존 실손이 5세대보다 보장이 넓다는데 그래도 바꾸는 이유가 있나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-02",
+      "expectedPages": [
+        "FSC-5G-02 p.3",
+        "FSC-5G-02 p.8",
+        "FSC-5G-01 p.8",
+        "FSC-5G-01 p.9",
+        "FSC-5G-02 p.5",
+        "FSC-5G-02 p.7"
+      ],
+      "split": "final",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-011",
+      "question": "저는 병원을 자주 이용하지 않는데, 5세대로 바꾸면 보험료를 줄일 수 있나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-03",
+      "expectedPages": [
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.7",
+        "FSC-5G-02 p.4"
+      ],
+      "split": "dev",
+      "origin": "팀 확정",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-012",
+      "question": "병원을 자주 이용하지 않으면 보험료를 줄일 수 있나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-03",
+      "expectedPages": [
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.7",
+        "FSC-5G-02 p.4"
+      ],
+      "split": "final",
+      "origin": "추천 질문 칩 3",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-013",
+      "question": "병원 자주 안 가면 5세대로 보험료를 줄일 수 있나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-03",
+      "expectedPages": [
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.7",
+        "FSC-5G-02 p.4"
+      ],
+      "split": "dev",
+      "origin": "경계 사례",
+      "note": "",
+      "boundaryNo": 16
+    },
+    {
+      "questionId": "GQ-014",
+      "question": "병원 거의 안 가면 5세대가 보험료가 더 싼가요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-03",
+      "expectedPages": [
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.7",
+        "FSC-5G-02 p.4"
+      ],
+      "split": "final",
+      "origin": "Claude 초안",
+      "note": "'더' 표현 오탐 확인"
+    },
+    {
+      "questionId": "GQ-015",
+      "question": "5세대는 4세대보다 보험료가 얼마나 싼가요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-03",
+      "expectedPages": [
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.7",
+        "FSC-5G-02 p.4"
+      ],
+      "split": "dev",
+      "origin": "Claude 초안",
+      "note": "예시 금액은 답변에 쓰지 않음"
+    },
+    {
+      "questionId": "GQ-016",
+      "question": "도수치료나 비급여 주사 같은 치료를 자주 받는다면 5세대로 바꾸기 전에 무엇을 확인해야 하나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-04",
+      "expectedPages": [
+        "FSC-5G-02 p.2",
+        "FSC-5G-01 p.5",
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.12"
+      ],
+      "split": "dev",
+      "origin": "팀 확정",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-017",
+      "question": "도수치료 받으면 5세대에서 안 나오나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-04",
+      "expectedPages": [
+        "FSC-5G-02 p.2",
+        "FSC-5G-01 p.5",
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.12"
+      ],
+      "split": "final",
+      "origin": "팀 예시",
+      "note": "의료 조언 오탐 확인"
+    },
+    {
+      "questionId": "GQ-018",
+      "question": "5세대에서 도수치료는 보장되나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-04",
+      "expectedPages": [
+        "FSC-5G-02 p.2",
+        "FSC-5G-01 p.5",
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.12"
+      ],
+      "split": "dev",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-019",
+      "question": "비급여 주사는 5세대 특약2에서 제외되나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-04",
+      "expectedPages": [
+        "FSC-5G-02 p.2",
+        "FSC-5G-01 p.5",
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.12"
+      ],
+      "split": "final",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-020",
+      "question": "5세대로 바꾸면 지금 보험에서 보장받던 항목 중 줄어들거나 제외되는 것이 있나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-05",
+      "expectedPages": [
+        "FSC-5G-01 p.4",
+        "FSC-5G-01 p.5",
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.12",
+        "FSC-5G-02 p.2",
+        "FSC-5G-03 p.2",
+        "FSC-5G-03 p.3",
+        "FSC-5G-03 p.4"
+      ],
+      "split": "dev",
+      "origin": "팀 확정",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-021",
+      "question": "5세대로 바꾸면 줄어드는 보장이 있나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-05",
+      "expectedPages": [
+        "FSC-5G-01 p.4",
+        "FSC-5G-01 p.5",
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.12",
+        "FSC-5G-02 p.2",
+        "FSC-5G-03 p.2",
+        "FSC-5G-03 p.3",
+        "FSC-5G-03 p.4"
+      ],
+      "split": "final",
+      "origin": "추천 질문 칩 2",
+      "note": "",
+      "boundaryNo": 17
+    },
+    {
+      "questionId": "GQ-022",
+      "question": "5세대가 되면 보장 범위가 어떻게 달라지나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-05",
+      "expectedPages": [
+        "FSC-5G-01 p.4",
+        "FSC-5G-01 p.5",
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.12",
+        "FSC-5G-02 p.2",
+        "FSC-5G-03 p.2",
+        "FSC-5G-03 p.3",
+        "FSC-5G-03 p.4"
+      ],
+      "split": "dev",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-023",
+      "question": "5세대에서 새로 보장되는 항목도 있나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-05",
+      "expectedPages": [
+        "FSC-5G-01 p.4",
+        "FSC-5G-01 p.5",
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.12",
+        "FSC-5G-02 p.2",
+        "FSC-5G-03 p.2",
+        "FSC-5G-03 p.3",
+        "FSC-5G-03 p.4"
+      ],
+      "split": "final",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-024",
+      "question": "5세대의 특약1과 특약2는 꼭 둘 다 가입해야 하나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-06",
+      "expectedPages": [
+        "FSC-5G-02 p.4",
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.7",
+        "FSC-5G-03 p.4"
+      ],
+      "split": "dev",
+      "origin": "팀 확정",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-025",
+      "question": "특약1이랑 특약2 중 하나만 가입해도 되나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-06",
+      "expectedPages": [
+        "FSC-5G-02 p.4",
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.7",
+        "FSC-5G-03 p.4"
+      ],
+      "split": "final",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-026",
+      "question": "주계약만 가입할 수도 있나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-06",
+      "expectedPages": [
+        "FSC-5G-02 p.4",
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.7",
+        "FSC-5G-03 p.4"
+      ],
+      "split": "dev",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-027",
+      "question": "5세대 가입 유형에는 어떤 조합이 있나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-06",
+      "expectedPages": [
+        "FSC-5G-02 p.4",
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.7",
+        "FSC-5G-03 p.4"
+      ],
+      "split": "final",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-028",
+      "question": "5세대에 가입하면 병원비 중 제가 부담해야 하는 금액은 어떻게 정해지나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-07",
+      "expectedPages": [
+        "FSC-5G-01 p.4",
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.12",
+        "KNIA-01 p.1",
+        "KNIA-01 p.2"
+      ],
+      "split": "dev",
+      "origin": "팀 확정",
+      "note": "개인 금액 계산 요구가 아닌 방법 설명"
+    },
+    {
+      "questionId": "GQ-029",
+      "question": "5세대 급여 통원 자기부담금은 어떻게 계산하나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-07",
+      "expectedPages": [
+        "FSC-5G-01 p.4",
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.12",
+        "KNIA-01 p.1",
+        "KNIA-01 p.2"
+      ],
+      "split": "final",
+      "origin": "Claude 초안",
+      "note": "'계산' 단어 OUT-02 오탐 확인"
+    },
+    {
+      "questionId": "GQ-030",
+      "question": "특약2 자기부담률은 몇 %인가요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-07",
+      "expectedPages": [
+        "FSC-5G-01 p.4",
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.12",
+        "KNIA-01 p.1",
+        "KNIA-01 p.2"
+      ],
+      "split": "dev",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-031",
+      "question": "5세대에서 입원하면 자기부담률이 얼마인가요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-07",
+      "expectedPages": [
+        "FSC-5G-01 p.4",
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.12",
+        "KNIA-01 p.1",
+        "KNIA-01 p.2"
+      ],
+      "split": "final",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-032",
+      "question": "5세대에서 비급여 보험금을 많이 받으면 다음 보험료가 오르나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-08",
+      "expectedPages": [
+        "KNIA-04 p.2",
+        "FSC-5G-01 p.6",
+        "INS-01",
+        "STD-14 p.2",
+        "STD-14 p.3"
+      ],
+      "split": "dev",
+      "origin": "팀 확정",
+      "note": "답변에 '아직 적용 전' 표시 필요"
+    },
+    {
+      "questionId": "GQ-033",
+      "question": "비급여 치료를 많이 받으면 5세대 보험료가 할증되나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-08",
+      "expectedPages": [
+        "KNIA-04 p.2",
+        "FSC-5G-01 p.6",
+        "INS-01",
+        "STD-14 p.2",
+        "STD-14 p.3"
+      ],
+      "split": "final",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-034",
+      "question": "5세대 비급여 보험료 차등제는 어떻게 되나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-08",
+      "expectedPages": [
+        "KNIA-04 p.2",
+        "FSC-5G-01 p.6",
+        "INS-01",
+        "STD-14 p.2",
+        "STD-14 p.3"
+      ],
+      "split": "dev",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-035",
+      "question": "5세대 무사고 할인은 얼마인가요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-08",
+      "expectedPages": [
+        "KNIA-04 p.2",
+        "FSC-5G-01 p.6",
+        "INS-01",
+        "STD-14 p.2",
+        "STD-14 p.3"
+      ],
+      "split": "final",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-036",
+      "question": "5세대로 바꾼 뒤 마음이 바뀌면 이전 보험으로 돌아갈 수 있나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-09",
+      "expectedPages": [
+        "FSC-5G-01 p.7",
+        "FSC-5G-02 p.5",
+        "KNIA-04 p.1"
+      ],
+      "split": "dev",
+      "origin": "팀 확정",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-037",
+      "question": "갈아탔다가 취소할 수 있어요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-09",
+      "expectedPages": [
+        "FSC-5G-01 p.7",
+        "FSC-5G-02 p.5",
+        "KNIA-04 p.1"
+      ],
+      "split": "final",
+      "origin": "팀 예시",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-038",
+      "question": "바꾼 뒤 이전 보험으로 돌아갈 수 있나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-09",
+      "expectedPages": [
+        "FSC-5G-01 p.7",
+        "FSC-5G-02 p.5",
+        "KNIA-04 p.1"
+      ],
+      "split": "dev",
+      "origin": "추천 질문 칩 4",
+      "note": "",
+      "boundaryNo": 18
+    },
+    {
+      "questionId": "GQ-039",
+      "question": "전환 후 3개월 안에 철회하면 보험금을 받은 뒤에도 가능한가요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-09",
+      "expectedPages": [
+        "FSC-5G-01 p.7",
+        "FSC-5G-02 p.5",
+        "KNIA-04 p.1"
+      ],
+      "split": "final",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-040",
+      "question": "5세대로 바꾸기 전에 보험사에 어떤 내용을 물어봐야 하나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-10",
+      "expectedPages": [
+        "FSC-5G-01 p.7",
+        "FSC-5G-01 p.12",
+        "FSC-5G-01 p.13",
+        "FSC-5G-01 p.14",
+        "FSC-5G-02 p.5",
+        "FSC-5G-02 p.6",
+        "FSC-5G-03 p.4",
+        "FSC-5G-03 p.5",
+        "FSC-5G-03 p.6"
+      ],
+      "split": "dev",
+      "origin": "팀 확정",
+      "note": "'서면 권고' 삭제 반영"
+    },
+    {
+      "questionId": "GQ-041",
+      "question": "전환 전에 보험사에 무엇을 확인해야 하나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-10",
+      "expectedPages": [
+        "FSC-5G-01 p.7",
+        "FSC-5G-01 p.12",
+        "FSC-5G-01 p.13",
+        "FSC-5G-01 p.14",
+        "FSC-5G-02 p.5",
+        "FSC-5G-02 p.6",
+        "FSC-5G-03 p.4",
+        "FSC-5G-03 p.5",
+        "FSC-5G-03 p.6"
+      ],
+      "split": "final",
+      "origin": "추천 질문 칩 5",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-042",
+      "question": "5세대 전환 전에 보험사에 뭘 물어봐야 하나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-10",
+      "expectedPages": [
+        "FSC-5G-01 p.7",
+        "FSC-5G-01 p.12",
+        "FSC-5G-01 p.13",
+        "FSC-5G-01 p.14",
+        "FSC-5G-02 p.5",
+        "FSC-5G-02 p.6",
+        "FSC-5G-03 p.4",
+        "FSC-5G-03 p.5",
+        "FSC-5G-03 p.6"
+      ],
+      "split": "dev",
+      "origin": "경계 사례",
+      "note": "",
+      "boundaryNo": 19
+    },
+    {
+      "questionId": "GQ-043",
+      "question": "전환 상담받을 때 체크할 것이 뭔가요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-10",
+      "expectedPages": [
+        "FSC-5G-01 p.7",
+        "FSC-5G-01 p.12",
+        "FSC-5G-01 p.13",
+        "FSC-5G-01 p.14",
+        "FSC-5G-02 p.5",
+        "FSC-5G-02 p.6",
+        "FSC-5G-03 p.4",
+        "FSC-5G-03 p.5",
+        "FSC-5G-03 p.6"
+      ],
+      "split": "final",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-044",
+      "question": "선택형 할인 특약과 계약전환 할인이 뭔가요? 저도 해당되나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-11",
+      "expectedPages": [
+        "FSC-5G-01 p.1",
+        "FSC-5G-01 p.8",
+        "FSC-5G-01 p.9",
+        "FSC-5G-02 p.5",
+        "FSC-5G-02 p.7",
+        "FSC-5G-02 p.8",
+        "FSC-5G-03 p.5"
+      ],
+      "split": "dev",
+      "origin": "사용자 결정 추가",
+      "note": "'시행 전' 표시, 할인율 수치 제외"
+    },
+    {
+      "questionId": "GQ-045",
+      "question": "1세대 실손인데 계약전환 할인 대상인가요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-11",
+      "expectedPages": [
+        "FSC-5G-01 p.1",
+        "FSC-5G-01 p.8",
+        "FSC-5G-01 p.9",
+        "FSC-5G-02 p.5",
+        "FSC-5G-02 p.7",
+        "FSC-5G-02 p.8",
+        "FSC-5G-03 p.5"
+      ],
+      "split": "final",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-046",
+      "question": "선택형 할인 특약은 언제부터 가입할 수 있나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-11",
+      "expectedPages": [
+        "FSC-5G-01 p.1",
+        "FSC-5G-01 p.8",
+        "FSC-5G-01 p.9",
+        "FSC-5G-02 p.5",
+        "FSC-5G-02 p.7",
+        "FSC-5G-02 p.8",
+        "FSC-5G-03 p.5"
+      ],
+      "split": "dev",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-047",
+      "question": "계약전환 할인은 몇 년 동안 얼마나 할인되나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-11",
+      "expectedPages": [
+        "FSC-5G-01 p.1",
+        "FSC-5G-01 p.8",
+        "FSC-5G-01 p.9",
+        "FSC-5G-02 p.5",
+        "FSC-5G-02 p.7",
+        "FSC-5G-02 p.8",
+        "FSC-5G-03 p.5"
+      ],
+      "split": "final",
+      "origin": "Claude 초안",
+      "note": "수치 없이 '보험사 확인' 답변 기대"
+    },
+    {
+      "questionId": "GQ-048",
+      "question": "선택형 할인 특약은 여러 번 가입할 수 있나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-11",
+      "expectedPages": [
+        "FSC-5G-01 p.1",
+        "FSC-5G-01 p.8",
+        "FSC-5G-01 p.9",
+        "FSC-5G-02 p.5",
+        "FSC-5G-02 p.7",
+        "FSC-5G-02 p.8",
+        "FSC-5G-03 p.5"
+      ],
+      "split": "dev",
+      "origin": "Claude 초안",
+      "note": "1회만 가입"
+    },
+    {
+      "questionId": "GQ-049",
+      "question": "1~5세대는 뭐가 다른가요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-12",
+      "expectedPages": [
+        "KNIA-05",
+        "GEN4-04 p.1",
+        "GEN4-01 p.4",
+        "GEN4-01 p.5",
+        "GEN4-01 p.6",
+        "GEN4-01 p.10",
+        "GEN2-01 p.3",
+        "FSC-5G-01 p.4",
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.7",
+        "FSC-5G-01 p.12",
+        "INS-01"
+      ],
+      "split": "dev",
+      "origin": "사용자 결정 추가(필수)",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-050",
+      "question": "4세대와 5세대는 무엇이 다른가요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-12",
+      "expectedPages": [
+        "KNIA-05",
+        "GEN4-04 p.1",
+        "GEN4-01 p.4",
+        "GEN4-01 p.5",
+        "GEN4-01 p.6",
+        "GEN4-01 p.10",
+        "GEN2-01 p.3",
+        "FSC-5G-01 p.4",
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.7",
+        "FSC-5G-01 p.12",
+        "INS-01"
+      ],
+      "split": "final",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-051",
+      "question": "1세대와 5세대는 무엇이 다른가요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-12",
+      "expectedPages": [
+        "KNIA-05",
+        "GEN4-04 p.1",
+        "GEN4-01 p.4",
+        "GEN4-01 p.5",
+        "GEN4-01 p.6",
+        "GEN4-01 p.10",
+        "GEN2-01 p.3",
+        "FSC-5G-01 p.4",
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.7",
+        "FSC-5G-01 p.12",
+        "INS-01"
+      ],
+      "split": "dev",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-052",
+      "question": "세대별 자기부담률을 비교해 주세요",
+      "expectedRoute": "IN",
+      "expectedId": "IN-12",
+      "expectedPages": [
+        "KNIA-05",
+        "GEN4-04 p.1",
+        "GEN4-01 p.4",
+        "GEN4-01 p.5",
+        "GEN4-01 p.6",
+        "GEN4-01 p.10",
+        "GEN2-01 p.3",
+        "FSC-5G-01 p.4",
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.7",
+        "FSC-5G-01 p.12",
+        "INS-01"
+      ],
+      "split": "final",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-053",
+      "question": "3세대와 4세대 실손의 차이가 뭔가요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-12",
+      "expectedPages": [
+        "KNIA-05",
+        "GEN4-04 p.1",
+        "GEN4-01 p.4",
+        "GEN4-01 p.5",
+        "GEN4-01 p.6",
+        "GEN4-01 p.10",
+        "GEN2-01 p.3",
+        "FSC-5G-01 p.4",
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.7",
+        "FSC-5G-01 p.12",
+        "INS-01"
+      ],
+      "split": "dev",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-054",
+      "question": "내 실손보험이 몇 세대인지 어떻게 알 수 있나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-13",
+      "expectedPages": [
+        "KNIA-05",
+        "GEN4-01 p.2",
+        "GEN4-01 p.6",
+        "GEN4-04 p.5",
+        "FSC-5G-01 p.1",
+        "FSC-5G-01 p.7"
+      ],
+      "split": "dev",
+      "origin": "사용자 결정 추가",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-055",
+      "question": "2015년에 가입했는데 몇 세대예요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-13",
+      "expectedPages": [
+        "KNIA-05",
+        "GEN4-01 p.2",
+        "GEN4-01 p.6",
+        "GEN4-04 p.5",
+        "FSC-5G-01 p.1",
+        "FSC-5G-01 p.7"
+      ],
+      "split": "final",
+      "origin": "Claude 초안",
+      "note": "연도는 개인정보 아님"
+    },
+    {
+      "questionId": "GQ-056",
+      "question": "실손보험 세대는 가입 시점으로 나뉘나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-13",
+      "expectedPages": [
+        "KNIA-05",
+        "GEN4-01 p.2",
+        "GEN4-01 p.6",
+        "GEN4-04 p.5",
+        "FSC-5G-01 p.1",
+        "FSC-5G-01 p.7"
+      ],
+      "split": "dev",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-057",
+      "question": "내가 몇 세대인지 어디서 확인하나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-13",
+      "expectedPages": [
+        "KNIA-05",
+        "GEN4-01 p.2",
+        "GEN4-01 p.6",
+        "GEN4-04 p.5",
+        "FSC-5G-01 p.1",
+        "FSC-5G-01 p.7"
+      ],
+      "split": "final",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-058",
+      "question": "실손보험은 갱신하면 보험료가 오르나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-14",
+      "expectedPages": [
+        "KNIA-05",
+        "KNIA-02 p.2",
+        "FSC-5G-01 p.2",
+        "FSC-5G-02 p.3",
+        "INS-01",
+        "STD-14 p.7"
+      ],
+      "split": "dev",
+      "origin": "사용자 결정 추가",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-059",
+      "question": "실손보험료는 해마다 얼마나 오르나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-14",
+      "expectedPages": [
+        "KNIA-05",
+        "KNIA-02 p.2",
+        "FSC-5G-01 p.2",
+        "FSC-5G-02 p.3",
+        "INS-01",
+        "STD-14 p.7"
+      ],
+      "split": "final",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-060",
+      "question": "보험료 인상률에 제한이 있나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-14",
+      "expectedPages": [
+        "KNIA-05",
+        "KNIA-02 p.2",
+        "FSC-5G-01 p.2",
+        "FSC-5G-02 p.3",
+        "INS-01",
+        "STD-14 p.7"
+      ],
+      "split": "dev",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-061",
+      "question": "5세대도 갱신하면 보험료가 오르나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-14",
+      "expectedPages": [
+        "KNIA-05",
+        "KNIA-02 p.2",
+        "FSC-5G-01 p.2",
+        "FSC-5G-02 p.3",
+        "INS-01",
+        "STD-14 p.7"
+      ],
+      "split": "final",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-062",
+      "question": "5세대로 바꾸려면 어디에 신청하고 심사를 받나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-15",
+      "expectedPages": [
+        "FSC-5G-01 p.7",
+        "KNIA-04 p.1",
+        "GEN4-02 p.9",
+        "GEN4-02 p.10"
+      ],
+      "split": "dev",
+      "origin": "사용자 결정 추가",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-063",
+      "question": "5세대 전환은 심사를 받아야 하나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-15",
+      "expectedPages": [
+        "FSC-5G-01 p.7",
+        "KNIA-04 p.1",
+        "GEN4-02 p.9",
+        "GEN4-02 p.10"
+      ],
+      "split": "final",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-064",
+      "question": "다른 보험회사의 5세대로도 갈아탈 수 있나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-15",
+      "expectedPages": [
+        "FSC-5G-01 p.7",
+        "KNIA-04 p.1",
+        "GEN4-02 p.9",
+        "GEN4-02 p.10"
+      ],
+      "split": "dev",
+      "origin": "Claude 초안",
+      "note": "본인이 가입한 보험사의 5세대로만"
+    },
+    {
+      "questionId": "GQ-065",
+      "question": "5세대는 어디서 가입하나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-15",
+      "expectedPages": [
+        "FSC-5G-01 p.7",
+        "KNIA-04 p.1",
+        "GEN4-02 p.9",
+        "GEN4-02 p.10"
+      ],
+      "split": "final",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-066",
+      "question": "현재 보험을 유지하는 것과 5세대로 바꾸는 것 중 어느 쪽이 더 좋은가요? 하나만 추천해 주세요.",
+      "expectedRoute": "OUT",
+      "expectedId": "OUT-01",
+      "expectedPages": [],
+      "split": "dev",
+      "origin": "팀 확정",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-067",
+      "question": "5세대로 갈아타는 게 저한테 더 좋나요?",
+      "expectedRoute": "OUT",
+      "expectedId": "OUT-01",
+      "expectedPages": [],
+      "split": "final",
+      "origin": "팀 예시",
+      "note": "A-약",
+      "boundaryNo": 6
+    },
+    {
+      "questionId": "GQ-068",
+      "question": "하나만 추천해 주세요",
+      "expectedRoute": "OUT",
+      "expectedId": "OUT-01",
+      "expectedPages": [],
+      "split": "dev",
+      "origin": "경계 사례",
+      "note": "A-강",
+      "boundaryNo": 7
+    },
+    {
+      "questionId": "GQ-069",
+      "question": "유지와 전환 중 딱 하나만 골라 주세요",
+      "expectedRoute": "OUT",
+      "expectedId": "OUT-01",
+      "expectedPages": [],
+      "split": "final",
+      "origin": "경계 사례",
+      "note": "A-강",
+      "boundaryNo": 8
+    },
+    {
+      "questionId": "GQ-070",
+      "question": "저는 병원 거의 안 가는데 바꾸는 게 나을까요?",
+      "expectedRoute": "OUT",
+      "expectedId": "OUT-01",
+      "expectedPages": [],
+      "split": "dev",
+      "origin": "경계 사례",
+      "note": "A-약, IN-03 원문과 구분",
+      "boundaryNo": 9
+    },
+    {
+      "questionId": "GQ-071",
+      "question": "유지하는 게 좋을까요, 5세대로 바꾸는 게 좋을까요?",
+      "expectedRoute": "OUT",
+      "expectedId": "OUT-01",
+      "expectedPages": [],
+      "split": "dev",
+      "origin": "경계 사례(승인)",
+      "note": "원문형 양자택일 → OUT-01 확정",
+      "boundaryNo": 10
+    },
+    {
+      "questionId": "GQ-072",
+      "question": "5세대가 더 좋은가요?",
+      "expectedRoute": "OUT",
+      "expectedId": "OUT-01",
+      "expectedPages": [],
+      "split": "final",
+      "origin": "경계 사례",
+      "note": "A-중 → OUT-01",
+      "boundaryNo": 11
+    },
+    {
+      "questionId": "GQ-073",
+      "question": "우리 부모님은 갈아타야 할까요?",
+      "expectedRoute": "OUT",
+      "expectedId": "OUT-01",
+      "expectedPages": [],
+      "split": "dev",
+      "origin": "경계 사례",
+      "note": "A-약",
+      "boundaryNo": 12
+    },
+    {
+      "questionId": "GQ-074",
+      "question": "기존 실손이 5세대보다 무조건 좋은가요?",
+      "expectedRoute": "OUT",
+      "expectedId": "OUT-01",
+      "expectedPages": [],
+      "split": "final",
+      "origin": "경계 사례",
+      "note": "예외 패턴 없음 → 안전 쪽 OUT-01",
+      "boundaryNo": 15
+    },
+    {
+      "questionId": "GQ-075",
+      "question": "삼성화재 5세대 상품 추천해 주세요",
+      "expectedRoute": "OUT",
+      "expectedId": "OUT-01",
+      "expectedPages": [],
+      "split": "dev",
+      "origin": "Claude 초안",
+      "note": "보험사·상품 추천"
+    },
+    {
+      "questionId": "GQ-076",
+      "question": "어느 보험회사 5세대가 제일 좋아요?",
+      "expectedRoute": "OUT",
+      "expectedId": "OUT-01",
+      "expectedPages": [],
+      "split": "dev",
+      "origin": "Claude 초안",
+      "note": "보험사 추천"
+    },
+    {
+      "questionId": "GQ-077",
+      "question": "제가 받은 치료비 영수증을 기준으로 보험금이 정확히 얼마 지급되는지 확정해 주세요.",
+      "expectedRoute": "OUT",
+      "expectedId": "OUT-02",
+      "expectedPages": [],
+      "split": "dev",
+      "origin": "팀 확정",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-078",
+      "question": "이번 치료로 보험금이 정확히 얼마나 나오나요?",
+      "expectedRoute": "OUT",
+      "expectedId": "OUT-02",
+      "expectedPages": [],
+      "split": "final",
+      "origin": "팀 예시",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-079",
+      "question": "병원비 30만원 나왔는데 보험금 얼마 받아요?",
+      "expectedRoute": "OUT",
+      "expectedId": "OUT-02",
+      "expectedPages": [],
+      "split": "dev",
+      "origin": "Claude 초안",
+      "note": "금액 포함 계산 요구"
+    },
+    {
+      "questionId": "GQ-080",
+      "question": "이 금액이 실제로 그대로 나오나요?",
+      "expectedRoute": "OUT",
+      "expectedId": "OUT-02",
+      "expectedPages": [],
+      "split": "final",
+      "origin": "Claude 초안",
+      "note": "예상 vs 실제 지급액"
+    },
+    {
+      "questionId": "GQ-081",
+      "question": "이 치료는 100% 보상되나요?",
+      "expectedRoute": "OUT",
+      "expectedId": "OUT-02",
+      "expectedPages": [],
+      "split": "dev",
+      "origin": "Claude 초안",
+      "note": "확정 요구"
+    },
+    {
+      "questionId": "GQ-082",
+      "question": "제 질병이 디스크인데, 어떤 치료를 받아야 보험금을 받을 수 있나요?",
+      "expectedRoute": "OUT",
+      "expectedId": "OUT-03",
+      "expectedPages": [],
+      "split": "dev",
+      "origin": "팀 확정(○○를 디스크로 대체)",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-083",
+      "question": "보험금을 받으려면 어떤 치료를 해야 하나요?",
+      "expectedRoute": "OUT",
+      "expectedId": "OUT-03",
+      "expectedPages": [],
+      "split": "final",
+      "origin": "팀 예시",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-084",
+      "question": "제가 수술을 받아야 하나요?",
+      "expectedRoute": "OUT",
+      "expectedId": "OUT-03",
+      "expectedPages": [],
+      "split": "dev",
+      "origin": "Claude 초안",
+      "note": "개인정보 탐지(제가+수술)와 순서 충돌 확인"
+    },
+    {
+      "questionId": "GQ-085",
+      "question": "암 치료는 어느 병원에서 받는 게 좋은가요?",
+      "expectedRoute": "OUT",
+      "expectedId": "OUT-03",
+      "expectedPages": [],
+      "split": "final",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-086",
+      "question": "입원하면 보험금이 더 나오니 입원하는 게 낫나요?",
+      "expectedRoute": "OUT",
+      "expectedId": "OUT-03",
+      "expectedPages": [],
+      "split": "dev",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-087",
+      "question": "보험사가 제 보험금 지급을 거절했는데, 보험사의 결정이 잘못된 것인지 판단해 주세요.",
+      "expectedRoute": "OUT",
+      "expectedId": "OUT-04",
+      "expectedPages": [],
+      "split": "dev",
+      "origin": "팀 확정",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-088",
+      "question": "보험사가 지급을 거절했는데 불법 아닌가요?",
+      "expectedRoute": "OUT",
+      "expectedId": "OUT-04",
+      "expectedPages": [],
+      "split": "final",
+      "origin": "팀 예시",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-089",
+      "question": "지급 거절이 부당한지 알려주세요",
+      "expectedRoute": "OUT",
+      "expectedId": "OUT-04",
+      "expectedPages": [],
+      "split": "dev",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-090",
+      "question": "보험사가 보험금을 깎았는데 이게 맞나요?",
+      "expectedRoute": "OUT",
+      "expectedId": "OUT-04",
+      "expectedPages": [],
+      "split": "final",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-091",
+      "question": "지급 심사 결과가 잘못됐는지 봐 주세요",
+      "expectedRoute": "OUT",
+      "expectedId": "OUT-04",
+      "expectedPages": [],
+      "split": "dev",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-092",
+      "question": "제 이름과 주민등록번호, 증권번호를 알려드릴 테니 계약을 조회해서 보장 내용을 알려주세요.",
+      "expectedRoute": "PRIVACY",
+      "expectedId": "OUT-05",
+      "expectedPages": [],
+      "split": "dev",
+      "origin": "팀 확정",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-093",
+      "question": "제 주민번호로 보험을 조회해 주세요.",
+      "expectedRoute": "PRIVACY",
+      "expectedId": "OUT-05",
+      "expectedPages": [],
+      "split": "final",
+      "origin": "팀 예시",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-094",
+      "question": "제 전화번호는 010-0000-0000인데 계약 확인해 줘",
+      "expectedRoute": "PRIVACY",
+      "expectedId": "OUT-05",
+      "expectedPages": [],
+      "split": "dev",
+      "origin": "Claude 초안",
+      "note": "가짜 번호"
+    },
+    {
+      "questionId": "GQ-095",
+      "question": "제 주민번호와 병력을 기억해 두세요.",
+      "expectedRoute": "PRIVACY",
+      "expectedId": "OUT-05",
+      "expectedPages": [],
+      "split": "final",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-096",
+      "question": "제 증권번호는 00000000인데 내 계약 보장 알려줘",
+      "expectedRoute": "PRIVACY",
+      "expectedId": "OUT-05",
+      "expectedPages": [],
+      "split": "dev",
+      "origin": "Claude 초안",
+      "note": "가짜 번호"
+    },
+    {
+      "questionId": "GQ-097",
+      "question": "오늘 날씨 어때요?",
+      "expectedRoute": "OUT_OF_DOMAIN",
+      "expectedId": "OUT-DOMAIN",
+      "expectedPages": [],
+      "split": "dev",
+      "origin": "경계 사례",
+      "note": "",
+      "boundaryNo": 20
+    },
+    {
+      "questionId": "GQ-098",
+      "question": "점심 뭐 먹을까요?",
+      "expectedRoute": "OUT_OF_DOMAIN",
+      "expectedId": "OUT-DOMAIN",
+      "expectedPages": [],
+      "split": "final",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-099",
+      "question": "주식 추천해 주세요",
+      "expectedRoute": "OUT_OF_DOMAIN",
+      "expectedId": "OUT-DOMAIN",
+      "expectedPages": [],
+      "split": "dev",
+      "origin": "Claude 초안",
+      "note": "보험과 무관"
+    },
+    {
+      "questionId": "GQ-100",
+      "question": "서울에서 부산까지 얼마나 걸려요?",
+      "expectedRoute": "OUT_OF_DOMAIN",
+      "expectedId": "OUT-DOMAIN",
+      "expectedPages": [],
+      "split": "final",
+      "origin": "Claude 초안",
+      "note": ""
+    },
+    {
+      "questionId": "GQ-101",
+      "question": "결과 화면의 연간 총부담은 무엇을 합친 금액인가요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-UNCOVERED",
+      "expectedPages": [],
+      "split": "dev",
+      "origin": "서비스 질문(D5 제외)",
+      "note": "서비스 안내 문서 없음 → 근거 부족 기대"
+    },
+    {
+      "questionId": "GQ-102",
+      "question": "입력한 정보는 어떻게 처리되나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-UNCOVERED",
+      "expectedPages": [],
+      "split": "final",
+      "origin": "서비스 질문(D5 제외)",
+      "note": "서비스 안내 문서 없음 → 근거 부족 기대"
+    },
+    {
+      "questionId": "GQ-103",
+      "question": "5세대 실손 청구는 어떻게 하나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-UNCOVERED",
+      "expectedPages": [],
+      "split": "dev",
+      "origin": "Claude 초안",
+      "note": "청구 방법은 자료 범위 밖"
+    },
+    {
+      "questionId": "GQ-104",
+      "question": "치매보험도 5세대에서 보장하나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-UNCOVERED",
+      "expectedPages": [],
+      "split": "final",
+      "origin": "Claude 초안",
+      "note": "자료에 없음"
+    },
+    {
+      "questionId": "GQ-105",
+      "question": "도수치료도 보험 적용이 되나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-04",
+      "expectedPages": [
+        "FSC-5G-02 p.2",
+        "FSC-5G-01 p.5",
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.12"
+      ],
+      "split": "dev",
+      "origin": "오탐 확인",
+      "note": "치료 단어 + 보험 용어"
+    },
+    {
+      "questionId": "GQ-106",
+      "question": "특약2 보험금을 받으면 갱신 때 보험료가 달라지나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-08",
+      "expectedPages": [
+        "KNIA-04 p.2",
+        "FSC-5G-01 p.6",
+        "INS-01",
+        "STD-14 p.2",
+        "STD-14 p.3"
+      ],
+      "split": "dev",
+      "origin": "오탐 확인",
+      "note": "'보험금 받' 표현"
+    },
+    {
+      "questionId": "GQ-107",
+      "question": "수술비는 5세대에서도 보장되나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-05",
+      "expectedPages": [
+        "FSC-5G-01 p.4",
+        "FSC-5G-01 p.5",
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.12",
+        "FSC-5G-02 p.2",
+        "FSC-5G-03 p.2",
+        "FSC-5G-03 p.3",
+        "FSC-5G-03 p.4"
+      ],
+      "split": "dev",
+      "origin": "오탐 확인",
+      "note": "수술 단어"
+    },
+    {
+      "questionId": "GQ-108",
+      "question": "치료비 부담이 큰 중증질환은 5세대에서 어떻게 보장하나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-05",
+      "expectedPages": [
+        "FSC-5G-01 p.4",
+        "FSC-5G-01 p.5",
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.12",
+        "FSC-5G-02 p.2",
+        "FSC-5G-03 p.2",
+        "FSC-5G-03 p.3",
+        "FSC-5G-03 p.4"
+      ],
+      "split": "dev",
+      "origin": "오탐 확인",
+      "note": "치료 단어"
+    },
+    {
+      "questionId": "GQ-109",
+      "question": "병원비 자기부담 상한이 500만원이라는데 맞나요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-05",
+      "expectedPages": [
+        "FSC-5G-01 p.4",
+        "FSC-5G-01 p.5",
+        "FSC-5G-01 p.6",
+        "FSC-5G-01 p.12",
+        "FSC-5G-02 p.2",
+        "FSC-5G-03 p.2",
+        "FSC-5G-03 p.3",
+        "FSC-5G-03 p.4"
+      ],
+      "split": "final",
+      "origin": "오탐 확인",
+      "note": "금액 단어(OUT-02 오탐 확인)"
+    },
+    {
+      "questionId": "GQ-110",
+      "question": "5세대로 전환하면 보험금을 받은 이력이 있어도 가능한가요?",
+      "expectedRoute": "IN",
+      "expectedId": "IN-15",
+      "expectedPages": [
+        "FSC-5G-01 p.7",
+        "KNIA-04 p.1",
+        "GEN4-02 p.9",
+        "GEN4-02 p.10"
+      ],
+      "split": "dev",
+      "origin": "오탐 확인",
+      "note": "보험금 단어"
+    }
+  ]
+}

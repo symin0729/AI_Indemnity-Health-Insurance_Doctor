@@ -10,7 +10,8 @@ import QuestionChips from "./QuestionChips";
 
 export default function ResultChatbot() {
   const navigate = useNavigate();
-  const hasResultState = useAnalysisStore((state) => state.contract !== null);
+  const contract = useAnalysisStore((state) => state.contract);
+  const hasResultState = contract !== null;
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState<ChatResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -39,7 +40,11 @@ export default function ResultChatbot() {
         mode: "GENERAL",
         consentGranted: true,
         consentPolicyVersion: "ai-chat-1.0",
-        context: { screen: "RESULT" },
+        context: contract ? {
+          screen: "RESULT",
+          productCode: ({1:"SAMSUNG_0904_2",2:"SAMSUNG_1611_7",3:"SAMSUNG_1704_1",4:"SAMSUNG_2107_1",5:"SAMSUNG_2605_1"} as const)[contract.generation],
+          generation: contract.generation,
+        } : { screen: "RESULT" },
       }, controller.signal);
       setAnswer(response);
     } catch (error) {
@@ -96,7 +101,7 @@ export default function ResultChatbot() {
           <div>
             <span className="step-badge">선택 STEP 6 · 보험 이해 도우미</span>
             <h1>실손보험, 궁금한 점을<br />쉽게 물어보세요.</h1>
-            <p>공식 자료를 바탕으로 실손보험 제도와 용어를 설명합니다.</p>
+            <p>공식 자료를 바탕으로 5세대 전환을 판단할 때 필요한 질문에 답합니다.</p>
           </div>
           <div className="chat-privacy-card">
             <span aria-hidden="true">✓</span>
@@ -125,7 +130,7 @@ export default function ResultChatbot() {
                 id="chat-question"
                 value={question}
                 onChange={(event) => setQuestion(event.target.value.slice(0, 300))}
-                placeholder="예: 자기부담금은 어떤 뜻인가요?"
+                placeholder="실손보험이나 5세대 전환에 관해 궁금한 내용을 입력해 주세요."
                 rows={2}
                 disabled={isLoading}
               />
@@ -135,7 +140,7 @@ export default function ResultChatbot() {
               </button>
             </div>
             <div className="chat-composer__meta">
-              <span>개인정보와 치료정보는 입력하지 마세요.</span>
+              <span>개인정보, 치료기록, 증권번호는 입력하지 마세요.</span>
               <span>{question.length} / 300</span>
             </div>
           </form>

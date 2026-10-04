@@ -1,3 +1,5 @@
+import { gen23CareSettingLabel } from "../../domain/samsungGen23CareSetting";
+import { Gen23Summary } from "../../components/samsung/Gen23Inputs";
 import AppShell from "../../components/AppShell";
 import { useState } from "react";
 import { createPortal } from "react-dom";
@@ -265,6 +267,25 @@ function M03ConfirmPage() {
                 <strong>{productCalculationSelections.gen1ContractBasis}</strong>
               </div>
             </>
+          ) : contract.generation === 2 ||
+            contract.generation === 3 ? (
+            <>
+              <div>
+                <p className="amount-label">
+                  상품 종형
+                </p>
+
+                <strong>
+                  {productCalculationSelections.samsungGen23Variant ===
+                  "standard"
+                    ? "1종 표준형"
+                    : productCalculationSelections.samsungGen23Variant ===
+                      "selected2"
+                    ? "2종 선택형Ⅱ"
+                    : "확인 필요"}
+                </strong>
+              </div>
+            </>
           ) : contract.generation === 5 ? (
             <>
               <div>
@@ -454,11 +475,11 @@ function M03ConfirmPage() {
                   </strong>
                 </div>
 
+                {(contract.generation === 2 || contract.generation === 3) && <Gen23Summary generation={contract.generation} usage={usage} />}
                 <p className="treatment-meta">
-                  {usage.careSetting ===
-                  "OUTPATIENT"
-                    ? "통원"
-                    : "입원"}
+                  {contract.generation === 2 || contract.generation === 3
+                    ? gen23CareSettingLabel(usage)
+                    : usage.careSetting === "OUTPATIENT" ? "통원" : "입원"}
                   {" · "}
                   {usage.benefitClass ===
                   "COVERED"
@@ -608,7 +629,7 @@ function M03ConfirmPage() {
             </p>
 
             <strong>
-              mvp-v2
+              삼성 {contract.generation}세대 상품별 실행 스펙 · 초안 검산
             </strong>
           </div>
 
@@ -628,7 +649,7 @@ function M03ConfirmPage() {
             </p>
 
             <strong>
-              회차별 M 계산 후 약관 계산 단위 적용
+              한 계산 단위 검산 · 반복 횟수·여러 치료의 연간 합산은 확인 필요
             </strong>
           </div>
 
@@ -731,7 +752,7 @@ function M03ConfirmPage() {
 
       <div className="notice-box warning">
         본 비교는 사용자가 확인한 입력값과
-        mvp-v2 룰셋을 이용한 모의 계산입니다.
+        삼성 상품별 실행 스펙을 이용한 초안 검산입니다. 미확인 조건은 계산을 보류합니다.
         실제 보험금, 가입 가능 여부,
         전환 보험료를 확정하지 않으며
         보험상품 전환을 권유하지 않습니다.

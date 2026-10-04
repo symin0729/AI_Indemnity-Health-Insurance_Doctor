@@ -1,0 +1,9 @@
+{
+  "schemaVersion": "1.0",
+  "description": "RAGFlow 검색어 보강 규칙. 서비스(api/lib/retrievalQuery.ts)와 평가(scripts/evaluate-ragflow-retrieval.py)가 같은 파일을 읽는다. 규칙을 바꾸면 검색 평가를 다시 실행한다.",
+  "benefitIntentPattern": "보상|공제|한도|자기부담|본인부담|계산|보험금|지급|비율|퍼센트|%|얼마|횟수|부담",
+  "benefitSuffix": "보상금액 공제금액 보상한도",
+  "glossary": [
+    { "pattern": "MRI|MRA|엠알아이", "append": "자기공명영상진단" }
+  ]
+}
