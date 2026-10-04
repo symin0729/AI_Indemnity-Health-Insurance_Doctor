@@ -1,4 +1,5 @@
 import SamsungComparisonResults from '../../components/samsung/SamsungComparisonResults';
+import headerLogo from '../../assets/header-logo.png';
 import AppShell from "../../components/AppShell";
 import {
   useEffect,
@@ -36,6 +37,99 @@ function formatMoney(
   }
 
   return `${value.toLocaleString()}원`;
+}
+
+function BurdenComparisonChart({
+  currentBurden,
+  targetBurden,
+}: {
+  currentBurden: number | null;
+  targetBurden: number | null;
+}) {
+  if (currentBurden === null || targetBurden === null) {
+    return (
+      <div className="burden-chart burden-chart--unavailable">
+        계산에 필요한 항목을 확인하면 금액 비교 그래프가 표시됩니다.
+      </div>
+    );
+  }
+
+  const maximumBurden = Math.max(currentBurden, targetBurden, 1);
+  const difference = currentBurden - targetBurden;
+  const absoluteDifference = Math.abs(difference);
+  const savingRate =
+    currentBurden > 0
+      ? (absoluteDifference / currentBurden) * 100
+      : 0;
+
+  const rows = [
+    {
+      label: "현재 계약 유지",
+      shortLabel: "유지",
+      value: currentBurden,
+      width: (currentBurden / maximumBurden) * 100,
+      tone: "current",
+    },
+    {
+      label: "5세대 비교안",
+      shortLabel: "전환",
+      value: targetBurden,
+      width: (targetBurden / maximumBurden) * 100,
+      tone: "target",
+    },
+  ];
+
+  const conclusion =
+    difference > 0
+      ? `5세대 전환 시 연간 ${absoluteDifference.toLocaleString()}원 절감`
+      : difference < 0
+        ? `현재 계약 유지 시 연간 ${absoluteDifference.toLocaleString()}원 절감`
+        : "두 선택지의 연간 총부담이 같습니다";
+
+  return (
+    <div className="burden-chart" aria-label="연간 총부담 금액 비교 그래프">
+      <div className="burden-chart__heading">
+        <div>
+          <span className="burden-chart__eyebrow">금액 차이 시각화</span>
+          <h3>연간 총부담 비교</h3>
+          <p>룰엔진 계산 결과를 기준으로 막대 길이가 자동 반영됩니다.</p>
+        </div>
+        <div className="burden-chart__difference">
+          <small>연간 차이</small>
+          <strong>{absoluteDifference.toLocaleString()}원</strong>
+          {difference !== 0 && currentBurden > 0 && (
+            <span>{savingRate.toFixed(1)}% 차이</span>
+          )}
+        </div>
+      </div>
+
+      <div className="burden-chart__plot">
+        {rows.map((row) => (
+          <div className="burden-chart__row" key={row.tone}>
+            <span className="burden-chart__label" title={row.label}>
+              {row.shortLabel}
+            </span>
+            <div className="burden-chart__track">
+              <div
+                className={`burden-chart__bar burden-chart__bar--${row.tone}`}
+                style={{ width: `${row.width}%` }}
+                role="meter"
+                aria-label={`${row.label} ${row.value.toLocaleString()}원`}
+                aria-valuemin={0}
+                aria-valuemax={maximumBurden}
+                aria-valuenow={row.value}
+              />
+            </div>
+            <strong className="burden-chart__value">
+              {row.value.toLocaleString()}원
+            </strong>
+          </div>
+        ))}
+      </div>
+
+      <p className="burden-chart__conclusion">{conclusion}</p>
+    </div>
+  );
 }
 
 function getStatusLabel(
@@ -1204,7 +1298,7 @@ function M04ResultPage() {
             }}
           >
             <img
-              src="/ai-insurance-result.png"
+              src={headerLogo}
               alt="AI 실손 닥터 보험 비교 결과 안내"
               style={{
                 width: "min(100%, 260px)",
@@ -1223,9 +1317,9 @@ function M04ResultPage() {
           padding: "clamp(22px, 4vw, 34px)",
           borderRadius: "24px",
           background:
-            "linear-gradient(135deg, #0f4778 0%, #1f659f 58%, #2f77b0 100%)",
+            "linear-gradient(135deg, #173d5f 0%, #255578 58%, #326887 100%)",
           color: "#ffffff",
-          boxShadow: "0 18px 44px rgba(18, 72, 120, 0.18)",
+          boxShadow: "0 18px 44px rgba(15, 43, 67, 0.17)",
         }}
       >
         <div
@@ -1315,6 +1409,11 @@ function M04ResultPage() {
             </strong>
           </div>
         </div>
+
+        <BurdenComparisonChart
+          currentBurden={current.totalBurden}
+          targetBurden={target5G.totalBurden}
+        />
 
         {!isComparisonAvailable && (
           <div

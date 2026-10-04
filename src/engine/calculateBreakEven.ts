@@ -416,6 +416,8 @@ export interface CalculateBreakEvenBySimulationParams {
   ) => BreakEvenSimulationEvaluation;
 }
 
+const MAX_BREAK_EVEN_SEARCH_POINTS = 10_001;
+
 function preferredFromDifference(
   difference: number,
   tolerance: number
@@ -463,7 +465,13 @@ export function calculateBreakEvenBySimulation({
       maxFrequency
     ) ||
     minFrequency < 0 ||
-    maxFrequency < minFrequency
+    maxFrequency < minFrequency ||
+    maxFrequency - minFrequency + 1 >
+      MAX_BREAK_EVEN_SEARCH_POINTS ||
+    !Number.isFinite(
+      equalityTolerance
+    ) ||
+    equalityTolerance < 0
   ) {
     return {
       status:
@@ -501,7 +509,7 @@ export function calculateBreakEvenBySimulation({
       points: [],
 
       warnings: [
-        "손익분기 탐색 범위를 확인해주세요.",
+        "손익분기 탐색 범위와 동률 허용치를 확인해주세요.",
       ],
 
       message:
@@ -523,8 +531,45 @@ export function calculateBreakEvenBySimulation({
     maxFrequency;
     frequency += 1
   ) {
-    const evaluated =
-      evaluate(frequency);
+    let evaluated:
+      BreakEvenSimulationEvaluation;
+
+    try {
+      evaluated =
+        evaluate(frequency);
+    } catch {
+      return {
+        status:
+          "CONFIRMATION_REQUIRED",
+
+        method:
+          "DISCRETE_SEARCH",
+
+        rangeChecked: {
+          min:
+            minFrequency,
+          max:
+            maxFrequency,
+        },
+
+        threshold: null,
+
+        exactTieFrequencies: [],
+        reversalIntervals: [],
+        points,
+
+        warnings:
+          Array.from(
+            new Set([
+              ...warnings,
+              `${frequency}회 조건의 총부담 계산 중 오류가 발생했습니다.`,
+            ])
+          ),
+
+        message:
+          "손익분기 탐색 중 계산 오류가 발생해 결과를 확정하지 않습니다.",
+      };
+    }
 
     if (
       evaluated.warnings
