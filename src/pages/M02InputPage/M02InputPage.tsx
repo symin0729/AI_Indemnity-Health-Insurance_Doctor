@@ -1,7 +1,5 @@
-import { SamsungPrecisionInputs } from '../../components/samsung/SamsungPrecisionInputs';
 import { InputHelp } from "../../components/InputHelp";
-import { shouldDisableAddTreatmentButton } from "./treatmentButtonState";
-import { createDraftFromUsage, createEmptyTreatmentDraft, getSeparateVisitWarningMessage, getTreatmentAddButtonLabel, getTreatmentAdditionalInfoFields, getTreatmentAddLabel, type TreatmentDraft } from "./treatmentSequence";
+import { createDraftFromUsage, createEmptyTreatmentDraft, getSeparateVisitWarningMessage, getTreatmentAdditionalInfoFields, getTreatmentAddLabel, type TreatmentDraft } from "./treatmentSequence";
 import { formatInceptionDateInput, generationForInceptionDate, generationSalesPeriod, generalPatientCopayPercent, inceptionDateForGeneration, type CopayInstitution, type CopayRegion } from "../../domain/insuranceInputDefaults";
 import { genericGen23CareSetting, syncGen23CareSetting, gen23CareSettingError } from "../../domain/samsungGen23CareSetting";
 import { Gen23Inputs } from "../../components/samsung/Gen23Inputs";
@@ -550,17 +548,21 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
   const [isTreatmentFormOpen, setIsTreatmentFormOpen] =
     useState(savedUsages.length === 0);
 
-  const [currentTreatmentSlotIndex, setCurrentTreatmentSlotIndex] =
-    useState(0);
+  const currentTreatmentSlotIndex = 0;
 
   const [treatmentDrafts, setTreatmentDrafts] = useState<Record<number, TreatmentDraft>>({});
+  const treatmentSampleTemplatesRef = useRef<Record<number, MedicalUsage>>({});
 
   const [isStep3Confirmed, setIsStep3Confirmed] = useState(false);
   const [isTargetPremiumHelpConfirmed, setIsTargetPremiumHelpConfirmed] = useState(false);
   const [isTreatmentHelpConfirmed, setIsTreatmentHelpConfirmed] = useState(false);
 
-  const [hasNoPlannedTreatment, setHasNoPlannedTreatment] =
-    useState(false);
+  useEffect(() => {
+    if (generation === 4 && gen4NonCoveredRider === "UNKNOWN") {
+      setGen4NonCoveredRider("ENROLLED");
+    }
+  }, [generation, gen4NonCoveredRider, setGen4NonCoveredRider]);
+
 
   const [
     errorMessage,
@@ -637,6 +639,14 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
 
       // 원본 HTML의 검증용 샘플과 같은 비교 조건을 함께 채운다.
       setTarget5GMonthlyPremiumInput("35000");
+      setHasTarget5GSpecialRider1(false);
+      setGen5SevereRider("NOT_ENROLLED");
+      if (scenario.target5GSpecialRider2 !== null) {
+        setHasTarget5GSpecialRider2(scenario.target5GSpecialRider2);
+        setGen5NonSevereRider(
+          scenario.target5GSpecialRider2 ? "ENROLLED" : "NOT_ENROLLED"
+        );
+      }
 
       /**
        * 샘플 시나리오에 명시된 계산 가정도
@@ -735,7 +745,10 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
   const saveCurrentTreatmentDraft = (slotIndex = currentTreatmentSlotIndex) => {
     setTreatmentDrafts((previous) => ({
       ...previous,
-      [slotIndex]: buildCurrentTreatmentDraft(),
+      [slotIndex]: {
+        ...buildCurrentTreatmentDraft(),
+        sourceUsage: previous[slotIndex]?.sourceUsage,
+      },
     }));
   };
 
@@ -773,6 +786,7 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
       ...previous,
       [currentTreatmentSlotIndex]: emptyDraft,
     }));
+    delete treatmentSampleTemplatesRef.current[currentTreatmentSlotIndex];
   };
 
   // ========================================
@@ -808,7 +822,7 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
     );
 
     setPlannedUsages([]);
-    setHasNoPlannedTreatment(false);
+    treatmentSampleTemplatesRef.current = {};
     setIsStep3Confirmed(false);
     setIsTargetPremiumHelpConfirmed(false);
     setIsTreatmentHelpConfirmed(false);
@@ -957,8 +971,13 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
       }
       catch (error) { setErrorMessage(error instanceof Error ? error.message : "계산 입력을 확인해주세요."); return null; }
     }
-    const usage: MedicalUsage = {
+    const sourceUsage = {
+      ...(treatmentSampleTemplatesRef.current[currentTreatmentSlotIndex] ??
+        treatmentDrafts[currentTreatmentSlotIndex]?.sourceUsage),
       ...(id ? plannedUsages.find(item => item.id === id) : {}),
+    } as Partial<MedicalUsage>;
+    const usage: MedicalUsage = {
+      ...sourceUsage,
       ...gen23Values,
       id:
         id ??
@@ -1020,6 +1039,40 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
       } : {}),
     };
 
+    if (generation === 2 || generation === 3) {
+      usage.samsungCalculationInput = {
+        ...sourceUsage.samsungCalculationInput,
+        eligibleExpense:
+          sourceUsage.samsungCalculationInput?.eligibleExpense ??
+          coveredAmountNumber ??
+          (assumeEntireMedicalCostCovered ? unitCostNumber : undefined),
+        requiredCoverageConfirmed:
+          sourceUsage.samsungCalculationInput?.requiredCoverageConfirmed ??
+          usage.gen23RequiredCoverageConfirmed,
+        policyExclusionsCleared:
+          sourceUsage.samsungCalculationInput?.policyExclusionsCleared ??
+          usage.gen23PolicyExclusionsCleared,
+        otherIndemnityPoliciesExist:
+          sourceUsage.samsungCalculationInput?.otherIndemnityPoliciesExist ??
+          usage.gen23OtherIndemnityPoliciesExist,
+        coveragePeriodConfirmed:
+          sourceUsage.samsungCalculationInput?.coveragePeriodConfirmed ??
+          usage.gen23CoveragePeriodConfirmed,
+        sameDayAggregationConfirmed:
+          sourceUsage.samsungCalculationInput?.sameDayAggregationConfirmed ??
+          usage.gen23SameDayAggregationConfirmed,
+        priorPaidBenefit:
+          sourceUsage.samsungCalculationInput?.priorPaidBenefit ??
+          usage.gen23PriorPaidBenefit,
+        priorAnnualCount:
+          sourceUsage.samsungCalculationInput?.priorAnnualCount ??
+          usage.gen23PriorAnnualCount,
+        priorEligibleDeductible:
+          sourceUsage.samsungCalculationInput?.priorEligibleDeductible ??
+          usage.gen23PriorEligibleDeductible,
+      };
+    }
+
     return usage;
   };
 
@@ -1069,38 +1122,7 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
     }
 
     resetTreatmentForm();
-    setHasNoPlannedTreatment(false);
     setIsTreatmentFormOpen(false);
-  };
-
-  const handleStartNewTreatment = (slotIndex = 0) => {
-    const targetDraft = treatmentDrafts[slotIndex] ?? createEmptyTreatmentDraft();
-
-    if (isTreatmentFormOpen && !editingUsageId) {
-      saveCurrentTreatmentDraft();
-      setCurrentTreatmentSlotIndex(slotIndex);
-      setIsTreatmentFormOpen(true);
-      applyTreatmentDraft(targetDraft);
-      setErrorMessage("");
-      setHasNoPlannedTreatment(false);
-      return;
-    }
-
-    if (plannedUsages.length >= MAX_TREATMENTS) {
-      setErrorMessage(`예정 치료는 최대 ${MAX_TREATMENTS}건까지 등록할 수 있습니다.`);
-      return;
-    }
-
-    saveCurrentTreatmentDraft();
-    setCurrentTreatmentSlotIndex(slotIndex);
-    setErrorMessage("");
-    setHasNoPlannedTreatment(false);
-    setIsTreatmentFormOpen(true);
-    if (targetDraft) {
-      applyTreatmentDraft(targetDraft);
-    } else {
-      resetTreatmentForm();
-    }
   };
 
   const [treatmentSampleNotice, setTreatmentSampleNotice] = useState("");
@@ -1121,6 +1143,7 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
       }
 
       const nextDraft = createDraftFromUsage(sampleUsage);
+      treatmentSampleTemplatesRef.current[currentTreatmentSlotIndex] = sampleUsage;
       saveCurrentTreatmentDraft();
       setTreatmentDrafts((previous) => ({
         ...previous,
@@ -1136,7 +1159,6 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
       setTreatmentSampleNotice(scenario.notice + ((generation === 2 || generation === 3) && samsungGen23Variant === "UNKNOWN" ? " 종형 미선택으로 표준형 예제를 불러왔습니다." : ""));
 
       applyTreatmentDraft(nextDraft);
-      setHasNoPlannedTreatment(false);
       setIsTreatmentFormOpen(true);
       setSampleScenarioNotice(scenario.notice);
       setErrorMessage("");
@@ -1320,6 +1342,18 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
       return;
     }
 
+    if (plannedUsages.length === 0) {
+      setErrorMessage("예정 치료를 입력한 뒤 하단의 ‘추가하기’ 버튼을 눌러 등록해주세요.");
+      goToInputStep(2);
+      return;
+    }
+
+    if (editingUsageId) {
+      setErrorMessage("수정 중인 예정 치료는 ‘수정 확인’ 버튼을 눌러 저장해주세요.");
+      goToInputStep(2);
+      return;
+    }
+
     const currentPremiumNumber =
       Number(monthlyPremium);
 
@@ -1441,55 +1475,9 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
       return;
     }
 
-    let finalUsages = [
+    const finalUsages = [
       ...plannedUsages,
     ];
-
-    if (
-      treatmentName.trim() ||
-      unitCost ||
-      treatmentDate ||
-      treatmentCategory.trim() ||
-      institutionType ||
-      healthInsuranceCopayRatePercent ||
-      coveredAmount
-    ) {
-      if (
-        !editingUsageId &&
-        finalUsages.length >= MAX_TREATMENTS
-      ) {
-        setErrorMessage(
-          `예정 치료는 최대 ${MAX_TREATMENTS}건까지 등록할 수 있습니다.`
-        );
-        return;
-      }
-
-      const currentUsage =
-        createCurrentUsage(
-          editingUsageId ??
-            undefined
-        );
-
-      if (!currentUsage) {
-        return;
-      }
-
-      if (editingUsageId) {
-        finalUsages =
-          finalUsages.map(
-            (usage) =>
-              usage.id ===
-              editingUsageId
-                ? currentUsage
-                : usage
-          );
-      } else {
-        finalUsages = [
-          ...finalUsages,
-          currentUsage,
-        ];
-      }
-    }
 
     const distinctTreatmentDates = new Set(
       finalUsages
@@ -1650,6 +1638,14 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
     }
     if (!isTargetPremiumHelpConfirmed) {
       showTargetPremiumHelp();
+      return;
+    }
+    if (plannedUsages.length === 0) {
+      setErrorMessage("예정 치료를 입력한 뒤 하단의 ‘추가하기’ 버튼을 눌러 등록해주세요.");
+      return;
+    }
+    if (editingUsageId) {
+      setErrorMessage("수정 중인 예정 치료는 ‘수정 확인’ 버튼을 눌러 저장해주세요.");
       return;
     }
     goToInputStep(3);
@@ -1927,12 +1923,11 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
             보험사
           <input
             type="text"
-            value={insurer}
-            onChange={(e) =>
-              setInsurer(
-                e.target.value
-              )
-            }
+            value={selectedSampleId ? "○○보험" : insurer}
+            onChange={(e) => {
+              setSelectedSampleId(null);
+              setInsurer(e.target.value);
+            }}
             placeholder="예: OO손해보험"
           />
         </label>
@@ -1941,12 +1936,11 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
           상품명
           <input
             type="text"
-            value={productName}
-            onChange={(e) =>
-              setProductName(
-                e.target.value
-              )
-            }
+            value={selectedSampleId ? "○○ 실손의료보험" : productName}
+            onChange={(e) => {
+              setSelectedSampleId(null);
+              setProductName(e.target.value);
+            }}
             placeholder="보험 상품명"
           />
         </label>
@@ -2210,21 +2204,7 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
                 </span>
               </label>
 
-              <label className="generation-classification__option">
-                <input
-                  type="radio"
-                  name="gen4-rider"
-                  checked={gen4NonCoveredRider === "UNKNOWN"}
-                  onChange={() => setGen4NonCoveredRider("UNKNOWN")}
-                />
-                <span>
-                  <strong>확인 필요</strong>
-                  <small>비급여 특약 가입 여부를 알 수 없음</small>
-                </span>
-              </label>
             </div>
-
-            {gen4NonCoveredRider === "UNKNOWN" && <div className="notice-box">비급여 계산을 중단합니다. 보험증권에서 특약 가입 여부를 확인해주세요.</div>}
           </fieldset>
         )}
 
@@ -2431,48 +2411,13 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
           <div className="treatment-compact-actions">
             <button type="button" className={`sample-button required-confirm-button${isTreatmentHelpConfirmed ? " is-confirmed" : ""}`} aria-haspopup="dialog" onClick={() => treatmentHelpDialogRef.current?.showModal()}>{isTreatmentHelpConfirmed ? "✓ 필수 입력 안내 확인 완료" : "필수 입력 안내 확인"}</button>
             <button type="button" className="sample-button" aria-haspopup="dialog" onClick={() => treatmentSampleDialogRef.current?.showModal()} disabled={isTreatmentLimitReached}>치료 샘플 불러오기</button>
-            {[0, 1, 2].map((slotIndex) => (
-              <button
-                key={slotIndex}
-                type="button"
-                className="primary-button"
-                onClick={() => handleStartNewTreatment(slotIndex)}
-                disabled={shouldDisableAddTreatmentButton({ isTreatmentFormOpen, isTreatmentLimitReached })}
-              >
-                {slotIndex === 0 ? getTreatmentAddButtonLabel() : getTreatmentAddLabel(slotIndex)}
-              </button>
-            ))}
           </div>
         </div>
 
         <p className="card-description" style={{ fontSize: "0.85rem" }}>
-          앞으로 예상되는 의료이용을
-          선택적으로 입력합니다. 치료는 최대 3건까지
-          추가하거나 수정할 수 있습니다.
+          앞으로 예상되는 의료이용을 입력한 뒤 반드시 하단의 ‘추가하기’를 눌러주세요.
+          치료는 최대 3건까지 추가하거나 수정할 수 있습니다.
         </p>
-
-        {plannedUsages.length === 0 && (
-          <label className={`no-treatment-option${hasNoPlannedTreatment ? " is-selected" : ""}`}>
-            <input
-              type="checkbox"
-              checked={hasNoPlannedTreatment}
-              onChange={(event) => {
-                const isChecked = event.target.checked;
-                setHasNoPlannedTreatment(isChecked);
-                if (isChecked) {
-                  resetTreatmentForm();
-                  setIsTreatmentFormOpen(false);
-                } else {
-                  setIsTreatmentFormOpen(true);
-                }
-              }}
-            />
-            <span>
-              <strong>예정 치료가 없습니다.</strong>
-              <small>예정된 의료이용 없이 보험료만 비교합니다.</small>
-            </span>
-          </label>
-        )}
 
         {isTreatmentFormOpen && <>
           <fieldset className="form-card">
@@ -3576,7 +3521,6 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
           </section>
         </div>
       )}
-      {activeStep === 2 && plannedUsages.map(usage => <SamsungPrecisionInputs key={usage.id} usage={usage} onChange={updated => setPlannedUsages(previous => previous.map(item => item.id === updated.id ? updated : item))} />)}
     </main>
     </AppShell>
   );
