@@ -14,6 +14,7 @@ import { calculateBreakEvenBySimulation } from './calculateBreakEven';
  * 한도 직후의 총부담 변화까지 확인할 수 있게 120회까지 탐색한다.
  */
 export const SAMSUNG_BREAK_EVEN_MAX_FREQUENCY = 120;
+const MAX_SUPPORTED_ANNUAL_USAGE_FREQUENCY = 10_000;
 
 export const samsungCalculationLabel = (generation: number) => `삼성 ${generation}세대 · 상품별 실행 스펙 · 초안 검산`;
 
@@ -218,6 +219,42 @@ function calculateScenarioOccurrences(
   accumulator: RunningLimitAccumulator,
 ) {
   const generation = target ? 5 : contract.generation;
+  const medicalCost = usage.patientPaidAmount ?? usage.unitCost;
+  if (
+    !Number.isInteger(usage.frequency) ||
+    usage.frequency < 1 ||
+    usage.frequency > MAX_SUPPORTED_ANNUAL_USAGE_FREQUENCY
+  ) {
+    return {
+      total: null,
+      latest: {
+        claim: null,
+        deductible: null,
+        capEligibleDeductible: null,
+        reasons: [`연간 예상 이용 횟수는 1~${MAX_SUPPORTED_ANNUAL_USAGE_FREQUENCY.toLocaleString('ko-KR')} 범위의 정수여야 합니다.`],
+        ruleId: '',
+      },
+    };
+  }
+  if (
+    !Number.isFinite(usage.unitCost) ||
+    usage.unitCost <= 0 ||
+    (usage.patientPaidAmount !== undefined &&
+      (!Number.isFinite(usage.patientPaidAmount) || usage.patientPaidAmount < 0)) ||
+    !Number.isFinite(medicalCost) ||
+    medicalCost < 0
+  ) {
+    return {
+      total: null,
+      latest: {
+        claim: null,
+        deductible: null,
+        capEligibleDeductible: null,
+        reasons: ['회당 환자부담 의료비를 확인해주세요.'],
+        ruleId: '',
+      },
+    };
+  }
   if (usage.frequency > 1 && !assumptions.assumeEachOccurrenceSeparate) {
     const unresolved = calculateSamsungComparisonItem(contract, selections, usage, assumptions, target);
     return {
@@ -277,8 +314,17 @@ export function calculateSamsungAnnualComparison(
     const target = calculateScenarioOccurrences(targetContract, selections, usage, assumptions, true, targetStates);
     return { usage, current: current.latest, target: target.latest, currentClaimTotal: current.total, targetClaimTotal: target.total };
   });
-  const complete = items.every((item) => item.currentClaimTotal !== null && item.targetClaimTotal !== null);
-  const medicalCost = usages.reduce((sum, usage) => sum + (usage.patientPaidAmount ?? usage.unitCost) * usage.frequency, 0);
+  const premiumsValid = Number.isFinite(contract.monthlyPremium)
+    && contract.monthlyPremium > 0
+    && Number.isFinite(target5GMonthlyPremium)
+    && target5GMonthlyPremium > 0;
+  const usageCosts = usages.map((usage) => (usage.patientPaidAmount ?? usage.unitCost) * usage.frequency);
+  const medicalCost = usageCosts.every((cost) => Number.isFinite(cost) && cost >= 0)
+    ? usageCosts.reduce((sum, cost) => sum + cost, 0)
+    : null;
+  const complete = premiumsValid
+    && medicalCost !== null
+    && items.every((item) => item.currentClaimTotal !== null && item.targetClaimTotal !== null);
   const currentClaimTotal = complete ? items.reduce((sum, item) => sum + (item.currentClaimTotal ?? 0), 0) : null;
   const targetClaimTotal = complete ? items.reduce((sum, item) => sum + (item.targetClaimTotal ?? 0), 0) : null;
   return {
@@ -287,8 +333,8 @@ export function calculateSamsungAnnualComparison(
     medicalCost,
     currentClaimTotal,
     targetClaimTotal,
-    currentTotal: currentClaimTotal === null ? null : contract.monthlyPremium * 12 + medicalCost - currentClaimTotal,
-    targetTotal: targetClaimTotal === null ? null : target5GMonthlyPremium * 12 + medicalCost - targetClaimTotal,
+    currentTotal: currentClaimTotal === null || medicalCost === null ? null : contract.monthlyPremium * 12 + medicalCost - currentClaimTotal,
+    targetTotal: targetClaimTotal === null || medicalCost === null ? null : target5GMonthlyPremium * 12 + medicalCost - targetClaimTotal,
   };
 }
 
@@ -301,7 +347,7 @@ export function calculateSamsungAnnualBreakEven(
   assumptions: AnalysisCalculationAssumptions,
   usageId: string,
 ) {
-  if (!usages.some((usage) => usage.id === usageId)) return null;
+  if (usages.filter((usage) => usage.id === usageId).length !== 1) return null;
   return calculateBreakEvenBySimulation({
     minFrequency: 0,
     maxFrequency: SAMSUNG_BREAK_EVEN_MAX_FREQUENCY,

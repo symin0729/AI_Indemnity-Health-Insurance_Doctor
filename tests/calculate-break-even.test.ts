@@ -38,4 +38,30 @@ describe('calculateBreakEvenBySimulation', () => {
     });
     expect(result.points).toHaveLength(121);
   });
+
+  it('fails closed when an evaluation throws', () => {
+    const result = calculateBreakEvenBySimulation({
+      maxFrequency: 10,
+      evaluate: (frequency) => {
+        if (frequency === 3) throw new Error('calculation failed');
+        return { currentTotalBurden: 100, targetTotalBurden: 90 };
+      },
+    });
+
+    expect(result).toMatchObject({
+      status: 'CONFIRMATION_REQUIRED',
+      threshold: null,
+      message: '손익분기 탐색 중 계산 오류가 발생해 결과를 확정하지 않습니다.',
+    });
+    expect(result.points).toHaveLength(3);
+    expect(result.warnings).toContain('3회 조건의 총부담 계산 중 오류가 발생했습니다.');
+  });
+
+  it('rejects a search range large enough to freeze the UI', () => {
+    const evaluate = vi.fn(() => ({ currentTotalBurden: 100, targetTotalBurden: 90 }));
+    const result = calculateBreakEvenBySimulation({ maxFrequency: 10_001, evaluate });
+
+    expect(result.status).toBe('CONFIRMATION_REQUIRED');
+    expect(evaluate).not.toHaveBeenCalled();
+  });
 });
