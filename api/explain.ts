@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { getConfig } from "./_lib/config";
-import { jsonResponse } from "./_lib/http";
-import { ConsentValidationError, validateConsent } from "./_lib/validateConsent";
+import { getConfig } from "./_lib/config.js";
+import { jsonResponse } from "./_lib/http.js";
+import { ConsentValidationError, validateConsent } from "./_lib/validateConsent.js";
 
 const requestSchema = z.object({
   productCode: z.string().trim().min(1),

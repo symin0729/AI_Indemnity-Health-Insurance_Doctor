@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { fetchWithTimeout } from "./http";
-import type { LlmAnswer } from "./types";
+import { fetchWithTimeout } from "./http.js";
+import type { LlmAnswer } from "./types.js";
 
 const answerSchema = z.object({
   answer: z.string().min(1),

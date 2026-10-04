@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { ChatRequest } from "./types";
+import type { ChatRequest } from "./types.js";
 
 const chatRequestSchema = z.object({
   question: z.string().trim().min(1),

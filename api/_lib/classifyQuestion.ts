@@ -1,4 +1,4 @@
-import { redactPersonalData } from "./redactPersonalData";
+import { redactPersonalData } from "./redactPersonalData.js";
 
 /**
  * 챗봇 질문 분류 (docs/ai-silson-doctor/19_chatbot_master_guide.md 2장).

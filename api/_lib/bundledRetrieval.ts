@@ -1,6 +1,6 @@
-import policyChunks from "../_data/policy-chunks.json";
-import { isAllowedRagStatus } from "./ragFilters";
-import type { RetrievedEvidence } from "./types";
+import policyChunks from "../_data/policy-chunks.json" with { type: "json" };
+import { isAllowedRagStatus } from "./ragFilters.js";
+import type { RetrievedEvidence } from "./types.js";
 
 /**
  * 배포 환경용 근거 검색. RAGFlow(로컬 Docker)에 닿지 못할 때 배포 파일 안에 포함된 정책자료 청크에서 직접 찾는다.

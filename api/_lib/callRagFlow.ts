@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { fetchWithTimeout } from "./http";
-import { buildRetrievalQuery } from "./retrievalQuery";
-import { isAllowedRagStatus, matchesRagFilters, type RagFilters } from "./ragFilters";
-import type { RetrievedEvidence } from "./types";
+import { fetchWithTimeout } from "./http.js";
+import { buildRetrievalQuery } from "./retrievalQuery.js";
+import { isAllowedRagStatus, matchesRagFilters, type RagFilters } from "./ragFilters.js";
+import type { RetrievedEvidence } from "./types.js";
 
 const ragflowResponseSchema = z.object({
   code: z.number().optional(),

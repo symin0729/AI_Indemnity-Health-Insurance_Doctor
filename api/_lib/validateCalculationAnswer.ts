@@ -1,5 +1,5 @@
-import type { LlmAnswer, RetrievedEvidence } from "./types";
-import { validateAnswer } from "./validateAnswer";
+import type { LlmAnswer, RetrievedEvidence } from "./types.js";
+import { validateAnswer } from "./validateAnswer.js";
 
 export const validateCalculationAnswer = (
   answer: LlmAnswer,
