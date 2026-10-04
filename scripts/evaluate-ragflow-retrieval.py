@@ -46,7 +46,7 @@ parser.add_argument("--cases-file", default=EVAL_PATH, help="평가 문항 파�
 parser.add_argument("--out-path", default=OUT_PATH, help="결과 저장 위치")
 parser.add_argument("--page-index", default="", help="build-pdf-page-index.py 가 만든 JSON. 청크에 위치 정보가 없을 때 글자 대조로 페이지를 찾는다")
 parser.add_argument("--multi-query", action="store_true", help="원문 질문과 보강한 질문을 각각 검색해 RRF(순위 합산)로 합친다. --use-rules 와 함께 쓴다")
-parser.add_argument("--use-rules", action="store_true", help="서비스와 같은 검색어 보강 규칙(api/lib/retrieval-query-rules.json)을 적용한다")
+parser.add_argument("--use-rules", action="store_true", help="서비스와 같은 검색어 보강 규칙(api/_lib/retrieval-query-rules.json)을 적용한다")
 parser.add_argument("--query-suffix", default="", help="질문 뒤에 붙일 도메인 용어 (검색어 보강)")
 parser.add_argument("--show-failed", type=int, default=0, metavar="N", help="실패 문항의 상위 청크 앞부분 N자를 출력한다 (진단용, 저장하지 않음)")
 parser.add_argument("--quiet", action="store_true", help="문항별 줄은 출력하지 않고 요약만 출력")
@@ -64,7 +64,7 @@ RULES = json.load(open(RULES_PATH, encoding="utf-8")) if args.use_rules else Non
 
 
 def build_query(question):
-    """api/lib/retrievalQuery.ts 의 buildRetrievalQuery 와 같은 동작이어야 한다."""
+    """api/_lib/retrievalQuery.ts 의 buildRetrievalQuery 와 같은 동작이어야 한다."""
     if RULES is None:
         return question
     parts = [question]

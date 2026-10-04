@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import golden from "../evals/golden-questions.json";
-import { classifyQuestion } from "../api/lib/classifyQuestion";
+import { classifyQuestion } from "../api/_lib/classifyQuestion";
 
 type GoldenQuestion = {
   questionId: string;

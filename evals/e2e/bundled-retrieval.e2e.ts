@@ -1,13 +1,13 @@
 /**
- * 배포용 내장 검색(api/lib/bundledRetrieval.ts)의 적중률을 RAGFlow 평가와 같은 기준으로 잰다.
+ * 배포용 내장 검색(api/_lib/bundledRetrieval.ts)의 적중률을 RAGFlow 평가와 같은 기준으로 잰다.
  * 적중 = 상위 10개 청크 중 하나가 expectedPages 의 문서(와 쪽)에 해당. 쪽은 청크 글자와 policy-page-index.json 대조.
  *   npx vitest run --config evals/e2e/vitest.config.ts evals/e2e/bundled-retrieval.e2e.ts
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { it } from "vitest";
-import { bundledRetrieve } from "../../api/lib/bundledRetrieval";
-import { fiveGenerationCondition } from "../../api/lib/generationScope";
-import { withRetrievalGlossary } from "../../api/lib/retrievalGlossary";
+import { bundledRetrieve } from "../../api/_lib/bundledRetrieval";
+import { fiveGenerationCondition } from "../../api/_lib/generationScope";
+import { withRetrievalGlossary } from "../../api/_lib/retrievalGlossary";
 
 const index = JSON.parse(readFileSync("knowledge/validation/ragflow/policy-page-index.json", "utf-8")).pages as Record<string, Record<string, string>>;
 const norm = (s: string) => s.normalize("NFC").replace(/\s+/g, "");

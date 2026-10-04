@@ -5,12 +5,12 @@
  */
 import { appendFileSync, readFileSync, writeFileSync } from "node:fs";
 import { it } from "vitest";
-import { callLlm } from "../../api/lib/callLlm";
-import { callRagFlow } from "../../api/lib/callRagFlow";
-import { buildGeneralPrompt } from "../../api/lib/buildGeneralPrompt";
-import { chatbotDatasetId, getConfig } from "../../api/lib/config";
-import { fiveGenerationCondition } from "../../api/lib/generationScope";
-import { withRetrievalGlossary } from "../../api/lib/retrievalGlossary";
+import { callLlm } from "../../api/_lib/callLlm";
+import { callRagFlow } from "../../api/_lib/callRagFlow";
+import { buildGeneralPrompt } from "../../api/_lib/buildGeneralPrompt";
+import { chatbotDatasetId, getConfig } from "../../api/_lib/config";
+import { fiveGenerationCondition } from "../../api/_lib/generationScope";
+import { withRetrievalGlossary } from "../../api/_lib/retrievalGlossary";
 
 const OUT = "knowledge/validation/ragflow/e2e-diagnose.jsonl";
 const FORBIDDEN = /가입하세요|해지하세요|전환하세요|추천합니다|지급됩니다|확실히|반드시|진단|처방|치료하세요|더 좋|더 낫|유리합니다|유리할 수 있|좋은 선택|하는 것이 좋습니다|하는 게 좋습니다/;

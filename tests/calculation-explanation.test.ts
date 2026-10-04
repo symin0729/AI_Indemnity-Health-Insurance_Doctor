@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { validateCalculationAnswer } from "../api/lib/validateCalculationAnswer";
-import type { LlmAnswer, RetrievedEvidence } from "../api/lib/types";
+import { validateCalculationAnswer } from "../api/_lib/validateCalculationAnswer";
+import type { LlmAnswer, RetrievedEvidence } from "../api/_lib/types";
 
 const evidence: RetrievedEvidence[] = [{
   content: "약관상 해당 계산 기준은 20%입니다.",

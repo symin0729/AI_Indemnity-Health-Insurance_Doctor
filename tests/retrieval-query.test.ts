@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildRetrievalQuery } from "../api/lib/retrievalQuery";
+import { buildRetrievalQuery } from "../api/_lib/retrievalQuery";
 
 describe("RAGFlow 검색어 보강", () => {
   it("보상·공제·한도를 묻는 질문 뒤에 약관 표의 용어를 덧붙인다", () => {

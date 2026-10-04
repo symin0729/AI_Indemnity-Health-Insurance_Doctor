@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { evidenceFromMap } from "../api/lib/evidenceFromMap";
-import { lookupEvidence } from "../api/lib/evidenceMap";
+import { evidenceFromMap } from "../api/_lib/evidenceFromMap";
+import { lookupEvidence } from "../api/_lib/evidenceMap";
 
 describe("근거 맵 라우터", () => {
   it("담보 이름이 분명한 질문은 해당 근거 하나를 찾는다", () => {

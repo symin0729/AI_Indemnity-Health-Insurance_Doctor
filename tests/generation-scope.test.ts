@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { asksAboutOtherGenerations, fiveGenerationCondition } from "../api/lib/generationScope";
+import { asksAboutOtherGenerations, fiveGenerationCondition } from "../api/_lib/generationScope";
 
 describe("5세대 우선 검색 범위", () => {
   it.each([

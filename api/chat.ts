@@ -1,18 +1,18 @@
-import { callLlm } from "./lib/callLlm";
-import { bundledRetrieve } from "./lib/bundledRetrieval";
-import { callRagFlow } from "./lib/callRagFlow";
-import { fiveGenerationCondition } from "./lib/generationScope";
-import { withRetrievalGlossary } from "./lib/retrievalGlossary";
-import { buildGeneralPrompt } from "./lib/buildGeneralPrompt";
-import { classifyQuestion } from "./lib/classifyQuestion";
-import { chatbotDatasetId, getConfig, hasLlmConfig, hasRagConfig } from "./lib/config";
-import { fallback, outNotice } from "./lib/fallback";
-import { jsonResponse } from "./lib/http";
-import { redactPersonalData } from "./lib/redactPersonalData";
-import type { ApiErrorBody, ChatResponse } from "./lib/types";
-import { ConsentValidationError, validateConsent } from "./lib/validateConsent";
-import { answerFailureReasons, validateAnswer } from "./lib/validateAnswer";
-import { InputValidationError, validateInput } from "./lib/validateInput";
+import { callLlm } from "./_lib/callLlm";
+import { bundledRetrieve } from "./_lib/bundledRetrieval";
+import { callRagFlow } from "./_lib/callRagFlow";
+import { fiveGenerationCondition } from "./_lib/generationScope";
+import { withRetrievalGlossary } from "./_lib/retrievalGlossary";
+import { buildGeneralPrompt } from "./_lib/buildGeneralPrompt";
+import { classifyQuestion } from "./_lib/classifyQuestion";
+import { chatbotDatasetId, getConfig, hasLlmConfig, hasRagConfig } from "./_lib/config";
+import { fallback, outNotice } from "./_lib/fallback";
+import { jsonResponse } from "./_lib/http";
+import { redactPersonalData } from "./_lib/redactPersonalData";
+import type { ApiErrorBody, ChatResponse } from "./_lib/types";
+import { ConsentValidationError, validateConsent } from "./_lib/validateConsent";
+import { answerFailureReasons, validateAnswer } from "./_lib/validateAnswer";
+import { InputValidationError, validateInput } from "./_lib/validateInput";
 
 async function handler(request: Request): Promise<Response> {
   const requestId = crypto.randomUUID();

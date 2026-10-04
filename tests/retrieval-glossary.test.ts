@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { withRetrievalGlossary } from "../api/lib/retrievalGlossary";
+import { withRetrievalGlossary } from "../api/_lib/retrievalGlossary";
 
 describe("검색어 용어 풀이", () => {
   it("일상 표현에 해당하는 문서 용어를 뒤에 붙인다", () => {

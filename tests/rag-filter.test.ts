@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { callRagFlow } from "../api/lib/callRagFlow";
-import { isAllowedRagStatus, isVerifiedRagMetadata, matchesRagFilters } from "../api/lib/ragFilters";
+import { callRagFlow } from "../api/_lib/callRagFlow";
+import { isAllowedRagStatus, isVerifiedRagMetadata, matchesRagFilters } from "../api/_lib/ragFilters";
 
 afterEach(() => vi.restoreAllMocks());
 
