@@ -27,8 +27,8 @@ try {
     server: { middlewareMode: true, hmr: false },
     appType: "custom",
   });
-  const { callLlm } = await server.ssrLoadModule("/api/lib/callLlm.ts");
-  const { getConfig } = await server.ssrLoadModule("/api/lib/config.ts");
+  const { callLlm } = await server.ssrLoadModule("/api/_lib/callLlm.ts");
+  const { getConfig } = await server.ssrLoadModule("/api/_lib/config.ts");
   const config = getConfig();
   console.log(`Gemini 연결 테스트: ${config.llmModel}, thinking=${config.llmThinkingLevel}, timeout=${config.timeoutMs}ms`);
   const started = Date.now();

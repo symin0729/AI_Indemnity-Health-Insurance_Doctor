@@ -77,7 +77,7 @@
       "evidence": [
         "api/chat.ts",
         "api/evidence.ts",
-        "api/lib/validateInput.ts"
+        "api/_lib/validateInput.ts"
       ]
     },
     {
@@ -85,7 +85,7 @@
       "requirement": "유효한 동의와 정책 버전을 확인한다.",
       "implementationStatus": "IMPLEMENTED",
       "evidence": [
-        "api/lib/validateConsent.ts"
+        "api/_lib/validateConsent.ts"
       ]
     },
     {
@@ -93,7 +93,7 @@
       "requirement": "개인정보가 탐지된 질문은 RAG·LLM 호출 전에 차단한다.",
       "implementationStatus": "IMPLEMENTED",
       "evidence": [
-        "api/lib/redactPersonalData.ts",
+        "api/_lib/redactPersonalData.ts",
         "tests/personal-data.test.ts"
       ]
     },
@@ -102,7 +102,7 @@
       "requirement": "허용 범위 밖의 의료조언·상품추천·지급확정 요청을 차단한다.",
       "implementationStatus": "IMPLEMENTED_WITH_TEST_COVERAGE_REQUIRED",
       "evidence": [
-        "api/lib/classifyQuestion.ts",
+        "api/_lib/classifyQuestion.ts",
         "knowledge/question-scope.json"
       ]
     },

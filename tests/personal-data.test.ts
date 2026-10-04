@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { redactPersonalData } from "../api/lib/redactPersonalData";
+import { redactPersonalData } from "../api/_lib/redactPersonalData";
 
 describe("외부 AI 전송 금지 정보", () => {
   it.each([
