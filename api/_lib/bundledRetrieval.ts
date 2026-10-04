@@ -1,4 +1,4 @@
-import policyChunks from "../data/policy-chunks.json";
+import policyChunks from "../_data/policy-chunks.json";
 import { isAllowedRagStatus } from "./ragFilters";
 import type { RetrievedEvidence } from "./types";
 

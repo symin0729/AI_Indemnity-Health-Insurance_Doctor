@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { validateAnswer } from "../api/lib/validateAnswer";
+import { validateAnswer } from "../api/_lib/validateAnswer";
 
 const evidence = [{
   content: "자기부담률은 공식 자료상 20%입니다.",

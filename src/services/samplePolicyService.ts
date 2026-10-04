@@ -48,8 +48,8 @@ export const SAMPLE_POLICY_OPTIONS: SamplePolicyOption[] = [
  * 현재 3세대 계약에 임의로 추가하지 않는다.
  */
 const VERIFIED_SAMPLE_CONTRACT: InsuranceContract = {
-  insurer: "INS_001",
-  productName: "무배당 실손의료비보험",
+  insurer: "삼성화재",
+  productName: "무배당 삼성화재 실손의료비보험(1704.1)",
   inceptionDate: "2018-03-01",
   generation: 3,
   monthlyPremium: 60000,

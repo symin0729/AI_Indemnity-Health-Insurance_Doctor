@@ -58,7 +58,7 @@ norm = lambda s: re.sub(r"\s+", "", unicodedata.normalize("NFC", s or ""))
 PAGES = json.load(open(INDEX, encoding="utf-8"))["pages"]
 
 
-# 일상 표현 → 공식 문서에 쓰인 표현. 모든 질문에 같은 규칙을 적용한다(api/lib/retrievalGlossary.ts 와 같아야 한다).
+# 일상 표현 → 공식 문서에 쓰인 표현. 모든 질문에 같은 규칙을 적용한다(api/_lib/retrievalGlossary.ts 와 같아야 한다).
 GLOSSARY = [
     (re.compile(r"싼|싸지|싸다|저렴|줄일|줄이|절약|아낄|적게|낮아|낮추"), "저렴 인하"),
     (re.compile(r"빠지|빠진|제외|줄어드|줄어든|축소"), "보장 제외 한도 변경"),

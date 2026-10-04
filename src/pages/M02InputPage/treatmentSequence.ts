@@ -1,6 +1,8 @@
 import type { MedicalUsage } from "../../domain/medical";
 
 export type TreatmentDraft = {
+  /** 샘플이 제공한 계산 엔진 전용 필드를 등록 시까지 보존한다. */
+  sourceUsage?: MedicalUsage;
   treatmentName: string;
   careSetting: "OUTPATIENT" | "INPATIENT";
   benefitClass: string;
@@ -61,6 +63,7 @@ export function createDraftFromUsage(usage?: Partial<MedicalUsage>): TreatmentDr
 
   return {
     ...emptyDraft,
+    sourceUsage: usage as MedicalUsage,
     treatmentName: usage.treatmentName ?? emptyDraft.treatmentName,
     careSetting: usage.careSetting ?? emptyDraft.careSetting,
     benefitClass: usage.benefitClass ?? emptyDraft.benefitClass,

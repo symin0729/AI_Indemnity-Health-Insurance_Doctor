@@ -1,4 +1,3 @@
-import SamsungComparisonResults from '../../components/samsung/SamsungComparisonResults';
 import headerLogo from '../../assets/header-logo.png';
 import AppShell from "../../components/AppShell";
 import {
@@ -28,6 +27,177 @@ import type {
   AnnualCalculationResult,
   ClaimCalculationItem,
 } from "../../domain/calculation";
+import type { MedicalUsage } from "../../domain/medical";
+import type { AnalysisCalculationAssumptions } from "../../store/useAnalysisStore";
+import {
+  calculateBreakEvenBySimulation,
+  type BreakEvenSimulationResult,
+} from "../../engine/calculateBreakEven";
+import {
+  calculateSamsungAnnualComparison,
+  SAMSUNG_BREAK_EVEN_MAX_FREQUENCY,
+} from "../../engine/calculateSamsungComparison";
+import {
+  loadTreatmentSample,
+  type TreatmentSampleKind,
+} from "../../services/sampleScenarioService";
+
+function getSavedSampleKind(usage: MedicalUsage): TreatmentSampleKind | null {
+  const name = usage.treatmentName.replace(/\s/g, "").toUpperCase();
+  const category = usage.treatmentCategory?.toUpperCase();
+  if (category === "MRI" || name.includes("MRI")) return "MRI";
+  if (name.includes("외래검사")) return "EXAM";
+  if (name.includes("일반외래진료")) return "OUTPATIENT";
+  return null;
+}
+
+/** 개발 중 저장된 구형 샘플에도 최신 엔진 입력 명세를 채운다. 사용자 입력값은 항상 우선한다. */
+export function hydrateSavedSampleUsage(usage: MedicalUsage, generation: number): MedicalUsage {
+  const kind = getSavedSampleKind(usage);
+  if (!kind) return usage;
+  const template = loadTreatmentSample("NON_COVERED", generation, kind).plannedUsages[0];
+  return {
+    ...template,
+    ...usage,
+    samsungCalculationInput: {
+      ...template.samsungCalculationInput,
+      ...usage.samsungCalculationInput,
+      eligibleExpense:
+        usage.samsungCalculationInput?.eligibleExpense ??
+        usage.coveredAmount ??
+        usage.patientPaidAmount ??
+        usage.unitCost,
+    },
+    samsungGen5Facts: usage.samsungGen5Facts ?? template.samsungGen5Facts,
+  };
+}
+
+/** 전체 이용 횟수를 사용자가 입력한 치료 구성 비율대로 정수 배분한다. */
+export function allocateCombinedTreatmentFrequencies(usages: MedicalUsage[], totalFrequency: number): MedicalUsage[] {
+  if (totalFrequency <= 0 || usages.length === 0) return [];
+  const baseTotal = usages.reduce((sum, usage) => sum + Math.max(0, usage.frequency), 0);
+  const weights = usages.map((usage) => baseTotal > 0 ? Math.max(0, usage.frequency) / baseTotal : 1 / usages.length);
+  const exact = weights.map((weight) => weight * totalFrequency);
+  const allocated = exact.map(Math.floor);
+  let remainder = totalFrequency - allocated.reduce((sum, value) => sum + value, 0);
+  const priority = exact
+    .map((value, index) => ({ index, fraction: value - Math.floor(value) }))
+    .sort((a, b) => b.fraction - a.fraction || a.index - b.index);
+  for (let index = 0; index < remainder; index += 1) allocated[priority[index % priority.length].index] += 1;
+  return usages
+    .map((usage, index) => ({ ...usage, frequency: allocated[index] }))
+    .filter((usage) => usage.frequency > 0);
+}
+
+/**
+ * 입력 화면의 세대별 필드를 삼성 공통 계산 입력으로 연결한다.
+ * 계산 규칙은 바꾸지 않고, 사용자가 확인한 값을 엔진 형식으로 전달한다.
+ */
+export function prepareUsageForSamsungComparison(
+  usage: MedicalUsage,
+  assumptions: AnalysisCalculationAssumptions,
+): MedicalUsage {
+  const source = usage.samsungCalculationInput ?? {};
+  const eligibleExpense =
+    source.eligibleExpense ??
+    usage.coveredAmount ??
+    (assumptions.assumeEntireMedicalCostCovered
+      ? usage.patientPaidAmount ?? usage.unitCost
+      : undefined);
+  const policyExclusionsCleared =
+    source.policyExclusionsCleared ?? usage.gen23PolicyExclusionsCleared;
+  const category = usage.treatmentCategory?.toUpperCase();
+  const threeNonCoveredCategory =
+    category === "MRI" || category === "MANUAL_THERAPY" || category === "INJECTION"
+      ? category
+      : undefined;
+  const aggregationUnit =
+    source.aggregationUnit ??
+    usage.gen23AggregationUnit ??
+    (category === "MRI"
+      ? "DIAGNOSTIC_ACTION"
+      : category === "MANUAL_THERAPY"
+        ? "TREATMENT"
+        : category === "INJECTION"
+          ? "VISIT"
+          : "VISIT");
+
+  return {
+    ...usage,
+    samsungCalculationInput: {
+      ...source,
+      eligibleExpense,
+      requiredCoverageConfirmed:
+        source.requiredCoverageConfirmed ?? usage.gen23RequiredCoverageConfirmed,
+      policyExclusionsCleared,
+      otherIndemnityPoliciesExist:
+        source.otherIndemnityPoliciesExist ?? usage.gen23OtherIndemnityPoliciesExist,
+      coveragePeriodConfirmed:
+        source.coveragePeriodConfirmed ?? usage.gen23CoveragePeriodConfirmed,
+      sameDayAggregationConfirmed:
+        source.sameDayAggregationConfirmed ?? usage.gen23SameDayAggregationConfirmed,
+      priorPaidBenefit: source.priorPaidBenefit ?? usage.gen23PriorPaidBenefit,
+      priorAnnualCount: source.priorAnnualCount ?? usage.gen23PriorAnnualCount,
+      priorEligibleDeductible:
+        source.priorEligibleDeductible ?? usage.gen23PriorEligibleDeductible,
+      contractBenefitCap: source.contractBenefitCap ?? usage.gen23ContractBenefitCap,
+      outpatientBenefitCap: source.outpatientBenefitCap ?? usage.gen23OutpatientBenefitCap,
+      prescriptionBenefitCap:
+        source.prescriptionBenefitCap ?? usage.gen23PrescriptionBenefitCap,
+      aggregationUnit,
+      threeNonCoveredCategory:
+        source.threeNonCoveredCategory ?? threeNonCoveredCategory,
+      threeNonCoveredExcludedFromBaseConfirmed:
+        source.threeNonCoveredExcludedFromBaseConfirmed ??
+        usage.gen23ThreeNonCoveredExcludedFromBaseConfirmed,
+    },
+    samsungGen5Facts:
+      usage.samsungGen5Facts ??
+      (usage.benefitClass === "NON_COVERED"
+        ? {
+            specialCaseDisease:
+              usage.severityClass === "SEVERE" ? "YES" : usage.severityClass === "NON_SEVERE" ? "NO" : "UNKNOWN",
+            treatmentRelatedness: usage.severityClass === "SEVERE" ? "RELATED" : "UNKNOWN",
+            policyExcludedTreatment: policyExclusionsCleared === true ? "NO" : "UNKNOWN",
+            ...(threeNonCoveredCategory ? { threeNonCoveredCategory } : {}),
+          }
+        : usage.samsungGen5Facts),
+  };
+}
+
+export function createPremiumOnlyBreakEvenDisplay(
+  currentAnnualPremium: number,
+  targetAnnualPremium: number,
+  warnings: string[] = [],
+): BreakEvenSimulationResult {
+  const difference = currentAnnualPremium - targetAnnualPremium;
+  const preferred = difference > 0 ? "TARGET_5G" : difference < 0 ? "CURRENT" : "TIE";
+  return {
+    status: "NO_REVERSAL",
+    method: "DISCRETE_SEARCH",
+    rangeChecked: { min: 0, max: SAMSUNG_BREAK_EVEN_MAX_FREQUENCY },
+    threshold: null,
+    exactTieFrequencies: difference === 0
+      ? Array.from({ length: SAMSUNG_BREAK_EVEN_MAX_FREQUENCY + 1 }, (_, frequency) => frequency)
+      : [],
+    reversalIntervals: [],
+    points: Array.from(
+      { length: SAMSUNG_BREAK_EVEN_MAX_FREQUENCY + 1 },
+      (_, frequency) => ({
+        frequency,
+        currentTotalBurden: currentAnnualPremium,
+        targetTotalBurden: targetAnnualPremium,
+        difference,
+        preferred,
+      }),
+    ),
+    warnings: Array.from(new Set([
+      ...warnings,
+      "의료비 계산이 완료되지 않아 확정된 연 보험료만 표시합니다. 이 선은 최종 손익분기 결과가 아닙니다.",
+    ])),
+    message: "의료비 확인 전 단계로, 확정된 연 보험료 두 선을 임시 표시합니다.",
+  };
+}
 
 function formatMoney(
   value: number | null
@@ -39,65 +209,104 @@ function formatMoney(
   return `${value.toLocaleString()}원`;
 }
 
-function BurdenComparisonChart({
+function createSamsungScenarioDisplay({
+  option,
+  annualPremium,
+  medicalCost,
+  insuranceBenefit,
+  totalBurden,
+  complete,
+  warnings,
+}: {
+  option: "CURRENT" | "TARGET_5G";
+  annualPremium: number;
+  medicalCost: number | null;
+  insuranceBenefit: number | null;
+  totalBurden: number | null;
+  complete: boolean;
+  warnings: string[];
+}): AnnualCalculationResult {
+  const finalMedicalBurden =
+    medicalCost === null || insuranceBenefit === null
+      ? null
+      : medicalCost - insuranceBenefit;
+
+  return {
+    option,
+    year: 1,
+    annualPremium,
+    items: [],
+    totalMedicalCost: medicalCost,
+    totalInsuranceBenefit: insuranceBenefit,
+    totalFinalMedicalBurden: finalMedicalBurden,
+    totalExcludedAmount: null,
+    totalAdjustedDeductible: null,
+    totalLimitExceededAmount: null,
+    totalBurden,
+    status: complete ? "CALCULATED" : "CONFIRMATION_REQUIRED",
+    warnings,
+  };
+}
+
+export function BurdenComparisonChart({
   currentBurden,
   targetBurden,
+  currentAnnualPremium,
+  targetAnnualPremium,
 }: {
   currentBurden: number | null;
   targetBurden: number | null;
+  currentAnnualPremium: number;
+  targetAnnualPremium: number;
 }) {
-  if (currentBurden === null || targetBurden === null) {
-    return (
-      <div className="burden-chart burden-chart--unavailable">
-        계산에 필요한 항목을 확인하면 금액 비교 그래프가 표시됩니다.
-      </div>
-    );
-  }
+  const isFullBurdenAvailable = currentBurden !== null && targetBurden !== null;
+  const displayedCurrent = currentBurden ?? currentAnnualPremium;
+  const displayedTarget = targetBurden ?? targetAnnualPremium;
 
-  const maximumBurden = Math.max(currentBurden, targetBurden, 1);
-  const difference = currentBurden - targetBurden;
+  const maximumBurden = Math.max(displayedCurrent, displayedTarget, 1);
+  const difference = displayedCurrent - displayedTarget;
   const absoluteDifference = Math.abs(difference);
   const savingRate =
-    currentBurden > 0
-      ? (absoluteDifference / currentBurden) * 100
+    displayedCurrent > 0
+      ? (absoluteDifference / displayedCurrent) * 100
       : 0;
 
   const rows = [
     {
       label: "현재 계약 유지",
       shortLabel: "유지",
-      value: currentBurden,
-      width: (currentBurden / maximumBurden) * 100,
+      value: displayedCurrent,
+      width: (displayedCurrent / maximumBurden) * 100,
       tone: "current",
     },
     {
       label: "5세대 비교안",
       shortLabel: "전환",
-      value: targetBurden,
-      width: (targetBurden / maximumBurden) * 100,
+      value: displayedTarget,
+      width: (displayedTarget / maximumBurden) * 100,
       tone: "target",
     },
   ];
 
   const conclusion =
     difference > 0
-      ? `5세대 전환 시 연간 ${absoluteDifference.toLocaleString()}원 절감`
+      ? `${isFullBurdenAvailable ? "5세대 전환 시" : "보험료 기준 5세대가"} 연간 ${absoluteDifference.toLocaleString()}원 낮음`
       : difference < 0
-        ? `현재 계약 유지 시 연간 ${absoluteDifference.toLocaleString()}원 절감`
+        ? `${isFullBurdenAvailable ? "현재 계약 유지 시" : "보험료 기준 현재 계약이"} 연간 ${absoluteDifference.toLocaleString()}원 낮음`
         : "두 선택지의 연간 총부담이 같습니다";
 
   return (
     <div className="burden-chart" aria-label="연간 총부담 금액 비교 그래프">
       <div className="burden-chart__heading">
         <div>
-          <span className="burden-chart__eyebrow">금액 차이 시각화</span>
-          <h3>연간 총부담 비교</h3>
-          <p>룰엔진 계산 결과를 기준으로 막대 길이가 자동 반영됩니다.</p>
+          <span className="burden-chart__eyebrow">{isFullBurdenAvailable ? "금액 차이 시각화" : "확정 보험료 시각화"}</span>
+          <h3>{isFullBurdenAvailable ? "연간 총부담 비교" : "연간 보험료 비교"}</h3>
+          <p>{isFullBurdenAvailable ? "룰엔진 계산 결과를 기준으로 막대 길이가 자동 반영됩니다." : "의료비 계산 전에도 확인된 연 보험료 차이를 표시합니다."}</p>
         </div>
         <div className="burden-chart__difference">
           <small>연간 차이</small>
           <strong>{absoluteDifference.toLocaleString()}원</strong>
-          {difference !== 0 && currentBurden > 0 && (
+          {difference !== 0 && displayedCurrent > 0 && (
             <span>{savingRate.toFixed(1)}% 차이</span>
           )}
         </div>
@@ -128,6 +337,208 @@ function BurdenComparisonChart({
       </div>
 
       <p className="burden-chart__conclusion">{conclusion}</p>
+      {!isFullBurdenAvailable && (
+        <p className="burden-chart__pending">의료비 입력 확인 후 같은 위치에 최종 총부담 그래프가 표시됩니다.</p>
+      )}
+    </div>
+  );
+}
+
+export function BreakEvenChart({ result }: { result: BreakEvenSimulationResult }) {
+  if (result.points.length < 2) {
+    return (
+      <div className="break-even-chart break-even-chart--unavailable">
+        계산 조건을 확인하면 횟수별 총부담 그래프가 표시됩니다.
+      </div>
+    );
+  }
+
+  const width = 720;
+  const height = 340;
+  const padding = { top: 22, right: 18, bottom: 38, left: 76 };
+  const plotWidth = width - padding.left - padding.right;
+  const plotHeight = height - padding.top - padding.bottom;
+  const minimumFrequency = result.rangeChecked.min;
+  const maximumFrequency = result.rangeChecked.max;
+  const totals = result.points.flatMap((point) => [
+    point.currentTotalBurden,
+    point.targetTotalBurden,
+  ]);
+  const minimumTotal = Math.min(...totals);
+  const maximumTotal = Math.max(...totals);
+  const baseYInterval = 50_000;
+  const rawYRange = Math.max(maximumTotal - minimumTotal, baseYInterval);
+  const yInterval = Math.max(
+    baseYInterval,
+    Math.ceil(rawYRange / (10 * baseYInterval)) * baseYInterval,
+  );
+  const yMinimum = Math.max(0, Math.floor(minimumTotal / yInterval) * yInterval);
+  const roundedMaximum = Math.ceil(maximumTotal / yInterval) * yInterval;
+  const yMaximum = Math.max(roundedMaximum, yMinimum + yInterval);
+  const yRange = Math.max(yMaximum - yMinimum, 1);
+  const x = (frequency: number) =>
+    padding.left +
+    ((frequency - minimumFrequency) /
+      Math.max(maximumFrequency - minimumFrequency, 1)) *
+      plotWidth;
+  const y = (total: number) =>
+    padding.top + ((yMaximum - total) / yRange) * plotHeight;
+  const currentPoints = result.points
+    .map((point) => `${x(point.frequency)},${y(point.currentTotalBurden)}`)
+    .join(" ");
+  const targetPoints = result.points
+    .map((point) => `${x(point.frequency)},${y(point.targetTotalBurden)}`)
+    .join(" ");
+  const thresholdPoint =
+    result.threshold === null
+      ? null
+      : result.points.find((point) => point.frequency === result.threshold) ?? null;
+  const xTicks = Array.from(
+    { length: Math.floor((maximumFrequency - minimumFrequency) / 10) + 1 },
+    (_, index) => minimumFrequency + index * 10,
+  ).filter((tick) => tick <= maximumFrequency);
+  if (xTicks.at(-1) !== maximumFrequency) xTicks.push(maximumFrequency);
+  const yTicks = Array.from(
+    { length: Math.floor((yMaximum - yMinimum) / yInterval) + 1 },
+    (_, index) => yMinimum + index * yInterval,
+  );
+  const visibleNumberPoints = result.points.filter((point) =>
+    point.frequency % 10 === 0 || point.frequency === result.threshold,
+  );
+  const formatDifference = (difference: number) => {
+    if (difference === 0) return "금액 동일";
+    return difference > 0
+      ? `5세대가 ${difference.toLocaleString()}원 낮음`
+      : `현재 계약이 ${Math.abs(difference).toLocaleString()}원 낮음`;
+  };
+
+  return (
+    <div className="break-even-chart">
+      <div className="break-even-chart__legend" aria-hidden="true">
+        <span><i className="is-current" />현재 계약 유지</span>
+        <span><i className="is-target" />5세대 비교안</span>
+        {result.threshold !== null && <span><i className="is-threshold" />손익분기 기준</span>}
+      </div>
+
+      <div className="break-even-chart__canvas">
+        <svg
+          viewBox={`0 0 ${width} ${height}`}
+          role="img"
+          aria-label={`치료 횟수 ${minimumFrequency}회부터 ${maximumFrequency}회까지 현재 계약과 5세대의 연간 총부담 비교`}
+        >
+          {yTicks.map((tick) => (
+            <g key={tick}>
+              <line
+                className="break-even-chart__grid"
+                x1={padding.left}
+                x2={width - padding.right}
+                y1={y(tick)}
+                y2={y(tick)}
+              />
+              <text className="break-even-chart__axis-label" x={padding.left - 10} y={y(tick) + 4} textAnchor="end">
+                {(tick / 10000).toLocaleString()}만원
+              </text>
+            </g>
+          ))}
+
+          {xTicks.map((tick) => (
+            <g key={tick}>
+              <line
+                className="break-even-chart__grid break-even-chart__grid--vertical"
+                x1={x(tick)}
+                x2={x(tick)}
+                y1={padding.top}
+                y2={height - padding.bottom}
+              />
+              <text
+                className="break-even-chart__axis-label"
+                x={x(tick)}
+                y={height - 10}
+                textAnchor="middle"
+              >
+                {tick}회
+              </text>
+            </g>
+          ))}
+
+          {result.threshold !== null && (
+            <g>
+              <line
+                className="break-even-chart__threshold"
+                x1={x(result.threshold)}
+                x2={x(result.threshold)}
+                y1={padding.top}
+                y2={height - padding.bottom}
+              />
+              <rect
+                className="break-even-chart__threshold-label-bg"
+                x={Math.min(x(result.threshold) + 7, width - 112)}
+                y={padding.top + 7}
+                width="104"
+                height="24"
+                rx="12"
+              />
+              <text
+                className="break-even-chart__threshold-label"
+                x={Math.min(x(result.threshold) + 59, width - 60)}
+                y={padding.top + 23}
+                textAnchor="middle"
+              >
+                손익분기 {result.threshold}회
+              </text>
+            </g>
+          )}
+
+          <polyline className="break-even-chart__line break-even-chart__line--current" points={currentPoints} />
+          <polyline className="break-even-chart__line break-even-chart__line--target" points={targetPoints} />
+
+          <text className="break-even-chart__axis-title" x={padding.left + plotWidth / 2} y={height - 1} textAnchor="middle">
+            연간 병원 이용 횟수
+          </text>
+
+          {thresholdPoint && (
+            <g>
+              <circle className="break-even-chart__point break-even-chart__point--current" cx={x(thresholdPoint.frequency)} cy={y(thresholdPoint.currentTotalBurden)} r="5" />
+              <circle className="break-even-chart__point break-even-chart__point--target" cx={x(thresholdPoint.frequency)} cy={y(thresholdPoint.targetTotalBurden)} r="5" />
+            </g>
+          )}
+        </svg>
+      </div>
+
+      <div className="break-even-chart__summary">
+        <div>
+          <span>탐색 범위</span>
+          <strong>{minimumFrequency}~{maximumFrequency}회</strong>
+        </div>
+        <div className={result.threshold === null ? "is-muted" : "is-highlighted"}>
+          <span>손익분기 기준</span>
+          <strong>{result.threshold === null ? "범위 내 없음" : `${result.threshold}회`}</strong>
+        </div>
+        <div>
+          <span>탐색 결과</span>
+          <strong>{result.status === "MULTIPLE_REVERSALS" ? "여러 번 역전" : result.status === "CONFIRMATION_REQUIRED" ? "확인 필요" : result.status === "NO_REVERSAL" ? "역전 없음" : "역전 확인"}</strong>
+        </div>
+      </div>
+
+      <div className="break-even-chart__numbers" aria-label="횟수별 총부담 숫자표">
+        <div className="break-even-chart__numbers-head" aria-hidden="true">
+          <span>병원 이용</span>
+          <span>현재 계약</span>
+          <span>5세대</span>
+          <span>차이</span>
+        </div>
+        {visibleNumberPoints.map((point) => (
+          <div
+            className={`break-even-chart__numbers-row${point.frequency === result.threshold ? " is-threshold" : ""}`}
+            key={point.frequency}
+          >
+            <strong>{point.frequency}회</strong>
+            <span>{point.currentTotalBurden.toLocaleString()}원</span>
+            <span>{point.targetTotalBurden.toLocaleString()}원</span>
+            <span>{formatDifference(point.difference)}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -824,8 +1235,6 @@ function ScenarioCard({
         E, d*, U는 M-I의 분해값이므로 다시 더하지 않습니다.
       </div>
 
-      <h3>치료별 계산</h3>
-
       {result.items.map((item) => (
         <ClaimDetail
           key={item.usageId}
@@ -1099,13 +1508,68 @@ function M04ResultPage() {
     );
   }
 
-  const result =
+  const legacyResult =
     calculationService.calculateV2(
       calculationInput
     );
 
-  const current = result.current;
-  const target5G = result.target5G;
+  const samsungContract =
+    contract.insurer === "INS_001"
+      ? { ...contract, insurer: "삼성화재" }
+      : contract;
+  const calculationUsages = usages.map((usage) =>
+    prepareUsageForSamsungComparison(
+      hydrateSavedSampleUsage(usage, contract.generation),
+      calculationAssumptions,
+    ),
+  );
+
+  const samsungComparison =
+    calculateSamsungAnnualComparison(
+      samsungContract,
+      target5GMonthlyPremium,
+      target5GCoverages,
+      productCalculationSelections,
+      calculationUsages,
+      calculationAssumptions,
+    );
+
+  const currentWarnings = Array.from(new Set(
+    samsungComparison.items.flatMap((item) => item.current.reasons),
+  ));
+  const targetWarnings = Array.from(new Set(
+    samsungComparison.items.flatMap((item) => item.target.reasons),
+  ));
+
+  const current = createSamsungScenarioDisplay({
+    option: "CURRENT",
+    annualPremium: contract.monthlyPremium * 12,
+    medicalCost: samsungComparison.medicalCost,
+    insuranceBenefit: samsungComparison.currentClaimTotal,
+    totalBurden: samsungComparison.currentTotal,
+    complete: samsungComparison.complete,
+    warnings: currentWarnings,
+  });
+  const target5G = createSamsungScenarioDisplay({
+    option: "TARGET_5G",
+    annualPremium: target5GMonthlyPremium * 12,
+    medicalCost: samsungComparison.medicalCost,
+    insuranceBenefit: samsungComparison.targetClaimTotal,
+    totalBurden: samsungComparison.targetTotal,
+    complete: samsungComparison.complete,
+    warnings: targetWarnings,
+  });
+  const target5GSaving =
+    samsungComparison.currentTotal === null || samsungComparison.targetTotal === null
+      ? null
+      : samsungComparison.currentTotal - samsungComparison.targetTotal;
+  const result = {
+    ...legacyResult,
+    current,
+    target5G,
+    target5GSaving,
+    warnings: Array.from(new Set([...currentWarnings, ...targetWarnings])),
+  };
 
   const isComparisonAvailable =
     current.totalBurden !== null &&
@@ -1138,19 +1602,47 @@ function M04ResultPage() {
     }
   }
 
-  const breakEvenResults =
-    usages.map((usage) => ({
+  const breakEvenResults = calculationUsages.length === 0 ? [] : (() => {
+    const engineResult = calculateBreakEvenBySimulation({
+      minFrequency: 0,
+      maxFrequency: SAMSUNG_BREAK_EVEN_MAX_FREQUENCY,
+      evaluate: (totalFrequency) => {
+        const simulatedUsages = allocateCombinedTreatmentFrequencies(calculationUsages, totalFrequency);
+        const comparison = calculateSamsungAnnualComparison(
+          samsungContract,
+          target5GMonthlyPremium,
+          target5GCoverages,
+          productCalculationSelections,
+          simulatedUsages,
+          calculationAssumptions,
+        );
+        const calculationWarnings = comparison.items.flatMap((item) => [
+          ...item.current.reasons.map((reason) => `${item.usage.treatmentName} · 현재 계약: ${reason}`),
+          ...item.target.reasons.map((reason) => `${item.usage.treatmentName} · 5세대: ${reason}`),
+        ]);
+        return {
+          currentTotalBurden: comparison.currentTotal,
+          targetTotalBurden: comparison.targetTotal,
+          warnings: comparison.complete
+            ? []
+            : Array.from(new Set([
+                ...calculationWarnings,
+                "미확인 계산 조건 때문에 전체 치료 묶음의 손익분기점을 확정할 수 없습니다.",
+              ])),
+        };
+      },
+    });
+    const usage = {
+      ...calculationUsages[0],
+      id: "combined-treatment-break-even",
+      treatmentName: `전체 예정 치료 ${calculationUsages.length}개 합산`,
+    };
+    return [{
       usage,
-      result:
-        calculationService.calculateBreakEvenV2(
-          calculationInput,
-          usage.id,
-          {
-            minFrequency: 0,
-            maxFrequency: 50,
-          }
-        ),
-    }));
+      isPremiumOnly: false,
+      result: engineResult,
+    }];
+  })();
 
   const handleStartOver = () => {
     setIsResetModalOpen(true);
@@ -1413,6 +1905,8 @@ function M04ResultPage() {
         <BurdenComparisonChart
           currentBurden={current.totalBurden}
           targetBurden={target5G.totalBurden}
+          currentAnnualPremium={contract.monthlyPremium * 12}
+          targetAnnualPremium={target5GMonthlyPremium * 12}
         />
 
         {!isComparisonAvailable && (
@@ -1473,14 +1967,20 @@ function M04ResultPage() {
               손익분기 탐색
             </h2>
             <p className="card-description" style={{ marginBottom: 0 }}>
-              치료 횟수를 0~50회로 바꾸며 전체 계산 엔진을 다시 실행해
-              유리한 선택지가 바뀌는 구간을 찾습니다.
+              등록한 치료를 하나로 합산하고, 전체 이용 횟수를 0~{SAMSUNG_BREAK_EVEN_MAX_FREQUENCY}회로 바꾸며
+              계산 엔진을 다시 실행해 유리한 선택지가 바뀌는 구간을 찾습니다.
             </p>
           </div>
         </div>
 
         <div style={{ display: "grid", gap: "12px" }}>
-          {breakEvenResults.map(({ usage, result: breakEven }) => (
+          {breakEvenResults.length === 0 && (
+            <div className="break-even-empty-state">
+              <strong>손익분기 그래프를 만들 치료 항목이 없습니다.</strong>
+              <span>치료 항목과 회당 의료비를 등록한 뒤 계산하면 0~120회 구간의 두 총부담 선과 역전 시점이 표시됩니다.</span>
+            </div>
+          )}
+          {breakEvenResults.map(({ usage, result: breakEven, isPremiumOnly }) => (
             <article
               key={usage.id}
               style={{
@@ -1517,7 +2017,9 @@ function M04ResultPage() {
                           : "status-badge warning"
                       }
                     >
-                      {breakEven.status === "AVAILABLE"
+                      {isPremiumOnly
+                        ? "보험료 기준선"
+                        : breakEven.status === "AVAILABLE"
                         ? "변곡점 확인"
                         : breakEven.status}
                     </span>
@@ -1550,6 +2052,12 @@ function M04ResultPage() {
                 </div>
               )}
 
+              {breakEven && (
+                <div style={{ gridColumn: "1 / -1", minWidth: 0 }}>
+                  <BreakEvenChart result={breakEven} />
+                </div>
+              )}
+
               {breakEven && breakEven.warnings.length > 0 && (
                 <div
                   className="notice-box warning"
@@ -1566,14 +2074,16 @@ function M04ResultPage() {
       </section>
 
       {/* 실손보험 세대 변천사 */}
-      <section>
-        <span className="step-badge">
-          GUIDE
-        </span>
+      <section className="generation-guide-section">
+        <div className="generation-guide-heading">
+          <span className="step-badge">
+            GUIDE
+          </span>
 
-        <h2>
-          실손보험 세대 변천사
-        </h2>
+          <h2>
+            실손보험 세대 변천사
+          </h2>
+        </div>
 
         <div
           className="comparison-summary"
@@ -2177,5 +2687,4 @@ function M04ResultPage() {
   );
 }
 
-export { M04ResultPage as LegacyMvpResultPage };
-export default SamsungComparisonResults;
+export default M04ResultPage;
