@@ -26,9 +26,10 @@ export const chatResponseSchema = z.object({
     url: z.string().url(),
   })),
   confirmations: z.array(z.string()),
-  status: z.enum(["ANSWERED", "INSUFFICIENT_EVIDENCE", "OUT_OF_SCOPE", "FALLBACK"]),
+  status: z.enum(["ANSWERED", "INSUFFICIENT_EVIDENCE", "OUT_OF_SCOPE", "PRIVACY_BLOCKED", "FALLBACK"]),
   fallback: z.boolean(),
   requestId: z.string(),
+  noticeId: z.string().optional(),
 });
 
 export type ChatRequest = z.infer<typeof chatRequestSchema>;
