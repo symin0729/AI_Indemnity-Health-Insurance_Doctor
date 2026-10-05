@@ -74,3 +74,26 @@ describe("1세대 D1 특약 가입 체크", () => {
     expect(gen1CoverageChecks("UNKNOWN")).toEqual({ injury: false, disease: false });
   });
 });
+
+import { resolveContractNames, usesPlaceholderNames } from "../src/domain/displayMask";
+describe("보험사·상품명 정리(입력 이름과 계산용 값)", () => {
+  it("2세대 이후는 계산용 값을 삼성화재 약관 상품으로 고정하고 입력 이름은 표시용으로만 둔다", () => {
+    expect(resolveContractNames({ generation: 3, insurerInput: " 내 보험사 ", productInput: "", })).toEqual({
+      insurer: "삼성화재", productName: "무배당 삼성화재 실손의료비보험(1704.1)", insurerLabel: "내 보험사", productLabel: undefined,
+    });
+    expect(resolveContractNames({ generation: 2, insurerInput: "", productInput: "" }).productName).toBe("무배당 삼성화재 실손의료비보험(1611.7)");
+  });
+  it("1세대 대표 상품은 삼성 0904.2로 고정하고, 그 밖의 보험사는 입력한 이름을 그대로 쓴다", () => {
+    expect(resolveContractNames({ generation: 1, gen1Product: "SAMSUNG_0904_2", insurerInput: "OO 보험", productInput: "OO 실손 의료 보험" })).toEqual({
+      insurer: "삼성화재", productName: "삼성 올라이프 100세 건강파트너보험(0904.2)", insurerLabel: "OO 보험", productLabel: "OO 실손 의료 보험",
+    });
+    expect(resolveContractNames({ generation: 1, gen1Product: "OTHER_POST", insurerInput: " 우체국보험 ", productInput: " 우체국보험 실손 의료 보험 " })).toEqual({
+      insurer: "우체국보험", productName: "우체국보험 실손 의료 보험", insurerLabel: "우체국보험", productLabel: "우체국보험 실손 의료 보험",
+    });
+  });
+  it("OO(표시용 대체 이름)를 쓰는 경우를 구분한다", () => {
+    expect(usesPlaceholderNames({ generation: 3 })).toBe(true);
+    expect(usesPlaceholderNames({ generation: 1, gen1Product: "SAMSUNG_0904_2" })).toBe(true);
+    expect(usesPlaceholderNames({ generation: 1, gen1Product: "OTHER_POST" })).toBe(false);
+  });
+});

@@ -1,8 +1,6 @@
-import { GEN3_RIDER_DEFAULT } from "../../domain/gen3Riders";
-import { MASKED_INSURER, MASKED_PRODUCT_NAME } from "../../domain/displayMask";
 import { buildSubmission } from "./inputModel";
+import { samplePolicyPatch } from "./contractTransitions";
 import { samplePolicyService, type SampleId } from "../../services/samplePolicyService";
-import { sampleScenarioService } from "../../services/sampleScenarioService";
 
 import type { BaseApi } from "./useM02Base";
 import type { ContractApi } from "./useContractFields";
@@ -13,6 +11,7 @@ import type { TreatmentActionsApi } from "./useTreatmentActions";
 
 export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentApi & AssumptionApi & TreatmentActionsApi) {
   const {
+    applyContractPatch,
     applyInputFailure,
     assumeEachOccurrenceSeparate,
     assumeEntireMedicalCostCovered,
@@ -23,15 +22,11 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
     gen1Product,
     gen3Riders,
     gen4NonCoveredRider,
-    gen5ContractType,
-    gen5NonSevereRider,
-    gen5SevereRider,
     generation,
     goToInputStep,
     hasTarget5GSpecialRider1,
     hasTarget5GSpecialRider2,
     inceptionDate,
-    insurer,
     insurerLabel,
     isSampleConfirmed,
     isStep3Confirmed,
@@ -41,7 +36,6 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
     navigate,
     plannedUsages,
     productLabel,
-    productName,
     reentryCycleYears,
     renewalCycleMonths,
     resetContractStep,
@@ -57,17 +51,12 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
     setGen1ContractBasis,
     setGen1D1Coverage,
     setGen1Product,
-    setGen3Riders,
-    setGen4NonCoveredRider,
-    setGen5NonSevereRider,
-    setGen5SevereRider,
     setGeneration,
     setIsGenerationSelected,
     isGenerationSelected,
     setHasTarget5GSpecialRider1,
     setHasTarget5GSpecialRider2,
     setInceptionDate,
-    setInsurer,
     setInsurerLabel,
     setIsResetModalOpen,
     setIsSampleConfirmed,
@@ -79,10 +68,8 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
     setPlannedUsages,
     setProductCalculationSelections,
     setProductLabel,
-    setProductName,
     setReentryCycleYears,
     setRenewalCycleMonths,
-    setSampleScenarioNotice,
     setSamsungGen23Variant,
     setSelectedSampleId,
     setTarget5GCoverages,
@@ -99,104 +86,15 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
   // 샘플 보험증권 불러오기
   // ========================================
 
+  /**
+   * STEP 1의 "샘플 불러오기": 현재 계약(내 보험 정보)만 채운다.
+   * STEP 2(5세대 비교 조건, 예정 치료)와 STEP 3(계산 가정)은 건드리지 않는다.
+   */
   const handleLoadSamplePolicy = (
     sampleId: SampleId
   ) => {
     try {
-      const sample =
-        samplePolicyService.load(
-          sampleId
-        );
-
-      const scenario =
-        sampleScenarioService.load(
-          sampleId
-        );
-
-      setInsurer(sample.insurer);
-      setProductName(
-        sample.productName
-      );
-      // 1세대 외에는 실제 이름 대신 OO 이름을 자동으로 채운다.
-      setInsurerLabel(sample.generation === 1 ? "" : MASKED_INSURER);
-      setProductLabel(sample.generation === 1 ? "" : MASKED_PRODUCT_NAME);
-      setInceptionDate(
-        sample.inceptionDate
-      );
-      setGeneration(
-        sample.generation
-      );
-      setIsGenerationSelected(true);
-      if (sample.generation === 4) setGen4NonCoveredRider("ENROLLED");
-      // 2·3세대 샘플은 상품 종형을 1. 표준형으로 선택한다. 3세대 특약은 하나도 선택하지 않은 상태로 시작한다.
-      if (sample.generation === 2 || sample.generation === 3) setSamsungGen23Variant("standard");
-      if (sample.generation === 3) setGen3Riders(GEN3_RIDER_DEFAULT);
-      setMonthlyPremium(
-        String(
-          sample.monthlyPremium
-        )
-      );
-
-      setRenewalCycleMonths(
-        sample.renewalCycleMonths != null
-          ? String(
-              sample.renewalCycleMonths
-            )
-          : ""
-      );
-
-      setReentryCycleYears(
-        sample.reentryCycleMonths != null
-          ? String(
-              sample.reentryCycleMonths / 12
-            )
-          : ""
-      );
-
-      // 원본 HTML의 검증용 샘플과 같은 비교 조건을 함께 채운다.
-      setTarget5GMonthlyPremiumInput("35000");
-      setHasTarget5GSpecialRider1(false);
-      setGen5SevereRider("NOT_ENROLLED");
-      if (scenario.target5GSpecialRider2 !== null) {
-        setHasTarget5GSpecialRider2(scenario.target5GSpecialRider2);
-        setGen5NonSevereRider(
-          scenario.target5GSpecialRider2 ? "ENROLLED" : "NOT_ENROLLED"
-        );
-      }
-
-      /**
-       * 샘플 시나리오에 명시된 계산 가정도
-       * STEP 4 체크 상태에 그대로 반영한다.
-       *
-       * 사용자가 다음 단계로 넘어가기 전
-       * 화면에서 직접 확인/해제할 수 있다.
-       */
-      setAssumeEntireMedicalCostCovered(
-        scenario.calculationAssumptions
-          .assumeEntireMedicalCostCovered
-      );
-
-      setAssumeNoPriorLimitUsage(
-        scenario.calculationAssumptions
-          .assumeNoPriorLimitUsage
-      );
-
-      setAssumeEachOccurrenceSeparate(
-        scenario.calculationAssumptions
-          .assumeEachOccurrenceSeparate
-      );
-
-      resetTreatmentForm();
-
-      setSelectedSampleId(
-        sampleId
-      );
-
-      setSampleScenarioNotice(
-        scenario.notice
-      );
-
-      setIsSampleConfirmed(true);
+      applyContractPatch(samplePolicyPatch(sampleId, samplePolicyService.load(sampleId)));
       setErrorMessage("");
     } catch (error) {
       setErrorMessage(
@@ -213,8 +111,6 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
   // ========================================
 
   const resetLocalForm = () => {
-    setInsurer("");
-    setProductName("");
     setInsurerLabel("");
     setProductLabel("");
     setInceptionDate("");
@@ -229,7 +125,6 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
     setReentryCycleYears("");
     setSelectedSampleId(null);
     setIsSampleConfirmed(false);
-    setSampleScenarioNotice("");
 
     setTarget5GMonthlyPremiumInput("");
     setHasTarget5GSpecialRider1(false);
@@ -269,8 +164,6 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
     const result = buildSubmission({
       generation,
       generationSelected: isGenerationSelected,
-      insurer,
-      productName,
       insurerLabel,
       productLabel,
       inceptionDate,
@@ -282,9 +175,6 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
       gen1ContractBasis,
       gen1D1Coverage,
       gen4NonCoveredRider,
-      gen5ContractType,
-      gen5SevereRider,
-      gen5NonSevereRider,
       gen3Riders,
       target5GMonthlyPremium,
       hasTarget5GSpecialRider1,

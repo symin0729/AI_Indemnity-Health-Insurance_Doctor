@@ -1,6 +1,7 @@
 import type { InsuranceContract, InsuranceGeneration } from "../../../domain/insurance";
 import type { MedicalUsage } from "../../../domain/medical";
-import { INTERNAL_INSURER, internalProductName } from "../../../domain/displayMask";
+import { resolveContractNames } from "../../../domain/displayMask";
+import { generationForInceptionDate } from "../../../domain/insuranceInputDefaults";
 import { isGen1ProductUnregistered, type Gen1ProductChoice } from "../../../domain/gen1Product";
 import type { Gen3RiderSelections } from "../../../domain/gen3Riders";
 import { isGen23VariantRegistered, type SamsungGen23Variant } from "../../../domain/samsungGen23Variant";
@@ -23,11 +24,6 @@ export function isValidIsoDate(value: string): boolean {
     date.getMonth() === month - 1 &&
     date.getDate() === day
   );
-}
-
-/** 표시용 이름(OO)을 쓰는 경우: 1세대 외, 그리고 1세대에서 대표 상품(OO 보험)을 고른 경우 */
-function usesLabelFields(input: { generation: InsuranceGeneration; gen1Product: Gen1ProductChoice }): boolean {
-  return input.generation !== 1 || input.gen1Product === "SAMSUNG_0904_2";
 }
 
 /** 약관 규칙이 없는 상품 종형(1세대 다른 보험사, 2·3세대 미등록 종형)을 골랐는지 */
@@ -59,25 +55,36 @@ export type InputFailure = {
 
 export type ContractStepInput = {
   generation: InsuranceGeneration;
+  inceptionDate: string;
   /** 사용자가 실손 세대를 직접 선택(또는 가입일로 판독)했는지 */
   generationSelected: boolean;
-  insurer: string;
-  productName: string;
+  /** 사용자가 입력한 보험사·상품명(표시용 이름). 계산용 값은 resolveContractNames가 정한다. */
+  insurerLabel: string;
+  productLabel: string;
   monthlyPremium: string;
   samsungGen23Variant: SamsungGen23Variant;
   gen1Product: Gen1ProductChoice;
   gen1D1Coverage: ProductCalculationSelections["gen1D1Coverage"];
 };
 
+/** 1세대에서 대표 상품이 아닌 보험사를 고른 경우에만 보험사·상품명 입력이 필요하다. */
+function isGen1NamesMissing(input: { generation: InsuranceGeneration; gen1Product: Gen1ProductChoice; insurerLabel: string; productLabel: string }): boolean {
+  return input.generation === 1 && isGen1ProductUnregistered(input.gen1Product) && (!input.insurerLabel.trim() || !input.productLabel.trim());
+}
+
 /** 1세대는 실손 특약(상해/질병)을 하나 이상 가입해야 계산 대상이다. */
 function isGen1CoverageMissing(input: { generation: InsuranceGeneration; gen1D1Coverage: ProductCalculationSelections["gen1D1Coverage"] }): boolean {
   return input.generation === 1 && (input.gen1D1Coverage === "NONE" || input.gen1D1Coverage === "UNKNOWN");
 }
 
+/** 5세대 가입일은 비교 대상이라 현재 계약(1~4세대)으로 입력할 수 없다. */
+const FIFTH_GEN_DATE_FAILURE: InputFailure = { ok: false, message: "가입일이 5세대 시기(2026.5.6 이후)입니다. 현재 계약은 1~4세대만 입력할 수 있습니다.", focusId: "generation-select" };
+
 const GEN1_COVERAGE_REQUIRED_FAILURE: InputFailure = { ok: false, message: "가입한 특약을 하나 이상 선택해주세요.", focusId: "gen1-d1-injury" };
 
 /** STEP 1(계약 정보)에서 다음 단계로 넘어가기 전 검증. 문제가 없으면 null */
 export function validateContractStep(input: ContractStepInput): InputFailure | null {
+  if (generationForInceptionDate(input.inceptionDate) === 5) return FIFTH_GEN_DATE_FAILURE;
   if (!input.generationSelected) {
     return { ok: false, message: "실손 세대를 선택해주세요.", focusId: "generation-select" };
   }
@@ -86,7 +93,7 @@ export function validateContractStep(input: ContractStepInput): InputFailure | n
     return { ok: false, message: "현재 월 보험료를 입력해주세요." };
   }
 
-  if (input.generation === 1 && (!input.insurer.trim() || !input.productName.trim())) {
+  if (isGen1NamesMissing(input)) {
     return { ok: false, message: "보험사와 상품명을 입력해주세요." };
   }
 
@@ -114,8 +121,6 @@ export function validateContractStep(input: ContractStepInput): InputFailure | n
 }
 
 export type SubmissionInput = ContractStepInput & {
-  insurerLabel: string;
-  productLabel: string;
   inceptionDate: string;
   renewalCycleMonths: string;
   reentryCycleYears: string;
@@ -133,9 +138,6 @@ export type SubmissionInput = ContractStepInput & {
   gen1ContractBasis: ProductCalculationSelections["gen1ContractBasis"];
   gen1D1Coverage: ProductCalculationSelections["gen1D1Coverage"];
   gen4NonCoveredRider: RiderEnrollmentStatus;
-  gen5ContractType: ProductCalculationSelections["gen5ContractType"];
-  gen5SevereRider: RiderEnrollmentStatus;
-  gen5NonSevereRider: RiderEnrollmentStatus;
   gen3Riders: Gen3RiderSelections;
 };
 
@@ -174,15 +176,16 @@ export function buildSubmission(input: SubmissionInput): InputFailure | Submissi
   const renewalCycleNumber = input.renewalCycleMonths ? Number(input.renewalCycleMonths) : null;
   const reentryCycleNumber = input.reentryCycleYears ? Number(input.reentryCycleYears) : null;
 
-  if (input.generation === 1 && !input.insurer.trim()) {
+  if (input.generation === 1 && isGen1ProductUnregistered(input.gen1Product) && !input.insurerLabel.trim()) {
     return { ok: false, message: "보험사를 입력해주세요." };
   }
-  if (input.generation === 1 && !input.productName.trim()) {
+  if (input.generation === 1 && isGen1ProductUnregistered(input.gen1Product) && !input.productLabel.trim()) {
     return { ok: false, message: "보험 상품명을 입력해주세요." };
   }
   if (!input.inceptionDate) {
     return { ok: false, message: "보험 가입일을 입력해주세요." };
   }
+  if (generationForInceptionDate(input.inceptionDate) === 5) return FIFTH_GEN_DATE_FAILURE;
   if (!isValidIsoDate(input.inceptionDate)) {
     return { ok: false, message: "보험 가입일은 YYYY-MM-DD 형식의 실제 날짜로 입력해주세요." };
   }
@@ -227,10 +230,7 @@ export function buildSubmission(input: SubmissionInput): InputFailure | Submissi
   }
 
   const currentCoverages: string[] = [];
-  if (input.generation === 5) {
-    if (input.gen5SevereRider === "ENROLLED") currentCoverages.push("SPECIAL_RIDER_1");
-    if (input.gen5NonSevereRider === "ENROLLED") currentCoverages.push("SPECIAL_RIDER_2");
-  } else if (input.generation === 4 && input.gen4NonCoveredRider === "ENROLLED") {
+  if (input.generation === 4 && input.gen4NonCoveredRider === "ENROLLED") {
     // 기존 세대의 현재 MVP 비급여 특약 확인값. G3_MRI_OUTPATIENT 같은 기존세대 룰과 연결한다.
     currentCoverages.push("NON_COVERED");
   }
@@ -242,10 +242,7 @@ export function buildSubmission(input: SubmissionInput): InputFailure | Submissi
   return {
     ok: true,
     contract: {
-      insurer: input.generation === 1 ? input.insurer.trim() : INTERNAL_INSURER,
-      productName: input.generation === 1 ? input.productName.trim() : internalProductName(input.generation),
-      insurerLabel: usesLabelFields(input) ? input.insurerLabel.trim() || undefined : undefined,
-      productLabel: usesLabelFields(input) ? input.productLabel.trim() || undefined : undefined,
+      ...resolveContractNames({ generation: input.generation, gen1Product: input.gen1Product, insurerInput: input.insurerLabel, productInput: input.productLabel }),
       inceptionDate: input.inceptionDate,
       generation: input.generation,
       monthlyPremium: currentPremiumNumber,
@@ -262,9 +259,10 @@ export function buildSubmission(input: SubmissionInput): InputFailure | Submissi
       gen1ContractBasis: input.gen1ContractBasis,
       gen1D1Coverage: input.gen1D1Coverage,
       gen4NonCoveredRider: input.gen4NonCoveredRider,
-      gen5ContractType: input.gen5ContractType,
-      gen5SevereRider: input.gen5SevereRider,
-      gen5NonSevereRider: input.gen5NonSevereRider,
+      // 5세대는 현재 계약으로 입력하지 않는다. 5세대 특약은 STEP 2 비교 조건(target5GCoverages)에서만 다룬다.
+      gen5ContractType: "GENERAL",
+      gen5SevereRider: "UNKNOWN",
+      gen5NonSevereRider: "UNKNOWN",
       samsungGen23Variant: input.samsungGen23Variant,
       gen3Riders: input.gen3Riders,
     },
