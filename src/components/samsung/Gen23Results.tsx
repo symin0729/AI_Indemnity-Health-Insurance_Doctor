@@ -1,11 +1,12 @@
 import type { MedicalUsage } from "../../domain/medical";
+import { GEN23_VARIANT_LABELS } from "../../domain/samsungGen23Variant";
 import type { Gen23Outcome, Gen23Variant } from "../../engine/samsungGen23Adapter";
 export function Gen23Results({ generation, variant, results, onEdit, onConfirm }: {
   generation: 2 | 3; variant: Gen23Variant; results: { usage: MedicalUsage; result: Gen23Outcome }[];
   onEdit: () => void; onConfirm: () => void;
 }) {
   return <main className="navy-page"><header className="page-header"><h1>{generation}세대 삼성화재 계산 결과</h1>
-    <p>{variant === "standard" ? "1종 표준형" : variant === "selected2" ? "2종 선택형Ⅱ" : "종형 확인 필요"}</p></header>
+    <p>{variant === "UNKNOWN" ? "종형 확인 필요" : GEN23_VARIANT_LABELS[variant]}</p></header>
     <section className="app-card"><h2>입력 조건에 따른 초안 검산</h2>
       <p className="notice-box">초안 검산 / 샘플 시뮬레이션 (SAMPLE_SIMULATION) · 실제 보험금 지급액이 아닙니다. 약관 및 계약조건의 최종 확인이 필요하며 운영 계산은 비활성 상태입니다. 치료별 입력한 한 계산단위의 결과이며, 연간 합계·5세대 절감액·확정 보험금을 의미하지 않습니다.</p>
       {results.length === 0 && <p>등록된 치료가 없습니다.</p>}

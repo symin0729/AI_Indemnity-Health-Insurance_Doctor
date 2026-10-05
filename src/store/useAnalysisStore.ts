@@ -1,5 +1,9 @@
 import { create } from "zustand";
 
+import type { SamsungGen23Variant } from "../domain/samsungGen23Variant";
+import type { Gen1ProductChoice } from "../domain/gen1Product";
+import { GEN3_RIDER_DEFAULT, type Gen3RiderSelections } from "../domain/gen3Riders";
+
 import type {
   InsuranceContract,
 } from "../domain/insurance";
@@ -27,13 +31,10 @@ export interface AnalysisCalculationAssumptions {
 }
 
 export type RiderEnrollmentStatus = "ENROLLED" | "NOT_ENROLLED" | "UNKNOWN";
-export type SamsungGen23Variant =
-  | "standard"
-  | "selected2"
-  | "UNKNOWN";
+export type { SamsungGen23Variant };
 
 export interface ProductCalculationSelections {
-  gen1Product: "SAMSUNG_0904_2" | "OTHER" | "UNKNOWN";
+  gen1Product: Gen1ProductChoice;
   gen1ContractBasis: "SAMPLE_SIMULATION" | "ACTUAL_CONTRACT";
   gen1D1Coverage: "INJURY" | "DISEASE" | "BOTH" | "UNKNOWN";
   gen4NonCoveredRider: RiderEnrollmentStatus;
@@ -41,9 +42,14 @@ export interface ProductCalculationSelections {
   gen5SevereRider: RiderEnrollmentStatus;
   gen5NonSevereRider: RiderEnrollmentStatus;
   samsungGen23Variant: SamsungGen23Variant;
+  gen3Riders?: Gen3RiderSelections;
 }
 
 interface AnalysisState {
+  mode: "consumer" | "planner";
+
+  setMode: (mode: "consumer" | "planner") => void;
+
   contract:
     | InsuranceContract
     | null;
@@ -117,6 +123,7 @@ const initialState = {
     gen5SevereRider: "UNKNOWN" as RiderEnrollmentStatus,
     gen5NonSevereRider: "UNKNOWN" as RiderEnrollmentStatus,
     samsungGen23Variant: "UNKNOWN" as const,
+    gen3Riders: GEN3_RIDER_DEFAULT,
   },
 };
 
@@ -124,6 +131,10 @@ export const useAnalysisStore =
   create<AnalysisState>(
     (set) => ({
       ...initialState,
+
+      mode: "planner",
+
+      setMode: (mode) => set({ mode }),
 
       setContract: (
         contract

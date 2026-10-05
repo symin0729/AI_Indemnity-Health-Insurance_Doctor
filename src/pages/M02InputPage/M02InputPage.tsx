@@ -1,11 +1,15 @@
 import { InputHelp } from "../../components/InputHelp";
 import { createDraftFromUsage, createEmptyTreatmentDraft, getSeparateVisitWarningMessage, getTreatmentAdditionalInfoFields, getTreatmentAddLabel, type TreatmentDraft } from "./treatmentSequence";
-import { formatInceptionDateInput, generationForInceptionDate, generationSalesPeriod, generalPatientCopayPercent, inceptionDateForGeneration, type CopayInstitution, type CopayRegion } from "../../domain/insuranceInputDefaults";
+import { formatInceptionDateInput, gen2VariantsForInceptionDate, generationForInceptionDate, generationSalesPeriod, generalPatientCopayPercent, inceptionDateForGeneration, type CopayInstitution, type CopayRegion } from "../../domain/insuranceInputDefaults";
 import { genericGen23CareSetting, syncGen23CareSetting, gen23CareSettingError } from "../../domain/samsungGen23CareSetting";
 import { Gen23Inputs } from "../../components/samsung/Gen23Inputs";
 import { parseGen23Form, restoreGen23Form, type Gen23FormState } from "../../domain/samsungGen23Form";
 import AppShell from "../../components/AppShell";
+import { GEN3_RIDERS, GEN3_RIDER_DEFAULT, gen3EnrollmentForTreatment, gen3RiderKeyForTreatment, type Gen3RiderKey, type Gen3RiderSelections } from "../../domain/gen3Riders";
+import { GEN1_COMPANY_OPTIONS, GEN1_PRODUCT_INSURER_DISPLAY, GEN1_PRODUCT_LABEL, GEN1_PRODUCT_NAME_DISPLAY, GEN1_UNREGISTERED_NOTE, gen1CompanyLabel, gen1CompanyProductName, isGen1ProductUnregistered } from "../../domain/gen1Product";
+import { GEN23_UNREGISTERED_NOTE, isGen23VariantRegistered } from "../../domain/samsungGen23Variant";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 
 import type {
@@ -170,14 +174,26 @@ const generationBrief: Record<1 | 2 | 3 | 4, string> = {
 const gen23VariantBrief: Record<SamsungGen23Variant, { label: string; description: string }> = {
   UNKNOWN: {
     label: "상품 종형 선택이 필요합니다",
-    description: "1종 표준형은 입원 보상대상 의료비의 80%를 보장하는 구조입니다. 2종 선택형Ⅱ는 입원 급여 90%·비급여 80%를 보장하는 구조이므로 보험증권에 표시된 종형을 확인해 선택해주세요.",
+    description: "표준형은 입원 보상대상 의료비의 80%를 보장하는 구조입니다. 선택형Ⅱ는 입원 급여 90%·비급여 80%를 보장하는 구조이므로 보험증권에 표시된 종형을 확인해 선택해주세요.",
   },
   standard: {
-    label: "선택한 상품 종형 · 1종 표준형",
+    label: "선택한 상품 종형 · 표준형",
     description: "입원 시 보상대상 의료비의 80%를 보장하는 구조입니다. 상급병실료 차액에는 별도 보장 비율과 한도가 적용되므로 보험증권의 가입 조건을 함께 확인해주세요.",
   },
+  standard2013: {
+    label: "선택한 상품 종형 · 표준형 (2013.1~2015.8 가입)",
+    description: "이 시기 가입 계약은 삼성화재 약관 규칙이 등록되지 않아 현재 계약의 보험금 계산을 제공하지 않습니다. 증권과 약관으로 확인해주세요.",
+  },
+  selected2013: {
+    label: "선택한 상품 종형 · 선택형 (2013.1~2015.8 가입)",
+    description: "이 시기 가입 계약은 삼성화재 약관 규칙이 등록되지 않아 현재 계약의 보험금 계산을 제공하지 않습니다. 증권과 약관으로 확인해주세요.",
+  },
+  unified2009: {
+    label: "선택한 상품 종형 · 단일 구조 (2009.10~2012.12 가입)",
+    description: "이 시기 가입 계약은 유형 구분이 없는 단일 구조이며, 삼성화재 약관 규칙이 등록되지 않아 현재 계약의 보험금 계산을 제공하지 않습니다. 증권과 약관으로 확인해주세요.",
+  },
   selected2: {
-    label: "선택한 상품 종형 · 2종 선택형Ⅱ",
+    label: "선택한 상품 종형 · 선택형Ⅱ",
     description: "입원 시 급여 의료비의 90%, 비급여 의료비의 80%를 보장하는 구조입니다. 급여와 비급여의 자기부담 기준이 서로 다르므로 실제 의료비 구분이 중요합니다.",
   },
 };
@@ -297,7 +313,9 @@ function M02InputPage() {
 
   const [gen4NonCoveredRider, setGen4NonCoveredRider] =
   useState<RiderEnrollmentStatus>(
-    savedProductCalculationSelections.gen4NonCoveredRider
+    savedProductCalculationSelections.gen4NonCoveredRider === "UNKNOWN"
+      ? "NOT_ENROLLED"
+      : savedProductCalculationSelections.gen4NonCoveredRider
   );
 
 const [gen1Product, setGen1Product] =
@@ -308,6 +326,11 @@ const [gen1Product, setGen1Product] =
 const [samsungGen23Variant, setSamsungGen23Variant] =
   useState<SamsungGen23Variant>(
     savedProductCalculationSelections.samsungGen23Variant
+  );
+
+const [gen3Riders, setGen3Riders] =
+  useState<Gen3RiderSelections>(
+    savedProductCalculationSelections.gen3Riders ?? GEN3_RIDER_DEFAULT
   );
 
 const [gen1ContractBasis, setGen1ContractBasis] =
@@ -553,16 +576,35 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
   const [treatmentDrafts, setTreatmentDrafts] = useState<Record<number, TreatmentDraft>>({});
   const treatmentSampleTemplatesRef = useRef<Record<number, MedicalUsage>>({});
 
+  const gen2Availability = gen2VariantsForInceptionDate(inceptionDate);
+  const isGen1Placeholder = generation === 1 && gen1Product === "SAMSUNG_0904_2";
+  const isGen1Unregistered = generation === 1 && isGen1ProductUnregistered(gen1Product);
+  const isVariantUnregistered =
+    isGen1Unregistered ||
+    ((generation === 2 || generation === 3) &&
+      samsungGen23Variant !== "UNKNOWN" &&
+      !isGen23VariantRegistered(samsungGen23Variant));
+
+  const blockUnregisteredVariant = () => {
+    if (!isVariantUnregistered) return false;
+    document.getElementById("variant-unregistered-banner")?.scrollIntoView({ block: "center", behavior: "smooth" });
+    document.getElementById(generation === 1 ? "samsung-gen1-product" : "samsung-gen23-variant")?.focus();
+    return true;
+  };
+
+  // 드롭다운이 열려 있는 동안 값을 비워 두면 같은 세대를 다시 골라도 변경 이벤트가 발생한다.
+  const [isGenerationPickerOpen, setIsGenerationPickerOpen] = useState(false);
+
+  const resetProductTypeSelections = () => {
+    setGen1Product("UNKNOWN");
+    setSamsungGen23Variant("UNKNOWN");
+    setGen4NonCoveredRider("NOT_ENROLLED");
+    setGen3Riders(GEN3_RIDER_DEFAULT);
+  };
+
   const [isStep3Confirmed, setIsStep3Confirmed] = useState(false);
   const [isTargetPremiumHelpConfirmed, setIsTargetPremiumHelpConfirmed] = useState(false);
   const [isTreatmentHelpConfirmed, setIsTreatmentHelpConfirmed] = useState(false);
-
-  useEffect(() => {
-    if (generation === 4 && gen4NonCoveredRider === "UNKNOWN") {
-      setGen4NonCoveredRider("ENROLLED");
-    }
-  }, [generation, gen4NonCoveredRider, setGen4NonCoveredRider]);
-
 
   const [
     errorMessage,
@@ -615,6 +657,10 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
       setGeneration(
         sample.generation
       );
+      if (sample.generation === 4) setGen4NonCoveredRider("ENROLLED");
+      if (sample.generation === 3) {
+        setGen3Riders({ manualTherapy: "ENROLLED", injection: "ENROLLED", mri: "ENROLLED" });
+      }
       setMonthlyPremium(
         String(
           sample.monthlyPremium
@@ -971,6 +1017,10 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
       }
       catch (error) { setErrorMessage(error instanceof Error ? error.message : "계산 입력을 확인해주세요."); return null; }
     }
+    if (generation === 3) {
+      const enrollment = gen3EnrollmentForTreatment(gen23Values.gen23TreatmentType, gen3Riders);
+      if (enrollment) gen23Values = { ...gen23Values, gen23RiderEnrollmentStatus: enrollment };
+    }
     const sourceUsage = {
       ...(treatmentSampleTemplatesRef.current[currentTreatmentSlotIndex] ??
         treatmentDrafts[currentTreatmentSlotIndex]?.sourceUsage),
@@ -1151,6 +1201,8 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
       }));
 
       setGen23Form(restoreGen23Form(sampleUsage));
+      const sampleRiderKey = generation === 3 ? gen3RiderKeyForTreatment(sampleUsage.gen23TreatmentType) : undefined;
+      if (sampleRiderKey) setGen3Riders((previous) => ({ ...previous, [sampleRiderKey]: "ENROLLED" }));
       if ((generation === 2 || generation === 3) && samsungGen23Variant === "UNKNOWN") setSamsungGen23Variant("standard");
       setAssumeEntireMedicalCostCovered(scenario.calculationAssumptions.assumeEntireMedicalCostCovered);
       setAssumeNoPriorLimitUsage(scenario.calculationAssumptions.assumeNoPriorLimitUsage);
@@ -1408,10 +1460,16 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
       (generation === 2 || generation === 3) &&
       samsungGen23Variant === "UNKNOWN"
     ) {
-      setErrorMessage(
-        `${generation}세대 실손보험의 상품 종형을 반드시 선택해주세요.`
-      );
+      setErrorMessage(`${generation}세대 실손보험의 상품 종형을 반드시 선택해주세요.`);
       document.getElementById("samsung-gen23-variant")?.focus();
+      return;
+    }
+
+    if (blockUnregisteredVariant()) return;
+
+    if (generation === 1 && gen1Product === "UNKNOWN") {
+      setErrorMessage("1세대 실손보험의 상품 종형을 반드시 선택해주세요.");
+      document.getElementById("samsung-gen1-product")?.focus();
       return;
     }
 
@@ -1590,7 +1648,8 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
       gen5ContractType,
       gen5SevereRider,
       gen5NonSevereRider,
-      samsungGen23Variant
+      samsungGen23Variant,
+      gen3Riders,
     });
 
     navigate("/confirm");
@@ -1615,6 +1674,14 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
     ) {
       setErrorMessage(`${generation}세대 실손보험의 상품 종형을 반드시 선택해주세요.`);
       document.getElementById("samsung-gen23-variant")?.focus();
+      return;
+    }
+
+    if (blockUnregisteredVariant()) return;
+
+    if (generation === 1 && gen1Product === "UNKNOWN") {
+      setErrorMessage("1세대 실손보험의 상품 종형을 반드시 선택해주세요.");
+      document.getElementById("samsung-gen1-product")?.focus();
       return;
     }
 
@@ -1667,7 +1734,7 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
     !editingUsageId;
 
   return (
-    <AppShell currentStep={activeStep} onReset={handleConfirmResetAll}
+    <AppShell currentStep={activeStep} onReset={handleConfirmResetAll} hideResetButton
       onStepChange={(step) => {
         if (step === 4) { handleNext(); return; }
         if (step === 3 && activeStep === 2) { handleStep2Next(); return; }
@@ -1678,6 +1745,15 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
         if (step === 1 || step === 2 || step === 3) goToInputStep(step);
       }}>
     <main className="navy-page navy-input-page">
+      {isVariantUnregistered && (
+        <div
+          id="variant-unregistered-banner"
+          role="alert"
+          className="notice-box error"
+        >
+          {GEN23_UNREGISTERED_NOTE}
+        </div>
+      )}
       {errorMessage && (
         <div
           role="alert"
@@ -1713,12 +1789,23 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
           >
             샘플 불러오기
           </button>
+          <button
+            type="button"
+            className="sample-button"
+            onClick={handleResetAll}
+          >
+            초기화
+          </button>
           {selectedSampleId && (
             <span className="status-badge success" role="status">
               샘플 입력 완료
             </span>
           )}
         </div>
+        <p className="sample-note">
+          MVP에서는 사전에 검증한 샘플 정보를 사용할 수 있습니다.
+          샘플을 불러온 경우 계산 전 사용자가 내용을 확인합니다.
+        </p>
 
         <div
           className="legacy-sample-picker"
@@ -1923,7 +2010,8 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
             보험사
           <input
             type="text"
-            value={selectedSampleId ? "○○보험" : insurer}
+            value={selectedSampleId ? "○○보험" : isGen1Placeholder ? GEN1_PRODUCT_INSURER_DISPLAY : insurer}
+            readOnly={isGen1Placeholder}
             onChange={(e) => {
               setSelectedSampleId(null);
               setInsurer(e.target.value);
@@ -1936,7 +2024,8 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
           상품명
           <input
             type="text"
-            value={selectedSampleId ? "○○ 실손의료보험" : productName}
+            value={selectedSampleId ? "○○ 실손의료보험" : isGen1Placeholder ? GEN1_PRODUCT_NAME_DISPLAY : productName}
+            readOnly={isGen1Placeholder}
             onChange={(e) => {
               setSelectedSampleId(null);
               setProductName(e.target.value);
@@ -1946,34 +2035,45 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
         </label>
 
         <label>
+          실손 세대
+          <select
+            value={isGenerationPickerOpen ? "" : generation}
+            onMouseDown={() => setIsGenerationPickerOpen(true)}
+            onTouchStart={() => setIsGenerationPickerOpen(true)}
+            onBlur={() => setIsGenerationPickerOpen(false)}
+            onChange={(e) => {
+              setIsGenerationPickerOpen(false);
+              const selectedGeneration = Number(e.target.value) as Exclude<InsuranceGeneration, 5>;
+              // 같은 세대를 다시 선택해도 보험사·상품명·상품 종형·가입일을 초기 상태로 되돌린다.
+              resetProductTypeSelections();
+              setSelectedSampleId(null);
+              setInsurer("");
+              setProductName("");
+              setGeneration(selectedGeneration);
+              setInceptionDate(inceptionDateForGeneration(selectedGeneration));
+            }}
+          >
+            <option value="" disabled hidden></option>
+            <option value={1}>1세대</option>
+            <option value={2}>2세대</option>
+            <option value={3}>3세대</option>
+            <option value={4}>4세대</option>
+          </select>
+        </label>
+
+        <label>
           가입일
           <IsoDateInput
             value={inceptionDate}
             onChange={(value) => {
               const formattedValue = formatInceptionDateInput(value);
+              resetProductTypeSelections();
               setInceptionDate(formattedValue);
               const detected = generationForInceptionDate(formattedValue);
               if (detected !== undefined) setGeneration(detected);
             }}
             placeholder="YYYY-MM-DD (예: 2018-03-01)"
           />
-        </label>
-
-        <label>
-          실손 세대
-          <select
-            value={generation}
-            onChange={(e) => {
-              const selectedGeneration = Number(e.target.value) as Exclude<InsuranceGeneration, 5>;
-              setGeneration(selectedGeneration);
-              setInceptionDate(inceptionDateForGeneration(selectedGeneration));
-            }}
-          >
-            <option value={1}>1세대</option>
-            <option value={2}>2세대</option>
-            <option value={3}>3세대</option>
-            <option value={4}>4세대</option>
-          </select>
         </label>
         {generation === 2 ||
         generation === 3 ? (
@@ -1991,19 +2091,80 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
                 )
               }
             >
-              <option value="UNKNOWN">
+              <option value="UNKNOWN" disabled hidden>
                 필수 선택
               </option>
 
-              <option value="standard">
-                1종 표준형
-              </option>
+              {generation === 2 ? (
+                gen2Availability.options.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))
+              ) : (
+                <>
+                  <option value="standard">
+                    1. 표준형
+                  </option>
 
-              <option value="selected2">
-                2종 선택형Ⅱ
-              </option>
+                  <option value="selected2">
+                    2. 선택형Ⅱ
+                  </option>
+                </>
+              )}
             </select>
           </label>
+        ) : null}
+
+
+        {generation === 1 ? (
+          <label>
+            상품 종형 <span className="required-mark">필수</span>
+            <select
+              id="samsung-gen1-product"
+              value={gen1Product}
+              required
+              aria-required="true"
+              aria-invalid={gen1Product === "UNKNOWN"}
+              onChange={(event) => {
+                const value = event.target.value as typeof gen1Product;
+                setGen1Product(value);
+                if (value === "SAMSUNG_0904_2") {
+                  setInsurer("삼성화재");
+                  setProductName("삼성 올라이프 100세 건강파트너보험(0904.2)");
+                } else {
+                  const company = gen1CompanyLabel(value);
+                  if (company) {
+                    setInsurer(company);
+                    setProductName(gen1CompanyProductName(company));
+                  }
+                }
+              }}
+            >
+              <option value="UNKNOWN" disabled hidden>필수 선택</option>
+              <option value="SAMSUNG_0904_2">1. {GEN1_PRODUCT_LABEL} ✓</option>
+              {GEN1_COMPANY_OPTIONS.map((option, index) => (
+                <option key={option.value} value={option.value}>{index + 2}. {option.label} ({GEN1_UNREGISTERED_NOTE})</option>
+              ))}
+            </select>
+          </label>
+        ) : null}
+
+        {generation === 4 ? (
+          <div className="select-like-field">
+            <span id="gen4-rider-title">
+              특약 가입 여부 <span className="optional-mark">선택</span>
+            </span>
+            <label className="no-treatment-option">
+              <input
+                type="checkbox"
+                checked={gen4NonCoveredRider === "ENROLLED"}
+                onChange={(event) => setGen4NonCoveredRider(event.target.checked ? "ENROLLED" : "NOT_ENROLLED")}
+              />
+              <span><strong>비급여 특약</strong></span>
+            </label>
+            <small className="sample-note">급여 주계약은 필수 가입으로 자동 포함</small>
+          </div>
         ) : null}
 
         <label>
@@ -2022,6 +2183,27 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
             placeholder="예: 60,000"
           /><span className="input-unit-label">원</span></span>
         </label>
+
+        {generation === 3 ? (
+          <div className="select-like-field rider-row">
+            <span id="gen3-rider-title">
+              특약 가입 여부 <span className="optional-mark">선택</span>
+              <small className="sample-note rider-row__hint">가입한 특약만 체크. 체크하지 않은 특약은 미가입으로 계산.</small>
+            </span>
+            <div className="rider-row__boxes" role="group" aria-labelledby="gen3-rider-title">
+              {GEN3_RIDERS.map(({ key, label }) => (
+                <label key={key} className="no-treatment-option">
+                  <input
+                    type="checkbox"
+                    checked={gen3Riders[key] === "ENROLLED"}
+                    onChange={(event) => setGen3Riders((previous) => ({ ...previous, [key as Gen3RiderKey]: event.target.checked ? "ENROLLED" : "NOT_ENROLLED" }))}
+                  />
+                  <span><strong>{label}</strong></span>
+                </label>
+              ))}
+            </div>
+          </div>
+        ) : null}
 
           <label>
             갱신 주기
@@ -2062,17 +2244,6 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
           </label>
         </div>
 
-        <div
-          className="notice-box"
-          style={{
-            marginTop: "-6px",
-            marginBottom: "22px",
-          }}
-        >
-          공모전 MVP에서는 사전에 검증한 샘플 정보를 사용할 수 있습니다.
-          샘플을 불러온 경우 실제 계산 전 사용자가 내용을 다시 확인해야 합니다.
-        </div>
-
         {detectedGeneration !== undefined && (
           <section className="generation-match-card" role="status" aria-live="polite">
             <div className="generation-match-card__icon" aria-hidden="true">✓</div>
@@ -2097,25 +2268,6 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
           <fieldset className="form-card" style={{ marginTop: "16px" }}>
             <legend>1세대 삼성화재 계약 확인</legend>
             <p className="card-description">보험증권을 기준으로 상품과 D1 담보를 선택해주세요.</p>
-
-            <label>
-              삼성화재 대표 상품
-              <select
-                value={gen1Product}
-                onChange={(event) => {
-                  const value = event.target.value as typeof gen1Product;
-                  setGen1Product(value);
-                  if (value === "SAMSUNG_0904_2") {
-                    setInsurer("삼성화재");
-                    setProductName("삼성 올라이프 100세 건강파트너보험(0904.2)");
-                  }
-                }}
-              >
-                <option value="UNKNOWN">확인할 수 없음</option>
-                <option value="SAMSUNG_0904_2">삼성 올라이프 100세 건강파트너보험(0904.2)</option>
-                <option value="OTHER">다른 상품</option>
-              </select>
-            </label>
 
             {gen1Product === "SAMSUNG_0904_2" && (
               <>
@@ -2167,44 +2319,6 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
                 </div>
               </>
             )}
-          </fieldset>
-        )}
-
-        {generation === 4 && (
-          <fieldset className="form-card generation-classification" style={{ marginTop: "16px" }}>
-            <legend>4세대 계약 분류</legend>
-            <p className="card-description">
-              보험증권에 표시된 비급여 특약 가입 여부를 기준으로 현재 계약을 선택해주세요.
-            </p>
-
-            <div className="generation-classification__options">
-              <label className="generation-classification__option">
-                <input
-                  type="radio"
-                  name="gen4-rider"
-                  checked={gen4NonCoveredRider === "ENROLLED"}
-                  onChange={() => setGen4NonCoveredRider("ENROLLED")}
-                />
-                <span>
-                  <strong>급여·비급여형</strong>
-                  <small>급여 주계약과 비급여 특약에 모두 가입</small>
-                </span>
-              </label>
-
-              <label className="generation-classification__option">
-                <input
-                  type="radio"
-                  name="gen4-rider"
-                  checked={gen4NonCoveredRider === "NOT_ENROLLED"}
-                  onChange={() => setGen4NonCoveredRider("NOT_ENROLLED")}
-                />
-                <span>
-                  <strong>급여형</strong>
-                  <small>급여 주계약만 가입하고 비급여 특약은 미가입</small>
-                </span>
-              </label>
-
-            </div>
           </fieldset>
         )}
 
@@ -2667,7 +2781,7 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
           })}
         </div>
 
-          {(generation === 2 || generation === 3) && <Gen23Inputs generation={generation} variant={samsungGen23Variant} insurerName={insurer === "INS_001" ? "삼성화재" : insurer || "보험사"} embedded institutionManaged value={gen23Form} onChange={(values) => {
+          {(generation === 2 || generation === 3) && <Gen23Inputs generation={generation} riderManaged={generation === 3} variant={samsungGen23Variant} insurerName={insurer === "INS_001" ? "삼성화재" : insurer || "보험사"} embedded institutionManaged value={gen23Form} onChange={(values) => {
             setGen23Form(values);
             const selectedCare = genericGen23CareSetting(values.gen23CareSetting);
             if (selectedCare && selectedCare !== careSetting) changeCareSetting(selectedCare);
@@ -3231,14 +3345,6 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
         <button
           type="button"
           className="secondary-button"
-          onClick={handleResetAll}
-        >
-          전체 초기화
-        </button>
-
-        <button
-          type="button"
-          className="secondary-button"
           onClick={() => activeStep === 1 ? navigate("/") : goToInputStep((activeStep - 1) as 1 | 2)}
         >
           이전
@@ -3305,7 +3411,7 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
         </section>
       </dialog>
 
-      {isResetModalOpen && (
+      {isResetModalOpen && createPortal(
         <div
           role="presentation"
           onMouseDown={(event) => {
@@ -3321,8 +3427,9 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
             inset: 0,
             zIndex: 9999,
             display: "grid",
-            placeItems: "center",
-            padding: "20px",
+            placeItems: "start center",
+            padding: "clamp(48px, 12vh, 120px) 20px 20px",
+            overflowY: "auto",
             background:
               "rgba(15, 23, 42, 0.48)",
             backdropFilter: "blur(4px)",
@@ -3381,11 +3488,13 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
                 className="primary-button"
                 onClick={handleConfirmResetAll}
               >
-                전체 초기화
+                초기화
               </button>
             </div>
           </section>
         </div>
+        ,
+        document.body
       )}
 
       {pendingDeleteUsage && (
