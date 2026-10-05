@@ -4,12 +4,10 @@ import type { M02Form } from "./useM02Form";
 
 export default function Step2Compare({ form }: { form: M02Form }) {
   const {
-    gen5NonSevereRider,
-    gen5SevereRider,
+    hasTarget5GSpecialRider1,
+    hasTarget5GSpecialRider2,
     isTargetPremiumHelpConfirmed,
     riderDetailVisible,
-    setGen5NonSevereRider,
-    setGen5SevereRider,
     setHasTarget5GSpecialRider1,
     setHasTarget5GSpecialRider2,
     setIsTargetPremiumHelpConfirmed,
@@ -51,6 +49,13 @@ export default function Step2Compare({ form }: { form: M02Form }) {
           /><span className="input-unit-label">원</span></span>
         </label>
 
+        <div className="select-like-field" style={{ marginTop: "14px", marginBottom: 0 }}>
+          <span id="target-rider-title">
+            특약 가입 여부 <span className="optional-mark">선택</span>
+            <small className="sample-note rider-row__hint">가입한 특약만 체크. 체크하지 않은 특약은 미가입으로 계산.</small>
+          </span>
+        </div>
+
         <div
           style={{
             display: "grid",
@@ -66,26 +71,14 @@ export default function Step2Compare({ form }: { form: M02Form }) {
               gap: "12px",
             }}
           >
-            <label
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                flex: 1,
-                cursor: "pointer",
-              }}
-            >
+            <label className="no-treatment-option" style={{ flex: 1, margin: 0 }}>
               <input
-                type="radio"
-                name="target-gen5-severe"
-                checked={
-                  gen5SevereRider === "ENROLLED"
-                }
-                onChange={() => { setGen5SevereRider("ENROLLED"); setHasTarget5GSpecialRider1(true); }}
+                type="checkbox"
+                checked={hasTarget5GSpecialRider1}
+                onChange={(event) => setHasTarget5GSpecialRider1(event.target.checked)}
               />
-              <span>5세대 중증 비급여 특약1 가입</span>
+              <span><strong>중증 비급여 특약(특약1)</strong></span>
             </label>
-            <label><input type="radio" name="target-gen5-severe" checked={gen5SevereRider === "NOT_ENROLLED"} onChange={() => { setGen5SevereRider("NOT_ENROLLED"); setHasTarget5GSpecialRider1(false); }} /> 미가입</label>
 
             <button
               type="button"
@@ -128,26 +121,14 @@ export default function Step2Compare({ form }: { form: M02Form }) {
               marginTop: "14px",
             }}
           >
-            <label
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                flex: 1,
-                cursor: "pointer",
-              }}
-            >
+            <label className="no-treatment-option" style={{ flex: 1, margin: 0 }}>
               <input
-                type="radio"
-                name="target-gen5-non-severe"
-                checked={
-                  gen5NonSevereRider === "ENROLLED"
-                }
-                onChange={() => { setGen5NonSevereRider("ENROLLED"); setHasTarget5GSpecialRider2(true); }}
+                type="checkbox"
+                checked={hasTarget5GSpecialRider2}
+                onChange={(event) => setHasTarget5GSpecialRider2(event.target.checked)}
               />
-              <span>5세대 비급여 특약2 가입</span>
+              <span><strong>비중증 비급여 특약(특약2)</strong></span>
             </label>
-            <label><input type="radio" name="target-gen5-non-severe" checked={gen5NonSevereRider === "NOT_ENROLLED"} onChange={() => { setGen5NonSevereRider("NOT_ENROLLED"); setHasTarget5GSpecialRider2(false); }} /> 미가입</label>
 
             <button
               type="button"

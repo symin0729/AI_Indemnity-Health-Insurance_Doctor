@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { CareSetting, MedicalUsage } from "../../../domain/medical";
 import type { InsuranceGeneration } from "../../../domain/insurance";
-import { useAnalysisStore, type RiderEnrollmentStatus, type SamsungGen23Variant } from "../../store/useAnalysisStore";
+import { useAnalysisStore, type SamsungGen23Variant } from "../../store/useAnalysisStore";
 
 
 
@@ -129,18 +129,6 @@ const [samsungGen23Variant, setSamsungGen23Variant] =
   );
 
 
-const [gen5SevereRider, setGen5SevereRider] =
-  useState<RiderEnrollmentStatus>(
-    savedProductCalculationSelections.gen5SevereRider
-  );
-
-
-const [gen5NonSevereRider, setGen5NonSevereRider] =
-  useState<RiderEnrollmentStatus>(
-    savedProductCalculationSelections.gen5NonSevereRider
-  );
-
-
   const [careSetting, setCareSetting] =
     useState<CareSetting>(
       "OUTPATIENT"
@@ -239,10 +227,6 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
     setIsGenerationSelected,
     samsungGen23Variant,
     setSamsungGen23Variant,
-    gen5SevereRider,
-    setGen5SevereRider,
-    gen5NonSevereRider,
-    setGen5NonSevereRider,
     careSetting,
     setCareSetting,
     unitCost,

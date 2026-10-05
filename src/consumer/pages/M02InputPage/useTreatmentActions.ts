@@ -2,7 +2,7 @@ import { createDraftFromUsage, createEmptyTreatmentDraft, type TreatmentDraft } 
 import { type CopayInstitution, type CopayRegion } from "../../../domain/insuranceInputDefaults";
 import { gen23CareSettingError } from "../../../domain/samsungGen23CareSetting";
 import { parseGen23Form, restoreGen23Form } from "../../../domain/samsungGen23Form";
-import { gen3EnrollmentForTreatment, gen3RiderKeyForTreatment } from "../../../domain/gen3Riders";
+import { gen3EnrollmentForTreatment } from "../../../domain/gen3Riders";
 import { isValidIsoDate } from "./inputModel";
 import type { BenefitClass, MedicalUsage, SeverityClass, ClaimCause, NationalHealthInsuranceStatus } from "../../../domain/medical";
 import { loadTreatmentSample, type TreatmentSampleKind } from "../../../services/sampleScenarioService";
@@ -40,11 +40,6 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
     nationalHealthInsuranceStatus,
     pendingDeleteUsage,
     plannedUsages,
-    samsungGen23Variant,
-    selectedSampleId,
-    setAssumeEachOccurrenceSeparate,
-    setAssumeEntireMedicalCostCovered,
-    setAssumeNoPriorLimitUsage,
     setBenefitClass,
     setCareSetting,
     setClaimCause,
@@ -61,16 +56,12 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
     setGen1PriorServiceDays,
     setGen1RoomDifference,
     setGen23Form,
-    setGen3Riders,
     setHealthInsuranceCopayRatePercent,
     setInstitutionType,
-    setIsStep3Confirmed,
     setIsTreatmentFormOpen,
     setNationalHealthInsuranceStatus,
     setPendingDeleteUsage,
     setPlannedUsages,
-    setSampleScenarioNotice,
-    setSamsungGen23Variant,
     setSeverityClass,
     setTreatmentCategory,
     setTreatmentDate,
@@ -467,9 +458,13 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
   };
 
 
+  /**
+   * STEP 2의 "치료 샘플 불러오기": 예정 치료 입력만 채운다.
+   * STEP 1(현재 계약)과 STEP 3(계산 가정)은 건드리지 않고, STEP 1에서 고른 샘플과도 무관하게 동작한다.
+   */
   const handleLoadSampleTreatments = (kind: TreatmentSampleKind) => {
     try {
-      const scenario = loadTreatmentSample(selectedSampleId ?? "NON_COVERED", generation, kind);
+      const scenario = loadTreatmentSample("NON_COVERED", generation, kind);
       treatmentSampleDialogRef.current?.close();
       const sampleUsage = scenario.plannedUsages[0];
 
@@ -487,18 +482,10 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
       }));
 
       setGen23Form(restoreGen23Form(sampleUsage));
-      const sampleRiderKey = generation === 3 ? gen3RiderKeyForTreatment(sampleUsage.gen23TreatmentType) : undefined;
-      if (sampleRiderKey) setGen3Riders((previous) => ({ ...previous, [sampleRiderKey]: "ENROLLED" }));
-      if ((generation === 2 || generation === 3) && samsungGen23Variant === "UNKNOWN") setSamsungGen23Variant("standard");
-      setAssumeEntireMedicalCostCovered(scenario.calculationAssumptions.assumeEntireMedicalCostCovered);
-      setAssumeNoPriorLimitUsage(scenario.calculationAssumptions.assumeNoPriorLimitUsage);
-      setAssumeEachOccurrenceSeparate(scenario.calculationAssumptions.assumeEachOccurrenceSeparate);
-      setIsStep3Confirmed(false);
-      setTreatmentSampleNotice(scenario.notice + ((generation === 2 || generation === 3) && samsungGen23Variant === "UNKNOWN" ? " 종형 미선택으로 표준형 예제를 불러왔습니다." : ""));
+      setTreatmentSampleNotice(scenario.notice);
 
       applyTreatmentDraft(nextDraft);
       setIsTreatmentFormOpen(true);
-      setSampleScenarioNotice(scenario.notice);
       setErrorMessage("");
     } catch (error) {
       setErrorMessage(
@@ -626,10 +613,6 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
   };
 
 
-  const scenarioNoticeHasUsage =
-    plannedUsages.length > 0 &&
-    selectedSampleId !== null;
-
   return {
     buildCurrentTreatmentDraft,
     applyTreatmentDraft,
@@ -641,7 +624,6 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
     handleEditTreatment,
     handleCancelEdit,
     handleConfirmRemoveTreatment,
-    scenarioNoticeHasUsage,
   };
 }
 

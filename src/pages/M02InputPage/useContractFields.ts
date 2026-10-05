@@ -1,5 +1,6 @@
 import { gen2VariantsForInceptionDate } from "../../domain/insuranceInputDefaults";
 import { GEN3_RIDER_DEFAULT, type Gen3RiderSelections } from "../../domain/gen3Riders";
+import { contractStepResetPatch, type ContractPatch } from "./contractTransitions";
 import { isUnregisteredVariantSelected, validateContractStep, type InputFailure } from "./inputModel";
 import { GEN23_VARIANT_NAMES, gen23VariantDescription } from "../../domain/samsungGen23Variant";
 import { useState } from "react";
@@ -30,21 +31,16 @@ export function useContractFields(deps: BaseApi) {
   // 현재 계약
   // ========================================
 
-  const [insurer, setInsurer] =
-    useState(
-      savedContract?.insurer ?? ""
-    );
+  // 입력한 보험사·상품명(모든 세대 공통). 계산용 값은 저장할 때 resolveContractNames가 정한다.
+  const [insurerLabel, setInsurerLabel] = useState(
+    savedContract?.insurerLabel ??
+      (savedContract?.generation === 1 && savedProductCalculationSelections.gen1Product !== "SAMSUNG_0904_2" ? savedContract.insurer : "")
+  );
 
-
-  const [insurerLabel, setInsurerLabel] = useState(savedContract?.insurerLabel ?? "");
-
-  const [productLabel, setProductLabel] = useState(savedContract?.productLabel ?? "");
-
-
-  const [productName, setProductName] =
-    useState(
-      savedContract?.productName ?? ""
-    );
+  const [productLabel, setProductLabel] = useState(
+    savedContract?.productLabel ??
+      (savedContract?.generation === 1 && savedProductCalculationSelections.gen1Product !== "SAMSUNG_0904_2" ? savedContract.productName : "")
+  );
 
 
   const [inceptionDate, setInceptionDate] =
@@ -85,12 +81,6 @@ const [gen1D1Coverage, setGen1D1Coverage] =
     savedProductCalculationSelections.gen1D1Coverage === "UNKNOWN"
       ? "NONE"
       : savedProductCalculationSelections.gen1D1Coverage
-  );
-
-
-const [gen5ContractType, setGen5ContractType] =
-  useState<"GENERAL" | "CONVERSION">(
-    savedProductCalculationSelections.gen5ContractType
   );
 
 
@@ -138,12 +128,6 @@ const [gen5ContractType, setGen5ContractType] =
     isSampleConfirmed,
     setIsSampleConfirmed,
   ] = useState(false);
-
-
-  const [
-    sampleScenarioNotice,
-    setSampleScenarioNotice,
-  ] = useState("");
 
 
   const [claimCause, setClaimCause] = useState<ClaimCause>("UNKNOWN");
@@ -194,16 +178,29 @@ const [gen5ContractType, setGen5ContractType] =
   const [isGenerationPickerOpen, setIsGenerationPickerOpen] = useState(false);
 
 
-  const resetProductTypeSelections = () => {
-    setGen1Product("UNKNOWN");
-    setSamsungGen23Variant("UNKNOWN");
-    setGen4NonCoveredRider("NOT_ENROLLED");
-    setGen3Riders(GEN3_RIDER_DEFAULT);
+  /** 규칙(contractTransitions.ts)이 돌려준 변경 내용을 STEP 1 입력에 그대로 적용한다. */
+  const applyContractPatch = (patch: ContractPatch) => {
+    if (patch.generation !== undefined) setGeneration(patch.generation);
+    if (patch.isGenerationSelected !== undefined) setIsGenerationSelected(patch.isGenerationSelected);
+    if (patch.inceptionDate !== undefined) setInceptionDate(patch.inceptionDate);
+    if (patch.insurerLabel !== undefined) setInsurerLabel(patch.insurerLabel);
+    if (patch.productLabel !== undefined) setProductLabel(patch.productLabel);
+    if (patch.gen1Product !== undefined) setGen1Product(patch.gen1Product);
+    if (patch.gen1D1Coverage !== undefined) setGen1D1Coverage(patch.gen1D1Coverage);
+    if (patch.gen1ContractBasis !== undefined) setGen1ContractBasis(patch.gen1ContractBasis);
+    if (patch.samsungGen23Variant !== undefined) setSamsungGen23Variant(patch.samsungGen23Variant);
+    if (patch.gen4NonCoveredRider !== undefined) setGen4NonCoveredRider(patch.gen4NonCoveredRider);
+    if (patch.gen3Riders !== undefined) setGen3Riders(patch.gen3Riders);
+    if (patch.monthlyPremium !== undefined) setMonthlyPremium(patch.monthlyPremium);
+    if (patch.renewalCycleMonths !== undefined) setRenewalCycleMonths(patch.renewalCycleMonths);
+    if (patch.reentryCycleYears !== undefined) setReentryCycleYears(patch.reentryCycleYears);
+    if (patch.selectedSampleId !== undefined) setSelectedSampleId(patch.selectedSampleId as SampleId | null);
+    if (patch.isSampleConfirmed !== undefined) setIsSampleConfirmed(patch.isSampleConfirmed);
   };
 
 
   // ========================================
-  // 전체 초기화
+  // STEP 1 초기화
   // ========================================
 
   const handleResetAll = () => {
@@ -215,23 +212,7 @@ const [gen5ContractType, setGen5ContractType] =
    * 5세대 전환 비교, 예정 치료(1세대 세부 입력 포함), 계산 가정은 건드리지 않는다.
    */
   const resetContractStep = () => {
-    setInsurer("");
-    setProductName("");
-    setInsurerLabel("");
-    setProductLabel("");
-    setInceptionDate("");
-    setGeneration(3);
-    setIsGenerationSelected(false);
-    resetProductTypeSelections();
-    setGen1ContractBasis("SAMPLE_SIMULATION");
-    setGen1D1Coverage("NONE");
-    setGen5ContractType("GENERAL");
-    setMonthlyPremium("");
-    setRenewalCycleMonths("");
-    setReentryCycleYears("");
-    setSelectedSampleId(null);
-    setIsSampleConfirmed(false);
-    setSampleScenarioNotice("");
+    applyContractPatch(contractStepResetPatch());
     setErrorMessage("");
   };
 
@@ -258,9 +239,10 @@ const [gen5ContractType, setGen5ContractType] =
     const failure = validateContractStep({
       generation,
       generationSelected: isGenerationSelected,
+      inceptionDate,
       gen1D1Coverage,
-      insurer,
-      productName,
+      insurerLabel,
+      productLabel,
       monthlyPremium,
       samsungGen23Variant,
       gen1Product,
@@ -282,14 +264,10 @@ const [gen5ContractType, setGen5ContractType] =
     );
 
   return {
-    insurer,
-    setInsurer,
     insurerLabel,
     setInsurerLabel,
     productLabel,
     setProductLabel,
-    productName,
-    setProductName,
     inceptionDate,
     setInceptionDate,
     gen4NonCoveredRider,
@@ -302,8 +280,6 @@ const [gen5ContractType, setGen5ContractType] =
     setGen1ContractBasis,
     gen1D1Coverage,
     setGen1D1Coverage,
-    gen5ContractType,
-    setGen5ContractType,
     monthlyPremium,
     setMonthlyPremium,
     renewalCycleMonths,
@@ -314,8 +290,6 @@ const [gen5ContractType, setGen5ContractType] =
     setSelectedSampleId,
     isSampleConfirmed,
     setIsSampleConfirmed,
-    sampleScenarioNotice,
-    setSampleScenarioNotice,
     claimCause,
     setClaimCause,
     nationalHealthInsuranceStatus,
@@ -339,7 +313,7 @@ const [gen5ContractType, setGen5ContractType] =
     blockUnregisteredVariant,
     isGenerationPickerOpen,
     setIsGenerationPickerOpen,
-    resetProductTypeSelections,
+    applyContractPatch,
     handleResetAll,
     resetContractStep,
     applyInputFailure,

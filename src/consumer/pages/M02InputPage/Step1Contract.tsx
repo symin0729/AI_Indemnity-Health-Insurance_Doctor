@@ -1,8 +1,8 @@
-import { formatInceptionDateInput, generationForInceptionDate, inceptionDateForGeneration } from "../../../domain/insuranceInputDefaults";
 import { MASKED_INSURER, MASKED_PRODUCT_NAME } from "../../../domain/displayMask";
 import { GEN3_RIDERS, type Gen3RiderKey } from "../../../domain/gen3Riders";
 import { GEN1_COMPANY_OPTIONS, gen1CoverageChecks, gen1CoverageFromChecks, GEN1_PRODUCT_INSURER_DISPLAY, GEN1_PRODUCT_LABEL, GEN1_PRODUCT_NAME_DISPLAY, GEN1_UNREGISTERED_NOTE, gen1CompanyLabel, gen1CompanyProductName } from "../../../domain/gen1Product";
 import OptionDropdown from "../../../components/OptionDropdown";
+import { generationSelectedPatch, inceptionDateTypedPatch } from "./contractTransitions";
 import type { InsuranceGeneration } from "../../../domain/insurance";
 import { SAMPLE_POLICY_OPTIONS } from "../../../services/samplePolicyService";
 import { type SamsungGen23Variant } from "../../store/useAnalysisStore";
@@ -16,57 +16,40 @@ export default function Step1Contract({ form }: { form: M02Form }) {
     gen23VariantItems,
     gen3Riders,
     gen4NonCoveredRider,
-    gen5ContractType,
-    gen5NonSevereRider,
-    gen5SevereRider,
     generation: formGeneration,
     isGenerationSelected,
-    setIsGenerationSelected,
     handleLoadSamplePolicy,
     handleResetAll,
     inceptionDate,
-    insurer,
     insurerLabel,
     isGen1Placeholder,
     isGenerationPickerOpen,
     isSampleConfirmed,
     monthlyPremium,
     productLabel,
-    productName,
     reentryCycleYears,
     renewalCycleMonths,
-    resetProductTypeSelections,
-    sampleScenarioNotice,
+    applyContractPatch,
     samsungGen23Variant,
-    scenarioNoticeHasUsage,
     selectedSample,
     selectedSampleId,
     setGen1D1Coverage,
     setGen1Product,
     setGen3Riders,
     setGen4NonCoveredRider,
-    setGen5ContractType,
-    setGen5NonSevereRider,
-    setGen5SevereRider,
-    setGeneration,
-    setInceptionDate,
-    setInsurer,
     setInsurerLabel,
     setIsGenerationPickerOpen,
     setIsSampleConfirmed,
     setMonthlyPremium,
     setProductLabel,
-    setProductName,
     setReentryCycleYears,
     setRenewalCycleMonths,
     setSamsungGen23Variant,
     setSelectedSampleId,
   } = form;
 
-  // 1세대 외, 그리고 1세대에서 "OO 보험"을 고른 경우에는 입력한 표시용 이름을 쓴다(계산용 내부 값은 따로 고정).
   // 실손 세대를 고르기 전(0)에는 세대별 입력 항목을 보여주지 않는다.
   const generation = isGenerationSelected ? formGeneration : 0;
-  const usesLabelFields = generation !== 1 || isGen1Placeholder;
 
   return (
     <section id="input-step-1" tabIndex={-1} className="form-card">
@@ -145,7 +128,7 @@ export default function Step1Contract({ form }: { form: M02Form }) {
                 className="treatment-meta"
                 style={{ marginBottom: 0 }}
               >
-                샘플을 선택하면 계약 정보와 예정 치료가 자동으로 채워집니다.
+                샘플을 선택하면 현재 계약 정보가 자동으로 채워집니다.
                 불러온 뒤 직접 수정할 수도 있습니다.
               </p>
             </div>
@@ -259,29 +242,6 @@ export default function Step1Contract({ form }: { form: M02Form }) {
                 </span>
               </div>
 
-              {sampleScenarioNotice && (
-                <p
-                  className="treatment-meta"
-                  style={{
-                    margin: "0 0 12px",
-                  }}
-                >
-                  {sampleScenarioNotice}
-                </p>
-              )}
-
-              {scenarioNoticeHasUsage && (
-                <div
-                  className="notice-box"
-                  style={{
-                    marginBottom: "12px",
-                  }}
-                >
-                  샘플에 필요한 계산 가정도 STEP 4에 자동 반영했습니다.
-                  계산 전 직접 확인하거나 해제할 수 있습니다.
-                </div>
-              )}
-
               <label
                 style={{
                   marginBottom: 0,
@@ -301,7 +261,7 @@ export default function Step1Contract({ form }: { form: M02Form }) {
                     )
                   }
                 />{" "}
-                불러온 계약 정보와 예정 치료를 직접 확인했습니다.
+                불러온 계약 정보를 직접 확인했습니다.
               </label>
             </div>
           )}
@@ -312,11 +272,10 @@ export default function Step1Contract({ form }: { form: M02Form }) {
             보험사
           <input
             type="text"
-            value={usesLabelFields ? insurerLabel : insurer}
+            value={insurerLabel}
             onChange={(e) => {
               setSelectedSampleId(null);
-              if (usesLabelFields) setInsurerLabel(e.target.value);
-              else setInsurer(e.target.value);
+              setInsurerLabel(e.target.value);
             }}
             placeholder={generation === 1 ? (isGen1Placeholder ? GEN1_PRODUCT_INSURER_DISPLAY : "예: OO손해보험") : MASKED_INSURER}
           />
@@ -326,11 +285,10 @@ export default function Step1Contract({ form }: { form: M02Form }) {
           상품명
           <input
             type="text"
-            value={usesLabelFields ? productLabel : productName}
+            value={productLabel}
             onChange={(e) => {
               setSelectedSampleId(null);
-              if (usesLabelFields) setProductLabel(e.target.value);
-              else setProductName(e.target.value);
+              setProductLabel(e.target.value);
             }}
             placeholder={generation === 1 ? (isGen1Placeholder ? GEN1_PRODUCT_NAME_DISPLAY : "보험 상품명") : MASKED_PRODUCT_NAME}
           />
@@ -348,16 +306,8 @@ export default function Step1Contract({ form }: { form: M02Form }) {
             onChange={(e) => {
               setIsGenerationPickerOpen(false);
               const selectedGeneration = Number(e.target.value) as Exclude<InsuranceGeneration, 5>;
-              // 같은 세대를 다시 선택해도 보험사·상품명·상품 종형·가입일을 초기 상태로 되돌린다.
-              resetProductTypeSelections();
-              setSelectedSampleId(null);
-              setInsurer("");
-              setProductName("");
-              setInsurerLabel("");
-              setProductLabel("");
-              setGeneration(selectedGeneration);
-              setIsGenerationSelected(true);
-              setInceptionDate(inceptionDateForGeneration(selectedGeneration));
+              // 같은 세대를 다시 선택해도 같은 규칙(contractTransitions.ts)으로 초기 상태로 되돌린다.
+              applyContractPatch(generationSelectedPatch(selectedGeneration, { selectedSampleId }));
             }}
           >
             <option value="" disabled hidden>{isGenerationSelected ? "" : "예: 3세대"}</option>
@@ -373,16 +323,7 @@ export default function Step1Contract({ form }: { form: M02Form }) {
           가입일
           <IsoDateInput
             value={inceptionDate}
-            onChange={(value) => {
-              const formattedValue = formatInceptionDateInput(value);
-              resetProductTypeSelections();
-              setInceptionDate(formattedValue);
-              const detected = generationForInceptionDate(formattedValue);
-              if (detected !== undefined) {
-                setGeneration(detected);
-                setIsGenerationSelected(true);
-              }
-            }}
+            onChange={(value) => applyContractPatch(inceptionDateTypedPatch(value))}
             placeholder="YYYY-MM-DD (예: 2018-03-01)"
           />
         </label>
@@ -416,16 +357,15 @@ export default function Step1Contract({ form }: { form: M02Form }) {
               onChange={(event) => {
                 const value = event.target.value as typeof gen1Product;
                 setGen1Product(value);
+                // 선택한 상품에 맞는 이름을 자동으로 채운다(이후 직접 수정할 수 있다).
                 if (value === "SAMSUNG_0904_2") {
-                  setInsurer("삼성화재");
-                  setProductName("삼성 올라이프 100세 건강파트너보험(0904.2)");
                   setInsurerLabel(GEN1_PRODUCT_INSURER_DISPLAY);
                   setProductLabel(GEN1_PRODUCT_NAME_DISPLAY);
                 } else {
                   const company = gen1CompanyLabel(value);
                   if (company) {
-                    setInsurer(company);
-                    setProductName(gen1CompanyProductName(company));
+                    setInsurerLabel(company);
+                    setProductLabel(gen1CompanyProductName(company));
                   }
                 }
               }}
@@ -562,26 +502,6 @@ export default function Step1Contract({ form }: { form: M02Form }) {
             /><span className="input-unit-label">년</span></span>
           </label>
         </div>
-
-        {generation === 5 && (
-          <fieldset className="form-card" style={{ marginTop: "16px" }}>
-            <legend>5세대 현재 계약 구성</legend>
-            <p>급여 기본계약: 가입 확인됨</p>
-            <label>계약 유형{" "}
-              <select value={gen5ContractType} onChange={(event) => setGen5ContractType(event.target.value as "GENERAL" | "CONVERSION")}>
-                <option value="GENERAL">일반형</option><option value="CONVERSION">계약전환형</option>
-              </select>
-            </label>
-            <p>특약1: 중증 비급여</p>
-            {(["ENROLLED", "NOT_ENROLLED", "UNKNOWN"] as const).map((value) => (
-              <label key={`severe-${value}`} style={{ marginRight: "16px" }}><input type="radio" name="gen5-severe" checked={gen5SevereRider === value} onChange={() => setGen5SevereRider(value)} /> {value === "ENROLLED" ? "가입함" : value === "NOT_ENROLLED" ? "가입하지 않음" : "확인할 수 없음"}</label>
-            ))}
-            <p>특약2: 비중증 비급여</p>
-            {(["ENROLLED", "NOT_ENROLLED", "UNKNOWN"] as const).map((value) => (
-              <label key={`non-severe-${value}`} style={{ marginRight: "16px" }}><input type="radio" name="gen5-non-severe" checked={gen5NonSevereRider === value} onChange={() => setGen5NonSevereRider(value)} /> {value === "ENROLLED" ? "가입함" : value === "NOT_ENROLLED" ? "가입하지 않음" : "확인할 수 없음"}</label>
-            ))}
-          </fieldset>
-        )}
       </section>
   );
 }

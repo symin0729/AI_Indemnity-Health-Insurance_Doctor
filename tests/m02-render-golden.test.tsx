@@ -59,7 +59,7 @@ const CASES: Array<{ name: string; state: () => void }> = [
   { name: "gen3-unselected", state: () => useAnalysisStore.setState({ contract: contract({}), productCalculationSelections: selections({ samsungGen23Variant: "UNKNOWN", gen3Riders: GEN3_RIDER_DEFAULT }) }) },
   { name: "gen4-enrolled", state: () => useAnalysisStore.setState({ contract: contract({ generation: 4, inceptionDate: "2022-01-01", coverages: ["NON_COVERED"] }), usages: [usage], productCalculationSelections: selections({ gen4NonCoveredRider: "ENROLLED" }) }) },
   { name: "gen4-not-enrolled", state: () => useAnalysisStore.setState({ contract: contract({ generation: 4, inceptionDate: "2022-01-01" }), productCalculationSelections: selections({ gen4NonCoveredRider: "NOT_ENROLLED" }) }) },
-  { name: "gen5", state: () => useAnalysisStore.setState({ contract: contract({ generation: 5, inceptionDate: "2026-06-01", coverages: ["SPECIAL_RIDER_1"] }), productCalculationSelections: selections({ gen5SevereRider: "ENROLLED", gen5NonSevereRider: "NOT_ENROLLED" }) }) },
+  { name: "gen3-target-riders", state: () => useAnalysisStore.setState({ contract: contract({}), target5GCoverages: ["SPECIAL_RIDER_1"], target5GMonthlyPremium: 35000, productCalculationSelections: selections({ samsungGen23Variant: "standard" }) }) },
 ];
 
 describe("M02 입력 화면 렌더링 기준 비교", () => {
