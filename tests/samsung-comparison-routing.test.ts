@@ -91,3 +91,10 @@ it('counts multiple treatments in the same visit as one annual visit',()=>{
  const result=calculateSamsungAnnualComparison(contract,35000,['SPECIAL_RIDER_1'],{...selections,gen5SevereRider:'ENROLLED'},[severe,{...severe,id:'same-visit-second'}],assumptions);
  expect(result.currentClaimTotal).toBe(140000);
 });
+it('gen1 inpatient applies the entered prior paid benefit to the 1-accident cap',()=>{
+  const inpatient={...baseUsage,careSetting:'INPATIENT' as const,gen1CoveredRoomAndTreatment:1000000,gen1RoomDifference:0};
+  const free=calculateSamsungComparisonItem({...contract,generation:1},selections,inpatient,assumptions);
+  const used=calculateSamsungComparisonItem({...contract,generation:1},selections,{...inpatient,gen1PriorPaidBenefit:49500000},assumptions);
+  expect(free).toMatchObject({claim:1000000,ruleId:'G1-01'});
+  expect(used).toMatchObject({claim:500000,ruleId:'G1-01'});
+});
