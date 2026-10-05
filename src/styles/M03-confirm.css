@@ -51,6 +51,11 @@
   background: #f4f9fe;
 }
 
+/* 전역 notice-box의 상단 여백이 grid 간격과 중복되지 않게 한다. */
+.calculation-agreement__check + .notice-box {
+  margin-top: -12px;
+}
+
 .calculation-agreement__check input {
   width: 24px;
   height: 24px;
@@ -62,6 +67,307 @@
 .calculation-agreement__check small {
   display: block;
   word-break: keep-all;
+}
+
+.planner-assumption-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.planner-assumption-item {
+  display: grid;
+  gap: 14px;
+  padding: 18px 20px;
+  border: 1px solid #cbd7e5;
+  border-radius: 15px;
+  background: #fff;
+}
+
+.planner-assumption-item__heading {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.planner-assumption-item__heading > div {
+  min-width: 0;
+}
+
+.planner-assumption-item__heading strong,
+.planner-assumption-item__heading small {
+  display: block;
+  word-break: keep-all;
+}
+
+.planner-assumption-item__heading strong {
+  color: #142033;
+  font-size: 1.08rem;
+  line-height: 1.5;
+}
+
+.planner-assumption-item__heading small {
+  margin-top: 5px;
+  color: #3b4b63;
+  font-size: 0.94rem;
+  font-weight: 600;
+  line-height: 1.55;
+}
+
+.planner-assumption-status {
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.planner-assumption-status.is-confirmed {
+  background: #e8f6ef;
+  color: #176343;
+}
+
+.planner-assumption-status.is-assumed {
+  background: #e9f2fc;
+  color: #174f83;
+}
+
+.planner-assumption-status.is-required {
+  background: #fff1df;
+  color: #8a4d0f;
+}
+
+.planner-assumption-choice {
+  display: grid;
+  grid-template-columns: 23px minmax(0, 1fr);
+  gap: 11px;
+  align-items: start;
+  padding: 13px 14px;
+  border-radius: 12px;
+  background: #f5f8fc;
+  color: #243650;
+  font-size: 0.96rem;
+  font-weight: 700;
+  line-height: 1.55;
+  cursor: pointer;
+}
+
+.planner-assumption-choice input {
+  width: 21px;
+  height: 21px;
+  margin: 1px 0 0;
+  accent-color: #123d69;
+}
+
+.planner-assumption-edit {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #174f83;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.planner-final-confirmation {
+  margin-top: 24px;
+}
+
+.planner-confirmation-summary {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.75fr) minmax(0, 1.25fr);
+  gap: 24px;
+  margin-bottom: 20px;
+  padding: 20px 22px;
+  border: 1px solid #efc48d;
+  border-radius: 18px;
+  background: #fff8ef;
+  color: #533414;
+}
+
+.planner-confirmation-summary h2,
+.planner-confirmation-summary p {
+  margin: 0;
+}
+
+.planner-confirmation-summary__intro > span {
+  display: inline-flex;
+  margin-bottom: 8px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #f7dfc1;
+  color: #7c430c;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.planner-confirmation-summary h2 {
+  font-size: 1.16rem;
+  line-height: 1.4;
+}
+
+.planner-confirmation-summary p {
+  margin-top: 5px;
+  color: #76512d;
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.planner-confirmation-summary__issues {
+  display: grid;
+  gap: 8px;
+}
+
+.planner-confirmation-summary__issues article {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  padding: 11px 12px;
+  border: 1px solid #efd1aa;
+  border-radius: 12px;
+  background: #fffdf9;
+}
+
+.planner-confirmation-summary__issues article > span {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border-radius: 50%;
+  background: #f7dfc1;
+  color: #7c430c;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.planner-confirmation-summary__issues strong {
+  display: block;
+  color: #533414;
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+.planner-confirmation-summary__issues p {
+  margin-top: 3px;
+  color: #76512d;
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.planner-treatment-core {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.planner-treatment-core > div {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #f5f8fc;
+}
+
+.planner-treatment-core > .planner-treatment-core__annual {
+  grid-column: 1 / -1;
+  border: 1px solid #c8d9ea;
+  background: #eef5fc;
+}
+
+.planner-treatment-core__annual strong {
+  font-size: 1.05rem;
+}
+
+.planner-treatment-core span,
+.planner-treatment-core strong {
+  display: block;
+}
+
+.planner-treatment-core span {
+  color: #607089;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.planner-treatment-core strong {
+  margin-top: 3px;
+  color: #142033;
+  font-size: 0.92rem;
+  line-height: 1.4;
+  word-break: keep-all;
+}
+
+.planner-treatment-details {
+  margin-top: 12px;
+  border-top: 1px solid #d8e1eb;
+  padding-top: 10px;
+}
+
+.planner-treatment-details summary {
+  color: #174f83;
+  font-size: 0.86rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.planner-treatment-details[open] summary {
+  margin-bottom: 12px;
+}
+
+.planner-value-warning {
+  display: inline-flex;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #fff1df;
+  color: #8a4d0f;
+  font-weight: 800;
+}
+
+.planner-comparison-basis {
+  display: grid;
+  gap: 4px;
+  margin-top: 18px;
+  padding: 14px 16px;
+  border: 1px solid #d3deea;
+  border-radius: 13px;
+  background: #f5f8fc;
+}
+
+.planner-comparison-basis span {
+  color: #607089;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.planner-comparison-basis strong {
+  color: #142033;
+  font-size: 0.98rem;
+  line-height: 1.45;
+  word-break: keep-all;
+}
+
+.planner-calculation-details {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #d8e1eb;
+}
+
+.planner-calculation-details summary {
+  color: #174f83;
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.planner-calculation-details[open] summary {
+  margin-bottom: 12px;
 }
 
 .calculation-agreement__check strong {
@@ -109,6 +415,48 @@
 
   .calculation-agreement__check small {
     font-size: 0.92rem;
+  }
+
+  .calculation-agreement__check + .notice-box {
+    margin-top: -8px;
+  }
+
+  .planner-assumption-item {
+    gap: 12px;
+    padding: 16px 14px;
+    border-radius: 13px;
+  }
+
+  .planner-assumption-item__heading {
+    display: grid;
+    gap: 10px;
+  }
+
+  .planner-assumption-item__heading strong {
+    font-size: 0.98rem;
+  }
+
+  .planner-assumption-item__heading small {
+    font-size: 0.9rem;
+  }
+
+  .planner-assumption-status {
+    justify-self: start;
+  }
+
+  .planner-assumption-choice {
+    padding: 12px;
+    font-size: 0.92rem;
+  }
+
+  .planner-confirmation-summary {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 17px 16px;
+  }
+
+  .planner-treatment-core {
+    grid-template-columns: 1fr;
   }
 }
 

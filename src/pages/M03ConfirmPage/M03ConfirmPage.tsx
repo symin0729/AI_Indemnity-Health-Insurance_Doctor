@@ -21,6 +21,9 @@ function M03ConfirmPage() {
     setIsCalculating,
   ] = useState(false);
 
+  const [isFinalConfirmationChecked, setIsFinalConfirmationChecked] =
+    useState(false);
+
   const contract = useAnalysisStore(
     (state) => state.contract
   );
@@ -46,6 +49,10 @@ function M03ConfirmPage() {
       (state) =>
         state.calculationAssumptions
     );
+
+  const setCalculationAssumptions = useAnalysisStore(
+    (state) => state.setCalculationAssumptions
+  );
 
   const productCalculationSelections = useAnalysisStore(
     (state) => state.productCalculationSelections
@@ -134,8 +141,84 @@ function M03ConfirmPage() {
       return false;
     });
 
+  const missingCoveredAmountCount = usages.filter(
+    (usage) =>
+      usage.coveredAmount === undefined &&
+      usage.samsungCalculationInput?.eligibleExpense === undefined &&
+      usage.gen23EligibleExpense === undefined
+  ).length;
+
+  const hasPriorUsageInputForAllTreatments = usages.every((usage) =>
+    [
+      usage.gen1PriorPaidBenefit,
+      usage.gen1PriorServiceDays,
+      usage.gen23PriorEligibleDeductible,
+      usage.gen23PriorPaidBenefit,
+      usage.gen23PriorAnnualCount,
+      usage.gen23PriorContinuationCount,
+      usage.samsungCalculationInput?.priorEligibleDeductible,
+      usage.samsungCalculationInput?.priorPaidBenefit,
+      usage.samsungCalculationInput?.priorAnnualCount,
+      usage.samsungCalculationInput?.priorServiceDays,
+    ].some((value) => value !== undefined)
+  );
+
+  const needsVisitUnitConfirmation = usages.some(
+    (usage) =>
+      usage.frequency > 1 &&
+      !usage.admissionId &&
+      !usage.sameDayGroupId
+  );
+
+  const confirmationIssues = [
+    hasUnknownUsage
+      ? {
+          title: "치료 분류를 확인해주세요.",
+          description: "급여·비급여 또는 비급여 치료의 중증·비중증 분류가 입력되지 않았습니다.",
+        }
+      : null,
+    hasMissingPrecisionInput
+      ? {
+          title: "급여 통원 정밀 정보를 확인해주세요.",
+          description: "의료기관 종별 또는 건강보험 본인부담률이 입력되지 않았습니다.",
+        }
+      : null,
+    missingCoveredAmountCount > 0 &&
+    !calculationAssumptions.assumeEntireMedicalCostCovered
+      ? {
+          title: "보장대상 인정금액을 확인해주세요.",
+          description: `보장대상 인정금액이 없는 치료가 ${missingCoveredAmountCount}건 있습니다.`,
+        }
+      : null,
+    !hasPriorUsageInputForAllTreatments &&
+    !calculationAssumptions.assumeNoPriorLimitUsage
+      ? {
+          title: "기존 지급·한도 사용 이력을 확인해주세요.",
+          description: "현재 보장기간의 지급액 또는 누적 사용량이 입력되지 않았습니다.",
+        }
+      : null,
+    needsVisitUnitConfirmation &&
+    !calculationAssumptions.assumeEachOccurrenceSeparate
+      ? {
+          title: "반복 치료의 방문 단위를 확인해주세요.",
+          description: "동일 입원·같은 날 받은 치료인지, 각각 별도 방문인지 선택해야 합니다.",
+        }
+      : null,
+  ].filter((issue): issue is { title: string; description: string } => issue !== null);
+
+  const handleAssumptionChange = (
+    key: keyof typeof calculationAssumptions,
+    checked: boolean
+  ) => {
+    setCalculationAssumptions({
+      ...calculationAssumptions,
+      [key]: checked,
+    });
+    setIsFinalConfirmationChecked(false);
+  };
+
   const handleCalculate = () => {
-    if (isCalculating) {
+    if (isCalculating || !isFinalConfirmationChecked) {
       return;
     }
 
@@ -155,6 +238,29 @@ function M03ConfirmPage() {
           현재 계약과 5세대에 동일한 의료이용 조건을 적용합니다.
         </p>
       </header>
+
+      {confirmationIssues.length > 0 && (
+        <section className="planner-confirmation-summary" aria-labelledby="planner-confirmation-summary-title">
+          <div className="planner-confirmation-summary__intro">
+            <span>확인 필요</span>
+            <h2 id="planner-confirmation-summary-title">
+              계산 전에 확인할 항목이 {confirmationIssues.length}건 있습니다.
+            </h2>
+            <p>입력 내용을 수정하거나 Step4-4에서 적용할 가정을 선택해주세요.</p>
+          </div>
+          <div className="planner-confirmation-summary__issues">
+            {confirmationIssues.map((issue, index) => (
+              <article key={issue.title}>
+                <span>{index + 1}</span>
+                <div>
+                  <strong>{issue.title}</strong>
+                  <p>{issue.description}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
 
       <div className="confirm-overview-grid">
       {/* STEP 1 */}
@@ -211,49 +317,23 @@ function M03ConfirmPage() {
 
           <div>
             <p className="amount-label">
-              월 보험료
+              보험료
             </p>
 
             <strong>
-              {contract.monthlyPremium.toLocaleString()}
-              원
+              월 {contract.monthlyPremium.toLocaleString()}원 · 연 {currentAnnualPremium.toLocaleString()}원
             </strong>
           </div>
 
           <div>
             <p className="amount-label">
-              연 보험료
+              갱신·재가입 주기
             </p>
 
             <strong>
-              {currentAnnualPremium.toLocaleString()}
-              원
-            </strong>
-          </div>
-
-          <div>
-            <p className="amount-label">
-              갱신 주기
-            </p>
-
-            <strong>
-              {contract.renewalCycleMonths ===
-              null
-                ? "모름"
-                : `${contract.renewalCycleMonths}개월`}
-            </strong>
-          </div>
-
-          <div>
-            <p className="amount-label">
-              재가입 주기
-            </p>
-
-            <strong>
-              {contract.reentryCycleMonths ===
-              null
-                ? "모름"
-                : `${contract.reentryCycleMonths}개월`}
+              갱신 {contract.renewalCycleMonths === null ? "모름" : `${contract.renewalCycleMonths}개월`}
+              {" · "}
+              재가입 {contract.reentryCycleMonths === null ? "모름" : `${contract.reentryCycleMonths}개월`}
             </strong>
           </div>
 
@@ -359,33 +439,11 @@ function M03ConfirmPage() {
         <div className="form-grid">
           <div>
             <p className="amount-label">
-              비교 대상
+              비교 보험료
             </p>
 
             <strong>
-              5세대 실손
-            </strong>
-          </div>
-
-          <div>
-            <p className="amount-label">
-              비교용 월 보험료
-            </p>
-
-            <strong>
-              {target5GMonthlyPremium.toLocaleString()}
-              원
-            </strong>
-          </div>
-
-          <div>
-            <p className="amount-label">
-              비교용 연 보험료
-            </p>
-
-            <strong>
-              {targetAnnualPremium.toLocaleString()}
-              원
+              월 {target5GMonthlyPremium.toLocaleString()}원 · 연 {targetAnnualPremium.toLocaleString()}원
             </strong>
           </div>
 
@@ -481,105 +539,64 @@ function M03ConfirmPage() {
                     </h3>
                   </div>
 
-                  <strong>
-                    {treatmentCost.toLocaleString()}
-                    원
-                  </strong>
                 </div>
 
-                {(contract.generation === 2 || contract.generation === 3) && <Gen23Summary generation={contract.generation} usage={usage} />}
                 <p className="treatment-meta">
                   {contract.generation === 2 || contract.generation === 3
                     ? gen23CareSettingLabel(usage)
                     : usage.careSetting === "OUTPATIENT" ? "통원" : "입원"}
                   {" · "}
-                  {usage.benefitClass ===
-                  "COVERED"
-                    ? "급여"
-                    : usage.benefitClass ===
-                        "NON_COVERED"
-                      ? "비급여"
-                      : "급여 여부 모름"}
-                  {" · "}
-                  {usage.severityClass ===
-                  "SEVERE"
-                    ? "중증"
-                    : usage.severityClass ===
-                        "NON_SEVERE"
-                      ? "비중증"
-                      : "중증 여부 모름"}
+                  {usage.benefitClass === "COVERED" ? "급여" : usage.benefitClass === "NON_COVERED" ? "비급여" : (
+                    <span className="planner-value-warning">급여 여부 모름</span>
+                  )}
+                  {usage.benefitClass === "NON_COVERED" && (
+                    <>
+                      {" · "}
+                      {usage.severityClass === "SEVERE" ? "중증" : usage.severityClass === "NON_SEVERE" ? "비중증" : (
+                        <span className="planner-value-warning">중증 여부 확인 필요</span>
+                      )}
+                    </>
+                  )}
                 </p>
 
-                <p className="treatment-meta">
-                  {usage.frequency}
-                  회 ×{" "}
-                  {perOccurrenceMedicalCost.toLocaleString()}
-                  원 (회당 M)
-                </p>
-
-                <div className="form-grid">
-                  <div>
-                    <p className="amount-label">
-                      치료 분류
-                    </p>
-                    <strong>
-                      {usage.treatmentCategory ??
-                        "미입력"}
-                    </strong>
+                <div className="planner-treatment-core">
+                  <div className="planner-treatment-core__annual">
+                    <span>연간 치료비</span>
+                    <strong>{treatmentCost.toLocaleString()}원</strong>
                   </div>
-
                   <div>
-                    <p className="amount-label">
-                      진료 예정일
-                    </p>
-                    <strong>
-                      {usage.treatmentDate ??
-                        "미입력"}
-                    </strong>
+                    <span>회당 의료비</span>
+                    <strong>{perOccurrenceMedicalCost.toLocaleString()}원</strong>
                   </div>
-
                   <div>
-                    <p className="amount-label">
-                      의료기관 종별
-                    </p>
-                    <strong>
-                      {usage.institutionType ===
-                      "CLINIC_HOSPITAL"
-                        ? "병·의원"
-                        : usage.institutionType ===
-                            "GENERAL_TERTIARY"
-                          ? "종합·상급종합병원"
-                          : "미입력"}
-                    </strong>
+                    <span>연간 횟수</span>
+                    <strong>{usage.frequency}회</strong>
                   </div>
-
                   <div>
-                    <p className="amount-label">
-                      건강보험 본인부담률 r
-                    </p>
-                    <strong>
-                      {usage.healthInsuranceCopayRate ===
-                      undefined
-                        ? "미입력"
-                        : `${(
-                            usage.healthInsuranceCopayRate *
-                            100
-                          ).toLocaleString()}%`}
-                    </strong>
+                    <span>치료 분류</span>
+                    <strong>{usage.treatmentCategory ?? "미입력"}</strong>
                   </div>
-
                   <div>
-                    <p className="amount-label">
-                      보장대상 인정금액 C
-                    </p>
-                    <strong>
-                      {usage.coveredAmount ===
-                      undefined
-                        ? "미입력 · 확인 필요"
-                        : `${usage.coveredAmount.toLocaleString()}원`}
-                    </strong>
+                    <span>보장대상 인정금액 C</span>
+                    <strong>{usage.coveredAmount === undefined ? "미입력 · 확인 필요" : `${usage.coveredAmount.toLocaleString()}원`}</strong>
                   </div>
                 </div>
+
+                <details className="planner-treatment-details">
+                  <summary>정밀 계산 입력 보기</summary>
+                  {(contract.generation === 2 || contract.generation === 3) && <Gen23Summary generation={contract.generation} usage={usage} />}
+                  <div className="form-grid">
+                    <div><p className="amount-label">진료 예정일</p><strong>{usage.treatmentDate ?? "미입력"}</strong></div>
+                    <div>
+                      <p className="amount-label">의료기관 종별</p>
+                      <strong>{usage.institutionType === "CLINIC_HOSPITAL" ? "병·의원" : usage.institutionType === "GENERAL_TERTIARY" ? "종합·상급종합병원" : "미입력"}</strong>
+                    </div>
+                    <div>
+                      <p className="amount-label">건강보험 본인부담률 r</p>
+                      <strong>{usage.healthInsuranceCopayRate === undefined ? "미입력" : `${(usage.healthInsuranceCopayRate * 100).toLocaleString()}%`}</strong>
+                    </div>
+                  </div>
+                </details>
               </article>
             );
           }
@@ -611,164 +628,154 @@ function M03ConfirmPage() {
         </span>
 
         <h2 className="card-title">
-          계산 가정
+          계산 기준 및 추가 확인
         </h2>
 
-        <div className="form-grid">
-          <div>
-            <p className="amount-label">
-              비교 기간
-            </p>
+        <p className="card-description">
+          입력값이 있으면 해당 값을 사용합니다. 확인되지 않은 항목만 아래에서 가정을 선택해주세요.
+        </p>
 
-            <strong>
-              1년
-            </strong>
-          </div>
-
-          <div>
-            <p className="amount-label">
-              의료이용 시나리오
-            </p>
-
-            <strong>
-              유지(BASE, 100%)
-            </strong>
-          </div>
-
-          <div>
-            <p className="amount-label">
-              룰셋 버전
-            </p>
-
-            <strong>
-              {contract.generation}세대 상품별 실행 스펙 · 초안 검산
-            </strong>
-          </div>
-
-          <div>
-            <p className="amount-label">
-              보험료 계산
-            </p>
-
-            <strong>
-              월 보험료 × 12개월
-            </strong>
-          </div>
-
-          <div>
-            <p className="amount-label">
-              치료비 계산
-            </p>
-
-            <strong>
-              한 계산 단위 검산 · 반복 횟수·여러 치료의 연간 합산은 확인 필요
-            </strong>
-          </div>
-
-          <div>
-            <p className="amount-label">
-              총부담 계산
-            </p>
-
-            <strong>
-              연 보험료 + ΣM - ΣI
-            </strong>
-          </div>
-
-          <div>
-            <p className="amount-label">
-              C 미입력 시 M 전체 보장대상 가정
-            </p>
-
-            <strong>
-              {calculationAssumptions
-                .assumeEntireMedicalCostCovered
-                ? "적용"
-                : "적용 안 함"}
-            </strong>
-          </div>
-
-          <div>
-            <p className="amount-label">
-              기존 한도·상한 사용량 0 가정
-            </p>
-
-            <strong>
-              {calculationAssumptions
-                .assumeNoPriorLimitUsage
-                ? "적용"
-                : "적용 안 함"}
-            </strong>
-          </div>
-
-          <div>
-            <p className="amount-label">
-              여러 회 치료를 서로 다른 계산 단위로 가정
-            </p>
-
-            <strong>
-              {calculationAssumptions
-                .assumeEachOccurrenceSeparate
-                ? "적용"
-                : "적용 안 함"}
-            </strong>
-          </div>
+        <div className="planner-comparison-basis">
+          <span>비교 기준</span>
+          <strong>1년 · 현재 계약과 5세대에 동일한 의료 이용 조건 적용</strong>
         </div>
 
-        <div className="notice-box">
-          자기부담액 d*, 보장 제외액 E,
-          지급한도 초과액 U는 최종 의료비 부담
-          M-I의 분해값이므로 총부담에 다시 더하지 않습니다.
-        </div>
-
-        <div className="notice-box">
-          현재 확인 화면은 1년 비교 입력을 검토합니다.
-          확인되지 않은 계약 조건·한도·분류는 0이나
-          대표값으로 채우지 않고 결과에서 확인 필요로 남깁니다.
-        </div>
-
-        {!calculationAssumptions
-          .assumeEntireMedicalCostCovered && (
-          <div className="notice-box warning">
-            C가 비어 있는 치료는 M 전체를 자동으로
-            보장대상으로 간주하지 않습니다.
-          </div>
-        )}
-
-        {!calculationAssumptions
-          .assumeNoPriorLimitUsage && (
-          <div className="notice-box warning">
-            기존 지급한도 사용액 또는 자기부담 상한 누적액이
-            필요한 계산은 0으로 자동 처리하지 않습니다.
-          </div>
-        )}
-
-        {!calculationAssumptions
-          .assumeEachOccurrenceSeparate &&
-          usages.some(
-            (usage) =>
-              usage.frequency > 1 &&
-              !usage.treatmentDate &&
-              !usage.admissionId &&
-              !usage.sameDayGroupId
-          ) && (
-            <div className="notice-box warning">
-              여러 회 치료 중 날짜·동일입원·동일일자 정보가 없는
-              항목이 있습니다. 각 회차를 서로 다른 계산 단위라고
-              자동 가정하지 않습니다.
+        <div className="planner-assumption-list" aria-label="누락 정보 및 계산 가정">
+          <article className="planner-assumption-item">
+            <div className="planner-assumption-item__heading">
+              <div>
+                <strong>보장대상 인정금액(C)</strong>
+                <small>
+                  {missingCoveredAmountCount === 0
+                    ? "모든 예정 치료에 보장대상 인정금액이 입력되어 있습니다."
+                    : `${missingCoveredAmountCount}건의 보장대상 인정금액이 입력되지 않았습니다.`}
+                </small>
+              </div>
+              <span className={`planner-assumption-status ${missingCoveredAmountCount === 0 ? "is-confirmed" : calculationAssumptions.assumeEntireMedicalCostCovered ? "is-assumed" : "is-required"}`}>
+                {missingCoveredAmountCount === 0
+                  ? "입력 완료"
+                  : calculationAssumptions.assumeEntireMedicalCostCovered
+                  ? "가정 적용"
+                  : "확인 필요"}
+              </span>
             </div>
-          )}
+            {missingCoveredAmountCount > 0 && (
+              <label className="planner-assumption-choice">
+                <input
+                  type="checkbox"
+                  checked={calculationAssumptions.assumeEntireMedicalCostCovered}
+                  onChange={(event) => handleAssumptionChange("assumeEntireMedicalCostCovered", event.target.checked)}
+                />
+                <span>미입력 치료는 환자부담 의료비(M) 전액을 C로 가정해 계산</span>
+              </label>
+            )}
+          </article>
+
+          <article className="planner-assumption-item">
+            <div className="planner-assumption-item__heading">
+              <div>
+                <strong>현재 보장기간의 지급·한도 사용 이력</strong>
+                <small>
+                  {hasPriorUsageInputForAllTreatments
+                    ? "입력한 지급액과 누적 사용량을 계산에 사용합니다."
+                    : "일부 치료의 지급액 또는 누적 사용량이 입력되지 않았습니다."}
+                </small>
+              </div>
+              <span className={`planner-assumption-status ${calculationAssumptions.assumeNoPriorLimitUsage ? "is-assumed" : hasPriorUsageInputForAllTreatments ? "is-confirmed" : "is-required"}`}>
+                {calculationAssumptions.assumeNoPriorLimitUsage
+                  ? "가정 적용"
+                  : hasPriorUsageInputForAllTreatments
+                  ? "입력값 사용"
+                  : "확인 필요"}
+              </span>
+            </div>
+            <label className="planner-assumption-choice">
+              <input
+                type="checkbox"
+                checked={calculationAssumptions.assumeNoPriorLimitUsage}
+                onChange={(event) => handleAssumptionChange("assumeNoPriorLimitUsage", event.target.checked)}
+              />
+              <span>확인되지 않은 기존 지급액과 한도·상한 사용량을 0으로 가정해 계산</span>
+            </label>
+          </article>
+
+          <article className="planner-assumption-item">
+            <div className="planner-assumption-item__heading">
+              <div>
+                <strong>치료 방문·합산 단위</strong>
+                <small>
+                  {needsVisitUnitConfirmation
+                    ? "반복 치료 중 동일 입원·동일일자 정보가 없는 항목이 있습니다."
+                    : "입력한 날짜와 동일 입원·동일일자 구분을 계산에 사용합니다."}
+                </small>
+              </div>
+              <span className={`planner-assumption-status ${!needsVisitUnitConfirmation ? "is-confirmed" : calculationAssumptions.assumeEachOccurrenceSeparate ? "is-assumed" : "is-required"}`}>
+                {!needsVisitUnitConfirmation
+                  ? "입력 완료"
+                  : calculationAssumptions.assumeEachOccurrenceSeparate
+                  ? "가정 적용"
+                  : "확인 필요"}
+              </span>
+            </div>
+            {needsVisitUnitConfirmation && (
+              <label className="planner-assumption-choice">
+                <input
+                  type="checkbox"
+                  checked={calculationAssumptions.assumeEachOccurrenceSeparate}
+                  onChange={(event) => handleAssumptionChange("assumeEachOccurrenceSeparate", event.target.checked)}
+                />
+                <span>날짜·입원 구분이 없는 반복 치료는 각각 별도 방문으로 가정해 계산</span>
+              </label>
+            )}
+          </article>
+
+          <button
+            type="button"
+            className="planner-assumption-edit"
+            onClick={() => navigate("/input#input-step-2")}
+          >
+            예정 치료 입력 확인하기
+          </button>
+        </div>
+
+        <details className="planner-calculation-details">
+          <summary>계산 방식 자세히 보기</summary>
+          <div className="form-grid">
+            <div><p className="amount-label">적용 규칙</p><strong>{contract.generation}세대 상품별 실행 스펙</strong></div>
+            <div><p className="amount-label">검산 상태</p><strong>초안 검산</strong></div>
+            <div><p className="amount-label">보험료 계산</p><strong>월 보험료 × 12개월</strong></div>
+            <div><p className="amount-label">치료비 계산</p><strong>회차별 약관 계산 후 연간 합산</strong></div>
+            <div><p className="amount-label">총부담 계산</p><strong>연 보험료 + ΣM - ΣI</strong></div>
+          </div>
+        </details>
+
       </section>
 
       </div>
 
-      <div className="notice-box warning">
-        본 비교는 사용자가 확인한 입력값과
-        상품별 실행 스펙을 이용한 초안 검산입니다. 미확인 조건은 계산을 보류합니다.
-        실제 보험금, 가입 가능 여부,
-        전환 보험료를 확정하지 않으며
-        보험상품 전환을 권유하지 않습니다.
-      </div>
+      <section className="calculation-agreement planner-final-confirmation" aria-labelledby="planner-final-confirmation-title">
+        <h2 id="planner-final-confirmation-title" className="calculation-agreement__title">
+          입력 정보와 계산 기준 최종 확인
+        </h2>
+
+        <label className={`calculation-agreement__check${isFinalConfirmationChecked ? " is-confirmed" : ""}`}>
+          <input
+            type="checkbox"
+            checked={isFinalConfirmationChecked}
+            onChange={(event) => setIsFinalConfirmationChecked(event.target.checked)}
+          />
+          <span>
+            <strong>계약·담보·예정 치료와 위 계산 가정을 모두 확인했습니다.</strong>
+            <small>현재 선택된 개별 계산 가정을 적용해 비교안을 계산합니다.</small>
+          </span>
+        </label>
+
+        <div className="notice-box warning">
+          본 비교는 사용자가 확인한 입력값과 상품별 실행 스펙을 이용한 초안 검산입니다.
+          미확인 조건은 계산을 보류합니다. 실제 보험금, 가입 가능 여부, 전환 보험료를
+          확정하지 않으며 보험상품 전환을 권유하지 않습니다.
+        </div>
+      </section>
 
       <div className="button-group">
         <button
@@ -785,7 +792,7 @@ function M03ConfirmPage() {
         <button
           type="button"
           className="primary-button"
-          disabled={isCalculating}
+          disabled={isCalculating || !isFinalConfirmationChecked}
           onClick={handleCalculate}
         >
           {isCalculating

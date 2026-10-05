@@ -34,6 +34,7 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
     insurer,
     insurerLabel,
     isSampleConfirmed,
+    isStep3Confirmed,
     isTargetPremiumHelpConfirmed,
     isTreatmentHelpConfirmed,
     monthlyPremium,
@@ -70,6 +71,7 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
     setInsurerLabel,
     setIsResetModalOpen,
     setIsSampleConfirmed,
+    setIsStep3Confirmed,
     setIsTargetPremiumHelpConfirmed,
     setIsTreatmentFormOpen,
     setIsTreatmentHelpConfirmed,
@@ -243,6 +245,7 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
 
     setPlannedUsages([]);
     treatmentSampleTemplatesRef.current = {};
+    setIsStep3Confirmed(false);
     setIsTargetPremiumHelpConfirmed(false);
     setIsTreatmentHelpConfirmed(false);
 
@@ -292,6 +295,7 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
       isSampleConfirmed,
       isTargetPremiumHelpConfirmed,
       isTreatmentHelpConfirmed,
+      isStep3Confirmed,
       calculationAssumptions: {
         assumeEntireMedicalCostCovered,
         assumeNoPriorLimitUsage,

@@ -23,6 +23,7 @@ function M02InputPage() {
     handleStep1Next,
     handleStep2Next,
     isResetModalOpen,
+    isStep3Confirmed,
     isTargetPremiumHelpConfirmed,
     isTreatmentHelpConfirmed,
     isVariantUnregistered,
@@ -83,7 +84,7 @@ function M02InputPage() {
 
       {/* 입력 3단계: 계산 가정 (단계 목록의 3) */}
       <div className="workflow-panel" data-direction={transitionDirection} hidden={activeStep !== 3}>
-      <Step3Assumptions />
+      <Step3Assumptions form={form} />
       </div>
 
       <div className="button-group">
@@ -98,7 +99,7 @@ function M02InputPage() {
         <button
           type="button"
           className="primary-button"
-          disabled={activeStep === 3 && !isTreatmentHelpConfirmed}
+          disabled={activeStep === 3 && (!isStep3Confirmed || !isTreatmentHelpConfirmed)}
           onClick={() => {
             if (activeStep === 1) handleStep1Next();
             else if (activeStep === 2) handleStep2Next();
