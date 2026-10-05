@@ -1,3 +1,4 @@
+import { toGen1EngineProduct } from "../domain/gen1Product";
 import type { InsuranceContract } from '../domain/insurance';
 import type { MedicalUsage } from '../domain/medical';
 import type { ProductCalculationSelections, AnalysisCalculationAssumptions } from '../store/useAnalysisStore';
@@ -68,7 +69,7 @@ export function calculateSamsungComparisonItem(contract: InsuranceContract, sele
     input.priorPaidBenefit ??= 0; input.priorAnnualCount ??= 0; input.priorServiceDays ??= 0; input.priorEligibleDeductible ??= 0;
   }
   if (generation === 1) {
-    const result = calculateSamsungGen1Sample({ product: selections.gen1Product, contractBasis: selections.gen1ContractBasis, d1Coverage: selections.gen1D1Coverage, claimCause: usage.claimCause ?? 'UNKNOWN', careSetting: usage.careSetting, nhiStatus: usage.nationalHealthInsuranceStatus ?? 'UNKNOWN' }, {
+    const result = calculateSamsungGen1Sample({ product: toGen1EngineProduct(selections.gen1Product), contractBasis: selections.gen1ContractBasis, d1Coverage: selections.gen1D1Coverage, claimCause: usage.claimCause ?? 'UNKNOWN', careSetting: usage.careSetting, nhiStatus: usage.nationalHealthInsuranceStatus ?? 'UNKNOWN' }, {
       ...input, coveredRoomAndTreatment: usage.gen1CoveredRoomAndTreatment ?? input.coveredRoomAndTreatment,
       roomDifference: usage.gen1RoomDifference ?? input.roomDifference, nonNhiInpatientTotal: usage.gen1NonNhiInpatientTotal ?? input.nonNhiInpatientTotal,
       outpatientExpense: input.eligibleExpense, priorPaidBenefit: usage.gen1PriorPaidBenefit ?? input.priorPaidBenefit,

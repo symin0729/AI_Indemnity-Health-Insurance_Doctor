@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import headerLogo from "../assets/header-logo.png";
 
 import { useAnalysisStore } from "../store/useAnalysisStore";
+import ModeToggle from "./ModeToggle";
 
 type AppStep = 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -13,6 +14,7 @@ type AppShellProps = {
   onStepChange?: (step: AppStep) => void;
   onReset?: () => void;
   showMvpNotice?: boolean;
+  hideResetButton?: boolean;
 };
 
 const STEP_ITEMS: Array<{
@@ -51,12 +53,15 @@ function AppShell({
   onStepChange,
   onReset,
   showMvpNotice = true,
+  hideResetButton = false,
 }: AppShellProps) {
   const navigate = useNavigate();
 
   const resetAnalysis = useAnalysisStore(
     (state) => state.resetAnalysis
   );
+
+  const mode = useAnalysisStore((state) => state.mode);
 
   const [isResetModalOpen, setIsResetModalOpen] =
     useState(false);
@@ -90,12 +95,7 @@ function AppShell({
   };
 
   const handleBrandClick = () => {
-    if (onStepChange) {
-      onStepChange(1);
-      return;
-    }
-
-    navigate("/input");
+    navigate("/");
   };
 
   const handleOpenReset = () => {
@@ -128,7 +128,7 @@ function AppShell({
             type="button"
             className="app-shell-brand"
             onClick={handleBrandClick}
-            aria-label="AI 실손 닥터 첫 입력 단계로 이동"
+            aria-label="AI 실손 닥터 첫 화면으로 이동"
           >
             <img
               className="app-shell-logo"
@@ -140,6 +140,8 @@ function AppShell({
             <span>AI 실손 닥터</span>
           </button>
 
+          <ModeToggle mode={mode} locked />
+
           <div className="app-shell-nav-right">
             <span className="app-shell-privacy">
               <span
@@ -149,13 +151,15 @@ function AppShell({
               서버 저장 없이 브라우저에서 계산
             </span>
 
-            <button
-              type="button"
-              className="app-shell-text-button"
-              onClick={handleOpenReset}
-            >
-              전체 초기화
-            </button>
+            {!hideResetButton && (
+              <button
+                type="button"
+                className="app-shell-text-button"
+                onClick={handleOpenReset}
+              >
+                초기화
+              </button>
+            )}
           </div>
         </div>
       </header>
@@ -321,7 +325,7 @@ function AppShell({
                 className="app-shell-button app-shell-button-primary"
                 onClick={handleConfirmReset}
               >
-                전체 초기화
+                초기화
               </button>
             </div>
           </section>

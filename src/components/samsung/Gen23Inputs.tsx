@@ -3,12 +3,12 @@ import { InputHelp } from "../InputHelp";
 import { gen23InputHelp } from "./gen23InputHelp";
 import { gen23Fields, type Gen23FormState } from "../../domain/samsungGen23Form";
 import type { MedicalUsage } from "../../domain/medical";
-export function Gen23Inputs({ generation, value, onChange, insurerName = "삼성화재", variant, embedded = false, institutionManaged = false }: { embedded?: boolean; insurerName?: string; variant?: "standard" | "selected2" | "UNKNOWN"; institutionManaged?: boolean; generation: 2 | 3; value: Gen23FormState; onChange: (value: Gen23FormState) => void }) {
+export function Gen23Inputs({ generation, value, onChange, insurerName = "삼성화재", variant, embedded = false, institutionManaged = false, riderManaged = false }: { riderManaged?: boolean; embedded?: boolean; insurerName?: string; variant?: "standard" | "selected2" | "standard2013" | "selected2013" | "unified2009" | "UNKNOWN"; institutionManaged?: boolean; generation: 2 | 3; value: Gen23FormState; onChange: (value: Gen23FormState) => void }) {
   const fieldId = useId();
   const care = value.gen23CareSetting;
   const special = generation === 3 && value.gen23TreatmentType && value.gen23TreatmentType !== "BASE";
   const requiredFields = new Set<keyof MedicalUsage>(["gen23CareSetting", "claimCause", "gen23RequiredCoverageConfirmed", "gen23PolicyExclusionsCleared", "gen23OtherIndemnityPoliciesExist", "gen23CoveragePeriod", "gen23CoveragePeriodConfirmed"]);
-  if (generation === 3) { requiredFields.add("gen23TreatmentType"); requiredFields.add("gen23RiderEnrollmentStatus"); }
+  if (generation === 3) { requiredFields.add("gen23TreatmentType"); if (!riderManaged) requiredFields.add("gen23RiderEnrollmentStatus"); }
   if (!special) {
     requiredFields.add("nationalHealthInsuranceStatus");
     if (generation === 3) requiredFields.add("gen23ThreeNonCoveredExcludedFromBaseConfirmed");
@@ -38,7 +38,7 @@ export function Gen23Inputs({ generation, value, onChange, insurerName = "삼성
   if (value.gen23CoveragePeriod === "POST_TERMINATION") { requiredFields.add("gen23PostTerminationContinuationConfirmed"); requiredFields.add("gen23DaysSinceTermination"); }
   return <fieldset className="form-card" aria-label="추가 입력 항목">
     <legend><h3>{embedded ? "세부 보장 및 계약 확인" : `${generation}세대 ${insurerName} 계산 조건`}</h3></legend>
-    <div className="form-grid">{gen23Fields.filter(f => (!institutionManaged || f.key !== "gen23Institution") && (!f.generation || f.generation === generation)
+    <div className="form-grid">{gen23Fields.filter(f => (!institutionManaged || f.key !== "gen23Institution") && (!riderManaged || f.key !== "gen23RiderEnrollmentStatus") && (!f.generation || f.generation === generation)
       && (!f.scope || (f.scope === "inpatient" ? care === "INPATIENT" && !special : f.scope === "special" ? special : care !== "INPATIENT" && !special))).map(f =>
       <div key={f.key}><div style={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}><label htmlFor={`${fieldId}-${f.key}`} style={{ marginBottom: 0 }}>{f.label}{requiredFields.has(f.key) && <span> (필수)</span>}</label>{requiredFields.has(f.key) && gen23InputHelp[f.key] && <InputHelp title={f.label} {...gen23InputHelp[f.key]!} />}</div>{f.kind === "number"
         ? <input id={`${fieldId}-${f.key}`} type="text" inputMode="decimal" value={value[f.key] ?? ""} onChange={e => onChange({ ...value, [f.key]: e.target.value })} placeholder="미확인 시 비워두기" />

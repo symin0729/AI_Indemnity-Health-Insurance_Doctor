@@ -1,6 +1,9 @@
 import { gen23CareSettingLabel } from "../../domain/samsungGen23CareSetting";
 import { Gen23Summary } from "../../components/samsung/Gen23Inputs";
 import AppShell from "../../components/AppShell";
+import { gen1CompanyLabel } from "../../domain/gen1Product";
+import { GEN3_RIDERS } from "../../domain/gen3Riders";
+import { GEN23_VARIANT_LABELS } from "../../domain/samsungGen23Variant";
 import { useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -256,7 +259,7 @@ function M03ConfirmPage() {
             <>
               <div>
                 <p className="amount-label">0904.2 상품</p>
-                <strong>{productCalculationSelections.gen1Product === "SAMSUNG_0904_2" ? "선택됨" : productCalculationSelections.gen1Product === "OTHER" ? "다른 상품" : "확인 필요"}</strong>
+                <strong>{productCalculationSelections.gen1Product === "SAMSUNG_0904_2" ? "선택됨" : gen1CompanyLabel(productCalculationSelections.gen1Product) ? `${gen1CompanyLabel(productCalculationSelections.gen1Product)} (계산 미지원)` : "확인 필요"}</strong>
               </div>
               <div>
                 <p className="amount-label">D1 담보</p>
@@ -276,15 +279,22 @@ function M03ConfirmPage() {
                 </p>
 
                 <strong>
-                  {productCalculationSelections.samsungGen23Variant ===
-                  "standard"
-                    ? "1종 표준형"
-                    : productCalculationSelections.samsungGen23Variant ===
-                      "selected2"
-                    ? "2종 선택형Ⅱ"
-                    : "확인 필요"}
+                  {GEN23_VARIANT_LABELS[productCalculationSelections.samsungGen23Variant]}
                 </strong>
               </div>
+
+              {contract.generation === 3 && GEN3_RIDERS.map(({ key, label }) => (
+                <div key={key}>
+                  <p className="amount-label">{label}</p>
+                  <strong>
+                    {productCalculationSelections.gen3Riders?.[key] === "ENROLLED"
+                      ? "가입"
+                      : productCalculationSelections.gen3Riders?.[key] === "NOT_ENROLLED"
+                      ? "미가입"
+                      : "선택 안 함"}
+                  </strong>
+                </div>
+              ))}
             </>
           ) : contract.generation === 5 ? (
             <>

@@ -1,3 +1,4 @@
+import { GEN23_VARIANT_LABELS, type SamsungGen23Variant } from "./samsungGen23Variant";
 import type { InsuranceGeneration } from "./insurance";
 import type { CareSetting } from "./medical";
 
@@ -15,6 +16,22 @@ export function generationForInceptionDate(value: string): InsuranceGeneration |
   if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) return undefined;
   return GENERATION_STARTS.find(([start]) => date.getTime() >= start)?.[1] ?? 1;
 }
+export type Gen2VariantOption = { value: Exclude<SamsungGen23Variant, "UNKNOWN">; label: string };
+export type Gen2VariantAvailability = { options: Gen2VariantOption[] };
+/**
+ * 2세대 가입일(판매 시기)별 상품 종형.
+ * 2015.9~2017.3은 삼성화재 1611.7 약관 규칙이 있는 표준형·선택형Ⅱ,
+ * 2013.1~2015.8과 2009.10~2012.12는 약관 규칙이 없어 계산하지 않는 종형으로 표시한다.
+ */
+export function gen2VariantsForInceptionDate(value: string): Gen2VariantAvailability {
+  const numbered = (values: Array<Gen2VariantOption["value"]>): Gen2VariantAvailability => ({
+    options: values.map((v, index) => ({ value: v, label: `${index + 1}. ${GEN23_VARIANT_LABELS[v]}` })),
+  });
+  if (generationForInceptionDate(value) !== 2) return numbered(["standard", "selected2"]);
+  if (value < "2013-01-01") return numbered(["unified2009"]);
+  if (value < "2015-09-01") return numbered(["standard2013", "selected2013"]);
+  return numbered(["standard", "selected2"]);
+}
 export function formatInceptionDateInput(value: string): string {
   const digits = value.replace(/\D/g, "").slice(0, 8);
   if (digits.length <= 4) return digits;
@@ -27,7 +44,7 @@ export function generationSalesPeriod(generation: InsuranceGeneration): string {
 export function inceptionDateForGeneration(generation: Exclude<InsuranceGeneration, 5>): string {
   return ({
     1: "2009-09-30",
-    2: "2009-10-01",
+    2: "2015-09-01",
     3: "2017-04-01",
     4: "2021-07-01",
   } as const)[generation];
