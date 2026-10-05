@@ -119,6 +119,9 @@ export function useM02Base() {
       generationForInceptionDate(savedContract?.inceptionDate ?? "") ?? savedContract?.generation ?? 3
     );
 
+  // 실손 세대는 사용자가 직접 선택해야 한다. 선택 전에는 3세대를 예시로만 보여준다.
+  const [isGenerationSelected, setIsGenerationSelected] = useState(savedContract !== null);
+
 
 const [samsungGen23Variant, setSamsungGen23Variant] =
   useState<SamsungGen23Variant>(
@@ -232,6 +235,8 @@ const [gen5NonSevereRider, setGen5NonSevereRider] =
     resetAnalysis,
     generation,
     setGeneration,
+    isGenerationSelected,
+    setIsGenerationSelected,
     samsungGen23Variant,
     setSamsungGen23Variant,
     gen5SevereRider,

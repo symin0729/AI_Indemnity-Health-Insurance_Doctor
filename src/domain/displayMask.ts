@@ -21,10 +21,10 @@ function isMasked({ generation, gen1Product }: DisplayInput): boolean {
 /** 1세대 외에는 사용자가 입력한 표시용 이름(없으면 OO)을, 1세대는 선택한 보험사 이름을 보여준다. */
 export function displayInsurer(input: DisplayInput, insurer: string, label?: string): string {
   if (input.generation !== 1) return label?.trim() || MASKED_INSURER;
-  return isMasked(input) ? GEN1_PRODUCT_INSURER_DISPLAY : insurer;
+  return isMasked(input) ? label?.trim() || GEN1_PRODUCT_INSURER_DISPLAY : insurer;
 }
 
 export function displayProductName(input: DisplayInput, productName: string, label?: string): string {
   if (input.generation !== 1) return label?.trim() || MASKED_PRODUCT_NAME;
-  return isMasked(input) ? GEN1_PRODUCT_NAME_DISPLAY : productName;
+  return isMasked(input) ? label?.trim() || GEN1_PRODUCT_NAME_DISPLAY : productName;
 }

@@ -206,14 +206,14 @@ function M02InputPage() {
               className="card-title"
               style={{ marginTop: "10px" }}
             >
-              입력 내용을 모두 지울까요?
+              현재 화면을 초기화할까요?
             </h2>
 
             <p
               id="input-reset-dialog-description"
               className="card-description"
             >
-              현재 계약, 5세대 비교 조건, 예정 치료와 계산 가정이 모두 초기화됩니다.
+              현재 화면(STEP 1)에 입력한 내용이 초기화됩니다. 다른 단계의 입력은 유지됩니다.
             </p>
 
             <div

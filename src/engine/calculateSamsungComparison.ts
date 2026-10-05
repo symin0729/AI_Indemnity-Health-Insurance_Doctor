@@ -72,11 +72,12 @@ export function calculateSamsungComparisonItem(contract: InsuranceContract, sele
     const result = calculateSamsungGen1Sample({ product: toGen1EngineProduct(selections.gen1Product), contractBasis: selections.gen1ContractBasis, d1Coverage: selections.gen1D1Coverage, claimCause: usage.claimCause ?? 'UNKNOWN', careSetting: usage.careSetting, nhiStatus: usage.nationalHealthInsuranceStatus ?? 'UNKNOWN' }, {
       ...input, coveredRoomAndTreatment: usage.gen1CoveredRoomAndTreatment ?? input.coveredRoomAndTreatment,
       roomDifference: usage.gen1RoomDifference ?? input.roomDifference, nonNhiInpatientTotal: usage.gen1NonNhiInpatientTotal ?? input.nonNhiInpatientTotal,
-      outpatientExpense: input.eligibleExpense, priorPaidBenefit: usage.gen1PriorPaidBenefit ?? input.priorPaidBenefit,
+      outpatientExpense: usage.samsungCalculationInput?.eligibleExpense ?? usage.unitCost, // 명시한 인정금액이 없으면 "한 번 진료받을 때 내가 내는 금액"을 쓴다 priorPaidBenefit: usage.gen1PriorPaidBenefit ?? input.priorPaidBenefit,
       priorServiceDays: usage.gen1PriorServiceDays ?? input.priorServiceDays,
       policyExclusionsCleared: input.policyExclusionsCleared ?? usage.gen1PolicyExclusionsCleared,
-      requiredCoverageConfirmed: selections.gen1D1Coverage !== 'UNKNOWN',
+      requiredCoverageConfirmed: selections.gen1D1Coverage !== 'UNKNOWN' && selections.gen1D1Coverage !== 'NONE',
     });
+    if ('reason' in result && result.status === 'NOT_ENROLLED') return { claim: 0, deductible: 0, capEligibleDeductible: 0, reasons: [result.reason], ruleId: '' };
     return 'reason' in result ? hold(result.reason) : { claim: result.claim, deductible: result.deductible, capEligibleDeductible: result.enforcementTrace?.capEligibleDeductible ?? result.deductible, reasons: result.warnings, ruleId: result.ruleId };
   }
   if (usage.benefitClass === 'UNKNOWN') return hold('급여·비급여 구분을 확인해주세요.');

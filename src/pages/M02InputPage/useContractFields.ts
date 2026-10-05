@@ -17,6 +17,9 @@ export function useContractFields(deps: BaseApi) {
     savedContract,
     savedProductCalculationSelections,
     setErrorMessage,
+    isGenerationSelected,
+    setGeneration,
+    setIsGenerationSelected,
     setIsResetModalOpen,
     setSamsungGen23Variant,
     showTargetPremiumHelp,
@@ -76,9 +79,12 @@ const [gen1ContractBasis, setGen1ContractBasis] =
   );
 
 
+// 특약은 체크한 것만 가입으로 보고, 체크하지 않은 상태(가입 없음)가 기본값이다.
 const [gen1D1Coverage, setGen1D1Coverage] =
   useState(
-    savedProductCalculationSelections.gen1D1Coverage
+    savedProductCalculationSelections.gen1D1Coverage === "UNKNOWN"
+      ? "NONE"
+      : savedProductCalculationSelections.gen1D1Coverage
   );
 
 
@@ -204,6 +210,31 @@ const [gen5ContractType, setGen5ContractType] =
     setIsResetModalOpen(true);
   };
 
+  /**
+   * STEP 1(내 보험 정보)에 입력한 값만 지운다.
+   * 5세대 전환 비교, 예정 치료(1세대 세부 입력 포함), 계산 가정은 건드리지 않는다.
+   */
+  const resetContractStep = () => {
+    setInsurer("");
+    setProductName("");
+    setInsurerLabel("");
+    setProductLabel("");
+    setInceptionDate("");
+    setGeneration(3);
+    setIsGenerationSelected(false);
+    resetProductTypeSelections();
+    setGen1ContractBasis("SAMPLE_SIMULATION");
+    setGen1D1Coverage("NONE");
+    setGen5ContractType("GENERAL");
+    setMonthlyPremium("");
+    setRenewalCycleMonths("");
+    setReentryCycleYears("");
+    setSelectedSampleId(null);
+    setIsSampleConfirmed(false);
+    setSampleScenarioNotice("");
+    setErrorMessage("");
+  };
+
 
   /** 검증 실패 결과를 화면에 반영한다. 검증 규칙 자체는 inputModel.ts에 있다. */
   const applyInputFailure = (failure: InputFailure) => {
@@ -226,6 +257,8 @@ const [gen5ContractType, setGen5ContractType] =
 
     const failure = validateContractStep({
       generation,
+      generationSelected: isGenerationSelected,
+      gen1D1Coverage,
       insurer,
       productName,
       monthlyPremium,
@@ -308,6 +341,7 @@ const [gen5ContractType, setGen5ContractType] =
     setIsGenerationPickerOpen,
     resetProductTypeSelections,
     handleResetAll,
+    resetContractStep,
     applyInputFailure,
     handleStep1Next,
     selectedSample,

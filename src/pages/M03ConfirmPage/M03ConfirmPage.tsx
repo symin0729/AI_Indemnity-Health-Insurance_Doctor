@@ -265,7 +265,7 @@ function M03ConfirmPage() {
               </div>
               <div>
                 <p className="amount-label">D1 담보</p>
-                <strong>{productCalculationSelections.gen1D1Coverage === "BOTH" ? "상해·질병 모두" : productCalculationSelections.gen1D1Coverage === "INJURY" ? "상해 D1" : productCalculationSelections.gen1D1Coverage === "DISEASE" ? "질병 D1" : "확인 필요"}</strong>
+                <strong>{productCalculationSelections.gen1D1Coverage === "BOTH" ? "상해·질병 모두" : productCalculationSelections.gen1D1Coverage === "INJURY" ? "상해 D1" : productCalculationSelections.gen1D1Coverage === "DISEASE" ? "질병 D1" : productCalculationSelections.gen1D1Coverage === "NONE" ? "가입한 특약 없음" : "확인 필요"}</strong>
               </div>
               <div>
                 <p className="amount-label">계산 기준</p>

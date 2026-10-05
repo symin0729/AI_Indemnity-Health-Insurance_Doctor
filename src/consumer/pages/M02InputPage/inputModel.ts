@@ -25,6 +25,11 @@ export function isValidIsoDate(value: string): boolean {
   );
 }
 
+/** 표시용 이름(OO)을 쓰는 경우: 1세대 외, 그리고 1세대에서 대표 상품(OO 보험)을 고른 경우 */
+function usesLabelFields(input: { generation: InsuranceGeneration; gen1Product: Gen1ProductChoice }): boolean {
+  return input.generation !== 1 || input.gen1Product === "SAMSUNG_0904_2";
+}
+
 /** 약관 규칙이 없는 상품 종형(1세대 다른 보험사, 2·3세대 미등록 종형)을 골랐는지 */
 export function isUnregisteredVariantSelected(input: {
   generation: InsuranceGeneration;
@@ -45,7 +50,7 @@ export type InputFailure = {
   /** 화면 상단에 표시할 오류 문구 */
   message?: string;
   /** 오류 후 이동할 입력 단계 */
-  goToStep?: 2;
+  goToStep?: 1 | 2;
   /** 오류 후 초점을 둘 입력칸 id */
   focusId?: string;
   /** 문구 대신 별도 동작이 필요한 경우 */
@@ -54,15 +59,29 @@ export type InputFailure = {
 
 export type ContractStepInput = {
   generation: InsuranceGeneration;
+  /** 사용자가 실손 세대를 직접 선택(또는 가입일로 판독)했는지 */
+  generationSelected: boolean;
   insurer: string;
   productName: string;
   monthlyPremium: string;
   samsungGen23Variant: SamsungGen23Variant;
   gen1Product: Gen1ProductChoice;
+  gen1D1Coverage: ProductCalculationSelections["gen1D1Coverage"];
 };
+
+/** 1세대는 실손 특약(상해/질병)을 하나 이상 가입해야 계산 대상이다. */
+function isGen1CoverageMissing(input: { generation: InsuranceGeneration; gen1D1Coverage: ProductCalculationSelections["gen1D1Coverage"] }): boolean {
+  return input.generation === 1 && (input.gen1D1Coverage === "NONE" || input.gen1D1Coverage === "UNKNOWN");
+}
+
+const GEN1_COVERAGE_REQUIRED_FAILURE: InputFailure = { ok: false, message: "가입한 특약을 하나 이상 선택해주세요.", focusId: "gen1-d1-injury" };
 
 /** STEP 1(계약 정보)에서 다음 단계로 넘어가기 전 검증. 문제가 없으면 null */
 export function validateContractStep(input: ContractStepInput): InputFailure | null {
+  if (!input.generationSelected) {
+    return { ok: false, message: "실손 세대를 선택해주세요.", focusId: "generation-select" };
+  }
+
   if (!input.monthlyPremium || Number(input.monthlyPremium) <= 0) {
     return { ok: false, message: "현재 월 보험료를 입력해주세요." };
   }
@@ -84,10 +103,12 @@ export function validateContractStep(input: ContractStepInput): InputFailure | n
   if (input.generation === 1 && input.gen1Product === "UNKNOWN") {
     return {
       ok: false,
-      message: "1세대 실손보험의 상품 종형을 반드시 선택해주세요.",
+      message: "1세대 실손보험의 가입 상품을 반드시 선택해주세요.",
       focusId: "samsung-gen1-product",
     };
   }
+
+  if (isGen1CoverageMissing(input)) return GEN1_COVERAGE_REQUIRED_FAILURE;
 
   return null;
 }
@@ -144,6 +165,10 @@ export function buildSubmission(input: SubmissionInput): InputFailure | Submissi
     return { ok: false, message: "수정 중인 예정 치료는 ‘수정 확인’ 버튼을 눌러 저장해주세요.", goToStep: 2 };
   }
 
+  if (!input.generationSelected) {
+    return { ok: false, message: "실손 세대를 선택해주세요.", focusId: "generation-select", goToStep: 1 };
+  }
+
   const currentPremiumNumber = Number(input.monthlyPremium);
   const targetPremiumNumber = Number(input.target5GMonthlyPremium);
   const renewalCycleNumber = input.renewalCycleMonths ? Number(input.renewalCycleMonths) : null;
@@ -172,10 +197,11 @@ export function buildSubmission(input: SubmissionInput): InputFailure | Submissi
   if (input.generation === 1 && input.gen1Product === "UNKNOWN") {
     return {
       ok: false,
-      message: "1세대 실손보험의 상품 종형을 반드시 선택해주세요.",
+      message: "1세대 실손보험의 가입 상품을 반드시 선택해주세요.",
       focusId: "samsung-gen1-product",
     };
   }
+  if (isGen1CoverageMissing(input)) return GEN1_COVERAGE_REQUIRED_FAILURE;
   if (!input.monthlyPremium || currentPremiumNumber <= 0) {
     return { ok: false, message: "현재 월 보험료를 올바르게 입력해주세요." };
   }
@@ -218,8 +244,8 @@ export function buildSubmission(input: SubmissionInput): InputFailure | Submissi
     contract: {
       insurer: input.generation === 1 ? input.insurer.trim() : INTERNAL_INSURER,
       productName: input.generation === 1 ? input.productName.trim() : internalProductName(input.generation),
-      insurerLabel: input.generation === 1 ? undefined : input.insurerLabel.trim() || undefined,
-      productLabel: input.generation === 1 ? undefined : input.productLabel.trim() || undefined,
+      insurerLabel: usesLabelFields(input) ? input.insurerLabel.trim() || undefined : undefined,
+      productLabel: usesLabelFields(input) ? input.productLabel.trim() || undefined : undefined,
       inceptionDate: input.inceptionDate,
       generation: input.generation,
       monthlyPremium: currentPremiumNumber,

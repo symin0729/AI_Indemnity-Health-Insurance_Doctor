@@ -1,9 +1,8 @@
 import { formatInceptionDateInput, generationForInceptionDate, inceptionDateForGeneration } from "../../../domain/insuranceInputDefaults";
-import { MASKED_INSURER, MASKED_PRODUCT_NAME, displayInsurer, displayProductName } from "../../../domain/displayMask";
+import { MASKED_INSURER, MASKED_PRODUCT_NAME } from "../../../domain/displayMask";
 import { GEN3_RIDERS, type Gen3RiderKey } from "../../../domain/gen3Riders";
-import { GEN1_COMPANY_OPTIONS, GEN1_PRODUCT_LABEL, GEN1_UNREGISTERED_NOTE, gen1CompanyLabel, gen1CompanyProductName } from "../../../domain/gen1Product";
+import { GEN1_COMPANY_OPTIONS, gen1CoverageChecks, gen1CoverageFromChecks, GEN1_PRODUCT_INSURER_DISPLAY, GEN1_PRODUCT_LABEL, GEN1_PRODUCT_NAME_DISPLAY, GEN1_UNREGISTERED_NOTE, gen1CompanyLabel, gen1CompanyProductName } from "../../../domain/gen1Product";
 import OptionDropdown from "../../../components/OptionDropdown";
-import type { CareSetting, ClaimCause, NationalHealthInsuranceStatus } from "../../../domain/medical";
 import type { InsuranceGeneration } from "../../../domain/insurance";
 import { SAMPLE_POLICY_OPTIONS } from "../../../services/samplePolicyService";
 import { type SamsungGen23Variant } from "../../store/useAnalysisStore";
@@ -12,25 +11,17 @@ import type { M02Form } from "./useM02Form";
 
 export default function Step1Contract({ form }: { form: M02Form }) {
   const {
-    careSetting,
-    changeCareSetting,
-    claimCause,
-    gen1ContractBasis,
-    gen1CoveredRoomAndTreatment,
     gen1D1Coverage,
-    gen1NonNhiInpatientTotal,
-    gen1PolicyExclusionsCleared,
-    gen1PriorPaidBenefit,
-    gen1PriorServiceDays,
     gen1Product,
-    gen1RoomDifference,
     gen23VariantItems,
     gen3Riders,
     gen4NonCoveredRider,
     gen5ContractType,
     gen5NonSevereRider,
     gen5SevereRider,
-    generation,
+    generation: formGeneration,
+    isGenerationSelected,
+    setIsGenerationSelected,
     handleLoadSamplePolicy,
     handleResetAll,
     inceptionDate,
@@ -40,7 +31,6 @@ export default function Step1Contract({ form }: { form: M02Form }) {
     isGenerationPickerOpen,
     isSampleConfirmed,
     monthlyPremium,
-    nationalHealthInsuranceStatus,
     productLabel,
     productName,
     reentryCycleYears,
@@ -51,16 +41,8 @@ export default function Step1Contract({ form }: { form: M02Form }) {
     scenarioNoticeHasUsage,
     selectedSample,
     selectedSampleId,
-    setClaimCause,
-    setGen1ContractBasis,
-    setGen1CoveredRoomAndTreatment,
     setGen1D1Coverage,
-    setGen1NonNhiInpatientTotal,
-    setGen1PolicyExclusionsCleared,
-    setGen1PriorPaidBenefit,
-    setGen1PriorServiceDays,
     setGen1Product,
-    setGen1RoomDifference,
     setGen3Riders,
     setGen4NonCoveredRider,
     setGen5ContractType,
@@ -73,16 +55,18 @@ export default function Step1Contract({ form }: { form: M02Form }) {
     setIsGenerationPickerOpen,
     setIsSampleConfirmed,
     setMonthlyPremium,
-    setNationalHealthInsuranceStatus,
     setProductLabel,
     setProductName,
     setReentryCycleYears,
     setRenewalCycleMonths,
     setSamsungGen23Variant,
     setSelectedSampleId,
-    setUnitCost,
-    unitCost,
   } = form;
+
+  // 1세대 외, 그리고 1세대에서 "OO 보험"을 고른 경우에는 입력한 표시용 이름을 쓴다(계산용 내부 값은 따로 고정).
+  // 실손 세대를 고르기 전(0)에는 세대별 입력 항목을 보여주지 않는다.
+  const generation = isGenerationSelected ? formGeneration : 0;
+  const usesLabelFields = generation !== 1 || isGen1Placeholder;
 
   return (
     <section id="input-step-1" tabIndex={-1} className="form-card">
@@ -328,14 +312,13 @@ export default function Step1Contract({ form }: { form: M02Form }) {
             보험사
           <input
             type="text"
-            value={generation === 1 ? displayInsurer({ generation, gen1Product }, insurer) : insurerLabel}
-            readOnly={isGen1Placeholder}
+            value={usesLabelFields ? insurerLabel : insurer}
             onChange={(e) => {
               setSelectedSampleId(null);
-              if (generation === 1) setInsurer(e.target.value);
-              else setInsurerLabel(e.target.value);
+              if (usesLabelFields) setInsurerLabel(e.target.value);
+              else setInsurer(e.target.value);
             }}
-            placeholder={generation === 1 ? "예: OO손해보험" : MASKED_INSURER}
+            placeholder={generation === 1 ? (isGen1Placeholder ? GEN1_PRODUCT_INSURER_DISPLAY : "예: OO손해보험") : MASKED_INSURER}
           />
         </label>
 
@@ -343,21 +326,22 @@ export default function Step1Contract({ form }: { form: M02Form }) {
           상품명
           <input
             type="text"
-            value={generation === 1 ? displayProductName({ generation, gen1Product }, productName) : productLabel}
-            readOnly={isGen1Placeholder}
+            value={usesLabelFields ? productLabel : productName}
             onChange={(e) => {
               setSelectedSampleId(null);
-              if (generation === 1) setProductName(e.target.value);
-              else setProductLabel(e.target.value);
+              if (usesLabelFields) setProductLabel(e.target.value);
+              else setProductName(e.target.value);
             }}
-            placeholder={generation === 1 ? "보험 상품명" : MASKED_PRODUCT_NAME}
+            placeholder={generation === 1 ? (isGen1Placeholder ? GEN1_PRODUCT_NAME_DISPLAY : "보험 상품명") : MASKED_PRODUCT_NAME}
           />
         </label>
 
         <label>
           실손 세대
           <select
-            value={isGenerationPickerOpen ? "" : generation}
+            id="generation-select"
+            className={isGenerationSelected ? undefined : "is-placeholder"}
+            value={isGenerationPickerOpen || !isGenerationSelected ? "" : generation}
             onMouseDown={() => setIsGenerationPickerOpen(true)}
             onTouchStart={() => setIsGenerationPickerOpen(true)}
             onBlur={() => setIsGenerationPickerOpen(false)}
@@ -372,15 +356,17 @@ export default function Step1Contract({ form }: { form: M02Form }) {
               setInsurerLabel("");
               setProductLabel("");
               setGeneration(selectedGeneration);
+              setIsGenerationSelected(true);
               setInceptionDate(inceptionDateForGeneration(selectedGeneration));
             }}
           >
-            <option value="" disabled hidden></option>
+            <option value="" disabled hidden>{isGenerationSelected ? "" : "예: 3세대"}</option>
             <option value={1}>1세대</option>
             <option value={2}>2세대</option>
             <option value={3}>3세대</option>
             <option value={4}>4세대</option>
           </select>
+          {generation === 1 && <small className="sample-note generation-note">대표 상품을 가정한 계산 예시입니다.</small>}
         </label>
 
         <label>
@@ -392,7 +378,10 @@ export default function Step1Contract({ form }: { form: M02Form }) {
               resetProductTypeSelections();
               setInceptionDate(formattedValue);
               const detected = generationForInceptionDate(formattedValue);
-              if (detected !== undefined) setGeneration(detected);
+              if (detected !== undefined) {
+                setGeneration(detected);
+                setIsGenerationSelected(true);
+              }
             }}
             placeholder="YYYY-MM-DD (예: 2018-03-01)"
           />
@@ -417,7 +406,7 @@ export default function Step1Contract({ form }: { form: M02Form }) {
 
         {generation === 1 ? (
           <label>
-            상품 종형 <span className="required-mark">필수</span>
+            가입 상품 <span className="required-mark">필수</span>
             <select
               id="samsung-gen1-product"
               value={gen1Product}
@@ -430,6 +419,8 @@ export default function Step1Contract({ form }: { form: M02Form }) {
                 if (value === "SAMSUNG_0904_2") {
                   setInsurer("삼성화재");
                   setProductName("삼성 올라이프 100세 건강파트너보험(0904.2)");
+                  setInsurerLabel(GEN1_PRODUCT_INSURER_DISPLAY);
+                  setProductLabel(GEN1_PRODUCT_NAME_DISPLAY);
                 } else {
                   const company = gen1CompanyLabel(value);
                   if (company) {
@@ -481,6 +472,36 @@ export default function Step1Contract({ form }: { form: M02Form }) {
             placeholder="예: 60,000"
           /><span className="input-unit-label">원</span></span>
         </label>
+
+        {/* 1세대를 고르면 바로 특약(상해/질병) 가입 여부를 받는다. 하나 이상 체크해야 한다. */}
+        {generation === 1 ? (
+          <div className="select-like-field rider-row">
+            <span id="gen1-d1-title">
+              특약 가입 여부 <span className="required-mark">필수</span>
+              <small className="sample-note rider-row__hint">가입한 특약을 하나 이상 체크해주세요.</small>
+            </span>
+            <div className="rider-row__boxes rider-row__boxes--two" role="group" aria-labelledby="gen1-d1-title">
+              {([
+                ["injury", "상해", "사고로 다쳤을 때의 입원·통원 의료비를 보장하는 특약"],
+                ["disease", "질병", "질병으로 치료받을 때의 입원·통원 의료비를 보장하는 특약"],
+              ] as const).map(([key, label, description]) => (
+                <label key={key} className="no-treatment-option">
+                  <input
+                    id={key === "injury" ? "gen1-d1-injury" : undefined}
+                    type="checkbox"
+                    checked={gen1CoverageChecks(gen1D1Coverage)[key]}
+                    aria-invalid={gen1D1Coverage === "NONE"}
+                    onChange={(event) => {
+                      const checks = gen1CoverageChecks(gen1D1Coverage);
+                      setGen1D1Coverage(gen1CoverageFromChecks(key === "injury" ? event.target.checked : checks.injury, key === "disease" ? event.target.checked : checks.disease));
+                    }}
+                  />
+                  <span><strong>{label}</strong><small>{description}</small></span>
+                </label>
+              ))}
+            </div>
+          </div>
+        ) : null}
 
         {generation === 3 ? (
           <div className="select-like-field rider-row">
@@ -541,64 +562,6 @@ export default function Step1Contract({ form }: { form: M02Form }) {
             /><span className="input-unit-label">년</span></span>
           </label>
         </div>
-
-        {generation === 1 && (
-          <fieldset className="form-card" style={{ marginTop: "16px" }}>
-            <legend>1세대 계약 확인</legend>
-            <p className="card-description">보험증권을 기준으로 상품과 D1 담보를 선택해주세요.</p>
-
-            {gen1Product === "SAMSUNG_0904_2" && (
-              <>
-                <fieldset className="nested-fieldset">
-                  <legend>보험증권에 표시된 담보</legend>
-                  {([
-                    ["INJURY", "상해 입·통원의료비(D1)"],
-                    ["DISEASE", "질병 입·통원의료비(D1)"],
-                    ["BOTH", "두 담보 모두"],
-                    ["UNKNOWN", "확인할 수 없음"],
-                  ] as const).map(([value, label]) => (
-                    <label key={value} style={{ marginRight: "16px" }}>
-                      <input type="radio" name="gen1-d1" checked={gen1D1Coverage === value} onChange={() => setGen1D1Coverage(value)} /> {label}
-                    </label>
-                  ))}
-                </fieldset>
-
-                <div className="gen1-conditional-inputs">
-                  <h3>0904.2 D1 계산 조건</h3>
-                  <div className="form-grid">
-                    <label>질병 / 상해<select value={claimCause} onChange={(event) => setClaimCause(event.target.value as ClaimCause)}><option value="UNKNOWN">확인할 수 없음</option><option value="INJURY">상해</option><option value="DISEASE">질병</option></select></label>
-                    <label>입원 / 통원<select value={careSetting} onChange={(event) => changeCareSetting(event.target.value as CareSetting)}><option value="INPATIENT">입원</option><option value="OUTPATIENT">통원</option></select></label>
-                    <label>이번 진료의 국민건강보험 적용 여부<select value={nationalHealthInsuranceStatus} onChange={(event) => setNationalHealthInsuranceStatus(event.target.value as NationalHealthInsuranceStatus)}><option value="UNKNOWN">확인할 수 없음</option><option value="APPLIED">적용됨</option><option value="NOT_APPLIED">적용되지 않음</option><option value="PARTIAL">일부 적용</option></select></label>
-                  </div>
-                  {nationalHealthInsuranceStatus === "PARTIAL" && <div className="notice-box warning">일부 적용 조합은 RULE_NOT_VERIFIED로 처리됩니다.</div>}
-                  {careSetting === "INPATIENT" && nationalHealthInsuranceStatus === "APPLIED" && <div className="form-grid">
-                    <label>실제 부담액<input type="text" inputMode="numeric" value={formatWonInput(gen1CoveredRoomAndTreatment)} onChange={(event) => setGen1CoveredRoomAndTreatment(getWonInputValue(event.target.value))} />원</label>
-                    <label>병실료 차액<input type="text" inputMode="numeric" value={formatWonInput(gen1RoomDifference)} onChange={(event) => setGen1RoomDifference(getWonInputValue(event.target.value))} placeholder="없으면 0" />원</label>
-                  </div>}
-                  {careSetting === "INPATIENT" && nationalHealthInsuranceStatus === "NOT_APPLIED" && <label>입원의료비 총액<input type="text" inputMode="numeric" value={formatWonInput(gen1NonNhiInpatientTotal)} onChange={(event) => setGen1NonNhiInpatientTotal(getWonInputValue(event.target.value))} />원</label>}
-                  {careSetting === "OUTPATIENT" && (nationalHealthInsuranceStatus === "APPLIED" || nationalHealthInsuranceStatus === "NOT_APPLIED") && <label>통원의료비<input type="text" inputMode="numeric" value={formatWonInput(unitCost)} onChange={(event) => setUnitCost(getWonInputValue(event.target.value))} />원</label>}
-                  <div className="form-grid">
-                    <label>이전 지급액<input type="text" inputMode="numeric" value={formatWonInput(gen1PriorPaidBenefit)} onChange={(event) => setGen1PriorPaidBenefit(getWonInputValue(event.target.value))} />원</label>
-                    {careSetting === "OUTPATIENT" && <label>이전 이용일수<input type="number" min="0" step="1" value={gen1PriorServiceDays} onChange={(event) => setGen1PriorServiceDays(event.target.value)} />일</label>}
-                  </div>
-                  <label className="no-treatment-option"><input type="checkbox" checked={gen1PolicyExclusionsCleared} onChange={(event) => setGen1PolicyExclusionsCleared(event.target.checked)} /><span><strong>보상하지 않는 사항에 해당하지 않음을 확인했습니다.</strong></span></label>
-                </div>
-
-                <fieldset className="nested-fieldset">
-                  <legend>계산 기준</legend>
-                  <label style={{ marginRight: "16px" }}><input type="radio" name="gen1-basis" checked={gen1ContractBasis === "SAMPLE_SIMULATION"} onChange={() => setGen1ContractBasis("SAMPLE_SIMULATION")} /> 대표 상품 샘플 시뮬레이션</label>
-                  <label><input type="radio" name="gen1-basis" checked={gen1ContractBasis === "ACTUAL_CONTRACT"} onChange={() => setGen1ContractBasis("ACTUAL_CONTRACT")} /> 실제 가입 계약</label>
-                </fieldset>
-
-                <div className="notice-box">
-                  {gen1ContractBasis === "SAMPLE_SIMULATION"
-                    ? "SAMPLE_SIMULATION · 대표 상품을 가정한 계산 예시입니다."
-                    : "ACTUAL_CONTRACT · 독립검수 전이므로 현재 실제 계약 계산은 RULE_NOT_VERIFIED로 표시됩니다."}
-                </div>
-              </>
-            )}
-          </fieldset>
-        )}
 
         {generation === 5 && (
           <fieldset className="form-card" style={{ marginTop: "16px" }}>

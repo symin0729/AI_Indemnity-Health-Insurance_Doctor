@@ -36,7 +36,7 @@ export type { SamsungGen23Variant };
 export interface ProductCalculationSelections {
   gen1Product: Gen1ProductChoice;
   gen1ContractBasis: "SAMPLE_SIMULATION" | "ACTUAL_CONTRACT";
-  gen1D1Coverage: "INJURY" | "DISEASE" | "BOTH" | "UNKNOWN";
+  gen1D1Coverage: "INJURY" | "DISEASE" | "BOTH" | "NONE" | "UNKNOWN";
   gen4NonCoveredRider: RiderEnrollmentStatus;
   gen5ContractType: "GENERAL" | "CONVERSION";
   gen5SevereRider: RiderEnrollmentStatus;
