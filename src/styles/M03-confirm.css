@@ -1,5 +1,117 @@
 /* M03-confirm 화면 전용 스타일. 이 화면 작업자만 수정합니다. */
 
+.calculation-agreement {
+  display: grid;
+  gap: 20px;
+  margin-top: 24px;
+  padding: clamp(22px, 3vw, 30px);
+  border: 1px solid #cbd7e5;
+  border-radius: 20px;
+  background: #fff;
+  color: #142033;
+}
+
+.calculation-agreement__title {
+  margin: 0;
+  font-size: clamp(1.35rem, 2vw, 1.65rem);
+  line-height: 1.35;
+}
+
+.calculation-agreement__conditions {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding-left: 1.4rem;
+  color: #31415a;
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.65;
+  word-break: keep-all;
+}
+
+.calculation-agreement__new-line {
+  display: block;
+  margin-top: 0.2em;
+}
+
+.calculation-agreement__check {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  gap: 15px;
+  align-items: start;
+  padding: 21px 22px;
+  border: 1px solid #b8c8da;
+  border-radius: 16px;
+  background: #f8fafc;
+  cursor: pointer;
+}
+
+.calculation-agreement__check.is-confirmed {
+  border: 2px solid #2d6fa8;
+  background: #f4f9fe;
+}
+
+.calculation-agreement__check input {
+  width: 24px;
+  height: 24px;
+  margin: 2px 0 0;
+  accent-color: #123d69;
+}
+
+.calculation-agreement__check strong,
+.calculation-agreement__check small {
+  display: block;
+  word-break: keep-all;
+}
+
+.calculation-agreement__check strong {
+  font-size: 1.12rem;
+  line-height: 1.5;
+}
+
+.calculation-agreement__check small {
+  margin-top: 6px;
+  color: #3b4b63;
+  font-size: 0.98rem;
+  font-weight: 600;
+  line-height: 1.55;
+}
+
+@media (max-width: 760px) {
+  .calculation-agreement {
+    gap: 16px;
+    padding: 20px 17px;
+    border-radius: 16px;
+  }
+
+  .calculation-agreement__conditions {
+    gap: 10px;
+    padding-left: 1.2rem;
+    font-size: 0.98rem;
+    line-height: 1.6;
+  }
+
+  .calculation-agreement__check {
+    grid-template-columns: 24px minmax(0, 1fr);
+    gap: 12px;
+    padding: 18px 15px;
+    border-radius: 14px;
+  }
+
+  .calculation-agreement__check input {
+    width: 22px;
+    height: 22px;
+  }
+
+  .calculation-agreement__check strong {
+    font-size: 1.02rem;
+  }
+
+  .calculation-agreement__check small {
+    font-size: 0.92rem;
+  }
+}
+
 .spinner,
 .calculation-spinner {
   width: 52px;

@@ -47,6 +47,10 @@ function M03ConfirmPage() {
         state.calculationAssumptions
     );
 
+  const setCalculationAssumptions = useAnalysisStore(
+    (state) => state.setCalculationAssumptions
+  );
+
   const productCalculationSelections = useAnalysisStore(
     (state) => state.productCalculationSelections
   );
@@ -134,8 +138,21 @@ function M03ConfirmPage() {
       return false;
     });
 
+  const isCalculationAgreementConfirmed =
+    calculationAssumptions.assumeEntireMedicalCostCovered &&
+    calculationAssumptions.assumeNoPriorLimitUsage &&
+    calculationAssumptions.assumeEachOccurrenceSeparate;
+
+  const handleCalculationAgreementChange = (checked: boolean) => {
+    setCalculationAssumptions({
+      assumeEntireMedicalCostCovered: checked,
+      assumeNoPriorLimitUsage: checked,
+      assumeEachOccurrenceSeparate: checked,
+    });
+  };
+
   const handleCalculate = () => {
-    if (isCalculating) {
+    if (isCalculating || !isCalculationAgreementConfirmed) {
       return;
     }
 
@@ -675,44 +692,6 @@ function M03ConfirmPage() {
             </strong>
           </div>
 
-          <div>
-            <p className="amount-label">
-              C 미입력 시 M 전체 보장대상 가정
-            </p>
-
-            <strong>
-              {calculationAssumptions
-                .assumeEntireMedicalCostCovered
-                ? "적용"
-                : "적용 안 함"}
-            </strong>
-          </div>
-
-          <div>
-            <p className="amount-label">
-              기존 한도·상한 사용량 0 가정
-            </p>
-
-            <strong>
-              {calculationAssumptions
-                .assumeNoPriorLimitUsage
-                ? "적용"
-                : "적용 안 함"}
-            </strong>
-          </div>
-
-          <div>
-            <p className="amount-label">
-              여러 회 치료를 서로 다른 계산 단위로 가정
-            </p>
-
-            <strong>
-              {calculationAssumptions
-                .assumeEachOccurrenceSeparate
-                ? "적용"
-                : "적용 안 함"}
-            </strong>
-          </div>
         </div>
 
         <div className="notice-box">
@@ -727,54 +706,52 @@ function M03ConfirmPage() {
           대표값으로 채우지 않고 결과에서 확인 필요로 남깁니다.
         </div>
 
-        {!calculationAssumptions
-          .assumeEntireMedicalCostCovered && (
-          <div className="notice-box warning">
-            C가 비어 있는 치료는 M 전체를 자동으로
-            보장대상으로 간주하지 않습니다.
-          </div>
-        )}
-
-        {!calculationAssumptions
-          .assumeNoPriorLimitUsage && (
-          <div className="notice-box warning">
-            기존 지급한도 사용액 또는 자기부담 상한 누적액이
-            필요한 계산은 0으로 자동 처리하지 않습니다.
-          </div>
-        )}
-
-        {!calculationAssumptions
-          .assumeEachOccurrenceSeparate &&
-          usages.some(
-            (usage) =>
-              usage.frequency > 1 &&
-              !usage.treatmentDate &&
-              !usage.admissionId &&
-              !usage.sameDayGroupId
-          ) && (
-            <div className="notice-box warning">
-              여러 회 치료 중 날짜·동일입원·동일일자 정보가 없는
-              항목이 있습니다. 각 회차를 서로 다른 계산 단위라고
-              자동 가정하지 않습니다.
-            </div>
-          )}
       </section>
 
       </div>
 
-      <div className="notice-box warning">
-        본 비교는 사용자가 확인한 입력값과
-        상품별 실행 스펙을 이용한 초안 검산입니다. 미확인 조건은 계산을 보류합니다.
-        실제 보험금, 가입 가능 여부,
-        전환 보험료를 확정하지 않으며
-        보험상품 전환을 권유하지 않습니다.
-      </div>
+      <section className="calculation-agreement" aria-labelledby="calculation-agreement-title">
+        <h2 id="calculation-agreement-title" className="calculation-agreement__title">
+          계산에 적용되는 기준
+        </h2>
+
+        <ul className="calculation-agreement__conditions">
+          <li>입력한 현재 월 보험료와 5세대 비교 보험료를 각각 12개월분으로 계산합니다.</li>
+          <li>입력한 예정 치료, 회당 의료비와 연간 횟수를 현재 계약과 5세대에 동일하게 적용합니다.</li>
+          <li>입력한 회당 환자부담 의료비 전액을 현재 계약과 5세대의 계산 대상으로 사용합니다.</li>
+          <li>현재 보장기간에 같은 담보로 지급받은 보험금과 사용한 한도가 없는 것으로 계산합니다.</li>
+          <li>
+            입력한 치료와 반복 횟수는 각각 별도의 병원 방문으로 계산합니다.
+            <span className="calculation-agreement__new-line">
+              (같은 날 함께 받는 치료가 있다면 이전 단계에서 내용을 확인해주세요.)
+            </span>
+          </li>
+        </ul>
+
+        <label className={`calculation-agreement__check${isCalculationAgreementConfirmed ? " is-confirmed" : ""}`}>
+          <input
+            type="checkbox"
+            checked={isCalculationAgreementConfirmed}
+            onChange={(event) => handleCalculationAgreementChange(event.target.checked)}
+          />
+          <span>
+            <strong>위 입력 내용과 계산 기준을 모두 확인했으며, 이 조건으로 비교하는 데 동의합니다.</strong>
+            <small>동의한 계산 기준은 현재 계약과 5세대 비교안 전체에 적용됩니다.</small>
+          </span>
+        </label>
+
+        <div className="notice-box warning">
+          본 비교는 사용자가 확인한 입력값과 상품별 실행 스펙을 이용한 초안 검산입니다.
+          미확인 조건은 계산을 보류합니다. 실제 보험금, 가입 가능 여부, 전환 보험료를
+          확정하지 않으며 보험상품 전환을 권유하지 않습니다.
+        </div>
+      </section>
 
       <div className="button-group">
         <button
           type="button"
           className="secondary-button"
-          disabled={isCalculating}
+          disabled={isCalculating || !isCalculationAgreementConfirmed}
           onClick={() =>
             navigate("/consumer/input#input-step-3")
           }

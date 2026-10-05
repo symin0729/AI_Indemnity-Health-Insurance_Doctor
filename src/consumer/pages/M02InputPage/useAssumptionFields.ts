@@ -42,8 +42,6 @@ export function useAssumptionFields(deps: BaseApi & ContractApi & CompareApi & T
   );
 
 
-  const [isStep3Confirmed, setIsStep3Confirmed] = useState(false);
-
   return {
     assumeEntireMedicalCostCovered,
     setAssumeEntireMedicalCostCovered,
@@ -51,8 +49,6 @@ export function useAssumptionFields(deps: BaseApi & ContractApi & CompareApi & T
     setAssumeNoPriorLimitUsage,
     assumeEachOccurrenceSeparate,
     setAssumeEachOccurrenceSeparate,
-    isStep3Confirmed,
-    setIsStep3Confirmed,
   };
 }
 
