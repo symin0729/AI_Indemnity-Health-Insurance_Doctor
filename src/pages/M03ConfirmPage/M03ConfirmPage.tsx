@@ -1,6 +1,7 @@
 import { gen23CareSettingLabel } from "../../domain/samsungGen23CareSetting";
 import { Gen23Summary } from "../../components/samsung/Gen23Inputs";
 import AppShell from "../../components/AppShell";
+import { displayInsurer, displayProductName } from "../../domain/displayMask";
 import { gen1CompanyLabel } from "../../domain/gen1Product";
 import { GEN3_RIDERS } from "../../domain/gen3Riders";
 import { GEN23_VARIANT_LABELS } from "../../domain/samsungGen23Variant";
@@ -10,6 +11,7 @@ import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 
 import { useAnalysisStore } from "../../store/useAnalysisStore";
+import "../../styles/M03-confirm.css";
 
 function M03ConfirmPage() {
   const navigate = useNavigate();
@@ -158,7 +160,7 @@ function M03ConfirmPage() {
       {/* STEP 1 */}
       <section className="form-card">
         <span className="step-badge">
-          STEP 1
+          STEP 4-1
         </span>
 
         <h2 className="card-title">
@@ -172,7 +174,7 @@ function M03ConfirmPage() {
             </p>
 
             <strong>
-              {contract.insurer}
+              {displayInsurer({ generation: contract.generation, gen1Product: productCalculationSelections.gen1Product }, contract.insurer, contract.insurerLabel)}
             </strong>
           </div>
 
@@ -182,7 +184,7 @@ function M03ConfirmPage() {
             </p>
 
             <strong>
-              {contract.productName}
+              {displayProductName({ generation: contract.generation, gen1Product: productCalculationSelections.gen1Product }, contract.productName, contract.productLabel)}
             </strong>
           </div>
 
@@ -347,7 +349,7 @@ function M03ConfirmPage() {
       {/* STEP 2 */}
       <section className="compare-card">
         <span className="step-badge">
-          STEP 2
+          STEP 4-2
         </span>
 
         <h2 className="card-title">
@@ -427,7 +429,7 @@ function M03ConfirmPage() {
       {/* STEP 3 */}
       <section className="form-card">
         <span className="step-badge">
-          STEP 3
+          STEP 4-3
         </span>
 
         <h2 className="card-title">
@@ -605,7 +607,7 @@ function M03ConfirmPage() {
       {/* STEP 4 */}
       <section className="app-card">
         <span className="step-badge">
-          STEP 4
+          STEP 4-4
         </span>
 
         <h2 className="card-title">
@@ -639,7 +641,7 @@ function M03ConfirmPage() {
             </p>
 
             <strong>
-              삼성 {contract.generation}세대 상품별 실행 스펙 · 초안 검산
+              {contract.generation}세대 상품별 실행 스펙 · 초안 검산
             </strong>
           </div>
 
@@ -762,7 +764,7 @@ function M03ConfirmPage() {
 
       <div className="notice-box warning">
         본 비교는 사용자가 확인한 입력값과
-        삼성 상품별 실행 스펙을 이용한 초안 검산입니다. 미확인 조건은 계산을 보류합니다.
+        상품별 실행 스펙을 이용한 초안 검산입니다. 미확인 조건은 계산을 보류합니다.
         실제 보험금, 가입 가능 여부,
         전환 보험료를 확정하지 않으며
         보험상품 전환을 권유하지 않습니다.

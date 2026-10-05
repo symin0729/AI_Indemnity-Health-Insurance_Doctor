@@ -10,6 +10,11 @@ export interface InsuranceContract {
 
   productName: string;
 
+  /** 1세대 외에는 계산용 내부 값과 별개로 사용자가 입력한 표시용 이름. 비어 있으면 OO로 표시한다. */
+  insurerLabel?: string;
+
+  productLabel?: string;
+
   inceptionDate: string;
 
   generation: InsuranceGeneration;

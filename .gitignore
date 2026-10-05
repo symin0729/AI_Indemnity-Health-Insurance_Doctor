@@ -26,3 +26,6 @@ Microsoft/Windows/PowerShell/ModuleAnalysisCache
 *.njsproj
 *.sln
 *.sw?
+
+# 입력 화면 렌더링 기준 비교용 임시 저장본
+tests/.golden/

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { calculateSamsungGen2Sample } from "../src/engine/calculateSamsungGen2";
 import { resolveSamsungGen23Product } from "../src/engine/loadProductRuleSet";
-import { GEN23_UNREGISTERED_REASON, GEN23_VARIANT_LABELS, isGen23VariantRegistered } from "../src/domain/samsungGen23Variant";
+import { gen23VariantDescription, GEN23_UNREGISTERED_REASON, GEN23_VARIANT_LABELS, isGen23VariantRegistered } from "../src/domain/samsungGen23Variant";
 import type { MedicalUsage } from "../src/domain/medical";
 
 const usage = { id: "legacy", treatmentName: "검산", careSetting: "INPATIENT", frequency: 1, unitCost: 100000 } as unknown as MedicalUsage;
@@ -25,5 +25,14 @@ describe("2세대 약관 규칙 미등록 종형", () => {
     expect(GEN23_VARIANT_LABELS.standard2013).toBe("표준형 (약관 규칙이 등록되지 않아 계산 제공하지 않음)");
     expect(GEN23_VARIANT_LABELS.selected2013).toBe("선택형 (약관 규칙이 등록되지 않아 계산 제공하지 않음)");
     expect(GEN23_VARIANT_LABELS.unified2009).toBe("단일 구조 (약관 규칙이 등록되지 않아 계산 제공하지 않음)");
+  });
+
+  it("상품 종형 설명은 급여·비급여 자기부담을 같은 형식으로 담는다", () => {
+    expect(gen23VariantDescription(2, "standard")).toBe("자기부담 급여 20%·비급여 20%");
+    expect(gen23VariantDescription(2, "selected2")).toBe("자기부담 급여 10%·비급여 20%");
+    expect(gen23VariantDescription(3, "standard")).toBe("자기부담 급여 20%·비급여 20% · 특약 3종 별도 가입(자기부담 30%)");
+    expect(gen23VariantDescription(3, "selected2")).toBe("자기부담 급여 10%·비급여 20% · 특약 3종 별도 가입(자기부담 30%)");
+    expect(gen23VariantDescription(2, "selected2013")).toBe("자기부담 급여 10%·비급여 10% · 약관 규칙이 등록되지 않아 계산 제공하지 않음");
+    expect(gen23VariantDescription(2, "unified2009")).toContain("약관 규칙이 등록되지 않아 계산 제공하지 않음");
   });
 });

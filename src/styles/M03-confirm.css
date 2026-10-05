@@ -1,0 +1,12 @@
+/* M03-confirm 화면 전용 스타일. 이 화면 작업자만 수정합니다. */
+
+.spinner,
+.calculation-spinner {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 18px;
+  border: 5px solid var(--pale);
+  border-top-color: var(--navy);
+  border-radius: 50%;
+  animation: spinnerRotate 0.75s linear infinite;
+}

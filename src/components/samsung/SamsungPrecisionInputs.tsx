@@ -6,7 +6,7 @@ export function SamsungPrecisionInputs({usage,onChange}:{usage:MedicalUsage;onCh
  const input=usage.samsungCalculationInput??{};
  const update=(key:keyof SamsungDraftCalculationInput,value:unknown)=>onChange({...usage,samsungCalculationInput:{...input,[key]:value}});
  const fact=(key:string,value:string)=>onChange({...usage,samsungGen5Facts:{specialCaseDisease:'UNKNOWN',treatmentRelatedness:'UNKNOWN',policyExcludedTreatment:'UNKNOWN',...usage.samsungGen5Facts,[key]:value}});
- return <details className="app-card"><summary>{usage.treatmentName} · 삼성 정밀 계산 확인</summary><p>확인되는 값만 입력하세요. 빈 값은 미확인으로 유지합니다. 기존 2·3세대 입력은 해당 전용 양식을 사용하세요.</p>
+ return <details className="app-card"><summary>{usage.treatmentName} · 정밀 계산 확인</summary><p>확인되는 값만 입력하세요. 빈 값은 미확인으로 유지합니다. 기존 2·3세대 입력은 해당 전용 양식을 사용하세요.</p>
  <label>상해·질병<select value={usage.claimCause??'UNKNOWN'} onChange={e=>onChange({...usage,claimCause:e.target.value as MedicalUsage['claimCause']})}><option value="UNKNOWN">확인 필요</option><option value="INJURY">상해</option><option value="DISEASE">질병</option></select></label>
  <label>국민건강보험 적용<select value={usage.nationalHealthInsuranceStatus??'UNKNOWN'} onChange={e=>onChange({...usage,nationalHealthInsuranceStatus:e.target.value as MedicalUsage['nationalHealthInsuranceStatus']})}><option value="UNKNOWN">확인 필요</option><option value="APPLIED">적용</option><option value="NOT_APPLIED">미적용</option><option value="PARTIAL">일부 적용</option></select></label>
  <label>3대 비급여 치료 종류<select value={usage.samsungGen5Facts?.threeNonCoveredCategory??''} onChange={e=>fact('threeNonCoveredCategory',e.target.value)}><option value="">해당 없음·미확인</option><option value="MANUAL_THERAPY">도수</option><option value="INJECTION">주사</option><option value="MRI">MRI</option></select></label>

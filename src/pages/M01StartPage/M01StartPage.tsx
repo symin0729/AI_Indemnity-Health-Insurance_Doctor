@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import ModeToggle from "../../components/ModeToggle";
 import { useAnalysisStore } from "../../store/useAnalysisStore";
 import headerLogo from "../../assets/header-logo.png";
+import "../../styles/M01-start.css";
 
 type StartMode = "consumer" | "planner";
 
@@ -96,9 +97,18 @@ function M01StartPage() {
 
   const mode: StartMode = searchParams.get("mode") === "consumer" ? "consumer" : "planner";
   const content = modeContent[mode];
-  const isConsumerReady = false;
   const needsPrivacyConsent = Boolean(content.privacyConsent);
-  const canStart = hasConfirmed && (!needsPrivacyConsent || hasPrivacyConsent) && (mode === "planner" || isConsumerReady);
+  const canStart = hasConfirmed && (!needsPrivacyConsent || hasPrivacyConsent);
+
+  // 설계사용과 소비자용은 서로 다른 화면·상태로 이어진다. 소비자용은 /consumer/* 경로의 독립된 화면을 쓴다.
+  const startComparison = () => {
+    if (mode === "consumer") {
+      navigate("/consumer/input");
+      return;
+    }
+    setStoreMode("planner");
+    navigate("/input");
+  };
 
   const selectMode = (next: StartMode) => {
     setSearchParams(next === "planner" ? {} : { mode: next }, { replace: true });
@@ -204,13 +214,10 @@ function M01StartPage() {
           )}
 
           <div className="start-action">
-            <button type="button" className="start-action__button" disabled={!canStart} onClick={() => { setStoreMode(mode); navigate("/input"); }}>
+            <button type="button" className="start-action__button" disabled={!canStart} onClick={startComparison}>
               {content.startLabel} <span aria-hidden="true">→</span>
             </button>
           </div>
-          {mode === "consumer" && (
-            <p className="start-modes__notice" role="status">소비자용 간편 비교는 준비 중입니다. 현재는 설계사용을 이용해 주세요.</p>
-          )}
         </section>
       </main>
     </div>
