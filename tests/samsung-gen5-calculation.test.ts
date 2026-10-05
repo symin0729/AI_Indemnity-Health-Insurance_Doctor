@@ -68,6 +68,7 @@ describe("Samsung generation-5 product calculation routing", () => {
       eligibleExpense: 1_000_000,
       nhiApplied: true,
       priorPaidBenefit: 49_500_000,
+      priorEligibleDeductible: 0,
       contractBenefitCap: 50_000_000,
     });
     expect(result.claim).toBe(500_000);

@@ -62,15 +62,18 @@ function calculation(ruleId) {
   };
   if (/^G3-(STD-0[1-3]|SEL2-02)$/.test(ruleId)) return maxDeductible(0.3, 20000);
 
+  // 급여 입원: 나머지 20% 자기부담이 연 200만원을 넘으면 초과분 보상(4세대 약관 제6조 ④, PDF 51쪽)
   if (["G4-01", "G4-02"].includes(ruleId)) return {
     ...rate(0.8),
+    annualDeductibleCap: 2000000,
     nonNhiFallback: { benefitRate: 0.4 },
   };
   if (["G4-08", "G4-09"].includes(ruleId)) return {
     ...maxDeductible(0.2, null),
     minimumByInstitution: { CLINIC_HOSPITAL: 10000, GENERAL_TERTIARY: 20000 },
   };
-  if (ruleId === "G5-01") return rate(0.8);
+  // 급여 입원 연 200만원 자기부담 상한(5세대 일반형·계약전환형 약관 제6조 ④, PDF 30쪽)
+  if (ruleId === "G5-01") return { ...rate(0.8), annualDeductibleCap: 2000000 };
   if (ruleId === "G4-03") return {
     type: "COMPONENT_SUM",
     components: [component("NON_COVERED_INPATIENT_EXCLUDING_ROOM", 0.7), component("ROOM_DIFFERENCE", 0.5, { dailyBenefitCap: 100000 })],
@@ -176,7 +179,7 @@ function enforcement(ruleId) {
     },
   };
   if (ruleId === "G4-07") return { annualBenefitCap: 3000000, countUnit: "DIAGNOSTIC_ACTION", aggregationUnitMustBeProvided: true };
-  if (["G4-01", "G4-02"].includes(ruleId)) return { annualBenefitCap: 50000000, requiresContractBenefitCap: true };
+  if (["G4-01", "G4-02"].includes(ruleId)) return { annualBenefitCap: 50000000, requiresContractBenefitCap: true, annualDeductibleCap: 2000000 };
   if (["G4-08", "G4-09"].includes(ruleId)) return {
     annualBenefitCap: 50000000,
     requiresContractBenefitCap: true,
@@ -192,7 +195,7 @@ function enforcement(ruleId) {
     requiresPerOccurrenceBenefitCap: true,
     maxPerOccurrenceBenefitCap: 200000,
   };
-  if (ruleId === "G5-01") return { annualBenefitCap: 50000000, requiresContractBenefitCap: true };
+  if (ruleId === "G5-01") return { annualBenefitCap: 50000000, requiresContractBenefitCap: true, annualDeductibleCap: 2000000 };
   if (ruleId === "G5-03") return { annualBenefitCap: 50000000, annualDeductibleCap: 5000000, appliesWhen: "GENERAL_OR_TERTIARY_HOSPITAL_EXCLUDING_SPECIFIED_THREE" };
   if (ruleId === "G5-04") return { annualBenefitCap: 50000000, maxAnnualCount: 100, countUnit: "VISIT", separateBy: "INJURY_OR_DISEASE", fixedPerOccurrenceBenefitCap: 200000 };
   if (ruleId === "G5-05") return {

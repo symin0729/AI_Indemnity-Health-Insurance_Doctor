@@ -8,7 +8,7 @@ it('rejects invalid outpatient rates including NaN',()=>{for(const rate of [NaN,
 it('requires cause on conversion outpatient',()=>expect(calculateSamsungGen5('CONVERSION','SEVERE_NON_COVERED_OUTPATIENT',{...common,conversionContractSubtype:'CONTRACT_CONVERSION',conversionEligibilityConfirmed:true,requiredCoverageConfirmed:true,eligibleExpense:100000,priorAnnualCount:0,priorPaidBenefit:0}).claim).toBeNull());
 it('holds gen1 unknown service period',()=>expect(calculateSamsungGen1Sample({product:'SAMSUNG_0904_2',contractBasis:'SAMPLE_SIMULATION',d1Coverage:'INJURY',claimCause:'INJURY',careSetting:'OUTPATIENT',nhiStatus:'APPLIED'},{requiredCoverageConfirmed:true,policyExclusionsCleared:true,nhiApplied:true,outpatientExpense:100000})).toMatchObject({status:'CONFIRMATION_REQUIRED',claim:null}));
 it('routes gen4 to Samsung rule, independently of MVP',()=>{
- const result=calculateSamsungComparisonItem({insurer:'삼성화재',productName:'2107.1',inceptionDate:'2021-07-01',generation:4,monthlyPremium:50000,renewalCycleMonths:null,reentryCycleMonths:null,coverages:[]},useAnalysisStore.getState().productCalculationSelections,{id:'x',treatmentName:'급여 입원',careSetting:'INPATIENT',benefitClass:'COVERED',severityClass:'UNKNOWN',frequency:1,unitCost:100000,coveredAmount:100000,claimCause:'INJURY',nationalHealthInsuranceStatus:'APPLIED',samsungCalculationInput:{...common,requiredCoverageConfirmed:true,contractBenefitCap:50000000,priorPaidBenefit:0}},{assumeEntireMedicalCostCovered:false,assumeNoPriorLimitUsage:false,assumeEachOccurrenceSeparate:false});
+ const result=calculateSamsungComparisonItem({insurer:'삼성화재',productName:'2107.1',inceptionDate:'2021-07-01',generation:4,monthlyPremium:50000,renewalCycleMonths:null,reentryCycleMonths:null,coverages:[]},useAnalysisStore.getState().productCalculationSelections,{id:'x',treatmentName:'급여 입원',careSetting:'INPATIENT',benefitClass:'COVERED',severityClass:'UNKNOWN',frequency:1,unitCost:100000,coveredAmount:100000,claimCause:'INJURY',nationalHealthInsuranceStatus:'APPLIED',samsungCalculationInput:{priorEligibleDeductible:0,...common,requiredCoverageConfirmed:true,contractBenefitCap:50000000,priorPaidBenefit:0}},{assumeEntireMedicalCostCovered:false,assumeNoPriorLimitUsage:false,assumeEachOccurrenceSeparate:false});
  expect(result).toMatchObject({ruleId:'G4-01',claim:80000});
 });
 
@@ -79,7 +79,7 @@ it('holds repeated treatment until separate occurrences are confirmed',()=>{
  expect(result.items[0].current.reasons[0]).toContain('별도 방문');
 });
 it('shares the fourth-generation covered annual cap across inpatient and outpatient rules',()=>{
- const commonInput={...baseUsage.samsungCalculationInput,priorPaidBenefit:49900000};
+ const commonInput={...baseUsage.samsungCalculationInput,priorPaidBenefit:49900000,priorEligibleDeductible:0};
  const inpatient={...baseUsage,id:'inpatient',careSetting:'INPATIENT' as const,samsungCalculationInput:commonInput};
  const outpatient={...baseUsage,id:'outpatient',samsungCalculationInput:commonInput};
  const result=calculateSamsungAnnualComparison({...contract,generation:4},35000,[],selections,[inpatient,outpatient],assumptions);

@@ -25,15 +25,17 @@
             "benefitRate": 0.8
           }
         ],
+        "annualDeductibleCap": 2000000,
         "nonNhiFallback": {
           "benefitRate": 0.4
         }
       },
-      "limitText": "연간 보험가입금액 한도",
+      "limitText": "연간 보험가입금액 한도; 나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
       "requiresAccumulator": true,
       "enforcement": {
         "annualBenefitCap": 50000000,
-        "requiresContractBenefitCap": true
+        "requiresContractBenefitCap": true,
+        "annualDeductibleCap": 2000000
       },
       "specialConditions": [
         "POLICY_EXCLUSIONS_MUST_BE_CLEARED",
@@ -71,15 +73,17 @@
             "benefitRate": 0.8
           }
         ],
+        "annualDeductibleCap": 2000000,
         "nonNhiFallback": {
           "benefitRate": 0.4
         }
       },
-      "limitText": "연간 보험가입금액 한도",
+      "limitText": "연간 보험가입금액 한도; 나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
       "requiresAccumulator": true,
       "enforcement": {
         "annualBenefitCap": 50000000,
-        "requiresContractBenefitCap": true
+        "requiresContractBenefitCap": true,
+        "annualDeductibleCap": 2000000
       },
       "specialConditions": [
         "POLICY_EXCLUSIONS_MUST_BE_CLEARED",

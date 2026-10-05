@@ -249,13 +249,14 @@ function calculated(
     return confirmation(rule, "건별·방문별·행위별 합산 단위가 필요합니다.");
   }
   let restored = 0;
-  const capBasis = [2, 3].includes(rule.generation ?? 0) ? capEligibleDeductible : enforcedDeductible;
+  // 2~4세대 입원의 연 자기부담 상한은 건강보험 적용 의료비의 자기부담만 대상으로 한다(건강보험 미적용 40% 보상분 제외).
+  const capBasis = [2, 3, 4].includes(rule.generation ?? 0) ? capEligibleDeductible : enforcedDeductible;
   const deductibleCapApplies =
-    (![2, 3].includes(rule.generation ?? 0) || (capBasis !== null && capBasis > 0)) &&
+    (![2, 3, 4].includes(rule.generation ?? 0) || (capBasis !== null && capBasis > 0)) &&
     (enforcement?.appliesWhen !== "GENERAL_OR_TERTIARY_HOSPITAL_EXCLUDING_SPECIFIED_THREE"
       || (input.institution === "GENERAL_TERTIARY" && input.specifiedThreeNonCoveredTreatment === false));
 
-  if ([2, 3, 5].includes(rule.generation ?? 0) && enforcement?.annualDeductibleCap !== undefined && deductibleCapApplies && enforcedDeductible !== null
+  if ([2, 3, 4, 5].includes(rule.generation ?? 0) && enforcement?.annualDeductibleCap !== undefined && deductibleCapApplies && enforcedDeductible !== null
     && input.priorEligibleDeductible === undefined) {
     return confirmation(rule, `연간 자기부담 ${enforcement.annualDeductibleCap.toLocaleString("ko-KR")}원 상한 적용을 위해 기존 누적 자기부담액이 필요합니다.`);
   }
@@ -518,10 +519,9 @@ export function evaluateSamsungExecutionSpec(
     const eligible = (key ? amount(input, key) : null) ?? expense(input);
     if (eligible === null || !component) return confirmation(rule, "보상대상의료비가 필요합니다.");
     const nonNhiFallback = calculation.nonNhiFallback as { benefitRate: number } | undefined;
-    const rate = input.nhiApplied === false && nonNhiFallback
-      ? nonNhiFallback.benefitRate
-      : component.benefitRate;
-    return calculated(rule, input, eligible * rate, eligible * (1 - rate));
+    const usesNonNhiFallback = input.nhiApplied === false && nonNhiFallback !== undefined;
+    const rate = usesNonNhiFallback ? nonNhiFallback.benefitRate : component.benefitRate;
+    return calculated(rule, input, eligible * rate, eligible * (1 - rate), [], usesNonNhiFallback ? 0 : eligible * (1 - rate));
   }
 
   if (calculation.type === "COMPONENT_SUM") {

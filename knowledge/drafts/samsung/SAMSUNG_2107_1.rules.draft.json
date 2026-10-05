@@ -13,7 +13,7 @@
       "coverage": "상해급여 입원",
       "page": 9,
       "formula": "급여 본인부담금 × 80%",
-      "limit": "연간 보험가입금액 한도",
+      "limit": "연간 보험가입금액 한도; 나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
       "status": "RULE_DRAFTED",
       "variant": "default",
       "evidenceIds": [
@@ -26,7 +26,7 @@
       "coverage": "질병급여 입원",
       "page": 9,
       "formula": "급여 본인부담금 × 80%",
-      "limit": "연간 보험가입금액 한도",
+      "limit": "연간 보험가입금액 한도; 나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
       "status": "RULE_DRAFTED",
       "variant": "default",
       "evidenceIds": [

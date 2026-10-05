@@ -163,6 +163,8 @@ function limitGroups(generation: number, ruleId: string, usage: MedicalUsage): L
     if (['G4-01', 'G4-08'].includes(ruleId)) benefit = 'G4-COVERED-INJURY';
     if (['G4-02', 'G4-09'].includes(ruleId)) benefit = 'G4-COVERED-DISEASE';
     if (['G4-03', 'G4-04'].includes(ruleId)) benefit = 'G4-NONCOVERED-GENERAL';
+    // 급여 입원 연 200만원 자기부담 상한은 상해·질병을 구분하지 않는다(약관 제6조 ④에 '각각' 문구 없음).
+    if (['G4-01', 'G4-02'].includes(ruleId)) deductible = 'G4-COVERED-INPATIENT';
   }
   if (generation === 5) {
     const conversion = ruleId.includes('CONV') ? 'CONVERSION' : 'GENERAL';

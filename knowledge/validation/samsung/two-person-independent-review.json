@@ -1485,11 +1485,12 @@
             "benefitRate": 0.8
           }
         ],
+        "annualDeductibleCap": 2000000,
         "nonNhiFallback": {
           "benefitRate": 0.4
         }
       },
-      "limitText": "연간 보험가입금액 한도",
+      "limitText": "연간 보험가입금액 한도; 나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
       "requiredCoverages": [],
       "specialConditions": [
         "POLICY_EXCLUSIONS_MUST_BE_CLEARED",
@@ -1505,7 +1506,7 @@
         "면책·특약 미가입·필수 입력 누락"
       ],
       "priorityChecks": [
-        "한도·횟수·합산 기준을 원문과 대조한다: 연간 보험가입금액 한도",
+        "한도·횟수·합산 기준을 원문과 대조한다: 연간 보험가입금액 한도; 나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
         "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
       ],
       "itemsToVerify": [
@@ -1544,11 +1545,12 @@
             "benefitRate": 0.8
           }
         ],
+        "annualDeductibleCap": 2000000,
         "nonNhiFallback": {
           "benefitRate": 0.4
         }
       },
-      "limitText": "연간 보험가입금액 한도",
+      "limitText": "연간 보험가입금액 한도; 나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
       "requiredCoverages": [],
       "specialConditions": [
         "POLICY_EXCLUSIONS_MUST_BE_CLEARED",
@@ -1564,7 +1566,7 @@
         "면책·특약 미가입·필수 입력 누락"
       ],
       "priorityChecks": [
-        "한도·횟수·합산 기준을 원문과 대조한다: 연간 보험가입금액 한도",
+        "한도·횟수·합산 기준을 원문과 대조한다: 연간 보험가입금액 한도; 나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
         "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
       ],
       "itemsToVerify": [
@@ -1997,9 +1999,10 @@
             "basis": "ELIGIBLE_EXPENSE",
             "benefitRate": 0.8
           }
-        ]
+        ],
+        "annualDeductibleCap": 2000000
       },
-      "limitText": "급여 상해/질병 각각 연간 보험가입금액 한도",
+      "limitText": "급여 상해/질병 각각 연간 보험가입금액 한도; 나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
       "requiredCoverages": [],
       "specialConditions": [
         "POLICY_EXCLUSIONS_MUST_BE_CLEARED",
@@ -2014,7 +2017,7 @@
         "면책·특약 미가입·필수 입력 누락"
       ],
       "priorityChecks": [
-        "한도·횟수·합산 기준을 원문과 대조한다: 급여 상해/질병 각각 연간 보험가입금액 한도",
+        "한도·횟수·합산 기준을 원문과 대조한다: 급여 상해/질병 각각 연간 보험가입금액 한도; 나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
         "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
       ],
       "itemsToVerify": [
@@ -2555,9 +2558,10 @@
             "basis": "ELIGIBLE_EXPENSE",
             "benefitRate": 0.8
           }
-        ]
+        ],
+        "annualDeductibleCap": 2000000
       },
-      "limitText": "급여 상해/질병 각각 연간 보험가입금액 한도",
+      "limitText": "급여 상해/질병 각각 연간 보험가입금액 한도; 나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
       "requiredCoverages": [],
       "specialConditions": [
         "POLICY_EXCLUSIONS_MUST_BE_CLEARED",
@@ -2574,7 +2578,7 @@
       ],
       "priorityChecks": [
         "계약전환·재개·자녀보험전환 세부유형과 전환 자격·계속 치료 적용 조건을 확인한다.",
-        "한도·횟수·합산 기준을 원문과 대조한다: 급여 상해/질병 각각 연간 보험가입금액 한도",
+        "한도·횟수·합산 기준을 원문과 대조한다: 급여 상해/질병 각각 연간 보험가입금액 한도; 나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
         "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
       ],
       "itemsToVerify": [
