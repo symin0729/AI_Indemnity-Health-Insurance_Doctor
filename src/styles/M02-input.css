@@ -220,3 +220,8 @@ select.is-placeholder { color: #98a2b3; }
 @media (max-width: 760px) { .rider-row__boxes--two { grid-template-columns: 1fr; } }
 /* 실손 세대 아래의 작은 안내 */
 .generation-note { display: block; margin: 6px 0 0; padding-left: 4px; font-weight: 500; }
+
+/* STEP 3은 후속 화면으로 교체할 수 있도록 빈 작업 영역만 유지합니다. */
+.step3-placeholder {
+  min-height: clamp(360px, 55vh, 680px);
+}
