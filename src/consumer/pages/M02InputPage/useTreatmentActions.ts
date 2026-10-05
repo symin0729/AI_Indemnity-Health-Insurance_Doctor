@@ -64,7 +64,6 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
     setGen3Riders,
     setHealthInsuranceCopayRatePercent,
     setInstitutionType,
-    setIsStep3Confirmed,
     setIsTreatmentFormOpen,
     setNationalHealthInsuranceStatus,
     setPendingDeleteUsage,
@@ -493,7 +492,6 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
       setAssumeEntireMedicalCostCovered(scenario.calculationAssumptions.assumeEntireMedicalCostCovered);
       setAssumeNoPriorLimitUsage(scenario.calculationAssumptions.assumeNoPriorLimitUsage);
       setAssumeEachOccurrenceSeparate(scenario.calculationAssumptions.assumeEachOccurrenceSeparate);
-      setIsStep3Confirmed(false);
       setTreatmentSampleNotice(scenario.notice + ((generation === 2 || generation === 3) && samsungGen23Variant === "UNKNOWN" ? " 종형 미선택으로 표준형 예제를 불러왔습니다." : ""));
 
       applyTreatmentDraft(nextDraft);
