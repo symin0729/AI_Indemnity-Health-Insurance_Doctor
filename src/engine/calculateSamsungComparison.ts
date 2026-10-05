@@ -17,7 +17,7 @@ import { calculateBreakEvenBySimulation } from './calculateBreakEven';
 export const SAMSUNG_BREAK_EVEN_MAX_FREQUENCY = 120;
 const MAX_SUPPORTED_ANNUAL_USAGE_FREQUENCY = 10_000;
 
-export const samsungCalculationLabel = (generation: number) => `삼성 ${generation}세대 · 상품별 실행 스펙 · 초안 검산`;
+export const samsungCalculationLabel = (generation: number) => `${generation}세대 · 상품별 실행 스펙 · 초안 검산`;
 
 function normalizeGen23Usage(usage: MedicalUsage, assumptions: AnalysisCalculationAssumptions): MedicalUsage {
   const expense = usage.coveredAmount ?? (assumptions.assumeEntireMedicalCostCovered ? usage.patientPaidAmount ?? usage.unitCost : undefined);
@@ -44,7 +44,7 @@ function normalizeGen23Usage(usage: MedicalUsage, assumptions: AnalysisCalculati
 export function calculateSamsungComparisonItem(contract: InsuranceContract, selections: ProductCalculationSelections, usage: MedicalUsage, assumptions: AnalysisCalculationAssumptions, target = false) {
   const generation = target ? 5 : contract.generation;
   const hold = (reason: string) => ({ claim: null as number | null, deductible: null as number | null, capEligibleDeductible: null as number | null, reasons: [reason], ruleId: '' });
-  if (!target && !contract.insurer.includes('삼성')) return hold('현재는 삼성화재 상품의 계산만 지원합니다.');
+  if (!target && !contract.insurer.includes('삼성')) return hold('현재는 지원하는 상품의 계산만 제공합니다.');
   if (generation === 2 || generation === 3) {
     const normalizedUsage = normalizeGen23Usage(usage, assumptions);
     const calculationUsage = assumptions.assumeNoPriorLimitUsage ? {

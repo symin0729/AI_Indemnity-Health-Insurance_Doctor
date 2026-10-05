@@ -5,6 +5,7 @@ import headerLogo from "../assets/header-logo.png";
 
 import { useAnalysisStore } from "../store/useAnalysisStore";
 import ModeToggle from "./ModeToggle";
+import "../styles/app-shell.css";
 
 type AppStep = 1 | 2 | 3 | 4 | 5 | 6;
 

@@ -41,6 +41,7 @@ import {
   loadTreatmentSample,
   type TreatmentSampleKind,
 } from "../../services/sampleScenarioService";
+import "../../styles/M04-result.css";
 
 function getSavedSampleKind(usage: MedicalUsage): TreatmentSampleKind | null {
   const name = usage.treatmentName.replace(/\s/g, "").toUpperCase();

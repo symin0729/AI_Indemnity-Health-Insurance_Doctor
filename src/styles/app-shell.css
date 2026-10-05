@@ -1,0 +1,16 @@
+/* app-shell 화면 전용 스타일. 이 화면 작업자만 수정합니다. */
+
+.app-shell-privacy-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ok);
+}
+
+.app-shell-progress-bar {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--pale);
+  transition: width var(--duration-normal) var(--ease-standard);
+}

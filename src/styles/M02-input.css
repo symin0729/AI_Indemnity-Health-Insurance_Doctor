@@ -1,0 +1,213 @@
+/* M02-input 화면 전용 스타일. 이 화면 작업자만 수정합니다. */
+
+.nested-fieldset {
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+.nested-fieldset legend {
+  padding: 0 6px;
+  font-weight: 800;
+}
+
+.gen1-conditional-inputs {
+  margin: 20px 0;
+  padding: 20px;
+  border: 1px solid var(--pale);
+  border-radius: 16px;
+  background: #f6f9fc;
+}
+
+.gen1-conditional-inputs > h3 {
+  margin-top: 0;
+}
+
+.legacy-sample-picker { display: none; }
+
+.html-sample-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: -4px 0 20px;
+}
+
+.no-treatment-option {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 18px;
+  padding: 15px 16px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: border-color var(--duration-fast) ease, background var(--duration-fast) ease;
+}
+
+.no-treatment-option.is-selected {
+  border-color: var(--blue2);
+  background: #eef4fa;
+}
+
+.no-treatment-option strong { display: block; font-size: 14px; }
+
+.no-treatment-option small { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; font-weight: 500; }
+
+.sample-button {
+  padding: 10px 13px;
+  border: 1px solid var(--pale);
+  border-radius: 11px;
+  background: #f6f9fc;
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.sample-button:hover { background: #eaf1f8; border-color: var(--blue2); }
+
+.sample-button.required-confirm-button {
+  border-color: #dc2626;
+  background: #fff1f2;
+  color: #b91c1c;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+  font-weight: 900;
+}
+
+.sample-button.required-confirm-button:hover {
+  border-color: #b91c1c;
+  background: #ffe4e6;
+  color: #991b1b;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.14);
+}
+
+.sample-button.required-confirm-button.is-confirmed {
+  border-color: #991b1b;
+  background: #b91c1c;
+  color: #ffffff;
+  box-shadow: 0 5px 14px rgba(185, 28, 28, 0.22);
+}
+
+.input-unit-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 24rem;
+  margin-top: 8px;
+}
+
+.input-unit-row > input:not([type="checkbox"]):not([type="radio"]) {
+  flex: 1 1 0;
+  width: 0;
+  min-width: 0;
+  margin-top: 0;
+}
+
+.input-unit-label {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.required-mark {
+  display: inline-flex;
+  align-items: center;
+  min-height: 18px;
+  margin-left: 5px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: #f8ecec;
+  color: #9b4c4c;
+  font-size: 0.68rem;
+  font-weight: 850;
+  vertical-align: 1px;
+}
+
+#samsung-gen23-variant[aria-invalid="true"],
+#samsung-gen1-product[aria-invalid="true"],
+#samsung-gen4-type[aria-invalid="true"],
+[id^="gen3-rider-"][aria-invalid="true"] {
+  border-color: #c98b8b;
+  background-color: #fffafa;
+}
+
+.treatment-help-dialog {
+  width: min(100% - 32px, 480px);
+  max-height: calc(100dvh - 32px);
+  padding: 0;
+  border: 0;
+  border-radius: 16px;
+  color: var(--ink);
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.24);
+}
+
+.treatment-help-dialog::backdrop {
+  background: rgba(15, 23, 42, 0.48);
+  backdrop-filter: blur(4px);
+}
+
+.treatment-heading-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.treatment-compact-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.treatment-compact-actions > button {
+  flex: 0 0 auto;
+  min-height: 34px;
+  min-width: 0;
+  padding: 6px 9px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.html-sample-actions:has(+ .sample-note) { margin-bottom: 6px; }
+
+.sample-note { margin: 0 0 20px; padding-left: 12px; color: #98a2b3; font-size: 10px; line-height: 1.5; }
+
+.optional-mark { display: inline-flex; align-items: center; min-height: 18px; margin-left: 5px; padding: 1px 6px; border-radius: 999px; background: #eaf0f7; color: #4a6a8f; font-size: 0.68rem; font-weight: 850; vertical-align: 1px; }
+
+.select-like-field { display: block; margin-bottom: 18px; color: var(--ink); font-size: 0.94rem; font-weight: 700; }
+
+.select-like { display: flex; align-items: center; justify-content: space-between; gap: 12px; text-align: left; font-size: inherit; font-weight: inherit; cursor: pointer; }
+
+.select-like__chevron { font-size: 0.7rem; color: var(--muted); }
+
+.select-like-field > .no-treatment-option { box-sizing: border-box; width: 100%; min-height: 48px; margin: 8px 0 0; padding: 11px 13px; border: 1px solid #c9d3df; border-radius: var(--radius-sm); background: #fff; }
+
+.select-like-field > .no-treatment-option strong { font-size: inherit; font-weight: inherit; }
+
+.select-like-field .sample-note { display: block; margin: 4px 0 0; padding-left: 4px; }
+
+.select-like__panel .no-treatment-option { margin-top: 6px; }
+
+.rider-row { grid-column: 1 / -1; }
+
+.rider-row__boxes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 8px; }
+
+.rider-row__boxes .no-treatment-option { box-sizing: border-box; width: 100%; min-height: 48px; margin: 0; padding: 11px 13px; border: 1px solid #c9d3df; border-radius: var(--radius-sm); background: #fff; }
+
+.rider-row__boxes .no-treatment-option strong { font-size: 12px; font-weight: inherit; line-height: 1.35; }
+
+@media (max-width: 760px) { .rider-row__boxes { grid-template-columns: 1fr; } }
+
+.select-like-field .rider-row__hint { display: inline; margin: 0 0 0 8px; padding: 0; font-weight: 500; }
+
+.option-dropdown { position: relative; }
+
+.option-dropdown__list { position: absolute; z-index: 20; top: 100%; left: 0; right: 0; margin: 6px 0 0; padding: 6px; list-style: none; border: 1px solid #c9d3df; border-radius: var(--radius-sm); background: #fff; box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14); }
+
+.option-dropdown__item.is-selected strong { color: var(--blue2); }
+
+#samsung-gen23-variant.select-like[aria-invalid="true"] { border-color: #c98b8b; background-color: #fffafa; }

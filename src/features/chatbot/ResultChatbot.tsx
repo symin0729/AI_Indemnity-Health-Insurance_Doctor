@@ -7,6 +7,7 @@ import { useAnalysisStore } from "../../store/useAnalysisStore";
 import AnswerCard from "./AnswerCard";
 import type { ChatResponse } from "./chatbot.schema";
 import QuestionChips from "./QuestionChips";
+import "../../styles/chatbot.css";
 
 export default function ResultChatbot() {
   const navigate = useNavigate();

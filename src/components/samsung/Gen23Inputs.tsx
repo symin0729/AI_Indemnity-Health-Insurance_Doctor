@@ -3,7 +3,7 @@ import { InputHelp } from "../InputHelp";
 import { gen23InputHelp } from "./gen23InputHelp";
 import { gen23Fields, type Gen23FormState } from "../../domain/samsungGen23Form";
 import type { MedicalUsage } from "../../domain/medical";
-export function Gen23Inputs({ generation, value, onChange, insurerName = "삼성화재", variant, embedded = false, institutionManaged = false, riderManaged = false }: { riderManaged?: boolean; embedded?: boolean; insurerName?: string; variant?: "standard" | "selected2" | "standard2013" | "selected2013" | "unified2009" | "UNKNOWN"; institutionManaged?: boolean; generation: 2 | 3; value: Gen23FormState; onChange: (value: Gen23FormState) => void }) {
+export function Gen23Inputs({ generation, value, onChange, insurerName = "OO 보험", variant, embedded = false, institutionManaged = false, riderManaged = false }: { riderManaged?: boolean; embedded?: boolean; insurerName?: string; variant?: "standard" | "selected2" | "standard2013" | "selected2013" | "unified2009" | "UNKNOWN"; institutionManaged?: boolean; generation: 2 | 3; value: Gen23FormState; onChange: (value: Gen23FormState) => void }) {
   const fieldId = useId();
   const care = value.gen23CareSetting;
   const special = generation === 3 && value.gen23TreatmentType && value.gen23TreatmentType !== "BASE";
