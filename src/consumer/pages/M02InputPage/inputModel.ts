@@ -5,6 +5,7 @@ import { isGen1ProductUnregistered, type Gen1ProductChoice } from "../../../doma
 import type { Gen3RiderSelections } from "../../../domain/gen3Riders";
 import { isGen23VariantRegistered, type SamsungGen23Variant } from "../../../domain/samsungGen23Variant";
 import type { AnalysisCalculationAssumptions, ProductCalculationSelections, RiderEnrollmentStatus } from "../../store/useAnalysisStore";
+import { getSeparateVisitWarningMessage } from "./treatmentSequence";
 
 /**
  * 입력 화면(M02)의 검증과 저장 값 만들기. 화면(React)과 분리된 순수 함수라서 테스트할 수 있다.
@@ -127,6 +128,7 @@ export type SubmissionInput = ContractStepInput & {
   isSampleConfirmed: boolean;
   isTargetPremiumHelpConfirmed: boolean;
   isTreatmentHelpConfirmed: boolean;
+  isStep3Confirmed: boolean;
   calculationAssumptions: AnalysisCalculationAssumptions;
   gen1ContractBasis: ProductCalculationSelections["gen1ContractBasis"];
   gen1D1Coverage: ProductCalculationSelections["gen1D1Coverage"];
@@ -151,7 +153,10 @@ export type Submission = {
 export function buildSubmission(input: SubmissionInput): InputFailure | Submission {
   if (!input.isTargetPremiumHelpConfirmed) return { ok: false, reveal: "TARGET_PREMIUM_HELP" };
   if (!input.isTreatmentHelpConfirmed) {
-    return { ok: false, message: "예정 치료의 필수 입력 안내를 읽고 확인해주세요." };
+    return { ok: false, message: "STEP 3의 필수 입력 안내를 읽고 확인해주세요." };
+  }
+  if (!input.isStep3Confirmed) {
+    return { ok: false, message: "입력 내용을 확인하고 ‘예정치료를 입력하셨나요?’에 체크해주세요." };
   }
   if (input.plannedUsages.length === 0) {
     return { ok: false, message: "예정 치료를 입력한 뒤 하단의 ‘추가하기’ 버튼을 눌러 등록해주세요.", goToStep: 2 };
@@ -214,6 +219,13 @@ export function buildSubmission(input: SubmissionInput): InputFailure | Submissi
   }
 
   const finalUsages = [...input.plannedUsages];
+  const distinctTreatmentDates = new Set(
+    finalUsages.map((usage) => usage.treatmentDate).filter((value): value is string => Boolean(value)),
+  );
+  if (distinctTreatmentDates.size > 1 && !input.calculationAssumptions.assumeEachOccurrenceSeparate) {
+    return { ok: false, message: getSeparateVisitWarningMessage() };
+  }
+
   const currentCoverages: string[] = [];
   if (input.generation === 5) {
     if (input.gen5SevereRider === "ENROLLED") currentCoverages.push("SPECIAL_RIDER_1");

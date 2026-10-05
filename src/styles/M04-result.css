@@ -387,3 +387,52 @@
   .break-even-chart__canvas { overflow-x: auto; }
   .break-even-chart__canvas svg { min-width: 620px; }
 }
+.result-assumption-summary {
+  display: grid;
+  grid-template-columns: minmax(210px, 0.65fr) minmax(0, 1.35fr);
+  gap: 22px;
+  align-items: start;
+  padding: 18px 22px;
+  border: 1px solid #b9cfe4;
+  border-radius: 18px;
+  background: #f4f9fe;
+  color: #173d5f;
+}
+
+.result-assumption-summary h2,
+.result-assumption-summary ul {
+  margin: 0;
+}
+
+.result-assumption-summary h2 {
+  margin-top: 7px;
+  font-size: 1.1rem;
+  line-height: 1.4;
+}
+
+.result-assumption-summary__badge {
+  display: inline-flex;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #dceafa;
+  color: #174f83;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.result-assumption-summary ul {
+  display: grid;
+  gap: 6px;
+  padding-left: 1.2rem;
+  font-size: 0.92rem;
+  font-weight: 650;
+  line-height: 1.5;
+}
+
+@media (max-width: 760px) {
+  .result-assumption-summary {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 17px 16px;
+  }
+}

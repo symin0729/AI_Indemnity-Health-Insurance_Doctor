@@ -751,7 +751,7 @@ function M03ConfirmPage() {
         <button
           type="button"
           className="secondary-button"
-          disabled={isCalculating || !isCalculationAgreementConfirmed}
+          disabled={isCalculating}
           onClick={() =>
             navigate("/consumer/input#input-step-3")
           }
@@ -762,7 +762,7 @@ function M03ConfirmPage() {
         <button
           type="button"
           className="primary-button"
-          disabled={isCalculating}
+          disabled={isCalculating || !isCalculationAgreementConfirmed}
           onClick={handleCalculate}
         >
           {isCalculating

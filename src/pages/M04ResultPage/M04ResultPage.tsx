@@ -1804,6 +1804,28 @@ function M04ResultPage() {
         </div>
       </header>
 
+      {(calculationAssumptions.assumeEntireMedicalCostCovered ||
+        calculationAssumptions.assumeNoPriorLimitUsage ||
+        calculationAssumptions.assumeEachOccurrenceSeparate) && (
+        <section className="result-assumption-summary" aria-labelledby="result-assumption-summary-title">
+          <div>
+            <span className="result-assumption-summary__badge">적용 조건</span>
+            <h2 id="result-assumption-summary-title">이 결과에 적용된 계산 가정</h2>
+          </div>
+          <ul>
+            {calculationAssumptions.assumeEntireMedicalCostCovered && (
+              <li>C가 없는 치료는 환자부담 의료비 M 전액을 보장대상으로 가정</li>
+            )}
+            {calculationAssumptions.assumeNoPriorLimitUsage && (
+              <li>확인되지 않은 기존 지급액과 한도·상한 사용량을 0으로 가정</li>
+            )}
+            {calculationAssumptions.assumeEachOccurrenceSeparate && (
+              <li>날짜·입원 구분이 없는 반복 치료를 각각 별도 방문으로 가정</li>
+            )}
+          </ul>
+        </section>
+      )}
+
       <section
         className="app-card"
         style={{
