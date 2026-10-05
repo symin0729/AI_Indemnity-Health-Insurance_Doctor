@@ -211,3 +211,12 @@
 .option-dropdown__item.is-selected strong { color: var(--blue2); }
 
 #samsung-gen23-variant.select-like[aria-invalid="true"] { border-color: #c98b8b; background-color: #fffafa; }
+
+/* 실손 세대를 고르기 전에는 예시(3세대)를 회색으로 보여준다 */
+select.is-placeholder { color: #98a2b3; }
+
+/* 박스가 두 개뿐인 줄(1세대 특약)은 두 칸으로 넓혀 설명이 한 줄에 보이게 한다 */
+.rider-row__boxes--two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 760px) { .rider-row__boxes--two { grid-template-columns: 1fr; } }
+/* 실손 세대 아래의 작은 안내 */
+.generation-note { display: block; margin: 6px 0 0; padding-left: 4px; font-weight: 500; }

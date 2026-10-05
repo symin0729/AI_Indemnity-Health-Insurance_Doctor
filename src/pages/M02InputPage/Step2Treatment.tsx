@@ -4,12 +4,29 @@ import { type CopayInstitution, type CopayRegion } from "../../domain/insuranceI
 import { genericGen23CareSetting, syncGen23CareSetting } from "../../domain/samsungGen23CareSetting";
 import { Gen23Inputs } from "../../components/samsung/Gen23Inputs";
 import { MASKED_INSURER } from "../../domain/displayMask";
-import type { BenefitClass, CareSetting, SeverityClass } from "../../domain/medical";
+import type { BenefitClass, CareSetting, ClaimCause, NationalHealthInsuranceStatus, SeverityClass } from "../../domain/medical";
 import { formatWonInput, getWonInputValue, IsoDateInput } from "./M02Shared";
 import type { M02Form } from "./useM02Form";
 
 export default function Step2Treatment({ form }: { form: M02Form }) {
   const {
+    claimCause,
+    gen1CoveredRoomAndTreatment,
+    gen1NonNhiInpatientTotal,
+    gen1PolicyExclusionsCleared,
+    gen1PriorPaidBenefit,
+    gen1PriorServiceDays,
+    gen1Product,
+    gen1RoomDifference,
+    nationalHealthInsuranceStatus,
+    setClaimCause,
+    setGen1CoveredRoomAndTreatment,
+    setGen1NonNhiInpatientTotal,
+    setGen1PolicyExclusionsCleared,
+    setGen1PriorPaidBenefit,
+    setGen1PriorServiceDays,
+    setGen1RoomDifference,
+    setNationalHealthInsuranceStatus,
     applyCopayDefault,
     benefitClass,
     careSetting,
@@ -325,6 +342,29 @@ export default function Step2Treatment({ form }: { form: M02Form }) {
             const selectedCare = genericGen23CareSetting(values.gen23CareSetting);
             if (selectedCare && selectedCare !== careSetting) changeCareSetting(selectedCare);
           }} />}
+
+        {/* 세대별 세부 입력: 1세대는 삼성 0904.2 D1 계산에 필요한 값을 여기서 입력한다. */}
+        {generation === 1 && gen1Product === "SAMSUNG_0904_2" && (
+          <fieldset className="form-card" aria-label="1세대 세부 입력">
+            <legend><h3>1세대 세부 입력 (D1 계산 조건)</h3></legend>
+            <div className="form-grid">
+              <label>질병 / 상해<select value={claimCause} onChange={(event) => setClaimCause(event.target.value as ClaimCause)}><option value="UNKNOWN">확인할 수 없음</option><option value="INJURY">상해</option><option value="DISEASE">질병</option></select></label>
+              <label>이번 진료의 국민건강보험 적용 여부<select value={nationalHealthInsuranceStatus} onChange={(event) => setNationalHealthInsuranceStatus(event.target.value as NationalHealthInsuranceStatus)}><option value="UNKNOWN">확인할 수 없음</option><option value="APPLIED">적용됨</option><option value="NOT_APPLIED">적용되지 않음</option><option value="PARTIAL">일부 적용</option></select></label>
+            </div>
+            {nationalHealthInsuranceStatus === "PARTIAL" && <div className="notice-box warning">일부 적용 조합은 RULE_NOT_VERIFIED로 처리됩니다.</div>}
+            {careSetting === "INPATIENT" && nationalHealthInsuranceStatus === "APPLIED" && <div className="form-grid">
+              <label>실제 부담액<input type="text" inputMode="numeric" value={formatWonInput(gen1CoveredRoomAndTreatment)} onChange={(event) => setGen1CoveredRoomAndTreatment(getWonInputValue(event.target.value))} />원</label>
+              <label>병실료 차액<input type="text" inputMode="numeric" value={formatWonInput(gen1RoomDifference)} onChange={(event) => setGen1RoomDifference(getWonInputValue(event.target.value))} placeholder="없으면 0" />원</label>
+            </div>}
+            {careSetting === "INPATIENT" && nationalHealthInsuranceStatus === "NOT_APPLIED" && <label>입원의료비 총액<input type="text" inputMode="numeric" value={formatWonInput(gen1NonNhiInpatientTotal)} onChange={(event) => setGen1NonNhiInpatientTotal(getWonInputValue(event.target.value))} />원</label>}
+            {careSetting === "OUTPATIENT" && <p className="sample-note">통원 금액은 위의 ‘한 번 진료받을 때 내가 내는 금액’을 사용합니다.</p>}
+            <div className="form-grid">
+              <label>이전 지급액<input type="text" inputMode="numeric" value={formatWonInput(gen1PriorPaidBenefit)} onChange={(event) => setGen1PriorPaidBenefit(getWonInputValue(event.target.value))} />원</label>
+              {careSetting === "OUTPATIENT" && <label>이전 이용일수<input type="number" min="0" step="1" value={gen1PriorServiceDays} onChange={(event) => setGen1PriorServiceDays(event.target.value)} />일</label>}
+            </div>
+            <label className="no-treatment-option"><input type="checkbox" checked={gen1PolicyExclusionsCleared} onChange={(event) => setGen1PolicyExclusionsCleared(event.target.checked)} /><span><strong>보상하지 않는 사항에 해당하지 않음을 확인했습니다.</strong></span></label>
+          </fieldset>
+        )}
 
         {isTreatmentLimitReached && (
           <div className="notice-box">

@@ -33,3 +33,17 @@ export function toGen1EngineProduct(choice: Gen1ProductChoice): "SAMSUNG_0904_2"
   if (choice === "SAMSUNG_0904_2" || choice === "UNKNOWN") return choice;
   return "OTHER";
 }
+
+/** 1세대 D1 특약 가입 여부(체크박스 2개) ↔ 계산에 넘기는 값 */
+export type Gen1D1Coverage = "INJURY" | "DISEASE" | "BOTH" | "NONE" | "UNKNOWN";
+
+export function gen1CoverageFromChecks(injury: boolean, disease: boolean): Exclude<Gen1D1Coverage, "UNKNOWN"> {
+  if (injury && disease) return "BOTH";
+  if (injury) return "INJURY";
+  if (disease) return "DISEASE";
+  return "NONE";
+}
+
+export function gen1CoverageChecks(coverage: Gen1D1Coverage): { injury: boolean; disease: boolean } {
+  return { injury: coverage === "INJURY" || coverage === "BOTH", disease: coverage === "DISEASE" || coverage === "BOTH" };
+}

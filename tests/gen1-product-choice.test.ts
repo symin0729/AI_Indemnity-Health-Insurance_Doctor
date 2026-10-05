@@ -48,11 +48,29 @@ describe("보험사·상품명 표시 마스킹", () => {
     expect(displayInsurer({ generation: 1, gen1Product: "OTHER_POST" }, "우체국보험")).toBe("우체국보험");
     expect(displayProductName({ generation: 1, gen1Product: "OTHER_POST" }, "우체국보험 실손 의료 보험")).toBe("우체국보험 실손 의료 보험");
     expect(displayInsurer({ generation: 1, gen1Product: "SAMSUNG_0904_2" }, "삼성화재")).toBe("OO 보험");
+    expect(displayInsurer({ generation: 1, gen1Product: "SAMSUNG_0904_2" }, "삼성화재", "내 보험사")).toBe("내 보험사");
     expect(displayProductName({ generation: 1, gen1Product: "SAMSUNG_0904_2" }, "삼성 올라이프 100세 건강파트너보험(0904.2)")).toBe("OO 실손 의료 보험");
   });
   it("계산용 내부 값은 삼성화재 상품으로 고정한다", () => {
     expect(INTERNAL_INSURER).toBe("삼성화재");
     expect(internalProductName(3)).toBe("무배당 삼성화재 실손의료비보험(1704.1)");
     expect(internalProductName(2)).toBe("무배당 삼성화재 실손의료비보험(1611.7)");
+  });
+});
+
+import { gen1CoverageChecks, gen1CoverageFromChecks } from "../src/domain/gen1Product";
+describe("1세대 D1 특약 가입 체크", () => {
+  it("체크한 특약만 가입으로 변환한다", () => {
+    expect(gen1CoverageFromChecks(true, false)).toBe("INJURY");
+    expect(gen1CoverageFromChecks(false, true)).toBe("DISEASE");
+    expect(gen1CoverageFromChecks(true, true)).toBe("BOTH");
+    expect(gen1CoverageFromChecks(false, false)).toBe("NONE");
+  });
+  it("저장된 값에서 체크 상태를 복원한다", () => {
+    expect(gen1CoverageChecks("BOTH")).toEqual({ injury: true, disease: true });
+    expect(gen1CoverageChecks("INJURY")).toEqual({ injury: true, disease: false });
+    expect(gen1CoverageChecks("DISEASE")).toEqual({ injury: false, disease: true });
+    expect(gen1CoverageChecks("NONE")).toEqual({ injury: false, disease: false });
+    expect(gen1CoverageChecks("UNKNOWN")).toEqual({ injury: false, disease: false });
   });
 });

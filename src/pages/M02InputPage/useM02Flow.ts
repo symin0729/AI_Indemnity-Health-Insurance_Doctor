@@ -1,3 +1,4 @@
+import { GEN3_RIDER_DEFAULT } from "../../domain/gen3Riders";
 import { MASKED_INSURER, MASKED_PRODUCT_NAME } from "../../domain/displayMask";
 import { buildSubmission } from "./inputModel";
 import { samplePolicyService, type SampleId } from "../../services/samplePolicyService";
@@ -43,7 +44,7 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
     productName,
     reentryCycleYears,
     renewalCycleMonths,
-    resetAnalysis,
+    resetContractStep,
     resetTreatmentForm,
     samsungGen23Variant,
     selectedSampleId,
@@ -61,6 +62,8 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
     setGen5NonSevereRider,
     setGen5SevereRider,
     setGeneration,
+    setIsGenerationSelected,
+    isGenerationSelected,
     setHasTarget5GSpecialRider1,
     setHasTarget5GSpecialRider2,
     setInceptionDate,
@@ -123,10 +126,11 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
       setGeneration(
         sample.generation
       );
+      setIsGenerationSelected(true);
       if (sample.generation === 4) setGen4NonCoveredRider("ENROLLED");
-      if (sample.generation === 3) {
-        setGen3Riders({ manualTherapy: "ENROLLED", injection: "ENROLLED", mri: "ENROLLED" });
-      }
+      // 2·3세대 샘플은 상품 종형을 1. 표준형으로 선택한다. 3세대 특약은 하나도 선택하지 않은 상태로 시작한다.
+      if (sample.generation === 2 || sample.generation === 3) setSamsungGen23Variant("standard");
+      if (sample.generation === 3) setGen3Riders(GEN3_RIDER_DEFAULT);
       setMonthlyPremium(
         String(
           sample.monthlyPremium
@@ -215,10 +219,11 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
     setProductLabel("");
     setInceptionDate("");
     setGeneration(3);
+    setIsGenerationSelected(false);
     setSamsungGen23Variant("UNKNOWN");
     setGen1Product("UNKNOWN");
     setGen1ContractBasis("SAMPLE_SIMULATION");
-    setGen1D1Coverage("UNKNOWN");
+    setGen1D1Coverage("NONE");
     setMonthlyPremium("");
     setRenewalCycleMonths("");
     setReentryCycleYears("");
@@ -251,14 +256,10 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
   };
 
 
+  /** 입력 화면의 "초기화" 버튼: 현재 화면(STEP 1)에 입력한 내용만 지운다. */
   const handleConfirmResetAll = () => {
     setIsResetModalOpen(false);
-
-    // Zustand 초기화
-    resetAnalysis();
-
-    // 현재 M02 화면 상태도 초기화
-    resetLocalForm();
+    resetContractStep();
   };
 
 
@@ -267,6 +268,7 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
 
     const result = buildSubmission({
       generation,
+      generationSelected: isGenerationSelected,
       insurer,
       productName,
       insurerLabel,
