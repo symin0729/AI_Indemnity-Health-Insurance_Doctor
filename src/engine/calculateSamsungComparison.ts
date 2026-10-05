@@ -9,6 +9,7 @@ import { calculateSamsungGen4Claim } from './calculateSamsungGen4';
 import { calculateSamsungGen5Claim } from './calculateSamsungGen5';
 import type { SamsungDraftCalculationInput } from './evaluateSamsungExecutionSpec';
 import { calculateBreakEvenBySimulation } from './calculateBreakEven';
+import { applySamsungDefaultAssumptions } from './samsungDefaultAssumptions';
 
 /**
  * 5세대 통원 보장은 상해·질병별 연 100회 한도가 있으므로
@@ -41,7 +42,22 @@ function normalizeGen23Usage(usage: MedicalUsage, assumptions: AnalysisCalculati
   };
 }
 
-export function calculateSamsungComparisonItem(contract: InsuranceContract, selections: ProductCalculationSelections, usage: MedicalUsage, assumptions: AnalysisCalculationAssumptions, target = false) {
+export interface SamsungComparisonItemResult {
+  claim: number | null;
+  deductible: number | null;
+  capEligibleDeductible: number | null;
+  reasons: string[];
+  ruleId: string;
+  /** 사용자가 입력하지 않아 약관상 표준값으로 채운 항목(결과 화면의 "적용된 가정"). */
+  appliedAssumptions?: string[];
+}
+
+export function calculateSamsungComparisonItem(contract: InsuranceContract, selections: ProductCalculationSelections, usage: MedicalUsage, assumptions: AnalysisCalculationAssumptions, target = false): SamsungComparisonItemResult {
+  const appliedAssumptions: string[] = [];
+  return { ...calculateComparisonItem(contract, selections, usage, assumptions, target, appliedAssumptions), appliedAssumptions };
+}
+
+function calculateComparisonItem(contract: InsuranceContract, selections: ProductCalculationSelections, usage: MedicalUsage, assumptions: AnalysisCalculationAssumptions, target: boolean, appliedAssumptions: string[]) {
   const generation = target ? 5 : contract.generation;
   const hold = (reason: string) => ({ claim: null as number | null, deductible: null as number | null, capEligibleDeductible: null as number | null, reasons: [reason], ruleId: '' });
   if (!target && !contract.insurer.includes('삼성')) return hold('현재는 지원하는 상품의 계산만 제공합니다.');
@@ -68,6 +84,7 @@ export function calculateSamsungComparisonItem(contract: InsuranceContract, sele
   if (assumptions.assumeNoPriorLimitUsage) {
     input.priorPaidBenefit ??= 0; input.priorAnnualCount ??= 0; input.priorServiceDays ??= 0; input.priorEligibleDeductible ??= 0;
   }
+  appliedAssumptions.push(...applySamsungDefaultAssumptions(input, { generation, target, usage, assumeEachOccurrenceSeparate: assumptions.assumeEachOccurrenceSeparate }));
   if (generation === 1) {
     const result = calculateSamsungGen1Sample({ product: toGen1EngineProduct(selections.gen1Product), contractBasis: selections.gen1ContractBasis, d1Coverage: selections.gen1D1Coverage, claimCause: usage.claimCause ?? 'UNKNOWN', careSetting: usage.careSetting, nhiStatus: usage.nationalHealthInsuranceStatus ?? 'UNKNOWN' }, {
       ...input, coveredRoomAndTreatment: usage.gen1CoveredRoomAndTreatment ?? input.coveredRoomAndTreatment,
@@ -99,7 +116,6 @@ export function calculateSamsungComparisonItem(contract: InsuranceContract, sele
   return result.status === 'CALCULATED' ? {claim:result.result.claim,deductible:result.result.deductible,capEligibleDeductible:result.result.enforcementTrace?.capEligibleDeductible ?? result.result.deductible,reasons:result.result.warnings,ruleId:result.result.ruleId} : hold('reason' in result ? result.reason : '분류 확인이 필요합니다.');
 }
 
-export type SamsungComparisonItemResult = ReturnType<typeof calculateSamsungComparisonItem>;
 
 export interface SamsungAnnualComparisonItem {
   usage: MedicalUsage;
