@@ -33,6 +33,26 @@ describe("Samsung generation-5 product calculation routing", () => {
     })).toMatchObject({ status: "ROUTED", classification: "NON_SEVERE", coverage: "NON_SEVERE_MRI_MRA" });
   });
 
+  for (const contractType of ["GENERAL", "CONVERSION"] as const) {
+    for (const careSetting of ["INPATIENT", "OUTPATIENT"] as const) {
+      for (const threeNonCoveredCategory of ["MANUAL_THERAPY", "INJECTION"] as const) {
+        it(`${contractType}/${careSetting}/${threeNonCoveredCategory}: excludes non-severe treatment even when exclusions are cleared`, () => {
+          const enrollment = { baseCovered: "ENROLLED", severeNonCoveredRider: "ENROLLED", nonSevereNonCoveredRider: "ENROLLED" } as const;
+          const facts = { benefitClass: "NON_COVERED", careSetting, specialCaseDisease: "NO", treatmentRelatedness: "UNKNOWN", policyExcludedTreatment: "NO", threeNonCoveredCategory } as const;
+          expect(calculateSamsungGen5Claim(contractType, enrollment, facts, { ...common, eligibleExpense: 100_000 })).toMatchObject({ status: "NOT_COVERED", reason: expect.stringContaining("특약2 보장 대상에서 제외") });
+          expect(routeSamsungGen5Coverage(enrollment, { ...facts, specialCaseDisease: "YES", treatmentRelatedness: "RELATED" })).toMatchObject({ status: "ROUTED", coverage: "SEVERE_THREE_NON_COVERED" });
+          expect(routeSamsungGen5Coverage(enrollment, { ...facts, specialCaseDisease: "YES", treatmentRelatedness: "NOT_RELATED" })).toMatchObject({ status: "NOT_COVERED" });
+          const conditional = calculateSamsungGen5Claim(contractType, enrollment, { ...facts, specialCaseDisease: "UNKNOWN" }, common, "CONDITIONAL_SIMULATION");
+          expect(conditional.status).toBe("CONDITIONAL_SIMULATION");
+          if (conditional.status === "CONDITIONAL_SIMULATION") {
+            expect(conditional.scenarios[1]).toMatchObject({ classification: "NON_SEVERE", covered: false, coverage: null });
+            expect(conditional.scenarios[1].result).toBeUndefined();
+          }
+        });
+      }
+    }
+  }
+
   it("asks only for the missing objective fact instead of requesting human review", () => {
     const decision = routeSamsungGen5Coverage(
       { baseCovered: "ENROLLED", severeNonCoveredRider: "ENROLLED", nonSevereNonCoveredRider: "ENROLLED" },

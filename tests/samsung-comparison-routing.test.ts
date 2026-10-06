@@ -20,10 +20,25 @@ const baseUsage={id:'normal',treatmentName:'정상 통원',careSetting:'OUTPATIE
 it('gen1 screen adapter pays 95000 and retains precision exclusion confirmation',()=>expect(calculateSamsungComparisonItem({...contract,generation:1},selections,baseUsage,assumptions)).toMatchObject({claim:95000,ruleId:'G1-04'}));
 it('gen1 uses the explicitly entered eligible amount',()=>expect(calculateSamsungComparisonItem({...contract,generation:1},selections,{...baseUsage,samsungCalculationInput:{...baseUsage.samsungCalculationInput,eligibleExpense:50000}},assumptions)).toMatchObject({claim:45000,ruleId:'G1-04'}));
 it('gen1 outpatient uses the amount paid per visit, not the covered-amount field',()=>expect(calculateSamsungComparisonItem({...contract,generation:1},selections,{...baseUsage,unitCost:60000,coveredAmount:100000},assumptions)).toMatchObject({claim:55000,ruleId:'G1-04'}));
+it('gen1 uses patient-paid cost consistently with annual medical burden',()=>{
+ const usage={...baseUsage,patientPaidAmount:60000};
+ const result=calculateSamsungAnnualComparison({...contract,generation:1},35000,[],selections,[usage],assumptions);
+ expect(result.medicalCost).toBe(60000);
+ expect(result.currentClaimTotal).toBe(55000);
+ expect(result.currentTotal).toBe(60000*12+60000-55000);
+ expect(calculateSamsungComparisonItem({...contract,generation:1},selections,{...usage,samsungCalculationInput:{...usage.samsungCalculationInput,eligibleExpense:50000}},assumptions).claim).toBe(45000);
+});
 it('gen1 pays 0 and explains when the entered cause is not covered by the checked D1 rider',()=>expect(calculateSamsungComparisonItem({...contract,generation:1},{...selections,gen1D1Coverage:'DISEASE'},{...baseUsage,claimCause:'INJURY'},assumptions)).toMatchObject({claim:0,deductible:0,reasons:['선택한 진료의 원인(질병/상해)에 해당하는 D1 특약에 가입하지 않아 현재 계약은 보상하지 않습니다.']}));
 it('gen4 screen adapter pays 80000 and applies remaining annual cap',()=>{
  expect(calculateSamsungComparisonItem({...contract,generation:4},selections,baseUsage,assumptions)).toMatchObject({claim:80000,ruleId:'G4-08'});
  expect(calculateSamsungComparisonItem({...contract,generation:4},selections,{...baseUsage,samsungCalculationInput:{...baseUsage.samsungCalculationInput,priorPaidBenefit:49990000}},assumptions).claim).toBe(10000);
+});
+it('partial current contract facts retain entered caps while target caps stay independent',()=>{
+ const usage={...baseUsage,samsungCalculationInput:{...baseUsage.samsungCalculationInput,contractBenefitCap:30000,perOccurrenceBenefitCap:25000}};
+ const partial={...assumptions,currentContractFacts:{otherIndemnityPoliciesExist:false}};
+ expect(calculateSamsungComparisonItem({...contract,generation:4},selections,usage,partial).claim).toBe(25000);
+ expect(calculateSamsungComparisonItem({...contract,generation:4},selections,usage,{...partial,currentContractFacts:{coveredBenefitCap:20000,coveredOutpatientCap:15000}}).claim).toBe(15000);
+ expect(calculateSamsungComparisonItem({...contract,generation:4},selections,usage,partial,true).claim).toBe(70000);
 });
 it('gen5 covered needs no severe facts and compares independently',()=>{
  expect(calculateSamsungComparisonItem(contract,selections,baseUsage,assumptions)).toMatchObject({claim:70000,ruleId:'G5-02'});
@@ -113,4 +128,25 @@ it('단일 계약 비교에서는 저장된 비례분담 값을 현재·전환 �
   }
   expect(legacyUsage.samsungCalculationInput.proportionalPaymentFactor).toBe(0.5);
   expect(legacyAssumptions.targetContractFacts.otherIndemnityPoliciesExist).toBe(true);
+});
+
+it('gen5 급여 입원: 병실료 차액은 급여 인정금액에서 빼고, 비급여 특약이 있을 때만 병실료 보상(50%, 일 10만원 한도)을 더한다',()=>{
+ const {coveredAmount:_c,...rest}=baseUsage;
+ const inpatient={...rest,careSetting:'INPATIENT' as const,unitCost:1000000,patientPaidAmount:1000000,gen23RoomDifference:200000,gen23InpatientDays:5,samsungCalculationInput:{...baseUsage.samsungCalculationInput,eligibleExpense:1000000,priorEligibleDeductible:0}};
+ const plain={...contract,coverages:[]};
+ const withRider={...contract,coverages:['SPECIAL_RIDER_2']};
+ // 특약 미가입: 급여 80만원 × 80% = 64만원, 병실료 차액은 보상하지 않는다.
+ const noRider=calculateSamsungComparisonItem(plain,selections,inpatient,assumptions,true);
+ expect(noRider.claim).toBe(640000);
+ expect(noRider.appliedAssumptions?.join(' ')).toContain('특약 미가입');
+ // 특약 가입: 64만원 + 병실료 차액 20만원 × 50% = 74만원(5일 × 10만원 한도 내).
+ const rider=calculateSamsungComparisonItem(withRider,selections,inpatient,assumptions,true);
+ expect(rider.claim).toBe(740000);
+ // 일 한도: 차액 100만원, 2일이면 min(50만원, 20만원) = 20만원.
+ const capped=calculateSamsungComparisonItem(withRider,selections,{...inpatient,unitCost:2000000,patientPaidAmount:2000000,samsungCalculationInput:{...inpatient.samsungCalculationInput,eligibleExpense:2000000},gen23RoomDifference:1000000,gen23InpatientDays:2},assumptions,true);
+ expect(capped.claim).toBe(800000+200000);
+ // 입원일 수가 없으면 일당 한도를 적용할 수 없어 확인 필요로 둔다.
+ expect(calculateSamsungComparisonItem(withRider,selections,{...inpatient,gen23InpatientDays:undefined},assumptions,true).claim).toBeNull();
+ // 병실료 차액이 없으면 기존과 같다.
+ expect(calculateSamsungComparisonItem(withRider,selections,{...inpatient,gen23RoomDifference:0},assumptions,true).claim).toBe(800000);
 });

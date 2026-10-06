@@ -1,3 +1,4 @@
+import { TREATMENT_SAMPLE_KINDS } from "../../../services/sampleScenarioService";
 import AppShell from "../../components/AppShell";
 import { GEN23_UNREGISTERED_NOTE } from "../../../domain/samsungGen23Variant";
 import { createPortal } from "react-dom";
@@ -14,10 +15,12 @@ function M02InputPage() {
     activeStep,
     errorMessage,
     goToInputStep,
+    returnToAssumptions,
     handleCancelRemoveTreatment,
     handleCancelResetAll,
     handleConfirmRemoveTreatment,
     handleConfirmResetAll,
+    handleFullReset,
     handleLoadSampleTreatments,
     handleNext,
     handleStep1Next,
@@ -33,7 +36,7 @@ function M02InputPage() {
   } = form;
 
   return (
-    <AppShell currentStep={activeStep} onReset={handleConfirmResetAll} hideResetButton
+    <AppShell currentStep={activeStep} onReset={handleFullReset}
       onStepChange={(step) => {
         if (step > activeStep && step <= 5) {
           if (activeStep === 1) handleStep1Next();
@@ -95,6 +98,8 @@ function M02InputPage() {
           이전
         </button>
 
+        {activeStep === 2 && returnToAssumptions && <button type="button" className="secondary-button return-to-assumptions" onClick={() => goToInputStep(4)}>← 4. 명시적 계산 가정으로 돌아가기</button>}
+
         <button
           type="button"
           className="primary-button"
@@ -125,9 +130,7 @@ function M02InputPage() {
           <h2 id="treatment-sample-title" className="card-title">치료 샘플 선택</h2>
           <p>가까운 예시를 고르면 입력칸이 채워집니다. 금액과 횟수는 연습용 가정이니 직접 수정하세요.</p>
           <div style={{ display: "grid", gap: "12px" }}>
-            <button type="button" className="sample-button" onClick={() => handleLoadSampleTreatments("OUTPATIENT")}>일반 외래 진료</button>
-            <button type="button" className="sample-button" onClick={() => handleLoadSampleTreatments("EXAM")}>외래 검사</button>
-            <button type="button" className="sample-button" onClick={() => handleLoadSampleTreatments("MRI")}>MRI 검사</button>
+            {TREATMENT_SAMPLE_KINDS.map(({ kind, label }) => <button key={kind} type="button" className="sample-button" onClick={() => handleLoadSampleTreatments(kind)}>{label}</button>)}
             <button type="button" className="secondary-button" onClick={() => treatmentSampleDialogRef.current?.close()}>닫기</button>
           </div>
         </section>
@@ -190,7 +193,7 @@ function M02InputPage() {
               id="input-reset-dialog-description"
               className="card-description"
             >
-              현재 화면(STEP 1)에 입력한 내용이 초기화됩니다. 다른 단계의 입력은 유지됩니다.
+              현재 화면(STEP {activeStep})에 입력한 내용이 초기화됩니다. 다른 단계의 입력은 유지됩니다.
             </p>
 
             <div

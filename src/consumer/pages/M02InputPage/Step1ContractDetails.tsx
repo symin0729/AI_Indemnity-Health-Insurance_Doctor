@@ -5,6 +5,12 @@ import SamsungContractFactsFields from '../../../components/samsung/SamsungContr
 import { CONTRACT_DETAIL_LABELS } from './contractRequirements';
 
 const AMOUNT_KEYS: Gen23ContractDetailKey[] = ['gen23ContractBenefitCap', 'gen23OutpatientBenefitCap', 'gen23PrescriptionBenefitCap'];
+/** 2·3세대 약관(1611.7·1704.1)의 가입금액 최대치. 입원은 1상해·1질병당 5천만원, 외래·처방조제비는 회(건)당 합산 30만원 이내. */
+const MAX_AMOUNT_HINT: Partial<Record<Gen23ContractDetailKey, string>> = {
+  gen23ContractBenefitCap: '최대 5천만 원 (1상해·1질병당)',
+  gen23OutpatientBenefitCap: '최대 30만 원 (외래·처방 합산 기준)',
+  gen23PrescriptionBenefitCap: '최대 30만 원 (외래·처방 합산 기준)',
+};
 
 export default function Step1ContractDetails({ form }: { form: M02Form }) {
   const { generation, isGenerationSelected, contractDetails, setContractDetails } = form;
@@ -28,6 +34,7 @@ export default function Step1ContractDetails({ form }: { form: M02Form }) {
         <option value="" disabled hidden>선택해주세요</option>
         {options.map(([option, name]) => <option key={option} value={option}>{name}</option>)}
       </select>}
+      {MAX_AMOUNT_HINT[key] ? <small className="contract-field-help contract-max-hint">{MAX_AMOUNT_HINT[key]}</small> : null}
     </label>;
   };
   if (generation === 4) return <>

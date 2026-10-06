@@ -1,26 +1,16 @@
 import { describe, expect, it } from "vitest";
 import { GEN3_RIDER_DEFAULT } from "../src/domain/gen3Riders";
-import type { InsuranceContract } from "../src/domain/insurance";
+import { generationForInceptionDate } from "../src/domain/insuranceInputDefaults";
 import {
   GENERATION_CHANGE_RESET,
   PRODUCT_TYPE_RESET,
   contractStepResetPatch,
   generationSelectedPatch,
   inceptionDateTypedPatch,
-  samplePolicyPatch,
+  contractSamplePatch,
 } from "../src/pages/M02InputPage/contractTransitions";
 
 /** STEP 1 입력들이 서로 어떻게 영향을 주는지(세대·가입일·샘플·초기화)를 규칙 단위로 고정한다. */
-const sample: InsuranceContract = {
-  insurer: "삼성화재",
-  productName: "무배당 삼성화재 실손의료비보험(1704.1)",
-  inceptionDate: "2018-03-01",
-  generation: 3,
-  monthlyPremium: 60000,
-  renewalCycleMonths: 12,
-  reentryCycleMonths: 180,
-  coverages: [],
-};
 
 describe("실손 세대를 선택할 때", () => {
   it("가입일은 그 세대의 기본 날짜로, 이름·상품 종형·특약·샘플 상태는 초기화한다", () => {
@@ -77,29 +67,46 @@ describe("가입일을 입력할 때", () => {
   });
 });
 
-describe("STEP 1 샘플 불러오기", () => {
-  it("현재 계약만 채운다: 세대·가입일·월 보험료·주기·OO 이름·2·3세대 표준형", () => {
-    expect(samplePolicyPatch("NON_COVERED", sample)).toMatchObject({
+describe("STEP 1 샘플 불러오기 (세대별 샘플 선택)", () => {
+  it("3세대 샘플: 세대·가입일·월 보험료·주기·OO 이름·표준형·3대 비급여 특약 모두 가입", () => {
+    expect(contractSamplePatch("GEN3")).toMatchObject({
       generation: 3,
       isGenerationSelected: true,
       inceptionDate: "2018-03-01",
       insurerLabel: "OO 보험",
       productLabel: "OO 실손의료보험",
       samsungGen23Variant: "standard",
-      gen3Riders: GEN3_RIDER_DEFAULT,
+      gen3Riders: { manualTherapy: "ENROLLED", injection: "ENROLLED", mri: "ENROLLED" },
       monthlyPremium: "60000",
       renewalCycleMonths: "12",
-      reentryCycleYears: "15",
+      reentryCycleYears: "1",
       selectedSampleId: "NON_COVERED",
       isSampleConfirmed: true,
     });
   });
-  it("STEP 2·3(5세대 비교 조건, 예정 치료, 계산 가정)에 해당하는 값은 포함하지 않는다", () => {
-    const keys = Object.keys(samplePolicyPatch("NON_COVERED", sample));
-    expect(keys.filter((k) => /target|5G|Rider1|Rider2|assume|usage|treatment/i.test(k))).toEqual([]);
+  it("1세대 샘플: 대표상품(0904.2)·상해·질병 특약 모두 가입, 이름은 직접 입력", () => {
+    expect(contractSamplePatch("GEN1")).toMatchObject({ generation: 1, inceptionDate: "2008-06-01", gen1Product: "SAMSUNG_0904_2", gen1D1Coverage: "BOTH", insurerLabel: "", productLabel: "", monthlyPremium: "70000" });
   });
-  it("이전에 고른 1세대 상품·특약은 되돌린다", () => {
-    expect(samplePolicyPatch("NON_COVERED", sample)).toMatchObject({ gen1Product: "UNKNOWN", gen1D1Coverage: "NONE" });
+  it("2세대 샘플: 표준형, 가입금액(입원 5천만·외래 25만·처방 5만) 입력", () => {
+    expect(contractSamplePatch("GEN2")).toMatchObject({ generation: 2, inceptionDate: "2016-03-01", samsungGen23Variant: "standard", monthlyPremium: "45000" });
+    expect(contractSamplePatch("GEN2").contractDetails).toMatchObject({ gen23ContractBenefitCap: "50000000", gen23OutpatientBenefitCap: "250000", gen23PrescriptionBenefitCap: "50000" });
+  });
+  it("4세대 샘플: 비급여 특약 가입, 약관 최대 가입금액 입력", () => {
+    expect(contractSamplePatch("GEN4")).toMatchObject({
+      generation: 4, inceptionDate: "2022-03-01", gen4NonCoveredRider: "ENROLLED", monthlyPremium: "40000",
+      currentContractFacts: { coveredBenefitCap: "50000000", coveredOutpatientCap: "200000", nonCoveredBenefitCap: "50000000", nonCoveredOutpatientCap: "200000" },
+    });
+  });
+  it("샘플 가입일은 각 세대의 판매 시기이다", () => {
+    for (const [id, generation] of [["GEN1", 1], ["GEN2", 2], ["GEN3", 3], ["GEN4", 4]] as const) {
+      expect(generationForInceptionDate(contractSamplePatch(id).inceptionDate as string), id).toBe(generation);
+    }
+  });
+  it("STEP 2·3(5세대 비교 조건, 예정 치료, 계산 가정)에 해당하는 값은 포함하지 않는다", () => {
+    for (const id of ["GEN1", "GEN2", "GEN3", "GEN4"] as const) {
+      const keys = Object.keys(contractSamplePatch(id));
+      expect(keys.filter((k) => /target|5G|Rider1|Rider2|assume|usage|treatment/i.test(k)), id).toEqual([]);
+    }
   });
 });
 

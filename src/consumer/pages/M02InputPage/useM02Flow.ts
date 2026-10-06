@@ -3,10 +3,11 @@ import { validateContractStep } from './inputModel';
 import { targetContractFormForSelection, currentContractFormForSelection, singleContractDetails, validateContractDetails } from './contractRequirements';
 import { buildSubmission } from "./inputModel";
 import { needsManualTherapyImprovementAssumption } from "../../../domain/manualTherapyCount";
+import { usagesNeedingInstitutionAssumption, usagesNeedingSeverityAssumption } from "../../../domain/gen5NonCoveredAssumptions";
 import { parseSamsungContractFacts } from '../../../domain/samsungContractFacts';
 import { applyGen23ContractInputs } from "../../../domain/contractDetails";
-import { samplePolicyPatch } from "./contractTransitions";
-import { samplePolicyService, type SampleId } from "../../../services/samplePolicyService";
+import { contractSamplePatch } from "./contractTransitions";
+import { TARGET_SAMPLE_CONTRACT_FACTS, type ContractSampleId } from "../../../domain/contractSamples";
 
 import type { BaseApi } from "./useM02Base";
 import type { ContractApi } from "./useContractFields";
@@ -17,11 +18,15 @@ import type { TreatmentActionsApi } from "./useTreatmentActions";
 
 export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentApi & AssumptionApi & TreatmentActionsApi) {
   const {
+    activeStep,
+    resetAnalysis,
     applyContractPatch,
     applyInputFailure,
     comparisonBasis,
     assumeNoPolicyExclusions,
     assumeManualTherapyImprovement,
+    assumeNonSevereNonCovered,
+    assumeNonCoveredInpatientSmallHospital,
     assumeEachOccurrenceSeparate,
     assumeEntireMedicalCostCovered,
     assumeNoPriorLimitUsage,
@@ -55,6 +60,8 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
     resetTreatmentForm,
     samsungGen23Variant,
     selectedSampleId,
+    setAssumeNoPolicyExclusions,
+    setAssumeManualTherapyImprovement,
     setAssumeEachOccurrenceSeparate,
     setAssumeEntireMedicalCostCovered,
     setAssumeNoPriorLimitUsage,
@@ -101,18 +108,12 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
    * STEP 1의 "샘플 불러오기": 현재 계약(내 보험 정보)만 채운다.
    * STEP 2(5세대 비교 조건, 예정 치료)와 STEP 3(계산 가정)은 건드리지 않는다.
    */
-  const handleLoadSamplePolicy = (
-    sampleId: SampleId
-  ) => {
+  const handleLoadContractSample = (sampleId: ContractSampleId) => {
     try {
-      applyContractPatch(samplePolicyPatch(sampleId, samplePolicyService.load(sampleId)));
+      applyContractPatch(contractSamplePatch(sampleId));
       setErrorMessage("");
     } catch (error) {
-      setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : "샘플 보험증권을 불러오지 못했습니다."
-      );
+      setErrorMessage(error instanceof Error ? error.message : "샘플 보험 정보를 불러오지 못했습니다.");
     }
   };
 
@@ -147,6 +148,8 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
       false
     );
     setAssumeNoPriorLimitUsage(false);
+    setAssumeNoPolicyExclusions(false);
+    setAssumeManualTherapyImprovement(false);
     setAssumeEachOccurrenceSeparate(
       false
     );
@@ -163,10 +166,41 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
   };
 
 
-  /** 입력 화면의 "초기화" 버튼: 현재 화면(STEP 1)에 입력한 내용만 지운다. */
+  /** 5세대 조건(STEP 3)에 입력한 값만 지운다: 월 보험료, 비급여 특약, 가입금액, 비급여 치료별 5세대 확인(산정특례·입원 종별). */
+  const resetTargetStep = () => {
+    setTarget5GMonthlyPremiumInput("");
+    setHasTarget5GSpecialRider1(false);
+    setHasTarget5GSpecialRider2(false);
+    setTargetContractFactsForm({});
+    setIsTargetPremiumHelpConfirmed(false);
+    setPlannedUsages(previous => previous.map(usage => usage.benefitClass === "NON_COVERED"
+      ? { ...usage, severityClass: "UNKNOWN", ...(usage.careSetting === "INPATIENT" ? { institutionType: undefined, copayInstitution: undefined } : {}) }
+      : usage));
+    setErrorMessage("");
+  };
+
+  /** 5세대 조건(STEP 3)의 샘플 불러오기: 설명용 가정값으로 월 보험료·특약·가입금액을 채운다. */
+  const handleLoadTargetSample = () => {
+    setTarget5GMonthlyPremiumInput("15000");
+    setHasTarget5GSpecialRider1(true);
+    setHasTarget5GSpecialRider2(true);
+    setTargetContractFactsForm({ ...TARGET_SAMPLE_CONTRACT_FACTS });
+    setErrorMessage("");
+  };
+
+  /** 입력 화면의 "초기화" 버튼(확인 창에서 확인 후): 현재 화면에 입력한 내용만 지운다. 예정 치료(STEP 2)는 화면 안의 자체 초기화를 쓴다. */
   const handleConfirmResetAll = () => {
     setIsResetModalOpen(false);
-    resetContractStep();
+    if (activeStep === 3) resetTargetStep();
+    else resetContractStep();
+  };
+
+  /** 오른쪽 상단 "전체 초기화": 모든 단계의 입력을 지우고 1단계로 돌아간다. */
+  const handleFullReset = () => {
+    setIsResetModalOpen(false);
+    resetLocalForm();
+    resetAnalysis();
+    goToInputStep(1);
   };
 
 
@@ -232,6 +266,9 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
         assumeNoPolicyExclusions,
         // 도수치료 10회 초과가 아니면 남아 있는 선택이 결과에 영향을 주지 않게 한다.
         assumeManualTherapyImprovement: assumeManualTherapyImprovement && needsManualTherapyImprovementAssumption(plannedUsages),
+        // 5세대 비급여 특약을 선택하고 해당 치료가 있을 때만 남긴다.
+        assumeNonSevereNonCovered: assumeNonSevereNonCovered && hasTarget5GSpecialRider1 && usagesNeedingSeverityAssumption(plannedUsages).length > 0,
+        assumeNonCoveredInpatientSmallHospital: assumeNonCoveredInpatientSmallHospital && (hasTarget5GSpecialRider1 || hasTarget5GSpecialRider2) && usagesNeedingInstitutionAssumption(plannedUsages).length > 0,
         assumeSingleIndemnityContract: true,
         assumeEntireMedicalCostCovered,
         assumeNoPriorLimitUsage,
@@ -281,9 +318,11 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
   };
 
   return {
-    handleLoadSamplePolicy,
+    handleLoadContractSample,
     resetLocalForm,
     handleConfirmResetAll,
+    handleFullReset,
+    handleLoadTargetSample,
     handleNext,
     handleStep2Next,
     handleStep3Next,

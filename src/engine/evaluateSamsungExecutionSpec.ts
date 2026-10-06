@@ -10,6 +10,8 @@ export interface SamsungDraftCalculationInput {
   contractType?: "GENERAL" | "CONVERSION";
   conversionContractSubtype?: "CONTRACT_CONVERSION" | "RESUMPTION" | "CHILD_CONVERSION";
   conversionEligibilityConfirmed?: boolean;
+  /** 전환 가능성을 전제로 한 모의 비교. 보험사의 실제 확인값과 구분한다. */
+  conversionSimulationAssumed?: boolean;
   eligibleExpense?: number;
   coveredRoomAndTreatment?: number;
   nonNhiInpatientTotal?: number;
@@ -461,7 +463,7 @@ export function evaluateSamsungExecutionSpec(
         if (!input.conversionContractSubtype) {
           return confirmation(rule, "계약전환형의 전환 세부유형(계약전환·재개·자녀보험전환)이 필요합니다.");
         }
-        if (input.conversionEligibilityConfirmed !== true) {
+        if (input.conversionEligibilityConfirmed !== true && input.conversionSimulationAssumed !== true) {
           return confirmation(rule, "계약전환형의 전환 자격과 계속 치료 적용 조건 확인이 필요합니다.");
         }
       }

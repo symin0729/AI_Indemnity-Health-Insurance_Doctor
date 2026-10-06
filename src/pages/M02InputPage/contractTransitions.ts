@@ -4,8 +4,9 @@ import { GEN3_RIDER_DEFAULT, type Gen3RiderSelections } from "../../domain/gen3R
 import type { InsuranceGeneration } from "../../domain/insurance";
 import { formatInceptionDateInput, generationForInceptionDate, inceptionDateForGeneration } from "../../domain/insuranceInputDefaults";
 import type { SamsungGen23Variant } from "../../domain/samsungGen23Variant";
-import type { InsuranceContract } from "../../domain/insurance";
 import type { RiderEnrollmentStatus } from "../../store/useAnalysisStore";
+import { CONTRACT_SAMPLES, GEN4_SAMPLE_CONTRACT_FACTS, type ContractSampleId } from "../../domain/contractSamples";
+import type { SamsungContractForm } from "../../domain/samsungContractFacts";
 import { GEN23_SAMPLE_CONTRACT_DETAILS, type ContractDetailForm } from "../../domain/contractDetails";
 
 /**
@@ -39,6 +40,8 @@ export type ContractPatch = Partial<{
   isSampleConfirmed: boolean;
   /** 가입금액·다른 실손·보장기간 등 계약 상세 */
   contractDetails: ContractDetailForm;
+  /** 4세대 현재 계약의 가입금액 입력 */
+  currentContractFacts: SamsungContractForm;
 }>;
 
 /** 상품 종형·특약 선택(세대 공통)을 처음 상태로 되돌린다. 가입일이 바뀔 때 쓴다. */
@@ -81,8 +84,9 @@ export function inceptionDateTypedPatch(raw: string): ContractPatch {
   };
 }
 
-/** STEP 1의 샘플 불러오기: 현재 계약만 채운다. */
-export function samplePolicyPatch(sampleId: string, sample: InsuranceContract): ContractPatch {
+/** STEP 1의 샘플 불러오기: 고른 세대의 현재 계약만 채운다. */
+export function contractSamplePatch(sampleId: ContractSampleId): ContractPatch {
+  const sample = CONTRACT_SAMPLES.find((item) => item.id === sampleId)!;
   const generation = sample.generation;
   return {
     ...GENERATION_CHANGE_RESET,
@@ -92,15 +96,14 @@ export function samplePolicyPatch(sampleId: string, sample: InsuranceContract): 
     // 1세대 외에는 실제 이름 대신 OO 이름을 자동으로 채운다.
     insurerLabel: generation === 1 ? "" : MASKED_INSURER,
     productLabel: generation === 1 ? "" : MASKED_PRODUCT_NAME,
-    // 2·3세대 샘플은 상품 종형을 표준형으로 선택하고, 특약은 하나도 선택하지 않은 상태로 시작한다.
-    ...(generation === 2 || generation === 3 ? { samsungGen23Variant: "standard" as const } : {}),
-    ...(generation === 4 ? { gen4NonCoveredRider: "ENROLLED" as const } : {}),
-    // 2·3세대 샘플은 가입금액·계약 상세도 설명용 값으로 채운다(4세대는 비워 약관상 최대값을 가정).
-    ...(generation === 2 || generation === 3 ? { contractDetails: GEN23_SAMPLE_CONTRACT_DETAILS } : {}),
+    ...(generation === 1 ? { gen1Product: "SAMSUNG_0904_2" as const, gen1D1Coverage: "BOTH" as const } : {}),
+    ...(generation === 2 || generation === 3 ? { samsungGen23Variant: "standard" as const, contractDetails: GEN23_SAMPLE_CONTRACT_DETAILS } : {}),
+    ...(generation === 3 ? { gen3Riders: { manualTherapy: "ENROLLED", injection: "ENROLLED", mri: "ENROLLED" } as const } : {}),
+    ...(generation === 4 ? { gen4NonCoveredRider: "ENROLLED" as const, currentContractFacts: { ...GEN4_SAMPLE_CONTRACT_FACTS } } : {}),
     monthlyPremium: String(sample.monthlyPremium),
-    renewalCycleMonths: sample.renewalCycleMonths != null ? String(sample.renewalCycleMonths) : "",
-    reentryCycleYears: sample.reentryCycleMonths != null ? String(sample.reentryCycleMonths / 12) : "",
-    selectedSampleId: sampleId,
+    renewalCycleMonths: "12",
+    reentryCycleYears: "1",
+    selectedSampleId: "NON_COVERED",
     isSampleConfirmed: true,
   };
 }

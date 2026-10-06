@@ -19,7 +19,7 @@ describe("Gen23 input/confirmation/result display", () => {
     expect(gen3).toContain("특약 대상 의료비"); expect(gen3).toContain("진단행위");
   });
   it("confirmation preserves unknown versus zero and false", () => {
-    const html=renderToStaticMarkup(createElement(Gen23Summary,{generation:2,usage:{...usage,gen23RoomDifference:0,gen23OtherIndemnityPoliciesExist:false}}));
+    const html=renderToStaticMarkup(createElement(Gen23Summary,{generation:2,usage:{...usage,gen23PriorAnnualCount:0,gen23OtherIndemnityPoliciesExist:false}}));
     expect(html).toContain("확인 필요"); expect(html).toContain('gen23-summary-value">0</span>'); expect(html).toContain("아니요");
   });
   it("never shows a fabricated claim or annual total on missing inputs", () => {

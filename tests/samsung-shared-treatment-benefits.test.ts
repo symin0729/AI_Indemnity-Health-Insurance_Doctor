@@ -64,7 +64,7 @@ describe('같은 치료를 서로 다른 계약의 담보·가입금액에 연�
     expect(html).toContain('80,000원');
   });
   it.each([3, 4] as const)('%i세대 MRI 특약과 5세대 비중증 MRI는 같은 치료에 서로 다른 한도를 적용한다', generation => {
-    const source = loadTreatmentSample('NON_COVERED', generation, 'MRI').plannedUsages[0];
+    const source = loadTreatmentSample('NON_COVERED', generation, 'NON_COVERED_MRI').plannedUsages[0];
     const shared: MedicalUsage = { ...source, frequency: 2, unitCost: 100000, patientPaidAmount: 100000, coveredAmount: 100000,
       gen23CoveredCopay: 0, gen23NonCoveredExpense: 100000, gen23EligibleExpense: 100000,
       samsungCalculationInput: { ...source.samsungCalculationInput, eligibleExpense: 100000 },
@@ -89,14 +89,15 @@ describe('같은 치료를 서로 다른 계약의 담보·가입금액에 연�
 });
 
 
-it.each([undefined, false])('전환 조건 %s이면 일반형으로 대체하지 않고 전환 계산·손익을 보류한다', confirmed => {
+it.each([undefined, false])('확인값 %s와 무관하게 명시적 전환 모의 비교로 계산한다', confirmed => {
   const contract: InsuranceContract = { insurer: '삼성화재', productName: '검증 상품', inceptionDate: '2021-07-01', generation: 4, monthlyPremium: 50000, renewalCycleMonths: 12, reentryCycleMonths: 60, coverages: [] };
   const selections = { ...useAnalysisStore.getState().productCalculationSelections, gen5ContractType: 'GENERAL' as const };
   const result = calculateSamsungAnnualComparison(contract, 30000, [], selections, [usage], {
     ...assumptions, targetContractFacts: { ...assumptions.targetContractFacts, conversionEligibilityConfirmed: confirmed },
   });
   expect(result.currentClaimTotal).toBe(100000);
-  expect(result.targetClaimTotal).toBeNull();
-  expect(result.targetTotal).toBeNull();
-  expect(result.items[0].target.reasons.join()).toContain('전환 자격');
+  expect(result.targetClaimTotal).not.toBeNull();
+  expect(result.targetTotal).not.toBeNull();
+  expect(result.items[0].target.ruleId).toContain('G5-CONV-');
+  expect(result.items[0].target.appliedAssumptions?.join()).toContain('모의 비교');
 });

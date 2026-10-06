@@ -138,18 +138,20 @@ describe("STEP 1 샘플 불러오기", () => {
   it("현재 계약만 채운다", async () => {
     const user = renderPage();
     await user.click(screen.getByRole("button", { name: "샘플 불러오기" }));
+    await user.click(screen.getByRole("button", { name: /^3세대 샘플/ }));
     expect(generationSelect().value).toBe("3");
     expect(dateInput().value).toBe("2018-03-01");
     expect(insurerInput().value).toBe("OO 보험");
     expect(productInput().value).toBe("OO 실손의료보험");
     expect(premiumInput().value).toBe("60,000");
     expect(variantButton().textContent).toContain("1. 표준형");
-    expect(riderBoxes().every((box) => !box.checked)).toBe(true);
+    expect(riderBoxes().every((box) => box.checked)).toBe(true); // 3세대 샘플은 3대 비급여 특약을 모두 가입
   });
 
   it("STEP 2(5세대 비교 조건·예정 치료)와 STEP 3(계산 가정)은 채우지 않는다", async () => {
     const user = renderPage();
     await user.click(screen.getByRole("button", { name: "샘플 불러오기" }));
+    await user.click(screen.getByRole("button", { name: /^3세대 샘플/ }));
     expect(targetPremiumInput().value).toBe("");
     const targetRiders = within(document.getElementById("input-step-3") as HTMLElement).getAllByRole("checkbox", { hidden: true }) as HTMLInputElement[];
     expect(targetRiders.every((box) => !box.checked)).toBe(true);
@@ -162,6 +164,7 @@ describe("STEP 1 샘플 불러오기", () => {
   it("샘플을 불러온 뒤 세대를 바꾸면 샘플이 채운 값이 남지 않는다", async () => {
     const user = renderPage();
     await user.click(screen.getByRole("button", { name: "샘플 불러오기" }));
+    await user.click(screen.getByRole("button", { name: /^3세대 샘플/ }));
     expect(screen.getByText("샘플 입력 완료")).toBeTruthy();
     await user.selectOptions(generationSelect(), "2");
     expect(generationSelect().value).toBe("2");
@@ -178,6 +181,7 @@ describe("STEP 1 초기화", () => {
   it("STEP 1 입력만 지우고 STEP 2 입력은 유지한다", async () => {
     const user = renderPage();
     await user.click(screen.getByRole("button", { name: "샘플 불러오기" }));
+    await user.click(screen.getByRole("button", { name: /^3세대 샘플/ }));
     fireEvent.change(targetPremiumInput(), { target: { value: "35000" } });
     expect(targetPremiumInput().value).toBe("35,000");
     await user.click(screen.getByRole("button", { name: "초기화" }));
@@ -244,7 +248,7 @@ describe("STEP 2 치료 샘플 불러오기", () => {
     await user.selectOptions(generationSelect(), "3");
     expect(variantButton().textContent).toContain("필수 선택");
     await user.click(screen.getByRole("button", { name: "치료 샘플 불러오기" }));
-    await user.click(screen.getByRole("button", { name: "MRI 검사" }));
+    await user.click(screen.getByRole("button", { name: "비급여 외래 치료" }));
     expect((document.getElementById("treatment-kind") as HTMLSelectElement).value).not.toBe("");
     // STEP 1
     expect(variantButton().textContent).toContain("필수 선택");
@@ -259,6 +263,7 @@ describe('설계사용 계약 상세 필수 입력', () => {
   it('가입금액 누락은 다음 단계와 사이드바 이동 모두 막는다', async () => {
     const user = renderPage();
     await user.click(screen.getByRole('button', { name: '샘플 불러오기' }));
+    await user.click(screen.getByRole("button", { name: /^3세대 샘플/ }));
     const cap = document.getElementById('contract-detail-gen23ContractBenefitCap') as HTMLInputElement;
     await user.clear(cap);
     expect(cap.required).toBe(true);
@@ -275,6 +280,7 @@ describe('설계사용 계약 상세 필수 입력', () => {
   it('보험기간 구분과 종료 후 계속치료 칸은 묻지 않고, 중복 계약 칸도 없다', async () => {
     const user = renderPage();
     await user.click(screen.getByRole('button', { name: '샘플 불러오기' }));
+    await user.click(screen.getByRole("button", { name: /^3세대 샘플/ }));
     for (const key of ['gen23CoveragePeriod', 'gen23CoveragePeriodConfirmed', 'gen23DaysSinceTermination', 'gen23PostTerminationContinuationConfirmed', 'gen23OtherIndemnityPoliciesExist', 'gen23ProportionalPaymentFactor']) {
       expect(document.getElementById(`contract-detail-${key}`), key).toBeNull();
     }

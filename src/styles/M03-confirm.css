@@ -317,34 +317,47 @@
   cursor: pointer;
 }
 
-/* gen23 요약 목록: "라벨 : 값" 한 줄 형식 */
-.gen23-summary-list {
-  margin: 8px 0 10px;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 5px;
+/* 펼친 입력과 계산 기준을 항목·값 표로 표시한다. */
+.planner-treatment-details {
+  --confirmation-detail-font-size: 0.86rem;
 }
 
-.gen23-summary-item {
-  display: flex;
-  align-items: baseline;
-  gap: 0;
-  font-size: 12px;
+.planner-calculation-details {
+  --confirmation-detail-font-size: 0.9rem;
+}
+
+.planner-treatment-details summary,
+.planner-calculation-details summary {
+  font-size: var(--confirmation-detail-font-size);
+}
+
+.gen23-summary-table {
+  width: 100%;
+  margin: 8px 0 10px;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: var(--confirmation-detail-font-size, 0.86rem);
   line-height: 1.5;
+}
+
+.gen23-summary-table th,
+.gen23-summary-table td {
+  border: 1px solid #d8e1eb;
+  padding: 10px 12px;
+  text-align: left;
+  vertical-align: top;
+  font-size: inherit;
+  overflow-wrap: anywhere;
+}
+
+.gen23-summary-table th {
+  width: 44%;
+  background: #f3f6fa;
 }
 
 .gen23-summary-label {
   color: #4b5e72;
   font-weight: 600;
-  white-space: nowrap;
-}
-
-.gen23-summary-label::after {
-  content: " : ";
-  color: #94a3b8;
-  font-weight: 400;
-  white-space: pre;
 }
 
 .gen23-summary-value {
@@ -352,11 +365,12 @@
   font-weight: 700;
 }
 
-.gen23-summary-value.is-unknown {
+.gen23-summary-value > .gen23-summary-value.is-unknown {
+  display: inline-block;
   color: #92400e;
   background: #fef3c7;
-  padding: 0 5px;
-  border-radius: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
   font-weight: 600;
 }
 

@@ -15,38 +15,36 @@
   margin: 0 auto !important;
 }
 
-.chat-privacy-card {
+.chat-composer .chat-privacy-line {
+  margin: 8px 0 10px;
+}
+
+.chat-privacy-line {
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.17);
-  border-radius: 17px;
-  background: rgba(255, 255, 255, 0.09);
-  backdrop-filter: blur(6px);
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  margin: 0 0 18px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #1d3d62; /* 사이드바 현재 단계 표시(.app-shell-step.active) 색 */
+  font-size: 13px;
+  line-height: 1.5;
 }
 
-.chat-privacy-card > span {
-  width: 28px;
-  height: 28px;
-  display: grid;
-  place-items: center;
-  flex: 0 0 auto;
-  border-radius: 50%;
-  background: #d7f3e9;
-  color: var(--ok);
-  font-weight: 950;
+.chat-privacy-line strong {
+  color: #fff1a8;
+  font-weight: 900;
 }
 
-.chat-privacy-card strong {
-  font-size: 12px;
+.chat-privacy-line__text {
+  color: #d6e2f0;
 }
 
-.chat-privacy-card p {
-  margin: 5px 0 0;
-  color: #c7d6e6;
-  font-size: 10px;
-  line-height: 1.6;
+.chat-privacy-line em {
+  color: #fff;
+  font-style: normal;
+  font-weight: 800;
 }
 
 .chat-panel {
@@ -98,7 +96,7 @@
 
 .chat-composer__meta {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 12px;
   margin-top: 7px;
   color: var(--muted);

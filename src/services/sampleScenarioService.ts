@@ -214,105 +214,62 @@ export const sampleScenarioService = {
   },
 };
 
-/** 사용자가 치료 샘플 버튼을 누른 경우에만 쓰는 입력 연습용 가정값. */
-export type TreatmentSampleKind = "OUTPATIENT" | "EXAM" | "MRI";
+/** 사용자가 치료 샘플 버튼을 누른 경우에만 쓰는 입력 연습용 예시. 금액·횟수는 세대와 상관없이 고정이다. */
+export type TreatmentSampleKind = "OUTPATIENT" | "EXAM" | "NON_COVERED_MRI" | "MANUAL_THERAPY" | "NON_COVERED_INPATIENT";
 
-const SAMPLE_TREATMENT_PROFILES = {
-  LOW_USAGE: {
-    OUTPATIENT: { amount: 120_000, frequency: 4 },
-    EXAM: { amount: 220_000, frequency: 3 },
-    MRI: { amount: 350_000, frequency: 3 },
-  },
-  NON_COVERED: {
-    OUTPATIENT: { amount: 180_000, frequency: 10 },
-    EXAM: { amount: 300_000, frequency: 8 },
-    MRI: { amount: 400_000, frequency: 8 },
-  },
-  COVERAGE_GAP: {
-    OUTPATIENT: { amount: 250_000, frequency: 8 },
-    EXAM: { amount: 500_000, frequency: 10 },
-    MRI: { amount: 650_000, frequency: 6 },
-  },
-} as const;
+/** 치료 샘플 버튼에 보이는 이름 순서. */
+export const TREATMENT_SAMPLE_KINDS: ReadonlyArray<{ kind: TreatmentSampleKind; label: string }> = [
+  { kind: "OUTPATIENT", label: "일반 외래 진료" },
+  { kind: "EXAM", label: "일반 외래검사" },
+  { kind: "NON_COVERED_MRI", label: "비급여 외래 치료" },
+  { kind: "MANUAL_THERAPY", label: "도수치료 (11회 이상)" },
+  { kind: "NON_COVERED_INPATIENT", label: "비급여 입원" },
+];
 
-const GENERATION_SAMPLE_AMOUNT_FACTOR: Record<number, number> = {
-  1: 0.9,
-  2: 0.95,
-  3: 1,
-  4: 1.1,
-  5: 1.2,
-};
-
-function treatmentSampleProfile(sampleId: SampleId, generation: number, kind: TreatmentSampleKind) {
-  const base = SAMPLE_TREATMENT_PROFILES[sampleId][kind];
-  const factor = GENERATION_SAMPLE_AMOUNT_FACTOR[generation] ?? 1;
-  return {
-    amount: Math.round((base.amount * factor) / 10_000) * 10_000,
-    frequency: base.frequency,
-  };
+interface TreatmentSampleSpec {
+  /** 치료명(예정 치료 목록·치료 종류 칸에 보이는 이름) */
+  name: string;
+  /** 비급여 치료 종류(3대 비급여). 일반 치료는 비워 둔다. */
+  category: "" | "MRI" | "MANUAL_THERAPY";
+  careSetting: "OUTPATIENT" | "INPATIENT";
+  benefitClass: "COVERED" | "NON_COVERED";
+  amount: number;
+  frequency: number;
+  /** 화면 설명용 한 줄(샘플 완료 안내에 사용) */
+  summary: string;
 }
 
-export function loadTreatmentSample(sampleId: SampleId, generation: number, kind: TreatmentSampleKind = "MRI"): SampleScenario {
-  if (kind !== "MRI") {
-    const scenario = loadTreatmentSample(sampleId, generation, "MRI");
-    const { amount, frequency } = treatmentSampleProfile(sampleId, generation, kind);
-    const name = kind === "OUTPATIENT" ? "일반 외래 진료" : "외래 검사";
-    const usage: MedicalUsage = { ...scenario.plannedUsages[0], id: `example-${kind.toLowerCase()}`, treatmentName: name,
-      treatmentCategory: "", benefitClass: "COVERED", severityClass: "UNKNOWN", frequency,
-      unitCost: amount, patientPaidAmount: amount, coveredAmount: amount,
-      institutionType: "CLINIC_HOSPITAL", copayInstitution: "CLINIC",
-      healthInsuranceCopayRate: 0.3,
-      claimCause: "DISEASE", nationalHealthInsuranceStatus: "APPLIED",
-      samsungCalculationInput: {
-        eligibleExpense: amount,
-        requiredCoverageConfirmed: true,
-        policyExclusionsCleared: true,
-        otherIndemnityPoliciesExist: false,
-        sameDayAggregationConfirmed: true,
-        priorPaidBenefit: 0,
-        priorAnnualCount: 0,
-        priorServiceDays: 0,
-        priorEligibleDeductible: 0,
-        contractBenefitCap: 50_000_000,
-        perOccurrenceBenefitCap: 200_000,
-        outpatientBenefitCap: 250_000,
-        prescriptionBenefitCap: 50_000,
-        daysSinceAccidentOrDiagnosis: 1,
-        aggregationUnit: "VISIT",
-      },
-      samsungGen5Facts: undefined,
-      note: "입력 연습용 가상 예제이며 실제 의료비나 평균 진료비가 아닙니다.",
-      ...(generation === 2 || generation === 3 ? {
-        gen23CareSetting: "OUTPATIENT", gen23Institution: "CLINIC",
-        gen23CoveredCopay: amount, gen23NonCoveredExpense: 0,
-        gen23EligibleExpense: undefined, gen23AggregationUnit: undefined,
-        gen23PriorPaidBenefit: 0, gen23PriorAnnualCount: 0,
-        gen23PriorEligibleDeductible: 0,
-        gen23OutpatientBenefitCap: 250000, gen23PrescriptionBenefitCap: 50000,
-        gen23OtherIndemnityPoliciesExist: false,
-        gen23RequiredCoverageConfirmed: true, gen23PolicyExclusionsCleared: true,
-        gen23SameDayAggregationConfirmed: true,
-        ...(generation === 3 ? {
-          gen23TreatmentType: "BASE", gen23RiderEnrollmentStatus: "ENROLLED",
-          gen23ThreeNonCoveredExcludedFromBaseConfirmed: true,
-        } : {}),
-      } : {}),
-    };
-    return { ...scenario, plannedUsages: [usage], target5GSpecialRider2: null,
-      notice: `${name} 입력 예제입니다. ${generation}세대·${sampleId} 프로필 기준 연 ${frequency}회, 의원, 회당 환자부담금 ${amount.toLocaleString("ko-KR")}원과 가입·누적 상태는 설명용 가정이며 평균 진료비가 아닙니다. 실제 정보로 수정해주세요.` };
-  }
-  const scenario = sampleScenarioService.load(sampleId === "LOW_USAGE" ? "NON_COVERED" : sampleId);
-  const { amount, frequency } = treatmentSampleProfile(sampleId, generation, "MRI");
-  const usage: MedicalUsage = {
-    ...scenario.plannedUsages[0],
-    id: "example-treatment-mri",
-    institutionType: "CLINIC_HOSPITAL", copayInstitution: "CLINIC",
-    healthInsuranceCopayRate: 0.3,
-    frequency,
+const TREATMENT_SAMPLE_SPECS: Record<TreatmentSampleKind, TreatmentSampleSpec> = {
+  OUTPATIENT: { name: "일반 외래 진료", category: "", careSetting: "OUTPATIENT", benefitClass: "COVERED", amount: 20_000, frequency: 4, summary: "치료 종류 X-ray, 의원급, 급여" },
+  EXAM: { name: "일반 외래검사", category: "", careSetting: "OUTPATIENT", benefitClass: "COVERED", amount: 40_000, frequency: 3, summary: "치료 종류 혈액검사, 의원급, 급여" },
+  NON_COVERED_MRI: { name: "비급여 외래 치료", category: "MRI", careSetting: "OUTPATIENT", benefitClass: "NON_COVERED", amount: 400_000, frequency: 3, summary: "치료 종류 MRI, 의원급, 비급여" },
+  MANUAL_THERAPY: { name: "도수치료", category: "MANUAL_THERAPY", careSetting: "OUTPATIENT", benefitClass: "NON_COVERED", amount: 100_000, frequency: 12, summary: "치료 종류 도수치료, 의원급, 비급여, 연 12회(10회 초과)" },
+  NON_COVERED_INPATIENT: { name: "비급여 입원 치료", category: "", careSetting: "INPATIENT", benefitClass: "NON_COVERED", amount: 1_500_000, frequency: 1, summary: "비급여 입원, 의원급, 병실료 차액 0원" },
+};
+
+function buildTreatmentSampleUsage(kind: TreatmentSampleKind, generation: number): MedicalUsage {
+  const spec = TREATMENT_SAMPLE_SPECS[kind];
+  const amount = spec.amount;
+  const covered = spec.benefitClass === "COVERED";
+  const inpatient = spec.careSetting === "INPATIENT";
+  const aggregationUnit = spec.category === "MRI" ? "DIAGNOSTIC_ACTION" : spec.category === "MANUAL_THERAPY" ? "TREATMENT" : "VISIT";
+  return {
+    id: `example-${kind.toLowerCase()}`,
+    treatmentName: spec.name,
+    treatmentCategory: spec.category,
+    careSetting: spec.careSetting,
+    benefitClass: spec.benefitClass,
+    severityClass: "UNKNOWN",
+    frequency: spec.frequency,
     unitCost: amount,
-    coveredAmount: amount,
-    claimCause: "DISEASE", nationalHealthInsuranceStatus: "APPLIED",
     patientPaidAmount: amount,
+    coveredAmount: amount,
+    institutionType: "CLINIC_HOSPITAL",
+    copayInstitution: "CLINIC",
+    // 급여 외래만 건강보험 본인부담률을 둔다(의원급 30%). 비급여는 미적용.
+    ...(covered && !inpatient ? { healthInsuranceCopayRate: 0.3 } : {}),
+    claimCause: "DISEASE",
+    nationalHealthInsuranceStatus: "APPLIED",
     samsungCalculationInput: {
       eligibleExpense: amount,
       requiredCoverageConfirmed: true,
@@ -328,32 +285,41 @@ export function loadTreatmentSample(sampleId: SampleId, generation: number, kind
       outpatientBenefitCap: 250_000,
       prescriptionBenefitCap: 50_000,
       daysSinceAccidentOrDiagnosis: 1,
-      aggregationUnit: "DIAGNOSTIC_ACTION",
-      threeNonCoveredCategory: "MRI",
-      threeNonCoveredExcludedFromBaseConfirmed: true,
+      aggregationUnit,
+      ...(spec.category ? { threeNonCoveredCategory: spec.category, threeNonCoveredExcludedFromBaseConfirmed: true } : {}),
+      ...(inpatient ? { roomDifference: 0 } : {}),
     },
-    samsungGen5Facts: {
-      specialCaseDisease: "NO",
-      treatmentRelatedness: "UNKNOWN",
-      policyExcludedTreatment: "NO",
-      threeNonCoveredCategory: "MRI",
-    },
-    // 보장대상액 및 계약·누적 상태는 사실 확인값이 아니라 이 예제만의 가정이다.
-    evidenceStatus: undefined,
-    note: "입력 연습용 예제: 보장대상 40만원, 담보 가입·보장기간·면책 확인, 기존 지급/이용 0, 중복보험 없음 가정. 실제 계약에 사용하기 전 확인 필요.",
+    ...(generation === 1 && inpatient ? { gen1RoomDifference: 0, gen1CoveredRoomAndTreatment: amount } : {}),
+    note: "입력 연습용 가상 예제이며 실제 의료비나 평균 진료비가 아닙니다.",
     ...(generation === 2 || generation === 3 ? {
-      gen23CareSetting: "OUTPATIENT" as const, gen23Institution: "CLINIC" as const,
-      gen23CoveredCopay: 0, gen23NonCoveredExpense: amount,
-      gen23PriorPaidBenefit: 0, gen23PriorAnnualCount: 0,
-      gen23OutpatientBenefitCap: 250000, gen23PrescriptionBenefitCap: 50000,
+      gen23CareSetting: spec.careSetting,
+      gen23Institution: "CLINIC",
+      gen23CoveredCopay: covered ? amount : 0,
+      gen23NonCoveredExpense: covered ? 0 : amount,
+      ...(inpatient ? { gen23RoomDifference: 0, gen23InpatientExcludingRoomDifference: amount, gen23ContractBenefitCap: 50_000_000 } : {}),
+      gen23PriorPaidBenefit: 0, gen23PriorAnnualCount: 0, gen23PriorEligibleDeductible: 0,
+      gen23OutpatientBenefitCap: 250_000, gen23PrescriptionBenefitCap: 50_000,
       gen23OtherIndemnityPoliciesExist: false,
       gen23RequiredCoverageConfirmed: true, gen23PolicyExclusionsCleared: true,
       gen23SameDayAggregationConfirmed: true,
       ...(generation === 3 ? {
-        gen23TreatmentType: "MRI" as const, gen23RiderEnrollmentStatus: "ENROLLED" as const,
-        gen23EligibleExpense: amount, gen23AggregationUnit: "DIAGNOSTIC_ACTION" as const,
+        gen23TreatmentType: spec.category || "BASE",
+        gen23RiderEnrollmentStatus: "ENROLLED",
+        gen23ThreeNonCoveredExcludedFromBaseConfirmed: true,
+        ...(spec.category ? { gen23EligibleExpense: amount, gen23AggregationUnit: aggregationUnit } : {}),
       } : {}),
     } : {}),
+  } as MedicalUsage;
+}
+
+export function loadTreatmentSample(sampleId: SampleId, generation: number, kind: TreatmentSampleKind = "OUTPATIENT"): SampleScenario {
+  const scenario = sampleScenarioService.load(sampleId === "LOW_USAGE" ? "NON_COVERED" : sampleId);
+  const spec = TREATMENT_SAMPLE_SPECS[kind];
+  const usage = buildTreatmentSampleUsage(kind, generation);
+  return {
+    ...scenario,
+    plannedUsages: [usage],
+    target5GSpecialRider2: null,
+    notice: `${spec.name} 입력 예제입니다(${spec.summary}). 한 번 진료받을 때 ${spec.amount.toLocaleString("ko-KR")}원, 연 ${spec.frequency}회와 가입·누적 상태는 설명용 가정이며 평균 진료비가 아닙니다. 실제 정보로 수정해주세요.`,
   };
-  return { ...scenario, plannedUsages: [usage], notice: `결과 화면 사례용 MRI 샘플입니다. ${generation}세대·${sampleId} 프로필 기준 연 ${frequency}회·회당 의료비 ${amount.toLocaleString("ko-KR")}원, 의원, 담보·보장기간·면책 확인, 기존 지급·이용 0, 중복보험 없음은 예제 가정입니다. 실제 정보로 수정한 뒤 치료를 추가하고 확인해주세요.` };
 }

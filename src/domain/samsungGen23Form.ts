@@ -141,7 +141,7 @@ export const gen23Fields: readonly Gen23Field[] = [
   },
   {
     "key": "gen23InpatientDays",
-    "label": "입원일수",
+    "label": "입원일 수",
     "kind": "number",
     "scope": "inpatient"
   },
