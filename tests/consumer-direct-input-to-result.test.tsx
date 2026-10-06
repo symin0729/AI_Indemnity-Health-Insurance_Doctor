@@ -665,6 +665,28 @@ describe("소비자용 직접 입력부터 비교 결과까지", () => {
     expect(panel(4).getByText(/병원이나 의원\(종합병원·상급종합병원 제외\)에서 한다고 보고/)).toBeTruthy();
   });
 
+  it.each([
+    ["일반 외래 진료", "X-ray 아님: 치료명", "20,000", "4", "통원", "COVERED"],
+    ["일반 외래검사", "", "40,000", "3", "통원", "COVERED"],
+    ["비급여 외래 치료", "MRI", "400,000", "3", "통원", "NON_COVERED"],
+    ["도수치료 (11회 이상)", "MANUAL_THERAPY", "100,000", "12", "통원", "NON_COVERED"],
+    ["비급여 입원", "", "1,500,000", "1", "입원", "NON_COVERED"],
+  ])("치료 샘플 '%s': 치료 정보 칸이 명세대로 채워진다 (소비자용)", async (label, kindValue, cost, frequency, care, benefit) => {
+    const user = renderPage();
+    await fillStep1(user, 4);
+    const step2 = panel(2);
+    await user.click(step2.getByRole("button", { name: "치료 샘플 불러오기" }));
+    await user.click(screen.getByRole("button", { name: label }));
+    expect((step2.getByLabelText(/급여 여부/) as HTMLSelectElement).value).toBe(benefit);
+    expect((step2.getByRole("checkbox", { name: care, exact: true }) as HTMLInputElement).checked).toBe(true);
+    expect((document.getElementById("patient-unit-cost") as HTMLInputElement).value).toBe(cost);
+    expect((step2.getByLabelText(/예상 횟수/) as HTMLInputElement).value).toBe(frequency);
+    if (kindValue === "MRI" || kindValue === "MANUAL_THERAPY") expect((document.getElementById("treatment-kind") as HTMLSelectElement).value).toBe(kindValue);
+    await user.click(step2.getByRole("button", { name: "추가하기" }));
+    expect(alertText()).toBe("");
+    expect(useAnalysisStore.getState().usages).toHaveLength(1);
+  });
+
   it("3세대 주사: 주사 확인 질문만 나오고, 일반·도수에는 나오지 않는다 (소비자용)", async () => {
     const user = renderPage();
     await setupGen3(user, /1\. 표준형/);

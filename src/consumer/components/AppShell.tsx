@@ -121,7 +121,7 @@ function AppShell({
     navigate("/consumer/input");
   };
 
-  const progressPercent = `${Math.min(currentStep, 6) / 6 * 100}%`;
+  const progressPercent = `${Math.min(currentStep, 7) / 7 * 100}%`;
 
   useAppMode("consumer");
 
@@ -172,7 +172,7 @@ function AppShell({
       <div className="app-shell-layout">
         <aside className="app-shell-sidebar">
           <div className="app-shell-side-kicker">
-            INDEMNITY INSURANCE LAB
+            INSURANCE SWITCH LAB
           </div>
 
           <h2 className="app-shell-side-title">
@@ -250,9 +250,7 @@ function AppShell({
           </div>
 
           <p className="app-shell-current-step" aria-live="polite">
-            {currentStep === 7
-              ? "선택 STEP 7 · 챗봇"
-              : `${currentStep} / 6 · ${STEP_ITEMS[currentStep - 1].label}`}
+            {`${currentStep} / 7 · ${STEP_ITEMS[currentStep - 1].label}`}
           </p>
           <p className="app-shell-side-note">
             보험상품 권유나 보험금 지급 보장이
