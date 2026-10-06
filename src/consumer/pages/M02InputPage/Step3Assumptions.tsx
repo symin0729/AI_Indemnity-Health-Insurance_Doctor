@@ -16,6 +16,7 @@ export default function Step3Assumptions({ form }: { form: M02Form }) {
     <div className="comparison-scope">
       <strong>한도 사용 전부터 시작하는 1년 모의 비교</strong>
       <p>유효한 실손 계약 1개 · 5세대 계약전환형 · 입력한 월 보험료 × 12</p>
+      <p>기존 계약을 5세대로 전환할 수 있다고 가정하고 동일한 예정 치료를 두 계약의 보장 기준으로 계산합니다. 실제 전환 가능 여부와 보험금 지급을 확정하는 결과는 아닙니다.</p>
       <p>갱신에 따른 보험료 변화와 향후 할인·할증은 추정하지 않습니다.</p>
     </div>
     <div className="comparison-assumption-list">
