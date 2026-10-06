@@ -148,19 +148,12 @@ function M03ConfirmPage() {
       usage.gen23EligibleExpense === undefined
   ).length;
 
-  const hasPriorUsageInputForAllTreatments = usages.every((usage) =>
-    [
-      usage.gen1PriorPaidBenefit,
-      usage.gen1PriorServiceDays,
-      usage.gen23PriorEligibleDeductible,
-      usage.gen23PriorPaidBenefit,
-      usage.gen23PriorAnnualCount,
-      usage.samsungCalculationInput?.priorEligibleDeductible,
-      usage.samsungCalculationInput?.priorPaidBenefit,
-      usage.samsungCalculationInput?.priorAnnualCount,
-      usage.samsungCalculationInput?.priorServiceDays,
-    ].some((value) => value !== undefined)
-  );
+  const hasPriorUsageInputForAllTreatments = usages.every((usage) => {
+    const gen = contract.generation;
+    if (gen === 1) return usage.gen1PriorPaidBenefit !== undefined || usage.gen1PriorServiceDays !== undefined || usage.samsungCalculationInput?.priorPaidBenefit !== undefined;
+    if (gen === 2 || gen === 3) return usage.gen23PriorPaidBenefit !== undefined || usage.gen23PriorAnnualCount !== undefined || usage.gen23PriorEligibleDeductible !== undefined;
+    return usage.samsungCalculationInput?.priorPaidBenefit !== undefined || usage.samsungCalculationInput?.priorAnnualCount !== undefined;
+  });
 
   const needsVisitUnitConfirmation = usages.some(
     (usage) =>

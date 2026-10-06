@@ -48,7 +48,12 @@ export function Gen23Inputs({ generation, value, onChange, insurerName = "OO 보
   </fieldset>;
 }
 export function Gen23Summary({ usage, generation }: { usage: MedicalUsage; generation: 2 | 3 }) {
-  return <details><summary>{generation}세대 계산 입력·확인 필요 항목</summary><ul className="gen23-summary-list">{gen23Fields.filter(f => !f.generation || f.generation === generation).map(f => {
+  const care = usage.gen23CareSetting ?? usage.careSetting;
+  const special = generation === 3 && usage.gen23TreatmentType && usage.gen23TreatmentType !== "BASE";
+  return <details><summary>{generation}세대 계산 입력·확인 필요 항목</summary><ul className="gen23-summary-list">{gen23Fields.filter(f =>
+    (!f.generation || f.generation === generation) &&
+    (!f.scope || !care || (f.scope === "inpatient" ? care === "INPATIENT" && !special : f.scope === "special" ? special : care !== "INPATIENT" && !special))
+  ).map(f => {
     const v = usage[f.key];
     const displayValue = v === undefined ? "확인 필요" : typeof v === "boolean" ? v ? "예 / 확인" : "아니요" : f.options?.find(([key]) => key === v)?.[1] ?? String(v);
     const isUnknown = v === undefined || v === "" || v === "UNKNOWN";

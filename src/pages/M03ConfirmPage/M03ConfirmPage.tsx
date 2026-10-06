@@ -148,19 +148,12 @@ function M03ConfirmPage() {
       usage.gen23EligibleExpense === undefined
   ).length;
 
-  const hasPriorUsageInputForAllTreatments = usages.every((usage) =>
-    [
-      usage.gen1PriorPaidBenefit,
-      usage.gen1PriorServiceDays,
-      usage.gen23PriorEligibleDeductible,
-      usage.gen23PriorPaidBenefit,
-      usage.gen23PriorAnnualCount,
-      usage.samsungCalculationInput?.priorEligibleDeductible,
-      usage.samsungCalculationInput?.priorPaidBenefit,
-      usage.samsungCalculationInput?.priorAnnualCount,
-      usage.samsungCalculationInput?.priorServiceDays,
-    ].some((value) => value !== undefined)
-  );
+  const hasPriorUsageInputForAllTreatments = usages.every((usage) => {
+    const gen = contract.generation;
+    if (gen === 1) return usage.gen1PriorPaidBenefit !== undefined || usage.gen1PriorServiceDays !== undefined || usage.samsungCalculationInput?.priorPaidBenefit !== undefined;
+    if (gen === 2 || gen === 3) return usage.gen23PriorPaidBenefit !== undefined || usage.gen23PriorAnnualCount !== undefined || usage.gen23PriorEligibleDeductible !== undefined;
+    return usage.samsungCalculationInput?.priorPaidBenefit !== undefined || usage.samsungCalculationInput?.priorAnnualCount !== undefined;
+  });
 
   const needsVisitUnitConfirmation = usages.some(
     (usage) =>
@@ -620,7 +613,11 @@ function M03ConfirmPage() {
 
         <div className="planner-comparison-basis">
           <span>비교 기준</span>
-          <strong>1년 · 현재 계약과 5세대에 동일한 의료 이용 조건 적용</strong>
+          <strong>
+            {calculationAssumptions.comparisonBasis === 'FRESH_YEAR'
+              ? '한도 사용 전부터 양쪽 계약 모두 1년 모의 비교'
+              : '현재 계약은 기존 사용분 반영 · 5세대는 전환 후 사용분 0에서 시작'}
+          </strong>
         </div>
 
         <div role="region" className="planner-assumption-list" aria-label="선택한 계산 가정 확인">
@@ -657,6 +654,18 @@ function M03ConfirmPage() {
               </div>
               <span className={`planner-assumption-status ${calculationAssumptions.assumeEachOccurrenceSeparate ? 'is-assumed' : 'is-confirmed'}`}>
                 {calculationAssumptions.assumeEachOccurrenceSeparate ? '가정 적용' : '입력값 적용'}
+              </span>
+            </div>
+          </article>
+
+          <article className="planner-assumption-item">
+            <div className="planner-assumption-item__heading">
+              <div>
+                <strong>비교 시작 조건 · 기존 사용분</strong>
+                <small>{calculationAssumptions.comparisonBasis !== 'REMAINING_LIMITS' ? '한도 사용 전부터 1년 비교: 양쪽 계약 모두 기존 사용분 0에서 시작합니다.' : calculationAssumptions.assumeNoPriorLimitUsage ? '현재 계약의 기존 사용분을 반영하고 빈 값은 0으로 가정합니다. 5세대는 0에서 시작합니다.' : '현재 계약의 입력한 기존 사용분을 반영합니다. 미확인 사용분은 확인 필요로 표시됩니다. 5세대는 0에서 시작합니다.'}</small>
+              </div>
+              <span className={`planner-assumption-status ${calculationAssumptions.comparisonBasis !== 'REMAINING_LIMITS' ? 'is-confirmed' : calculationAssumptions.assumeNoPriorLimitUsage ? 'is-assumed' : 'is-confirmed'}`}>
+                {calculationAssumptions.comparisonBasis !== 'REMAINING_LIMITS' ? '한도 전 비교' : calculationAssumptions.assumeNoPriorLimitUsage ? '가정 적용' : '입력값 적용'}
               </span>
             </div>
           </article>

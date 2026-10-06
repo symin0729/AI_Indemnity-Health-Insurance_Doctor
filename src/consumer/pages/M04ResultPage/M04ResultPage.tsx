@@ -1336,7 +1336,7 @@ function M04ResultPage() {
           </span>
           <h1>보험 비교 결과</h1>
           <p className="page-description">
-            mvp-v2 계산 룰을 불러오는 중입니다.
+            {contract.generation === 2 || contract.generation === 3 ? '상품별 계산 룰을 불러오는 중입니다.' : '계산 룰을 불러오는 중입니다.'}
           </p>
         </header>
       </main></AppShell>
@@ -1565,6 +1565,7 @@ function M04ResultPage() {
       ...calculationUsages[0],
       id: "combined-treatment-break-even",
       treatmentName: `전체 예정 치료 ${calculationUsages.length}개 합산`,
+      frequency: calculationUsages.reduce((sum, u) => sum + u.frequency, 0),
     };
     return [{
       usage,
