@@ -463,3 +463,103 @@ select.is-placeholder option { color: var(--color-text); }
 
 #input-step-2 .treatment-date-field > label { margin-bottom: 8px; }
 #input-step-2 .treatment-input-group .treatment-date-field input:not([type="checkbox"]):not([type="radio"]) { margin-top: 0; }
+
+/* 5세대 비교 조건도 고객 정보처럼 계약 조건과 가입금액을 독립 카드로 배치한다. */
+.target-comparison-layout { outline: none; }
+.target-contract-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+.target-premium-field { grid-column: 1; grid-row: 1; }
+.target-riders-field { grid-column: 1 / -1; grid-row: 2; min-width: 0; }
+.target-contract-grid .no-treatment-option { min-height: 48px; box-sizing: border-box; padding: 11px 13px; background: #fff; border-radius: var(--radius-sm); }
+.target-contract-grid .no-treatment-option strong { font-size: 12px; }
+.target-comparison-layout .input-unit-row input { box-sizing: border-box; width: 100%; min-height: 48px; }
+.target-benefit-card .form-grid { align-items: start; }
+.target-benefit-card .form-grid label > span:first-child { display: flex; align-items: center; gap: 6px; min-height: 28px; }
+.target-benefit-card .sample-note { margin-top: 20px; }
+@media (max-width: 640px) {
+  .target-contract-grid { grid-template-columns: minmax(0, 1fr); }
+  .target-premium-field, .target-riders-field { grid-column: auto; grid-row: auto; }
+}
+
+.target-rider-summary { margin: 0; padding: 0; list-style: none; color: var(--color-text-sub); font-size: 13px; line-height: 1.65; }
+.target-rider-summary li { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 12px; padding: 7px 0; }
+.target-rider-summary strong { color: var(--color-text); }
+.target-rider-cap-table { width: 100%; margin: 16px 0; border-collapse: collapse; font-size: 13px; text-align: left; }
+.target-rider-cap-table caption { text-align: left; font-weight: 700; margin-bottom: 8px; }
+.target-rider-cap-table th, .target-rider-cap-table td { padding: 9px 12px; border-bottom: 1px solid var(--color-border); }
+.target-rider-cap-table th { background: #f6f9fc; }
+@media (max-width: 640px) {
+  .target-rider-summary li { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+}
+
+.target-premium-note { display: block; margin-top: 8px; color: var(--muted); font-size: 11px; font-weight: 400; line-height: 1.6; }
+
+.target-premium-field { grid-column: 1 / -1; min-width: 0; }
+.target-premium-field > .input-unit-row { width: calc((100% - 24px) / 2); }
+.target-premium-note { width: 100%; white-space: normal; overflow: visible; text-overflow: clip; word-break: keep-all; }
+@media (max-width: 640px) {
+  .target-premium-field > .input-unit-row { width: 100%; }
+}
+
+.target-premium-examples { grid-column: 1 / -1; grid-row: 2; }
+.target-premium-examples .button-group { flex-wrap: wrap; margin-top: 8px; }
+.target-riders-field { grid-row: 3; }
+@media (max-width: 640px) {
+  .target-premium-examples, .target-riders-field { grid-row: auto; }
+}
+
+.target-premium-field { grid-column: 1; }
+.target-premium-field > .input-unit-row { width: 100%; }
+.target-premium-heading { display: flex; align-items: center; gap: 6px; }
+.premium-example-toggle { border: 1px solid var(--color-border); border-radius: 8px; padding: 3px 9px; color: var(--blue); background: #f6f9fc; font-size: 11px; cursor: pointer; }
+.target-premium-examples { grid-column: 2; grid-row: 1; min-width: 0; padding: 14px; border: 1px solid var(--color-border); border-radius: 12px; background: #f8fafc; }
+.target-premium-examples .target-rider-cap-table { margin-top: 0; }
+.target-riders-field { grid-row: 2; }
+@media (max-width: 640px) {
+  .target-premium-field, .target-premium-examples, .target-riders-field { grid-column: 1; grid-row: auto; }
+}
+
+.target-premium-examples { padding: 10px 12px; }
+.target-premium-examples .target-rider-cap-table { font-size: 11px; margin-bottom: 10px; }
+.target-premium-examples .target-rider-cap-table caption { font-size: 12px; margin-bottom: 5px; }
+.target-premium-examples .target-rider-cap-table th,
+.target-premium-examples .target-rider-cap-table td { padding: 5px 7px; line-height: 1.45; }
+.target-premium-examples .target-premium-note { font-size: 10px; line-height: 1.5; margin-top: 5px; }
+
+.contract-cap-field { min-width: 0; }
+.contract-cap-field > label { display: block; margin-bottom: 8px; }
+.contract-cap-field > label > span { display: flex; align-items: center; gap: 6px; min-height: 28px; }
+.contract-cap-choices { display: flex; gap: 8px; flex-wrap: wrap; }
+.contract-cap-choice { flex: 1; min-height: 48px; padding: 10px 12px; border: 1px solid #c9d3df; border-radius: 11px; background: #fff; color: var(--color-text); font: inherit; font-weight: 700; cursor: pointer; }
+.contract-cap-choice[aria-pressed="true"] { border-color: var(--blue); background: #eaf1f8; color: var(--blue); }
+.contract-cap-choice:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+.covered-cap-example { margin-top: 8px; }
+.covered-cap-example .sample-button { padding: 6px 10px; font-size: 11px; }
+.covered-cap-example .contract-field-help { display: block; margin-top: 5px; }
+
+.contract-cap-field > label > span { flex-wrap: wrap; }
+.covered-cap-inline-example { padding: 5px 9px; font-size: 11px; margin-left: 4px; }
+
+/* 보험료 예시를 카드 오른쪽 상단에 두어 특약 입력 영역을 밀어내지 않는다. */
+.target-contract-card { position: relative; }
+@media (min-width: 900px) {
+  .target-contract-card:has(.target-premium-examples) { padding-top: 32px; }
+  .target-contract-card:has(.target-premium-examples) > .card-description { max-width: calc(50% - 12px); }
+  .target-contract-card .target-premium-examples {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    width: calc(50% - 36px);
+    box-sizing: border-box;
+    max-height: 310px;
+    overflow-y: auto;
+    padding: 9px 11px;
+  }
+  .target-contract-card:has(.target-premium-examples) .target-riders-field { margin-top: 24px; }
+}
+.target-premium-examples .target-rider-cap-table { font-size: 10px; margin: 0 0 7px; }
+.target-premium-examples .target-rider-cap-table:not(:first-child) { margin-top: 10px; }
+.target-premium-examples .target-rider-cap-table caption { font-size: 11px; margin-bottom: 4px; }
+.target-premium-examples .target-rider-cap-table th,
+.target-premium-examples .target-rider-cap-table td { padding: 4px 6px; line-height: 1.35; }
+.target-premium-examples .target-premium-note { font-size: 9px; line-height: 1.4; margin-top: 4px; }

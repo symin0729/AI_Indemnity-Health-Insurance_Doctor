@@ -39,7 +39,10 @@ async function fillContractFacts(user: UserEvent, prefix: string, outpatientCap 
   for (const [key, amount] of [["coveredBenefitCap", "50000000"], ["coveredOutpatientCap", outpatientCap], ["nonCoveredBenefitCap", "50000000"], [prefix === "current-contract" ? "nonCoveredOutpatientCap" : "nonSevereBenefitCap", prefix === "current-contract" ? "200000" : "10000000"]]) {
     const field = document.getElementById(`${prefix}-${key}`) as HTMLInputElement | null;
     // 미가입 특약의 금액은 입력하지 않는다.
-    if (field) { await user.clear(field); await user.type(field, amount); }
+    if (field) {
+      if (field.tagName === 'INPUT') { await user.clear(field); await user.type(field, amount); }
+      else { await user.click(within(field).getByRole('button', { name: `${(Number(amount) / 10000).toLocaleString('ko-KR')}만원` })); }
+    }
   }
   expect(document.getElementById(`${prefix}-other`)).toBeNull();
   // 진료일 기준 보험기간 구분은 묻지 않는다(현재 계약은 유효한 계약 기준 비교).
@@ -304,7 +307,7 @@ describe("소비자용 직접 입력부터 비교 결과까지", () => {
     const severe = step3.getByRole('checkbox', { name: /^중증 비급여 특약/ });
     await user.click(severe);
     const cap = document.getElementById('target-contract-nonCoveredBenefitCap') as HTMLInputElement;
-    await user.type(cap, '999'); // 가입금액 선택지 밖의 값
+    await user.click(within(cap).getByRole('button', { name: '3,000만원' })); // 가입 후 금액을 선택했다가 특약을 해제
     await user.click(severe);
     expect(document.getElementById('target-contract-nonCoveredBenefitCap')).toBeNull();
     await user.type(document.getElementById('target-premium') as HTMLInputElement, '30000');
