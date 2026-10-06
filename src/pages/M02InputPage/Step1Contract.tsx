@@ -56,7 +56,7 @@ export default function Step1Contract({ form }: { form: M02Form }) {
     <>
     <section id="input-step-1" tabIndex={-1} className="form-card">
         <span className="step-badge">
-          STEP 1-1 · 고객 보험 정보
+          STEP 1-1 · 고객 정보
         </span>
 
         <h2 className="card-title">
@@ -512,7 +512,7 @@ export default function Step1Contract({ form }: { form: M02Form }) {
 
       {isGenerationSelected && (
         <section className="form-card" aria-label="가입한 보장의 가입금액">
-          <span className="step-badge">STEP 1-2 · 고객 보험 정보</span>
+          <span className="step-badge">STEP 1-2 · 고객 정보</span>
           <h2 className="card-title">가입한 보장의 가입금액</h2>
           {generation === 1 ? (
             <p className="card-description">1세대는 가입금액과 한도가 약관에 정해져 있어 따로 입력할 내용이 없습니다.</p>

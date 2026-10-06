@@ -29,7 +29,7 @@ export default function SamsungTreatmentComparison({ items, generation }: { item
       <h3>{item.usage.treatmentName} · {item.usage.frequency}회 · 회당 {money(item.usage.patientPaidAmount ?? item.usage.unitCost)}</h3>
       <div className="form-grid">
         <ContractResult label={`현재 ${generation}세대`} result={item.current} total={item.currentClaimTotal} />
-        <ContractResult label="비교 5세대" result={item.target} total={item.targetClaimTotal} />
+        <ContractResult label="비교 5세대 계약전환형" result={item.target} total={item.targetClaimTotal} />
       </div>
     </article>)}
     <p className="sample-note">약관 기반 모의 계산이며 실제 보험금 지급액을 확정하지 않습니다.</p>

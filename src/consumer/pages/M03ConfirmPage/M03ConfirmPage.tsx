@@ -421,8 +421,9 @@ function M03ConfirmPage() {
         </span>
 
         <h2 className="card-title">
-          5세대 비교 조건 확인
+          5세대 계약전환 조건 확인
         </h2>
+          <p className="notice-box">삼성 5세대 계약전환형 · 전환 자격·계속 치료 조건: {calculationAssumptions.targetContractFacts?.conversionEligibilityConfirmed === true ? '확인 완료' : '미확인 — 계산 보류'}</p>
 
         <div className="form-grid">
           <div>
@@ -627,6 +628,7 @@ function M03ConfirmPage() {
           <article className="planner-assumption-item"><strong>보장대상 인정금액(C)</strong><p>{missingCoveredAmountCount === 0 ? '입력한 인정금액 사용' : calculationAssumptions.assumeEntireMedicalCostCovered ? '미입력 치료는 환자부담 의료비 전액을 보장대상 금액으로 가정' : '미입력 보장대상 금액은 확인 필요로 표시'}</p></article>
           <article className="planner-assumption-item"><strong>비교 시작 조건과 기존 사용분</strong><p>{calculationAssumptions.comparisonBasis !== 'REMAINING_LIMITS' ? '한도 사용 전부터 1년 비교: 양쪽 계약 모두 기존 사용분 0에서 시작' : calculationAssumptions.assumeNoPriorLimitUsage ? '현재 계약의 입력한 기존 사용분을 반영하고 빈 값만 0으로 가정. 5세대는 기존 사용분 0에서 시작' : '현재 계약의 입력한 기존 사용분 반영. 미확인 사용분은 확인 필요로 표시. 5세대는 기존 사용분 0에서 시작'}</p></article>
           <article className="planner-assumption-item"><strong>치료 방문·합산 단위</strong><p>{calculationAssumptions.assumeEachOccurrenceSeparate ? '반복 치료를 각각 별도 방문으로 가정' : '입력한 방문 구분을 사용하고 미확인 반복 치료는 확인 필요로 표시'}</p></article>
+          {calculationAssumptions.assumeManualTherapyImprovement && <article className="planner-assumption-item"><strong>도수치료 10회 이후</strong><p>증상 개선이 확인되어 보상된다고 가정(4·5세대 약관의 최초 10회 이후 조건)</p></article>}
           <button type="button" className="planner-assumption-edit" onClick={() => navigate('/consumer/input#input-step-4')}>명시적 계산 가정 수정하기</button>
         </div>
 

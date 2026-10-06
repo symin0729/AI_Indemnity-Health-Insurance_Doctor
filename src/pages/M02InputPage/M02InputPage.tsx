@@ -28,9 +28,7 @@ function M02InputPage() {
     navigate,
     patientCostHelpDialogRef,
     pendingDeleteUsage,
-    setIsTreatmentHelpConfirmed,
     transitionDirection,
-    treatmentHelpDialogRef,
     treatmentSampleDialogRef,
   } = form;
 
@@ -125,7 +123,7 @@ function M02InputPage() {
       <dialog ref={treatmentSampleDialogRef} className="treatment-help-dialog" aria-labelledby="treatment-sample-title">
         <section className="app-card" style={{ margin: 0 }}>
           <h2 id="treatment-sample-title" className="card-title">치료 샘플 선택</h2>
-          <p>내 상황과 가까운 입력 예제를 선택하세요. 금액과 계약 조건은 연습용 가정입니다. 횟수와 급여 여부는 불러온 뒤 직접 입력해주세요.</p>
+          <p>가까운 예시를 고르면 입력칸이 채워집니다. 금액과 횟수는 연습용 가정이니 직접 수정하세요.</p>
           <div style={{ display: "grid", gap: "12px" }}>
             <button type="button" className="sample-button" onClick={() => handleLoadSampleTreatments("OUTPATIENT")}>일반 외래 진료</button>
             <button type="button" className="sample-button" onClick={() => handleLoadSampleTreatments("EXAM")}>외래 검사</button>
@@ -135,28 +133,6 @@ function M02InputPage() {
         </section>
       </dialog>
 
-      <dialog
-        ref={treatmentHelpDialogRef}
-        className="treatment-help-dialog"
-        aria-labelledby="treatment-help-title"
-        aria-describedby="treatment-help-description"
-        onClick={(event) => {
-          if (event.target === event.currentTarget) treatmentHelpDialogRef.current?.close();
-        }}
-      >
-        <section className="app-card" style={{ margin: 0 }}>
-          <h2 id="treatment-help-title" className="card-title">필수 항목을 정확하게 입력해주세요</h2>
-          <p id="treatment-help-description" className="card-description">
-            ‘필수’로 표시된 항목을 실제 정보에 맞게 입력할수록, 내 상황에 맞는 비교 결과를 확인하는 데 도움이 됩니다.
-            항목이 비어 있거나 실제와 다른 값을 입력하면 계산이 제한되거나 결과가 달라질 수 있습니다.
-          </p>
-          <p>진료비는 영수증이나 병원의 예상 비용을 참고하고, 모르는 값은 임의로 채우지 마세요. 샘플을 불러왔다면 본인의 치료·계약 정보로 수정해주세요.</p>
-          <p>입력을 모두 완료해도 실제 보험금 지급액이 확정되는 것은 아닙니다.</p>
-          <div className="button-group">
-            <button type="button" className="primary-button" autoFocus onClick={() => { setIsTreatmentHelpConfirmed(true); treatmentHelpDialogRef.current?.close(); }}>확인</button>
-          </div>
-        </section>
-      </dialog>
 
       {isResetModalOpen && createPortal(
         <div

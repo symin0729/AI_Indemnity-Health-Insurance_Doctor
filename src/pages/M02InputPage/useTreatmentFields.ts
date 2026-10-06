@@ -40,7 +40,7 @@ export function useTreatmentFields(deps: BaseApi & ContractApi & CompareApi) {
 
 
   const [frequency, setFrequency] =
-    useState("1");
+    useState("");
 
 
   const [
@@ -76,7 +76,9 @@ export function useTreatmentFields(deps: BaseApi & ContractApi & CompareApi) {
     setHealthInsuranceCopayRatePercent(rate === undefined ? "" : String(rate));
   };
 
+  const [treatmentCareSelected, setTreatmentCareSelected] = useState(false);
   const changeCareSetting = (care: CareSetting) => {
+    setTreatmentCareSelected(true);
     setCareSetting(care);
     applyCopayDefault(care);
   };
@@ -118,12 +120,9 @@ export function useTreatmentFields(deps: BaseApi & ContractApi & CompareApi) {
 
   const currentTreatmentSlotIndex = 0;
 
-  const [isTreatmentHelpConfirmed, setIsTreatmentHelpConfirmed] = useState(false);
-
 
   const [treatmentSampleNotice, setTreatmentSampleNotice] = useState("");
-
-  const treatmentHelpDialogRef = useRef<HTMLDialogElement>(null);
+  const [treatmentSampleLoaded, setTreatmentSampleLoaded] = useState(false);
 
   const patientCostHelpDialogRef = useRef<HTMLDialogElement>(null);
 
@@ -156,6 +155,8 @@ export function useTreatmentFields(deps: BaseApi & ContractApi & CompareApi) {
     !editingUsageId;
 
   return {
+    treatmentCareSelected,
+    setTreatmentCareSelected,
     treatmentName,
     setTreatmentName,
     benefitClass,
@@ -187,11 +188,10 @@ export function useTreatmentFields(deps: BaseApi & ContractApi & CompareApi) {
     isTreatmentFormOpen,
     setIsTreatmentFormOpen,
     currentTreatmentSlotIndex,
-    isTreatmentHelpConfirmed,
-    setIsTreatmentHelpConfirmed,
+    treatmentSampleLoaded,
+    setTreatmentSampleLoaded,
     treatmentSampleNotice,
     setTreatmentSampleNotice,
-    treatmentHelpDialogRef,
     patientCostHelpDialogRef,
     treatmentSampleDialogRef,
     handleRemoveTreatment,

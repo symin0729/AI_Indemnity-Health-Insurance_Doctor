@@ -2,6 +2,7 @@ import { gen3EnrollmentForTreatment } from '../../domain/gen3Riders';
 import { validateContractStep } from './inputModel';
 import { targetContractFormForSelection, currentContractFormForSelection, singleContractDetails, validateContractDetails } from './contractRequirements';
 import { buildSubmission } from "./inputModel";
+import { needsManualTherapyImprovementAssumption } from "../../domain/manualTherapyCount";
 import { parseSamsungContractFacts } from '../../domain/samsungContractFacts';
 import { applyGen23ContractInputs } from "../../domain/contractDetails";
 import { samplePolicyPatch } from "./contractTransitions";
@@ -20,6 +21,7 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
     applyInputFailure,
     comparisonBasis,
     assumeNoPolicyExclusions,
+    assumeManualTherapyImprovement,
     assumeEachOccurrenceSeparate,
     assumeEntireMedicalCostCovered,
     assumeNoPriorLimitUsage,
@@ -43,7 +45,6 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
     isSampleConfirmed,
     isStep3Confirmed,
     isTargetPremiumHelpConfirmed,
-    isTreatmentHelpConfirmed,
     monthlyPremium,
     navigate,
     plannedUsages,
@@ -75,7 +76,6 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
     setIsStep3Confirmed,
     setIsTargetPremiumHelpConfirmed,
     setIsTreatmentFormOpen,
-    setIsTreatmentHelpConfirmed,
     setMonthlyPremium,
     setPlannedUsages,
     setProductCalculationSelections,
@@ -155,7 +155,6 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
     treatmentSampleTemplatesRef.current = {};
     setIsStep3Confirmed(false);
     setIsTargetPremiumHelpConfirmed(false);
-    setIsTreatmentHelpConfirmed(false);
 
     resetTreatmentForm();
     setIsTreatmentFormOpen(true);
@@ -188,7 +187,7 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
         const inputs = singleContractDetails(contractDetails, samsungGen23Variant);
         usagesWithContractDetails = usagesWithContractDetails.map((usage) => applyGen23ContractInputs(generation === 3 ? { ...usage, gen23RiderEnrollmentStatus: gen3EnrollmentForTreatment(usage.gen23TreatmentType, gen3Riders) } : usage, inputs));
       } catch (error) {
-        setErrorMessage(`고객 보험 정보(STEP 1)의 가입금액·계약 상세를 확인해주세요. ${error instanceof Error ? error.message : ""}`);
+        setErrorMessage(`고객 정보(STEP 1)의 가입금액·계약 상세를 확인해주세요. ${error instanceof Error ? error.message : ""}`);
         goToInputStep(1);
         return;
       }
@@ -227,11 +226,12 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
       selectedSampleId,
       isSampleConfirmed,
       isTargetPremiumHelpConfirmed,
-      isTreatmentHelpConfirmed,
       isStep3Confirmed,
       calculationAssumptions: {
         comparisonBasis,
         assumeNoPolicyExclusions,
+        // 도수치료 10회 초과가 아니면 남아 있는 선택이 결과에 영향을 주지 않게 한다.
+        assumeManualTherapyImprovement: assumeManualTherapyImprovement && needsManualTherapyImprovementAssumption(plannedUsages),
         assumeSingleIndemnityContract: true,
         assumeEntireMedicalCostCovered,
         assumeNoPriorLimitUsage,

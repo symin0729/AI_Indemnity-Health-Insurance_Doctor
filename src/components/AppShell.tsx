@@ -25,7 +25,7 @@ const STEP_ITEMS: Array<{
 }> = [
   {
     step: 1,
-    label: "고객 보험 정보",
+    label: "고객 정보",
   },
   {
     step: 2,
@@ -33,7 +33,7 @@ const STEP_ITEMS: Array<{
   },
   {
     step: 3,
-    label: "5세대 비교 조건",
+    label: "5세대 조건",
   },
   {
     step: 4,

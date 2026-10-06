@@ -15,7 +15,7 @@ it('routes gen4 to Samsung rule, independently of MVP',()=>{
 
 const assumptions={targetContractFacts:confirmedContractFacts,assumeEntireMedicalCostCovered:false,assumeNoPriorLimitUsage:false,assumeEachOccurrenceSeparate:false};
 const contract={insurer:'삼성화재',productName:'검산 샘플',inceptionDate:'2026-06-01',generation:5 as const,monthlyPremium:60000,renewalCycleMonths:null,reentryCycleMonths:null,coverages:[]};
-const selections={...useAnalysisStore.getState().productCalculationSelections,gen1Product:'SAMSUNG_0904_2' as const,gen1D1Coverage:'INJURY' as const,gen4NonCoveredRider:'ENROLLED' as const,gen5SevereRider:'NOT_ENROLLED' as const,gen5NonSevereRider:'ENROLLED' as const,samsungGen23Variant:'standard' as const};
+const selections={...useAnalysisStore.getState().productCalculationSelections,gen5ContractType:"GENERAL" as const,gen1Product:'SAMSUNG_0904_2' as const,gen1D1Coverage:'INJURY' as const,gen4NonCoveredRider:'ENROLLED' as const,gen5SevereRider:'NOT_ENROLLED' as const,gen5NonSevereRider:'ENROLLED' as const,samsungGen23Variant:'standard' as const};
 const baseUsage={id:'normal',treatmentName:'정상 통원',careSetting:'OUTPATIENT' as const,benefitClass:'COVERED' as const,severityClass:'UNKNOWN' as const,frequency:1,unitCost:100000,coveredAmount:100000,institutionType:'CLINIC_HOSPITAL' as const,healthInsuranceCopayRate:0.3,claimCause:'INJURY' as const,nationalHealthInsuranceStatus:'APPLIED' as const,samsungCalculationInput:{...common,requiredCoverageConfirmed:true,sameDayAggregationConfirmed:true,contractBenefitCap:50000000,perOccurrenceBenefitCap:200000,priorPaidBenefit:0,priorAnnualCount:0,priorServiceDays:0,daysSinceAccidentOrDiagnosis:1}};
 it('gen1 screen adapter pays 95000 and retains precision exclusion confirmation',()=>expect(calculateSamsungComparisonItem({...contract,generation:1},selections,baseUsage,assumptions)).toMatchObject({claim:95000,ruleId:'G1-04'}));
 it('gen1 uses the explicitly entered eligible amount',()=>expect(calculateSamsungComparisonItem({...contract,generation:1},selections,{...baseUsage,samsungCalculationInput:{...baseUsage.samsungCalculationInput,eligibleExpense:50000}},assumptions)).toMatchObject({claim:45000,ruleId:'G1-04'}));
@@ -28,7 +28,7 @@ it('gen4 screen adapter pays 80000 and applies remaining annual cap',()=>{
 it('gen5 covered needs no severe facts and compares independently',()=>{
  expect(calculateSamsungComparisonItem(contract,selections,baseUsage,assumptions)).toMatchObject({claim:70000,ruleId:'G5-02'});
  expect(calculateSamsungComparisonItem({...contract,generation:2},selections,baseUsage,assumptions).claim).toBeNull();
- expect(calculateSamsungComparisonItem({...contract,generation:2},selections,baseUsage,assumptions,true)).toMatchObject({claim:70000,ruleId:'G5-02'});
+ expect(calculateSamsungComparisonItem({...contract,generation:2},selections,baseUsage,assumptions,true)).toMatchObject({claim:70000,ruleId:'G5-CONV-02'});
 });
 for(const generation of [2,3] as const) for(const variant of ['standard','selected2'] as const) for(const care of ['INPATIENT','OUTPATIENT','PRESCRIPTION'] as const) {
  it(`screen adapter gen${generation}/${variant}/${care}`,()=>{

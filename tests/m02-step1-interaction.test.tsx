@@ -151,12 +151,12 @@ describe("STEP 1 샘플 불러오기", () => {
     const user = renderPage();
     await user.click(screen.getByRole("button", { name: "샘플 불러오기" }));
     expect(targetPremiumInput().value).toBe("");
-    const targetRiders = within(visiblePanel(2)).getAllByRole("checkbox", { hidden: true }) as HTMLInputElement[];
+    const targetRiders = within(document.getElementById("input-step-3") as HTMLElement).getAllByRole("checkbox", { hidden: true }) as HTMLInputElement[];
     expect(targetRiders.every((box) => !box.checked)).toBe(true);
-    const assumptions = within(visiblePanel(3)).getAllByRole("checkbox", { hidden: true }) as HTMLInputElement[];
+    const assumptions = within(visiblePanel(4)).getAllByRole("checkbox", { hidden: true }) as HTMLInputElement[];
     expect(assumptions.length).toBeGreaterThan(0);
     expect(assumptions.every((box) => !box.checked)).toBe(true);
-    expect((screen.getByPlaceholderText("예: MRI") as HTMLInputElement).value).toBe("");
+    expect((document.getElementById("treatment-kind") as HTMLSelectElement).value).toBe("");
   });
 
   it("샘플을 불러온 뒤 세대를 바꾸면 샘플이 채운 값이 남지 않는다", async () => {
@@ -245,12 +245,12 @@ describe("STEP 2 치료 샘플 불러오기", () => {
     expect(variantButton().textContent).toContain("필수 선택");
     await user.click(screen.getByRole("button", { name: "치료 샘플 불러오기" }));
     await user.click(screen.getByRole("button", { name: "MRI 검사" }));
-    expect((screen.getByPlaceholderText("예: MRI") as HTMLInputElement).value).not.toBe("");
+    expect((document.getElementById("treatment-kind") as HTMLSelectElement).value).not.toBe("");
     // STEP 1
     expect(variantButton().textContent).toContain("필수 선택");
     expect(riderBoxes().every((box) => !box.checked)).toBe(true);
     // STEP 3
-    const assumptions = within(visiblePanel(3)).getAllByRole("checkbox", { hidden: true }) as HTMLInputElement[];
+    const assumptions = within(visiblePanel(4)).getAllByRole("checkbox", { hidden: true }) as HTMLInputElement[];
     expect(assumptions.every((box) => !box.checked)).toBe(true);
   });
 });

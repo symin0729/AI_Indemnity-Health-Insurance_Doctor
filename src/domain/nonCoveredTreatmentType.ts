@@ -5,9 +5,9 @@
 export type NonCoveredTreatmentType = "" | "MANUAL_THERAPY" | "INJECTION" | "MRI";
 
 export const NON_COVERED_TREATMENT_TYPES: readonly (readonly [NonCoveredTreatmentType, string])[] = [
-  ["", "일반 비급여"],
+  ["", "일반"],
   ["MANUAL_THERAPY", "도수·체외충격파·증식치료"],
-  ["INJECTION", "비급여 주사"],
+  ["INJECTION", "주사"],
   ["MRI", "MRI/MRA"],
 ];
 

@@ -35,7 +35,7 @@ export function createEmptyTreatmentDraft(): TreatmentDraft {
     careSetting: "OUTPATIENT",
     benefitClass: "UNKNOWN",
     severityClass: "UNKNOWN",
-    frequency: "1",
+    frequency: "",
     unitCost: "",
     treatmentDate: "",
     treatmentCategory: "",

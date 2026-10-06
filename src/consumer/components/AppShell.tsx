@@ -33,7 +33,7 @@ const STEP_ITEMS: Array<{
   },
   {
     step: 3,
-    label: "5세대 비교 조건",
+    label: "5세대 조건",
   },
   {
     step: 4,

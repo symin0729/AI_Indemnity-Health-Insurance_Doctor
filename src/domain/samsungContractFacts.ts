@@ -3,6 +3,8 @@ import type { SamsungDraftCalculationInput } from '../engine/evaluateSamsungExec
 
 /** 보험증권/전환 견적에서 담보별로 확인한 값. 현재 계약과 비교 계약은 별도로 저장한다. */
 export interface SamsungContractFacts {
+  /** 전환 견적에서 확인한 전환 자격 및 계속 치료 적용 조건. */
+  conversionEligibilityConfirmed?: boolean;
   coveredBenefitCap?: number;
   nonCoveredBenefitCap?: number;
   nonSevereBenefitCap?: number;
@@ -56,6 +58,7 @@ export function parseSamsungContractFacts(form: SamsungContractForm, generation:
     facts[key] = value;
   }
   if (generation === 5) {
+    if (form.conversionEligibilityConfirmed === "true" || form.conversionEligibilityConfirmed === "false") facts.conversionEligibilityConfirmed = form.conversionEligibilityConfirmed === "true";
     if (facts.nonCoveredBenefitCap !== undefined && ![50_000_000, 30_000_000, 10_000_000].includes(facts.nonCoveredBenefitCap)) throw new Error('중증 비급여 가입금액은 5천만·3천만·1천만원 중 확인해주세요.');
     if (facts.nonSevereBenefitCap !== undefined && ![10_000_000, 6_000_000, 2_000_000].includes(facts.nonSevereBenefitCap)) throw new Error('비중증 비급여 가입금액은 1천만·600만·200만원 중 확인해주세요.');
   }

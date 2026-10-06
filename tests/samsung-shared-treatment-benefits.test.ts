@@ -24,7 +24,7 @@ const assumptions: AnalysisCalculationAssumptions = {
   comparisonBasis: 'FRESH_YEAR', assumeSingleIndemnityContract: true, assumeNoPolicyExclusions: true,
   assumeEntireMedicalCostCovered: true, assumeNoPriorLimitUsage: true, assumeEachOccurrenceSeparate: true,
   currentContractFacts: { coveredBenefitCap: 30000000, coveredOutpatientCap: 50000 },
-  targetContractFacts: { coveredBenefitCap: 10000000, coveredOutpatientCap: 40000 },
+  targetContractFacts: { conversionEligibilityConfirmed: true, coveredBenefitCap: 10000000, coveredOutpatientCap: 40000 },
 };
 const cases = [
   { generation: 1, variant: 'standard', rule: 'G1-04', cap: 100000, claim: 190000 },
@@ -49,10 +49,10 @@ describe('같은 치료를 서로 다른 계약의 담보·가입금액에 연�
     expect(item.current.ruleId).toBe(rule);
     expect(item.current.calculationDetails?.perOccurrenceCap).toBe(cap);
     expect(item.current.calculationDetails?.coverage).toBeTruthy();
-    expect(item.target.ruleId).toBe('G5-02');
+    expect(item.target.ruleId).toBe('G5-CONV-02');
     expect(item.target.calculationDetails?.perOccurrenceCap).toBe(40000);
     expect(item.target.calculationDetails?.benefitCap).toBe(10000000);
-    expect(item.target.calculationDetails?.source.documentId).toBe('SAMSUNG_2605_1_GENERAL_TERMS');
+    expect(item.target.calculationDetails?.source.documentId).toBe('SAMSUNG_2605_1_CONVERSION_TERMS');
     expect(result.currentTotal).toBe(600000 + 200000 - claim);
     expect(result.targetTotal).toBe(360000 + 200000 - 80000);
     expect(usage).toEqual(snapshot);
@@ -79,11 +79,24 @@ describe('같은 치료를 서로 다른 계약의 담보·가입금액에 연�
     expect(result.targetClaimTotal).toBe(100000);
     expect(result.items[0].current.ruleId).toBe(generation === 3 ? 'G3-STD-03' : 'G4-07');
     expect(result.items[0].current.calculationDetails?.benefitCap).toBe(3000000);
-    expect(result.items[0].target.ruleId).toBe('G5-08');
+    expect(result.items[0].target.ruleId).toBe('G5-CONV-08');
     expect(result.items[0].target.calculationDetails?.benefitCap).toBe(2000000);
     const withoutRider = calculateSamsungAnnualComparison(contract, 30000, [], selections, [shared], policy);
     expect(withoutRider.currentClaimTotal).toBe(140000);
     expect(withoutRider.targetClaimTotal).toBe(0);
   });
 
+});
+
+
+it.each([undefined, false])('전환 조건 %s이면 일반형으로 대체하지 않고 전환 계산·손익을 보류한다', confirmed => {
+  const contract: InsuranceContract = { insurer: '삼성화재', productName: '검증 상품', inceptionDate: '2021-07-01', generation: 4, monthlyPremium: 50000, renewalCycleMonths: 12, reentryCycleMonths: 60, coverages: [] };
+  const selections = { ...useAnalysisStore.getState().productCalculationSelections, gen5ContractType: 'GENERAL' as const };
+  const result = calculateSamsungAnnualComparison(contract, 30000, [], selections, [usage], {
+    ...assumptions, targetContractFacts: { ...assumptions.targetContractFacts, conversionEligibilityConfirmed: confirmed },
+  });
+  expect(result.currentClaimTotal).toBe(100000);
+  expect(result.targetClaimTotal).toBeNull();
+  expect(result.targetTotal).toBeNull();
+  expect(result.items[0].target.reasons.join()).toContain('전환 자격');
 });

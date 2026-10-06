@@ -421,8 +421,9 @@ function M03ConfirmPage() {
         </span>
 
         <h2 className="card-title">
-          5세대 비교 조건 확인
+          5세대 계약전환 조건 확인
         </h2>
+          <p className="notice-box">삼성 5세대 계약전환형 · 전환 자격·계속 치료 조건: {calculationAssumptions.targetContractFacts?.conversionEligibilityConfirmed === true ? '확인 완료' : '미확인 — 계산 보류'}</p>
 
         <div className="form-grid">
           <div>
@@ -651,18 +652,6 @@ function M03ConfirmPage() {
           <article className="planner-assumption-item">
             <div className="planner-assumption-item__heading">
               <div>
-                <strong>비교 시작 조건 · 기존 사용분</strong>
-                <small>{calculationAssumptions.comparisonBasis !== 'REMAINING_LIMITS' ? '양쪽 계약 모두 한도 사용 전(기존 사용분 0)부터 1년을 비교합니다.' : calculationAssumptions.assumeNoPriorLimitUsage ? '현재 계약은 입력한 기존 사용분을 반영하고, 빈 값은 0으로 가정합니다. 5세대는 0에서 시작합니다.' : '현재 계약은 입력한 기존 사용분을 반영합니다. 미확인 사용분은 확인 필요로 표시됩니다. 5세대는 0에서 시작합니다.'}</small>
-              </div>
-              <span className={`planner-assumption-status ${calculationAssumptions.comparisonBasis !== 'REMAINING_LIMITS' ? 'is-confirmed' : calculationAssumptions.assumeNoPriorLimitUsage ? 'is-assumed' : 'is-confirmed'}`}>
-                {calculationAssumptions.comparisonBasis !== 'REMAINING_LIMITS' ? '한도 전 비교' : calculationAssumptions.assumeNoPriorLimitUsage ? '가정 적용' : '입력값 적용'}
-              </span>
-            </div>
-          </article>
-
-          <article className="planner-assumption-item">
-            <div className="planner-assumption-item__heading">
-              <div>
                 <strong>치료 방문 · 합산 단위</strong>
                 <small>{calculationAssumptions.assumeEachOccurrenceSeparate ? '반복 치료를 각각 별도 방문으로 가정합니다.' : '입력한 방문 구분을 사용하고, 미확인 반복 치료는 확인 필요로 표시합니다.'}</small>
               </div>
@@ -671,6 +660,16 @@ function M03ConfirmPage() {
               </span>
             </div>
           </article>
+
+          {calculationAssumptions.assumeManualTherapyImprovement && <article className="planner-assumption-item">
+            <div className="planner-assumption-item__heading">
+              <div>
+                <strong>도수치료 10회 이후</strong>
+                <small>증상 개선이 확인되어 보상된다고 가정합니다. (4·5세대 약관의 최초 10회 이후 조건)</small>
+              </div>
+              <span className="planner-assumption-status is-assumed">가정 적용</span>
+            </div>
+          </article>}
 
           <button type="button" className="planner-assumption-edit" onClick={() => navigate('/input#input-step-4')}>명시적 계산 가정 수정하기</button>
         </div>

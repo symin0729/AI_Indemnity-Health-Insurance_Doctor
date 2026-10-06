@@ -1758,7 +1758,7 @@ function M04ResultPage() {
           <ul>
             <li>입력한 월 보험료 × 12와 같은 예정 치료를 비교합니다. 갱신 인상률·향후 할인·할증은 추정하지 않습니다.</li>
             {calculationAssumptions.comparisonBasis === 'FRESH_YEAR' && <li>두 계약 모두 한도 사용 전부터 시작하는 1년 모의 비교입니다. 기존 사용분은 반영하지 않습니다.</li>}
-            {calculationAssumptions.comparisonBasis === 'REMAINING_LIMITS' && <li>현재 계약은 입력한 기존 사용분, 5세대는 신규 계약의 사용분 0을 기준으로 비교합니다.</li>}
+            {calculationAssumptions.comparisonBasis === 'REMAINING_LIMITS' && <li>현재 계약은 입력한 기존 사용분, 5세대는 전환 후 계약의 비교 시작 시점에서 사용분 0을 기준으로 비교합니다.</li>}
             {calculationAssumptions.assumeNoPolicyExclusions && <li>미확인 면책 조건은 보장 제외 사유가 없다고 가정했습니다.</li>}
             {calculationAssumptions.assumeSingleIndemnityContract && <li>실손 계약 1개 기준 비교 · 다른 실손 계약과의 보험금 분담은 반영하지 않음</li>}
             {calculationAssumptions.assumeEntireMedicalCostCovered && (

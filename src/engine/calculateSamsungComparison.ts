@@ -84,6 +84,12 @@ export function calculateSamsungComparisonItem(contract: InsuranceContract, sele
       appliedAssumptions.push('보장 제외 사유가 없다는 가정으로 모의 계산함. 실제 면책 심사 결과가 아님');
     }
   }
+  // 4·5세대 도수·체외충격파·증식치료는 최초 10회 이후 증상 개선 확인이 있어야 보상한다. 확인 입력이 없으므로 선택한 가정으로만 채운다.
+  if (assumptions.assumeManualTherapyImprovement && (usage.treatmentCategory ?? '').toUpperCase() === 'MANUAL_THERAPY'
+    && usage.samsungCalculationInput?.improvementEvidenceConfirmed === undefined) {
+    usage = { ...usage, samsungCalculationInput: { ...usage.samsungCalculationInput, improvementEvidenceConfirmed: true } };
+    if (usage.frequency > 10 && (target || contract.generation === 4)) appliedAssumptions.push('도수·체외충격파·증식치료는 10회 이후에도 증상 개선이 확인되어 보상되는 것으로 봄');
+  }
   if (assumptions.assumeEachOccurrenceSeparate) {
     usage = { ...usage, gen23SameDayAggregationConfirmed: usage.gen23SameDayAggregationConfirmed ?? true,
       samsungCalculationInput: { ...usage.samsungCalculationInput, sameDayAggregationConfirmed: usage.samsungCalculationInput?.sameDayAggregationConfirmed ?? true } };
@@ -120,6 +126,10 @@ function calculateComparisonItem(contract: InsuranceContract, selections: Produc
     nhiApplied: usage.nationalHealthInsuranceStatus === 'APPLIED' ? true : usage.nationalHealthInsuranceStatus === 'NOT_APPLIED' ? false : undefined,
     claimCause: usage.claimCause === 'UNKNOWN' ? undefined : usage.claimCause,
   };
+  if (target) {
+    input.conversionContractSubtype = 'CONTRACT_CONVERSION';
+    input.conversionEligibilityConfirmed = assumptions.targetContractFacts?.conversionEligibilityConfirmed;
+  }
   if (assumptions.assumeNoPriorLimitUsage) {
     input.priorPaidBenefit ??= 0; input.priorAnnualCount ??= 0; input.priorServiceDays ??= 0; input.priorEligibleDeductible ??= 0;
   }
@@ -150,7 +160,7 @@ function calculateComparisonItem(contract: InsuranceContract, selections: Produc
   const facts = usage.samsungGen5Facts ?? (usage.benefitClass === 'COVERED' ? {specialCaseDisease: 'UNKNOWN' as const, treatmentRelatedness: 'UNKNOWN' as const, policyExcludedTreatment: 'UNKNOWN' as const} : undefined);
   if (!facts) return hold('5세대 산정특례·치료 관련성·보장 제외 여부 확인이 필요합니다.');
   if (target) input.requiredCoverageConfirmed = true;
-  const result = calculateSamsungGen5Claim(target ? 'GENERAL' : selections.gen5ContractType, target ? {baseCovered:'ENROLLED',severeNonCoveredRider:contract.coverages.includes('SPECIAL_RIDER_1')?'ENROLLED':'NOT_ENROLLED',nonSevereNonCoveredRider:contract.coverages.includes('SPECIAL_RIDER_2')?'ENROLLED':'NOT_ENROLLED'} : {baseCovered:input.requiredCoverageConfirmed ? 'ENROLLED':'UNKNOWN',severeNonCoveredRider:selections.gen5SevereRider,nonSevereNonCoveredRider:selections.gen5NonSevereRider}, {...facts,benefitClass:usage.benefitClass,careSetting:usage.careSetting}, input);
+  const result = calculateSamsungGen5Claim(target ? 'CONVERSION' : selections.gen5ContractType, target ? {baseCovered:'ENROLLED',severeNonCoveredRider:contract.coverages.includes('SPECIAL_RIDER_1')?'ENROLLED':'NOT_ENROLLED',nonSevereNonCoveredRider:contract.coverages.includes('SPECIAL_RIDER_2')?'ENROLLED':'NOT_ENROLLED'} : {baseCovered:input.requiredCoverageConfirmed ? 'ENROLLED':'UNKNOWN',severeNonCoveredRider:selections.gen5SevereRider,nonSevereNonCoveredRider:selections.gen5NonSevereRider}, {...facts,benefitClass:usage.benefitClass,careSetting:usage.careSetting}, input);
   if (result.status === 'NOT_COVERED') return {claim:0,deductible:0,capEligibleDeductible:0,reasons:[result.reason],ruleId:''};
   return result.status === 'CALCULATED' ? {calculationDetails:result.result.calculationDetails,claim:result.result.claim,deductible:result.result.deductible,capEligibleDeductible:result.result.enforcementTrace?.capEligibleDeductible ?? result.result.deductible,reasons:result.result.warnings,ruleId:result.result.ruleId} : hold('reason' in result ? result.reason : '분류 확인이 필요합니다.');
 }

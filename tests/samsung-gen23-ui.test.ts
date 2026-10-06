@@ -20,7 +20,7 @@ describe("Gen23 input/confirmation/result display", () => {
   });
   it("confirmation preserves unknown versus zero and false", () => {
     const html=renderToStaticMarkup(createElement(Gen23Summary,{generation:2,usage:{...usage,gen23RoomDifference:0,gen23OtherIndemnityPoliciesExist:false}}));
-    expect(html).toContain("확인 필요"); expect(html).toContain("<dd>0</dd>"); expect(html).toContain("아니요");
+    expect(html).toContain("확인 필요"); expect(html).toContain('gen23-summary-value">0</span>'); expect(html).toContain("아니요");
   });
   it("never shows a fabricated claim or annual total on missing inputs", () => {
     const html=renderToStaticMarkup(createElement(Gen23Results,{generation:3,variant:"UNKNOWN",results:[{usage,result:{status:"CONFIRMATION_REQUIRED",claim:null,reason:"상품 종형 확인 필요"}}],onEdit:()=>{},onConfirm:()=>{}}));
