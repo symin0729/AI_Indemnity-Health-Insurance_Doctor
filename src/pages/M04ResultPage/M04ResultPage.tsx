@@ -1450,10 +1450,7 @@ function M04ResultPage() {
       ? { ...contract, insurer: "삼성화재" }
       : contract;
   const calculationUsages = usages.map((usage) =>
-    prepareUsageForSamsungComparison(
-      hydrateSavedSampleUsage(usage, contract.generation),
-      calculationAssumptions,
-    ),
+    prepareUsageForSamsungComparison(usage, calculationAssumptions),
   );
 
   const samsungComparison =
