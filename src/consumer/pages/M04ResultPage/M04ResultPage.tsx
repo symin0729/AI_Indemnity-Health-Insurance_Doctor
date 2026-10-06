@@ -38,41 +38,7 @@ import {
   calculateSamsungAnnualComparison,
   SAMSUNG_BREAK_EVEN_MAX_FREQUENCY,
 } from "../../../engine/calculateSamsungComparison";
-import {
-  loadTreatmentSample,
-  type TreatmentSampleKind,
-} from "../../../services/sampleScenarioService";
 import "../../../styles/M04-result.css";
-
-function getSavedSampleKind(usage: MedicalUsage): TreatmentSampleKind | null {
-  const name = usage.treatmentName.replace(/\s/g, "").toUpperCase();
-  const category = usage.treatmentCategory?.toUpperCase();
-  if (category === "MRI" || name.includes("MRI")) return "MRI";
-  if (name.includes("외래검사")) return "EXAM";
-  if (name.includes("일반외래진료")) return "OUTPATIENT";
-  return null;
-}
-
-/** 개발 중 저장된 구형 샘플에도 최신 엔진 입력 명세를 채운다. 사용자 입력값은 항상 우선한다. */
-export function hydrateSavedSampleUsage(usage: MedicalUsage, generation: number): MedicalUsage {
-  const kind = getSavedSampleKind(usage);
-  if (!kind) return usage;
-  const template = loadTreatmentSample("NON_COVERED", generation, kind).plannedUsages[0];
-  return {
-    ...template,
-    ...usage,
-    samsungCalculationInput: {
-      ...template.samsungCalculationInput,
-      ...usage.samsungCalculationInput,
-      eligibleExpense:
-        usage.samsungCalculationInput?.eligibleExpense ??
-        usage.coveredAmount ??
-        usage.patientPaidAmount ??
-        usage.unitCost,
-    },
-    samsungGen5Facts: usage.samsungGen5Facts ?? template.samsungGen5Facts,
-  };
-}
 
 /** 전체 이용 횟수를 사용자가 입력한 치료 구성 비율대로 정수 배분한다. */
 export function allocateCombinedTreatmentFrequencies(usages: MedicalUsage[], totalFrequency: number): MedicalUsage[] {

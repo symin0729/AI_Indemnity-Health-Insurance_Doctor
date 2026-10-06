@@ -4,13 +4,13 @@ import { describe, expect, it } from "vitest";
 import { calculateSamsungAnnualBreakEven, calculateSamsungAnnualComparison } from "../src/engine/calculateSamsungComparison";
 import { calculateBreakEvenBySimulation } from "../src/engine/calculateBreakEven";
 import type { MedicalUsage } from "../src/domain/medical";
-import { allocateCombinedTreatmentFrequencies, hydrateSavedSampleUsage, prepareUsageForSamsungComparison } from "../src/pages/M04ResultPage/M04ResultPage";
+import { allocateCombinedTreatmentFrequencies, prepareUsageForSamsungComparison } from "../src/pages/M04ResultPage/M04ResultPage";
 import { samplePolicyService, type SampleId } from "../src/services/samplePolicyService";
 import { loadTreatmentSample, type TreatmentSampleKind } from "../src/services/sampleScenarioService";
 import type { ProductCalculationSelections } from "../src/store/useAnalysisStore";
 
 const profiles: SampleId[] = ["LOW_USAGE", "NON_COVERED", "COVERAGE_GAP"];
-const kinds: TreatmentSampleKind[] = ["OUTPATIENT", "EXAM", "MRI"];
+const kinds: TreatmentSampleKind[] = ["OUTPATIENT", "EXAM", "NON_COVERED_MRI"];
 const generations = [1, 2, 3, 4, 5] as const;
 const variants = ["standard", "selected2"] as const;
 const riderStates = ["ENROLLED", "NOT_ENROLLED"] as const;
@@ -20,6 +20,11 @@ const assumptions = { targetContractFacts: confirmedContractFacts, currentContra
   assumeEntireMedicalCostCovered: false,
   assumeNoPriorLimitUsage: true,
   assumeEachOccurrenceSeparate: true,
+  // 새 샘플은 5세대 산정특례 여부·입원 종별을 비워 두므로 소비자용과 같은 가정으로 채운다.
+  assumeNonSevereNonCovered: true,
+  assumeNonCoveredInpatientSmallHospital: true,
+  assumeManualTherapyImprovement: true,
+  assumeNoPolicyExclusions: true,
 };
 
 function selections(generation: number, variant: "standard" | "selected2", rider: "ENROLLED" | "NOT_ENROLLED"): ProductCalculationSelections {
@@ -172,9 +177,9 @@ describe("valid user-input calculation matrix", () => {
   it("keeps every two- and three-treatment combination connected to annual totals", () => {
     const kindSets: TreatmentSampleKind[][] = [
       ["OUTPATIENT", "EXAM"],
-      ["OUTPATIENT", "MRI"],
-      ["EXAM", "MRI"],
-      ["OUTPATIENT", "EXAM", "MRI"],
+      ["OUTPATIENT", "NON_COVERED_MRI"],
+      ["EXAM", "NON_COVERED_MRI"],
+      ["OUTPATIENT", "EXAM", "NON_COVERED_MRI"],
     ];
     let checked = 0;
     for (const generation of generations) {
@@ -206,56 +211,4 @@ describe("valid user-input calculation matrix", () => {
     }
     expect(checked).toBe(120);
   });
-
-  it("upgrades previously saved sample treatments before drawing one, two, or three charts", () => {
-    const generation = 3;
-    const staleSamples = kinds.map((kind, index) => {
-      const current = loadTreatmentSample("NON_COVERED", generation, kind).plannedUsages[0];
-      return {
-        id: `stale-${index}`,
-        treatmentName: current.treatmentName,
-        careSetting: current.careSetting,
-        benefitClass: current.benefitClass,
-        severityClass: current.severityClass,
-        frequency: current.frequency,
-        unitCost: current.unitCost,
-        patientPaidAmount: current.patientPaidAmount,
-        coveredAmount: current.coveredAmount,
-      } satisfies MedicalUsage;
-    });
-
-    const firstChartSignatures: string[] = [];
-    for (const count of [1, 2, 3]) {
-      const usages = staleSamples.slice(0, count).map((usage) =>
-        prepareUsageForSamsungComparison(hydrateSavedSampleUsage(usage, generation), assumptions),
-      );
-      const annual = calculateSamsungAnnualComparison(
-        { ...samplePolicyService.load("NON_COVERED"), generation },
-        35_000,
-        ["SPECIAL_RIDER_1", "SPECIAL_RIDER_2"],
-        selections(generation, "standard", "ENROLLED"),
-        usages,
-        assumptions,
-      );
-      expect(annual.complete, `${count} saved samples`).toBe(true);
-      for (const usage of usages) {
-        const chart = calculateSamsungAnnualBreakEven(
-          { ...samplePolicyService.load("NON_COVERED"), generation },
-          35_000,
-          ["SPECIAL_RIDER_1", "SPECIAL_RIDER_2"],
-          selections(generation, "standard", "ENROLLED"),
-          usages,
-          assumptions,
-          usage.id,
-        );
-        expect(chart?.points, `${count} samples / ${usage.treatmentName}`).toHaveLength(121);
-        expect(new Set(chart?.points.map((point) => point.currentTotalBurden)).size).toBeGreaterThan(1);
-        expect(new Set(chart?.points.map((point) => point.targetTotalBurden)).size).toBeGreaterThan(1);
-        if (usage === usages[0]) {
-          firstChartSignatures.push(JSON.stringify(chart?.points.map((point) => [point.currentTotalBurden, point.targetTotalBurden])));
-        }
-      }
-    }
-    expect(new Set(firstChartSignatures).size).toBe(3);
-  }, 60_000);
 });

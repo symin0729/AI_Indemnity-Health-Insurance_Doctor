@@ -1,6 +1,7 @@
 import { confirmedContractFacts } from './fixtures/confirmed-contract-facts';
 import { describe, expect, it } from "vitest";
-import { loadTreatmentSample, sampleScenarioService } from "../src/services/sampleScenarioService";
+import { loadTreatmentSample, sampleScenarioService, TREATMENT_SAMPLE_KINDS } from "../src/services/sampleScenarioService";
+import { needsManualTherapyImprovementAssumption } from "../src/domain/manualTherapyCount";
 import { samplePolicyService } from "../src/services/samplePolicyService";
 import { calculateSamsungAnnualBreakEven, calculateSamsungAnnualComparison } from "../src/engine/calculateSamsungComparison";
 import { useAnalysisStore } from "../src/store/useAnalysisStore";
@@ -11,169 +12,88 @@ import { shouldDisableAddTreatmentButton } from "../src/pages/M02InputPage/treat
 import { createDraftFromUsage, createEmptyTreatmentDraft, getSeparateVisitWarningMessage, getTreatmentAddButtonLabel, getTreatmentAddLabel, getTreatmentAdditionalInfoFields } from "../src/pages/M02InputPage/treatmentSequence";
 import { prepareUsageForSamsungComparison } from "../src/pages/M04ResultPage/M04ResultPage";
 
-describe("explicit treatment sample loading", () => {
-  it.each(["LOW_USAGE", "NON_COVERED", "COVERAGE_GAP"] as const)("%s fills required Gen2/3 fields through the form", id => {
-    for (const generation of [2, 3] as const) {
-      const scenario = loadTreatmentSample(id, generation);
-      const usage = scenario.plannedUsages[0];
-      const saved = { ...usage, ...parseGen23Form(restoreGen23Form(usage)) };
-      expect(saved.treatmentName).toBe("MRI");
-      expect(saved.unitCost).toBeGreaterThanOrEqual(300000);
-      expect(saved.careSetting).toBe(saved.gen23CareSetting);
-      expect(scenario.notice).toContain("예제 가정");
-      for (const variant of ["standard", "selected2"] as const) {
-        const result = (generation === 2 ? calculateSamsungGen2Sample : calculateSamsungGen3Sample)(variant, saved);
-        expect(result.status).toBe("DRAFT_CALCULATED");
-        if (result.status === "DRAFT_CALCULATED") expect(result.claim).toBeGreaterThan(0);
-      }
+describe("treatment samples (치료 샘플 5종)", () => {
+  const SPECS = [
+    { kind: "OUTPATIENT", label: "일반 외래 진료", name: "일반 외래 진료", category: "", careSetting: "OUTPATIENT", benefitClass: "COVERED", amount: 20_000, frequency: 4 },
+    { kind: "EXAM", label: "일반 외래검사", name: "일반 외래검사", category: "", careSetting: "OUTPATIENT", benefitClass: "COVERED", amount: 40_000, frequency: 3 },
+    { kind: "NON_COVERED_MRI", label: "비급여 외래 치료", name: "비급여 외래 치료", category: "MRI", careSetting: "OUTPATIENT", benefitClass: "NON_COVERED", amount: 400_000, frequency: 3 },
+    { kind: "MANUAL_THERAPY", label: "도수치료 (11회 이상)", name: "도수치료", category: "MANUAL_THERAPY", careSetting: "OUTPATIENT", benefitClass: "NON_COVERED", amount: 100_000, frequency: 12 },
+    { kind: "NON_COVERED_INPATIENT", label: "비급여 입원", name: "비급여 입원 치료", category: "", careSetting: "INPATIENT", benefitClass: "NON_COVERED", amount: 1_500_000, frequency: 1 },
+  ] as const;
+  const assumptions = {
+    targetContractFacts: confirmedContractFacts, currentContractFacts: confirmedContractFacts,
+    assumeEntireMedicalCostCovered: false, assumeNoPriorLimitUsage: true, assumeEachOccurrenceSeparate: true,
+    assumeNonSevereNonCovered: true, assumeNonCoveredInpatientSmallHospital: true, assumeManualTherapyImprovement: true,
+  };
+  const selectionsFor = (generation: number) => ({
+    ...useAnalysisStore.getState().productCalculationSelections,
+    gen1Product: "SAMSUNG_0904_2" as const, gen1ContractBasis: "SAMPLE_SIMULATION" as const, gen1D1Coverage: "INJURY" as const,
+    gen4NonCoveredRider: "ENROLLED" as const, gen5ContractType: "GENERAL" as const, gen5SevereRider: "ENROLLED" as const, gen5NonSevereRider: "ENROLLED" as const,
+    samsungGen23Variant: "standard" as const,
+  });
+
+  it("샘플 버튼 목록과 이름이 명세와 같다", () => {
+    expect(TREATMENT_SAMPLE_KINDS.map(({ label }) => label)).toEqual(SPECS.map(({ label }) => label));
+    expect(TREATMENT_SAMPLE_KINDS.map(({ kind }) => kind)).toEqual(SPECS.map(({ kind }) => kind));
+  });
+
+  it.each(SPECS)("$label: 치료 정보가 세대와 상관없이 같은 고정값으로 채워진다", (spec) => {
+    for (const generation of [1, 2, 3, 4, 5]) {
+      const usage = loadTreatmentSample("NON_COVERED", generation, spec.kind).plannedUsages[0];
+      expect(usage.treatmentName).toBe(spec.name);
+      expect(usage.treatmentCategory ?? "").toBe(spec.category);
+      expect(usage.careSetting).toBe(spec.careSetting);
+      expect(usage.benefitClass).toBe(spec.benefitClass);
+      expect(usage.unitCost).toBe(spec.amount);
+      expect(usage.patientPaidAmount).toBe(spec.amount);
+      expect(usage.coveredAmount).toBe(spec.amount);
+      expect(usage.frequency).toBe(spec.frequency);
+      expect(usage.institutionType).toBe("CLINIC_HOSPITAL");
+      expect(usage.copayInstitution).toBe("CLINIC");
+      // 급여 외래만 건강보험 본인부담률 30%, 비급여·입원은 미적용
+      if (spec.benefitClass === "COVERED") expect(usage.healthInsuranceCopayRate).toBe(0.3);
+      else expect(usage.healthInsuranceCopayRate).toBeUndefined();
+      expect(usage.samsungCalculationInput?.priorPaidBenefit).toBe(0);
+      expect(usage.samsungCalculationInput?.priorAnnualCount).toBe(0);
+      expect(usage.samsungCalculationInput?.otherIndemnityPoliciesExist).toBe(false);
     }
   });
-  it("feeds a loaded outpatient sample through the annual comparison and break-even engines", () => {
-    const contract = samplePolicyService.load("NON_COVERED");
-    const scenario = loadTreatmentSample("NON_COVERED", 3, "OUTPATIENT");
-    const usage = scenario.plannedUsages[0];
-    const selections = {
-      ...useAnalysisStore.getState().productCalculationSelections,
-      samsungGen23Variant: "standard" as const,
-    };
-    const comparison = calculateSamsungAnnualComparison(
-      contract,
-      35_000,
-      [],
-      selections,
-      [usage],
-      { ...scenario.calculationAssumptions, targetContractFacts: confirmedContractFacts },
-    );
-    const breakEven = calculateSamsungAnnualBreakEven(
-      contract,
-      35_000,
-      [],
-      selections,
-      [usage],
-      { ...scenario.calculationAssumptions, targetContractFacts: confirmedContractFacts },
-      usage.id,
-    );
 
-    expect(comparison.complete).toBe(true);
-    expect(comparison.currentTotal).not.toBeNull();
-    expect(comparison.targetTotal).not.toBeNull();
-    expect(breakEven?.points).toHaveLength(121);
-    expect(breakEven?.status).not.toBe("CONFIRMATION_REQUIRED");
+  it("비급여 입원: 2·3세대 입원 구분·병실료 차액 0원·지급한도 5천만원·누적 0원", () => {
+    for (const generation of [2, 3]) {
+      const usage = loadTreatmentSample("NON_COVERED", generation, "NON_COVERED_INPATIENT").plannedUsages[0];
+      expect(usage.gen23CareSetting).toBe("INPATIENT");
+      expect(usage.gen23RoomDifference).toBe(0);
+      expect(usage.gen23ContractBenefitCap).toBe(50_000_000);
+      expect(usage.gen23PriorPaidBenefit).toBe(0);
+    }
+    expect(loadTreatmentSample("NON_COVERED", 1, "NON_COVERED_INPATIENT").plannedUsages[0].gen1RoomDifference).toBe(0);
   });
-  it("reproduces the featured MRI result-screen case", () => {
-    const contract = samplePolicyService.load("NON_COVERED");
-    const scenario = loadTreatmentSample("NON_COVERED", 3, "MRI");
-    const usage = scenario.plannedUsages[0];
-    const selections = {
-      ...useAnalysisStore.getState().productCalculationSelections,
-      samsungGen23Variant: "standard" as const,
-      gen5NonSevereRider: "ENROLLED" as const,
-    };
-    const comparison = calculateSamsungAnnualComparison(contract, 35_000, ["SPECIAL_RIDER_2"], selections, [usage], { ...scenario.calculationAssumptions, targetContractFacts: confirmedContractFacts });
-    const breakEven = calculateSamsungAnnualBreakEven(contract, 35_000, ["SPECIAL_RIDER_2"], selections, [usage], { ...scenario.calculationAssumptions, targetContractFacts: confirmedContractFacts }, usage.id);
 
-    expect(usage.frequency).toBe(8);
-    expect(comparison.currentTotal).toBe(1_680_000);
-    expect(comparison.targetTotal).toBe(2_020_000);
-    expect(comparison.currentTotal! - comparison.targetTotal!).toBe(-340_000);
-    expect(breakEven?.threshold).toBe(4);
+  it("도수치료 샘플은 연 12회로 10회 초과 가정 항목이 나오는 경우다", () => {
+    expect(needsManualTherapyImprovementAssumption([loadTreatmentSample("NON_COVERED", 4, "MANUAL_THERAPY").plannedUsages[0]])).toBe(true);
   });
-  it.each([
-    ["OUTPATIENT", "EXAM"],
-    ["OUTPATIENT", "MRI"],
-    ["EXAM", "MRI"],
-  ] as const)("calculates two registered samples together: %s + %s", (firstKind, secondKind) => {
-    const contract = samplePolicyService.load("NON_COVERED");
-    const firstScenario = loadTreatmentSample("NON_COVERED", 3, firstKind);
-    const secondScenario = loadTreatmentSample("NON_COVERED", 3, secondKind);
-    const usages = [firstScenario.plannedUsages[0], secondScenario.plannedUsages[0]];
-    const selections = {
-      ...useAnalysisStore.getState().productCalculationSelections,
-      samsungGen23Variant: "standard" as const,
-      gen5NonSevereRider: "ENROLLED" as const,
-    };
-    const comparison = calculateSamsungAnnualComparison(contract, 35_000, ["SPECIAL_RIDER_2"], selections, usages, { ...secondScenario.calculationAssumptions, targetContractFacts: confirmedContractFacts });
-    const breakEvens = usages.map((usage) => calculateSamsungAnnualBreakEven(contract, 35_000, ["SPECIAL_RIDER_2"], selections, usages, { ...secondScenario.calculationAssumptions, targetContractFacts: confirmedContractFacts }, usage.id));
 
-    expect(comparison.complete, `${firstKind}+${secondKind}`).toBe(true);
-    expect(comparison.items).toHaveLength(2);
-    expect(comparison.medicalCost).toBe(usages.reduce((sum, usage) => sum + usage.frequency * usage.unitCost, 0));
-    for (const result of breakEvens) {
-      expect(result?.points.length).toBe(121);
-      expect(result?.status).not.toBe("CONFIRMATION_REQUIRED");
+  it.each(SPECS)("$label: 1~4세대 현재 계약과 5세대 모두 연간 비교·손익분기가 계산된다", (spec) => {
+    for (const generation of [1, 2, 3, 4] as const) {
+      const contract = { ...samplePolicyService.load("NON_COVERED"), generation };
+      const usage = loadTreatmentSample("NON_COVERED", generation, spec.kind).plannedUsages[0];
+      const prepared = prepareUsageForSamsungComparison(generation === 1 ? { ...usage, claimCause: "INJURY" as const } : usage, assumptions);
+      const result = calculateSamsungAnnualComparison(contract, 35_000, ["SPECIAL_RIDER_1", "SPECIAL_RIDER_2"], selectionsFor(generation), [prepared], assumptions);
+      expect(result.complete, `${spec.kind} gen${generation}: ${JSON.stringify(result.items[0]?.current.reasons)} / ${JSON.stringify(result.items[0]?.target.reasons)}`).toBe(true);
+      const breakEven = calculateSamsungAnnualBreakEven(contract, 35_000, ["SPECIAL_RIDER_1", "SPECIAL_RIDER_2"], selectionsFor(generation), [prepared], assumptions, prepared.id);
+      // 입원은 한 번 입원 비용이 커서 연간 한도 안에서 계산할 수 있는 횟수까지만 곡선이 그려진다.
+      if (spec.careSetting === "OUTPATIENT") expect(breakEven?.points.length, `${spec.kind} gen${generation}`).toBe(121);
+      else expect(breakEven?.points.length, `${spec.kind} gen${generation}`).toBeGreaterThan(1);
     }
   });
-  it.each(["OUTPATIENT", "EXAM", "MRI"] as const)("%s sample produces different totals and a visible break-even reversal", kind => {
-    for (const sampleId of ["LOW_USAGE", "NON_COVERED", "COVERAGE_GAP"] as const) {
-      const contract = samplePolicyService.load(sampleId);
-      const scenario = loadTreatmentSample(sampleId, 3, kind);
-      const usage = scenario.plannedUsages[0];
-      const selections = {
-        ...useAnalysisStore.getState().productCalculationSelections,
-        samsungGen23Variant: "standard" as const,
-      };
-      const comparison = calculateSamsungAnnualComparison(contract, 35_000, [], selections, [usage], { ...scenario.calculationAssumptions, targetContractFacts: confirmedContractFacts });
-      const breakEven = calculateSamsungAnnualBreakEven(contract, 35_000, [], selections, [usage], { ...scenario.calculationAssumptions, targetContractFacts: confirmedContractFacts }, usage.id);
 
-      expect(comparison.complete, sampleId).toBe(true);
-      expect(comparison.currentTotal, sampleId).not.toBe(comparison.targetTotal);
-      expect(breakEven?.status, sampleId).not.toBe("CONFIRMATION_REQUIRED");
-      expect(breakEven?.points.length, sampleId).toBeGreaterThan(1);
-      // 5세대 급여 통원 1회 20만원 한도(약관 제6조 ⑤) 반영 후 외래 검사 샘플의 차이는 2만원 수준이다.
-      expect(Math.abs(comparison.currentTotal! - comparison.targetTotal!), sampleId).toBeGreaterThanOrEqual(10_000);
-    }
-  });
-  it.each(["EXAM", "MRI"] as const)("restores %s Samsung inputs from saved Gen2/3 form fields", kind => {
-    const contract = samplePolicyService.load("NON_COVERED");
-    const scenario = loadTreatmentSample("NON_COVERED", 3, kind);
-    const original = scenario.plannedUsages[0];
-    const savedWithoutCommonInput = { ...original, samsungCalculationInput: undefined, samsungGen5Facts: undefined };
-    const usage = prepareUsageForSamsungComparison(savedWithoutCommonInput, { ...scenario.calculationAssumptions, targetContractFacts: confirmedContractFacts });
-    const selections = {
-      ...useAnalysisStore.getState().productCalculationSelections,
-      samsungGen23Variant: "standard" as const,
-    };
-    const comparison = calculateSamsungAnnualComparison(contract, 35_000, [], selections, [usage], { ...scenario.calculationAssumptions, targetContractFacts: confirmedContractFacts });
-    const breakEven = calculateSamsungAnnualBreakEven(contract, 35_000, [], selections, [usage], { ...scenario.calculationAssumptions, targetContractFacts: confirmedContractFacts }, usage.id);
-
-    expect(usage.samsungCalculationInput?.eligibleExpense).toBe(original.coveredAmount);
-    expect(usage.samsungCalculationInput?.policyExclusionsCleared).toBe(true);
-    expect(comparison.complete).toBe(true);
-    expect(breakEven?.status).toBe("AVAILABLE");
-    expect(breakEven?.threshold).toBeGreaterThan(0);
-  });
-  it("leaves the original low-usage contract sample empty and creates fresh examples", () => {
+  it("원래 저이용 계약 샘플은 비워 두고, 치료 샘플은 매번 새 값으로 만든다", () => {
     expect(sampleScenarioService.load("LOW_USAGE").plannedUsages).toEqual([]);
     const first = loadTreatmentSample("LOW_USAGE", 5);
     first.plannedUsages[0].unitCost = 1;
-    expect(loadTreatmentSample("LOW_USAGE", 5).plannedUsages[0].unitCost).toBe(420000);
-    expect(first.plannedUsages[0].evidenceStatus).toBeUndefined();
+    expect(loadTreatmentSample("LOW_USAGE", 5).plannedUsages[0].unitCost).toBe(20_000);
   });
-});
-
-it.each(["OUTPATIENT", "EXAM"] as const)("%s covers common base-treatment examples without MRI rider fields", kind => {
-  for (const generation of [2, 3] as const) {
-    const sample = loadTreatmentSample("LOW_USAGE", generation, kind);
-    const usage = sample.plannedUsages[0];
-    expect(usage.benefitClass).toBe("COVERED");
-    expect(usage.frequency).toBeGreaterThan(1);
-    expect(usage.gen23AggregationUnit).toBeUndefined();
-    expect(sample.notice).toContain("평균 진료비가 아닙니다");
-    for (const variant of ["standard", "selected2"] as const) {
-      expect((generation === 2 ? calculateSamsungGen2Sample : calculateSamsungGen3Sample)(variant, usage).status).toBe("DRAFT_CALCULATED");
-    }
-  }
-});
-
-it.each(["OUTPATIENT", "EXAM", "MRI"] as const)("%s sample amount changes by insurance generation", kind => {
-  const gen2 = loadTreatmentSample("NON_COVERED", 2, kind).plannedUsages[0];
-  const gen3 = loadTreatmentSample("NON_COVERED", 3, kind).plannedUsages[0];
-  const gen4 = loadTreatmentSample("NON_COVERED", 4, kind).plannedUsages[0];
-
-  expect(gen2.unitCost).toBeLessThan(gen3.unitCost);
-  expect(gen3.unitCost).toBeLessThan(gen4.unitCost);
-  expect(gen2.frequency).toBe(gen3.frequency);
-  expect(gen3.frequency).toBe(gen4.frequency);
 });
 
 it("keeps the add-treatment button enabled while the form is open unless the limit is reached", () => {
