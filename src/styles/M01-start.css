@@ -8,15 +8,19 @@
 
 .start-page__brand { display: flex; align-items: center; gap: 10px; color: var(--ink); font-weight: 950; letter-spacing: -0.03em; }
 
-.start-page__logo { width: 59px; height: 39px; display: block; flex: 0 0 auto; object-fit: contain; }
+.start-page__logo { width: 40px; height: 40px; display: block; flex: 0 0 auto; object-fit: contain; }
 
 .start-page__main { width: min(1120px, calc(100% - 32px)); margin: 34px auto 70px; }
 
 .start-hero { display: grid; grid-template-columns: 1.25fr 0.75fr; align-items: center; gap: 34px; padding: 46px; overflow: hidden; border-radius: 28px; background: linear-gradient(135deg, var(--navy), var(--blue)); color: #fff; box-shadow: var(--shadow); }
 
-.start-hero__badge { display: inline-block; padding: 7px 11px; border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 999px; background: rgba(255, 255, 255, 0.12); color: var(--pale); font-size: 10px; font-weight: 900; letter-spacing: 0.08em; }
+.start-hero__badge { display: inline-block; padding: 7px 13px; border: 1px solid rgba(255, 255, 255, 0.22); border-radius: 999px; background: rgba(255, 255, 255, 0.12); color: var(--pale); font-size: 11px; font-weight: 900; letter-spacing: 0.07em; }
 
-.start-hero__copy > p { max-width: 640px; margin: 0; color: #cbd8e7; font-size: 14px; }
+.start-hero__copy { max-width: 740px; }
+
+.start-hero__copy h1 { margin: 16px 0 18px; color: #fff; font-size: clamp(2.2rem, 2.8vw, 3rem); line-height: 1.1; letter-spacing: -0.04em; }
+
+.start-hero__copy > p { max-width: 640px; margin: 0; color: #d4e4f6; font-size: 16px; line-height: 1.6; font-weight: 450; }
 
 .start-hero__visual { min-height: 220px; display: grid; place-items: center; padding: 28px; border-radius: 22px; background: rgba(255, 255, 255, 0.94); }
 
@@ -42,37 +46,37 @@
 
 .insurance-history__meta span { color: var(--blue2); font-size: 9px; font-weight: 800; }
 
-.insurance-history__item > p { margin: 7px 0 0; color: var(--muted); font-size: 10px; line-height: 1.55; }
+.insurance-history__item > p { margin: 7px 0 0; color: var(--muted); font-size: 11px; line-height: 1.55; }
 
 .insurance-history__note { margin: 18px 0 0; color: #8a98aa; font-size: 9px; text-align: right; }
 
 .start-guide { margin-top: 16px; padding: 30px; border: 1px solid var(--line); border-radius: 24px; background: #fff; box-shadow: var(--shadow-soft); }
 
-.start-guide__description { margin: 0 0 19px; color: var(--muted); font-size: 12px; }
+.start-guide__description { margin: 0 0 19px; color: var(--muted); font-size: 13px; line-height: 1.6; }
 
-.start-guide__steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 11px; }
+.start-guide__steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 
-.start-guide__step { padding: 16px; border: 1px solid var(--line); border-radius: 15px; background: #fafcfe; }
+.start-guide__step { padding: 18px; border: 1px solid var(--line); border-radius: 15px; background: #fafcfe; }
 
-.start-guide__number { width: 31px; height: 31px; display: grid; place-items: center; border-radius: 10px; background: #e8f0f8; color: var(--blue); font-size: 12px; font-weight: 950; }
+.start-guide__number { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 10px; background: #e8f0f8; color: var(--blue); font-size: 13px; font-weight: 950; }
 
-.start-guide__step h3 { margin: 9px 0 4px; font-size: 13px; }
+.start-guide__step h3 { margin: 10px 0 5px; font-size: 14px; }
 
-.start-guide__step p { margin: 0; color: var(--muted); font-size: 10px; }
+.start-guide__step p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
 
 .start-cautions { margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--line); }
 
-.start-cautions h3 { margin: 0 0 11px; font-size: 15px; }
+.start-cautions h3 { margin: 0 0 12px; font-size: 15px; font-weight: 800; }
 
-.start-cautions__list { display: grid; gap: 8px; }
+.start-cautions__list { display: grid; gap: 9px; }
 
-.start-cautions__item { display: flex; align-items: flex-start; gap: 9px; color: #475467; font-size: 11px; }
+.start-cautions__item { display: flex; align-items: flex-start; gap: 9px; color: #3f4f63; font-size: 12px; line-height: 1.6; }
 
 .start-cautions__item > span { width: 21px; height: 21px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 7px; background: #fff2e5; color: var(--warn); font-weight: 950; }
 
 .start-cautions__item p { margin: 1px 0 0; }
 
-.start-consent { display: flex; align-items: flex-start; gap: 10px; margin-top: 20px; padding: 15px; border: 1px solid transparent; border-radius: 13px; background: var(--ice); font-size: 11px; font-weight: 750; transition: border-color var(--duration-fast) ease; }
+.start-consent { display: flex; align-items: flex-start; gap: 10px; margin-top: 20px; padding: 15px; border: 1px solid transparent; border-radius: 13px; background: var(--ice); font-size: 12px; font-weight: 700; line-height: 1.6; transition: border-color var(--duration-fast) ease; }
 
 .start-consent.is-checked { border-color: var(--pale); }
 

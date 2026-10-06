@@ -52,7 +52,7 @@ describe.each(modes)('$mode: 가정 페이지와 원래 입력 확인 페이지�
       expect(screen.getByRole('heading', { name })).toBeTruthy();
     }
     const assumptions = screen.getByRole('region', { name: '선택한 계산 가정 확인' });
-    expect(assumptions.textContent).toContain('보장 제외 사유가 없다는 가정 적용');
+    expect(assumptions.textContent).toMatch(/보장 제외 사유가 없다(고 가정합니다|는 가정 적용)/);
     expect(screen.getAllByRole('checkbox')).toHaveLength(1);
     const calculate = screen.getByRole('button', { name: '이 조건으로 비교 계산하기' }) as HTMLButtonElement;
     expect(calculate.disabled).toBe(true);

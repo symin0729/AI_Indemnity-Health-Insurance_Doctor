@@ -1,6 +1,6 @@
 import SamsungTreatmentComparison from "../../components/samsung/SamsungTreatmentComparison";
 import { prepareUsageForSamsungComparison } from "../../engine/prepareSamsungComparison";
-import headerLogo from '../../assets/header-logo.png';
+import mainLogo from '../../assets/main-logo.png';
 import AppShell from "../../components/AppShell";
 import {
   useEffect,
@@ -1729,7 +1729,7 @@ function M04ResultPage() {
             }}
           >
             <img
-              src={headerLogo}
+              src={mainLogo}
               alt="AI 실손 닥터 보험 비교 결과 안내"
               style={{
                 width: "min(100%, 260px)",
