@@ -33,7 +33,6 @@ const valid = (over: Partial<SubmissionInput> = {}): SubmissionInput => ({
   selectedSampleId: null,
   isSampleConfirmed: false,
   isTargetPremiumHelpConfirmed: true,
-  isTreatmentHelpConfirmed: true,
   isStep3Confirmed: true,
   calculationAssumptions: { assumeEntireMedicalCostCovered: false, assumeNoPriorLimitUsage: false, assumeEachOccurrenceSeparate: false },
   ...over,
@@ -101,7 +100,7 @@ describe("isUnregisteredVariantSelected", () => {
 
 describe("buildSubmission 검증 순서와 문구 (확인 화면으로 가기 전)", () => {
   it("안내 확인 체크 없이 진행하고 치료 등록과 수정 중 상태를 검증한다", () => {
-    expect(buildSubmission(valid({ isTargetPremiumHelpConfirmed: false, isTreatmentHelpConfirmed: false, isStep3Confirmed: true })).ok).toBe(true);
+    expect(buildSubmission(valid({ isTargetPremiumHelpConfirmed: false, isStep3Confirmed: true })).ok).toBe(true);
     expect(fail({ plannedUsages: [] })).toEqual({ ok: false, message: "예정 치료를 입력한 뒤 하단의 ‘추가하기’ 버튼을 눌러 등록해주세요.", goToStep: 2 });
     expect(fail({ editingUsageId: "u1" })).toEqual({ ok: false, message: "수정 중인 예정 치료는 ‘수정 확인’ 버튼을 눌러 저장해주세요.", goToStep: 2 });
   });

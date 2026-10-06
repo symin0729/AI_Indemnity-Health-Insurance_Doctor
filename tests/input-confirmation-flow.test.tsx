@@ -48,7 +48,7 @@ describe.each(modes)('$mode: 가정 페이지와 원래 입력 확인 페이지�
     await user.click(screen.getByRole('checkbox', { name: /^보장 제외 사유가 없다고 가정/ }));
     await user.click(screen.getByRole('button', { name: '입력 정보 확인하기' }));
     expect(screen.getByRole('heading', { name: '계산 전 정보를 확인해주세요.' })).toBeTruthy();
-    for (const name of ['현재 계약 확인', '5세대 비교 조건 확인', '예정 치료 확인', '계산 기준 및 추가 확인']) {
+    for (const name of ['현재 계약 확인', '5세대 계약전환 조건 확인', '예정 치료 확인', '계산 기준 및 추가 확인']) {
       expect(screen.getByRole('heading', { name })).toBeTruthy();
     }
     const assumptions = screen.getByRole('region', { name: '선택한 계산 가정 확인' });

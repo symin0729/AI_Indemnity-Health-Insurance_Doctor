@@ -1,12 +1,11 @@
-import { InputHelp } from "../../components/InputHelp";
-import { getTreatmentAdditionalInfoFields, getTreatmentAddLabel } from "./treatmentSequence";
+import { getTreatmentAddButtonLabel, getTreatmentAddLabel } from "./treatmentSequence";
 import { type CopayInstitution, type CopayRegion } from "../../domain/insuranceInputDefaults";
 import { genericGen23CareSetting, syncGen23CareSetting } from "../../domain/samsungGen23CareSetting";
 import { Gen23Inputs } from "../../components/samsung/Gen23Inputs";
 import { MASKED_INSURER } from "../../domain/displayMask";
 import { GEN23_CONTRACT_DETAIL_KEYS } from "../../domain/contractDetails";
 import { NON_COVERED_TREATMENT_TYPES, nonCoveredTreatmentTypeLabel, toNonCoveredTreatmentType } from "../../domain/nonCoveredTreatmentType";
-import type { BenefitClass, CareSetting, ClaimCause, NationalHealthInsuranceStatus, SeverityClass } from "../../domain/medical";
+import type { BenefitClass, ClaimCause, SeverityClass } from "../../domain/medical";
 import { formatWonInput, getWonInputValue, IsoDateInput } from "./M02Shared";
 import type { M02Form } from "./useM02Form";
 
@@ -25,21 +24,17 @@ const gen23HiddenInTreatment = (inpatient: boolean, special: boolean): ReadonlyS
 
 export default function Step2Treatment({ form }: { form: M02Form }) {
   const {
+    treatmentCareSelected,
     claimCause,
     gen1CoveredRoomAndTreatment,
-    gen1NonNhiInpatientTotal,
     policyExclusionsCleared,
     gen1DaysSinceAccident,
     gen1Product,
     gen1RoomDifference,
-    nationalHealthInsuranceStatus,
     setClaimCause,
     setGen1CoveredRoomAndTreatment,
-    setGen1NonNhiInpatientTotal,
-    setPolicyExclusionsCleared,
     setGen1DaysSinceAccident,
     setGen1RoomDifference,
-    setNationalHealthInsuranceStatus,
     applyCopayDefault,
     benefitClass,
     careSetting,
@@ -47,12 +42,13 @@ export default function Step2Treatment({ form }: { form: M02Form }) {
     copayInstitution,
     copayRegion,
     coveredAmount,
-    currentTreatmentSlotIndex,
     editingUsageId,
     frequency,
     gen23Form,
     generation,
     handleAddTreatment,
+    handleOpenTreatmentForm,
+    handleResetTreatments,
     handleCancelEdit,
     handleEditTreatment,
     handleRemoveTreatment,
@@ -60,7 +56,6 @@ export default function Step2Treatment({ form }: { form: M02Form }) {
     institutionType,
     isTreatmentFormOpen,
     isTreatmentLimitReached,
-    patientCostHelpDialogRef,
     plannedUsages,
     samsungGen23Variant,
     setBenefitClass,
@@ -80,10 +75,10 @@ export default function Step2Treatment({ form }: { form: M02Form }) {
     setUnitCost,
     severityClass,
     treatmentDate,
-    treatmentHelpDialogRef,
     treatmentName,
     treatmentSampleDialogRef,
     treatmentSampleNotice,
+    treatmentSampleLoaded,
     unitCost,
   } = form;
 
@@ -92,25 +87,25 @@ export default function Step2Treatment({ form }: { form: M02Form }) {
         {treatmentSampleNotice && <p className="notice-box" role="status">{treatmentSampleNotice}</p>}
         <span className="step-badge">STEP 2 · 예정 치료</span>
         <div className="treatment-heading-row">
-          <h2 className="card-title" style={{ margin: 0 }}>예정 치료</h2>
-          <div className="treatment-compact-actions">
-            <button type="button" className="sample-button" aria-haspopup="dialog" onClick={() => treatmentHelpDialogRef.current?.showModal()}>입력 도움말</button>
-            <button type="button" className="sample-button" aria-haspopup="dialog" onClick={() => treatmentSampleDialogRef.current?.showModal()} disabled={isTreatmentLimitReached}>치료 샘플 불러오기</button>
-          </div>
-        </div>
-
+          <h2 className="card-title">예정 치료</h2>
         <p className="card-description" style={{ fontSize: "0.85rem" }}>
           앞으로 예상되는 의료이용을 입력한 뒤 반드시 하단의 ‘추가하기’를 눌러주세요.
           치료는 최대 3건까지 추가하거나 수정할 수 있습니다.
         </p>
+          <div className="treatment-compact-actions">
+            {!isTreatmentLimitReached && <button type="button" className="sample-button" onClick={handleOpenTreatmentForm} disabled={isTreatmentFormOpen}>{getTreatmentAddButtonLabel()}</button>}
+            <button type="button" className="sample-button" aria-haspopup="dialog" onClick={() => treatmentSampleDialogRef.current?.showModal()} disabled={isTreatmentLimitReached}>치료 샘플 불러오기</button>
+            <button type="button" className="sample-button" onClick={handleResetTreatments}>초기화</button>
+            {treatmentSampleLoaded && <span className="status-badge success" role="status">샘플 입력 완료</span>}
+          </div>
+        </div>
+
+
 
         {isTreatmentFormOpen && <>
-          <fieldset className="form-card">
-            <legend>
-              <h3>
-                {editingUsageId ? "치료 수정" : getTreatmentAddLabel(currentTreatmentSlotIndex)}
-              </h3>
-            </legend>
+          <div className="treatment-form-container">
+          <fieldset className="form-card treatment-form-card">
+            <legend><h3 id="treatment-basic-title">치료 정보</h3></legend>
 
         {editingUsageId && (
           <div className="notice-box">
@@ -119,49 +114,64 @@ export default function Step2Treatment({ form }: { form: M02Form }) {
           </div>
         )}
 
-        <label>
-          치료명 (필수)
-          <input
-            type="text"
-            value={
-              treatmentName
-            }
-            onChange={(e) =>
-              setTreatmentName(
-                e.target.value
-              )
-            }
-            placeholder="예: MRI"
-          />
-        </label>
-
+        <section className="treatment-input-group" aria-labelledby="treatment-basic-title">
         <div className="form-grid">
-          <label>
-            입원 / 통원 (필수)
-            <select
-              value={
-                careSetting
-              }
-              onChange={(e) => {
-                const nextCare = e.target.value as CareSetting;
-                changeCareSetting(nextCare);
-                if (generation === 2 || generation === 3) {
-                  setGen23Form(previous => ({ ...previous, gen23CareSetting: syncGen23CareSetting(nextCare, previous.gen23CareSetting) }));
-                }
-              }}
-            >
-              <option value="OUTPATIENT">
-                통원
-              </option>
-
-              <option value="INPATIENT">
-                입원
-              </option>
+        <div>
+          <label htmlFor="treatment-kind" className="treatment-field-heading">치료 종류 <span className="required-mark">필수</span><small className="treatment-inline-hint">기타는 직접 입력 · 특약 적용은 별도 확인</small></label>
+          {(treatmentCategory === 'OTHER' || (!['MANUAL_THERAPY', 'INJECTION', 'MRI'].includes(treatmentCategory) && treatmentName !== '' && treatmentName !== '일반 비급여')) ? (
+            <div className="treatment-kind-input">
+              <input id="treatment-kind" type="text" autoFocus value={treatmentName} onChange={event => setTreatmentName(event.target.value)} placeholder="예: 외래 진료, 검사, 수술" />
+              <button type="button" className="sample-button" onClick={() => { setTreatmentCategory(''); setTreatmentName('일반 비급여'); }}>목록 선택</button>
+            </div>
+          ) : (
+            <select id="treatment-kind" value={['MANUAL_THERAPY', 'INJECTION', 'MRI'].includes(treatmentCategory) ? treatmentCategory : treatmentName ? 'GENERAL' : ''}
+              onChange={event => {
+                const value = event.target.value;
+                setTreatmentCategory(value === 'GENERAL' ? '' : value);
+                setTreatmentName(value === 'OTHER' ? '' : value === 'GENERAL' ? '일반 비급여' : nonCoveredTreatmentTypeLabel(value));
+              }}>
+              {!treatmentName && <option value="" disabled>예: MRI/MRA, 도수치료</option>}
+              {NON_COVERED_TREATMENT_TYPES.map(([value, label]) => <option key={value} value={value || 'GENERAL'}>{label}</option>)}
+              <option value="OTHER">기타 (직접 입력)</option>
             </select>
-          </label>
+          )}
+        </div>
 
+          <div className="treatment-date-field"><label htmlFor="treatment-date" className="treatment-field-heading">진료 예정일</label><IsoDateInput id="treatment-date" value={treatmentDate} onChange={setTreatmentDate} placeholder="YYYY-MM-DD" /></div>
+        </div>
+        <div>
+          <fieldset className="treatment-cause-care" aria-label="치료 구분 (필수)">
+            <legend>치료 구분 <span className="required-mark">필수</span><small className="treatment-inline-hint">상해·질병 구분 후 입원·통원 중 하나 선택</small></legend>
+            <div className="form-grid treatment-cause-row">
+            <div>
+            <label htmlFor="treatment-cause" className="sr-only">치료 원인 (필수)</label>
+            <select id="treatment-cause" value={claimCause} onChange={event => setClaimCause(event.target.value as ClaimCause)}>
+              {claimCause === "UNKNOWN" && <option value="UNKNOWN" disabled>예: 상해 / 질병</option>}
+              <option value="INJURY">상해</option>
+              <option value="DISEASE">질병</option>
+            </select>
+            </div>
+            <div>
+            <div className="treatment-care-options">
+              {(['INPATIENT', 'OUTPATIENT'] as const).map(setting => <label className="no-treatment-option" key={setting}>
+                <input type="checkbox" checked={treatmentCareSelected && careSetting === setting} disabled={claimCause === 'UNKNOWN'} onChange={() => {
+                  changeCareSetting(setting);
+                  if (generation === 2 || generation === 3) setGen23Form(previous => ({ ...previous, gen23CareSetting: syncGen23CareSetting(setting, previous.gen23CareSetting) }));
+                }} />
+                <span>{setting === 'INPATIENT' ? '입원' : '통원'}</span>
+              </label>)}
+            </div>
+            </div>
+            </div>
+          </fieldset>
+
+        </div>
+
+        </section>
+        <section className="treatment-input-group treatment-coverage-layout" aria-label="담보와 의료기관 정보">
+          <div>
           <label>
-            급여 여부 (필수)
+            <span className="treatment-field-heading">급여 여부 <span className="required-mark">필수</span></span>
             <select
               value={
                 benefitClass
@@ -173,10 +183,7 @@ export default function Step2Treatment({ form }: { form: M02Form }) {
                 )
               }
             >
-              <option value="UNKNOWN">
-                모름
-              </option>
-
+              {benefitClass === 'UNKNOWN' && <option value="UNKNOWN" disabled>예: 급여 / 비급여</option>}
               <option value="COVERED">
                 급여
               </option>
@@ -186,18 +193,88 @@ export default function Step2Treatment({ form }: { form: M02Form }) {
               </option>
             </select>
           </label>
+          </div>
+          <div className="treatment-coverage-stack">
+        {/* 급여를 고르면 의료기관 종별·소재 지역·건강보험 본인부담률, 비급여를 고르면 산정특례·치료 관련성을 받는다. */}
+        {(benefitClass === "COVERED" || benefitClass === "NON_COVERED") && <>
+        {benefitClass === "COVERED" && <div className="treatment-coverage-stack">
+          {benefitClass === "COVERED" && <label htmlFor="copay-institution">
+            <span className="treatment-field-heading">
+            의료기관 종별 {careSetting === "OUTPATIENT" && <span className="required-mark">필수</span>}
+            </span>
+            <select id="copay-institution" value={copayInstitution || institutionType} onChange={(e) => {
+              const value = e.target.value as CopayInstitution | "";
+              setCopayInstitution(value);
+              setInstitutionType(value === "TERTIARY" || value === "GENERAL" ? "GENERAL_TERTIARY" : value === "CLINIC" || value === "HOSPITAL" ? "CLINIC_HOSPITAL" : "");
+              applyCopayDefault(careSetting, value);
+              if (generation === 2 || generation === 3) {
+                const institution = value === "TERTIARY" ? "GENERAL_TERTIARY" : value === "GENERAL" || value === "HOSPITAL" ? "HOSPITAL" : value === "CLINIC" ? "CLINIC" : "";
+                setGen23Form(previous => ({ ...previous, gen23Institution: institution }));
+              }
+            }}>
+              <option value="" disabled hidden>선택해주세요</option>
+              {!copayInstitution && institutionType && <option value={institutionType}>기존 분류 — 세부 종별을 선택해주세요</option>}
+              <option value="TERTIARY">상급종합병원 (대형 대학병원 등)</option>
+              <option value="GENERAL">종합병원 (여러 진료과, 100병상 이상)</option>
+              <option value="HOSPITAL">병원급 (30병상 이상)</option>
+              <option value="CLINIC">의원급 (동네 의원)</option>
+              <option value="PUBLIC_HEALTH">보건기관 (보건소·보건지소)</option>
+            </select>
+          </label>}
+          {benefitClass === "COVERED" && (copayInstitution === "GENERAL" || copayInstitution === "HOSPITAL") && <label htmlFor="institution-region">
+            <span className="treatment-field-heading">
+            의료기관 소재 지역 <span className="required-mark">필수</span>
+            <small className="treatment-inline-hint">진료받는 병원의 주소 기준</small>
+            </span>
+            <select id="institution-region" value={copayRegion} onChange={(e) => {
+              const value = e.target.value as CopayRegion | "";
+              setCopayRegion(value);
+              applyCopayDefault(careSetting, copayInstitution, value);
+            }}>
+              <option value="">선택해주세요</option>
+              <option value="DONG">동지역</option>
+              <option value="EUP_MYEON">읍·면지역</option>
+            </select>
+          </label>}
+          {benefitClass === "COVERED" && <label>
+            <span className="treatment-field-heading">건강보험 본인부담률</span>
+            <span className="input-unit-row"><input
+              type="number"
+              onWheel={(e) => e.currentTarget.blur()}
+              min="0"
+              max="100"
+              step="0.1"
+              value={healthInsuranceCopayRatePercent}
+              onChange={(e) => setHealthInsuranceCopayRatePercent(e.target.value)}
+              placeholder="예: 40"
+            /><span className="input-unit-label">%</span></span>
+          </label>}
+        </div>}
+        {benefitClass === "NON_COVERED" && <div className="treatment-coverage-stack">
+          <label>
+            <span className="treatment-field-heading">산정특례 및 치료 관련성</span>
+            <select value={severityClass} onChange={(e) => setSeverityClass(e.target.value as SeverityClass)}>
+              <option value="UNKNOWN">모름</option>
+              <option value="SEVERE">산정특례 질환 치료 또는 관련 합병증으로 확인됨</option>
+              <option value="NON_SEVERE">산정특례 미적용 또는 다른 질환 치료로 확인됨</option>
+            </select>
+          </label>
+        </div>}
+        </>}
 
-
-        </div>
+          </div>
+        </section>
+        <section className="treatment-input-group treatment-cost-block">
 
         <div className="form-grid">
           <label>
-            예상 횟수 (필수)
+            <span className="treatment-field-heading">예상 횟수 <span className="required-mark">필수</span><small className="treatment-inline-hint">앞으로 1년간 이 치료를 받을 횟수</small></span>
             <span className="input-unit-row"><input
               type="number"
               onWheel={(e) => e.currentTarget.blur()}
               min="1"
               step="1"
+              placeholder="예: 3"
               value={frequency}
               onChange={(e) =>
                 setFrequency(
@@ -208,9 +285,8 @@ export default function Step2Treatment({ form }: { form: M02Form }) {
           </label>
 
           <div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-              <label htmlFor="patient-unit-cost" style={{ marginBottom: 0 }}>한 번 진료받을 때 내가 내는 금액 (필수)</label>
-              <button type="button" className="sample-button" style={{ minHeight: "30px", padding: "4px 9px", fontSize: "0.8rem" }} aria-label="진료비 입력 도움말" aria-haspopup="dialog" aria-controls="patient-cost-dialog" onClick={() => patientCostHelpDialogRef.current?.showModal()}>도움말</button>
+            <div className="treatment-field-heading">
+              <label htmlFor="patient-unit-cost" style={{ marginBottom: 0 }}>한 번 진료받을 때 내가 내는 금액 <span className="required-mark">필수</span></label>
             </div>
             <span className="input-unit-row"><input
               id="patient-unit-cost"
@@ -228,113 +304,9 @@ export default function Step2Treatment({ form }: { form: M02Form }) {
         </div>
 
         <div className="form-grid">
-          <label htmlFor="copay-institution">
-            의료기관 종별 {careSetting === "OUTPATIENT" && (generation === 2 || generation === 3 || benefitClass === "COVERED") && <span>(필수)</span>}
-            <InputHelp title="의료기관 종별" description="병원 이름만 보고 판단하지 말고 등록된 의료기관 종류를 선택하세요. 종합병원과 상급종합병원은 서로 다른 선택지입니다." source="병원 안내·원무과" />
-            <select id="copay-institution" value={copayInstitution || institutionType} onChange={(e) => {
-              const value = e.target.value as CopayInstitution | "";
-              setCopayInstitution(value);
-              setInstitutionType(value === "TERTIARY" || value === "GENERAL" ? "GENERAL_TERTIARY" : value === "CLINIC" || value === "HOSPITAL" ? "CLINIC_HOSPITAL" : "");
-              applyCopayDefault(careSetting, value);
-              if (generation === 2 || generation === 3) {
-                const institution = value === "TERTIARY" ? "GENERAL_TERTIARY" : value === "GENERAL" || value === "HOSPITAL" ? "HOSPITAL" : value === "CLINIC" ? "CLINIC" : "";
-                setGen23Form(previous => ({ ...previous, gen23Institution: institution }));
-              }
-            }}>
-              <option value="">모름 / 해당 없음</option>
-              {!copayInstitution && institutionType && <option value={institutionType}>기존 분류 — 세부 종별을 선택해주세요</option>}
-              <option value="TERTIARY">상급종합병원</option>
-              <option value="GENERAL">종합병원</option>
-              <option value="HOSPITAL">병원급</option>
-              <option value="CLINIC">의원급</option>
-              <option value="PUBLIC_HEALTH">보건기관</option>
-            </select>
-          </label>
-          {(copayInstitution === "GENERAL" || copayInstitution === "HOSPITAL") && careSetting === "OUTPATIENT" && <label htmlFor="institution-region">
-            의료기관 소재 지역 (필수)
-            <InputHelp title="의료기관 소재 지역" description="거주지가 아니라 진료받는 의료기관의 주소를 기준으로 동지역 또는 읍·면지역을 선택하세요." source="의료기관 주소·병원 원무과" />
-            <select id="institution-region" value={copayRegion} onChange={(e) => {
-              const value = e.target.value as CopayRegion | "";
-              setCopayRegion(value);
-              applyCopayDefault(careSetting, copayInstitution, value);
-            }}>
-              <option value="">선택해주세요</option>
-              <option value="DONG">동지역</option>
-              <option value="EUP_MYEON">읍·면지역</option>
-            </select>
-          </label>}
 
-          {benefitClass === "COVERED" && careSetting === "OUTPATIENT" && <label>
-            건강보험 본인부담률
-            <span className="input-unit-row"><input
-              type="number"
-              onWheel={(e) => e.currentTarget.blur()}
-              min="0"
-              max="100"
-              step="0.1"
-              value={
-                healthInsuranceCopayRatePercent
-              }
-              onChange={(e) =>
-                setHealthInsuranceCopayRatePercent(
-                  e.target.value
-                )
-              }
-              placeholder="예: 40"
-            /><span className="input-unit-label">%</span></span>
-          </label>}
-        </div>
-
-        <div className="form-grid">
-          {getTreatmentAdditionalInfoFields().map((field) => {
-            if (field.key === "treatmentDate") {
-              return (
-                <label key={field.key}>
-                  {field.label}
-                  <IsoDateInput
-                    value={treatmentDate}
-                    onChange={setTreatmentDate}
-                    placeholder="YYYY-MM-DD"
-                  />
-                </label>
-              );
-            }
-
-            if (field.key === "severityClass") {
-              if (benefitClass !== "NON_COVERED") return null;
-              return (
-                <label key={field.key}>
-                  {field.label}
-                  <select
-                    value={
-                      severityClass
-                    }
-                    onChange={(e) =>
-                      setSeverityClass(
-                        e.target
-                          .value as SeverityClass
-                      )
-                    }
-                  >
-                    <option value="UNKNOWN">
-                      모름
-                    </option>
-
-                    <option value="SEVERE">
-                      산정특례 질환 치료 또는 관련 합병증으로 확인됨
-                    </option>
-
-                    <option value="NON_SEVERE">
-                      산정특례 미적용 또는 다른 질환 치료로 확인됨
-                    </option>
-                  </select>
-                </label>
-              );
-            }
-
-            return (
-              <label key={field.key}>
-                {field.label}
+              <label>
+                <span className="treatment-field-heading">회당 보장대상 인정금액 (C)</span>
                 <span className="input-unit-row"><input
                   type="text"
                   inputMode="numeric"
@@ -349,52 +321,16 @@ export default function Step2Treatment({ form }: { form: M02Form }) {
                   placeholder="모르면 비워두세요"
                 /><span className="input-unit-label">원</span></span>
               </label>
-            );
-          })}
+
         </div>
 
-        {/* 모든 세대 공통: 현재 계약과 5세대 전환 계산이 같은 값을 쓴다. */}
-        <fieldset className="treatment-section" aria-label="치료 원인과 보장 확인">
-          <legend><h3>치료 원인과 보장 확인</h3></legend>
-          <div className="form-grid">
-            <label>
-              치료 원인 (필수)
-              <InputHelp title="치료 원인" description="사고로 다친 치료면 상해, 그 밖의 병 치료면 질병을 선택하세요. 상해와 질병은 보장 한도와 계산 규칙이 다릅니다." source="진료기록·진단서" />
-              <select value={claimCause} onChange={(event) => setClaimCause(event.target.value as ClaimCause)}>
-                <option value="UNKNOWN">선택해주세요</option>
-                <option value="INJURY">상해</option>
-                <option value="DISEASE">질병</option>
-              </select>
-            </label>
-            <label>
-              이번 진료의 국민건강보험 적용 (필수)
-              <InputHelp title="국민건강보험 적용" description="대부분의 병원 진료는 건강보험이 적용됩니다. 비급여 항목이 있다는 이유만으로 '적용되지 않음'을 고르지 마세요." source="진료비 영수증·병원 원무과" />
-              <select value={nationalHealthInsuranceStatus} onChange={(event) => setNationalHealthInsuranceStatus(event.target.value as NationalHealthInsuranceStatus)}>
-                <option value="APPLIED">적용됨</option>
-                <option value="NOT_APPLIED">적용되지 않음</option>
-                <option value="PARTIAL">일부 적용</option>
-              </select>
-            </label>
-          </div>
-          {benefitClass === "NON_COVERED" && (
-            <div className="form-grid">
-              <label>
-                비급여 치료 종류
-                <InputHelp title="비급여 치료 종류" description="도수치료·체외충격파·증식치료, 비급여 주사, MRI/MRA는 약관에서 공제금액과 한도를 따로 정합니다. 해당하지 않으면 일반 비급여를 고르세요." source="진료비 세부내역서·병원 안내" />
-                <select value={toNonCoveredTreatmentType(benefitClass, treatmentCategory)} onChange={(event) => setTreatmentCategory(event.target.value)}>
-                  {NON_COVERED_TREATMENT_TYPES.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-                </select>
-              </label>
-            </div>
-          )}
-          {nationalHealthInsuranceStatus === "PARTIAL" && <div className="notice-box warning">건강보험 일부 적용은 비용을 나누는 기준이 확인되지 않아 계산이 보류됩니다.</div>}
-          <label className="no-treatment-option">
-            <input type="checkbox" checked={policyExclusionsCleared} onChange={(event) => setPolicyExclusionsCleared(event.target.checked)} />
-            <span><strong>증권·약관에서 보장 제외 사유가 없음을 확인함 (선택)</strong></span>
-          </label>
-        </fieldset>
+        </section>
 
-          {(generation === 2 || generation === 3) && <Gen23Inputs generation={generation} riderManaged={generation === 3} variant={samsungGen23Variant} insurerName={MASKED_INSURER} embedded institutionManaged hiddenKeys={new Set([...(careSetting === "OUTPATIENT" ? ["gen23CoveredCopay", "gen23NonCoveredExpense"] : []), ...gen23HiddenInTreatment(careSetting === "INPATIENT", generation === 3 && toNonCoveredTreatmentType(benefitClass, treatmentCategory) !== ""), ...(form.comparisonBasis === "FRESH_YEAR" ? ["gen23PriorPaidBenefit", "gen23BenefitLimitRestored"] : [])])} value={{ ...gen23Form, ...contractDetails, claimCause, nationalHealthInsuranceStatus, gen23PolicyExclusionsCleared: String(policyExclusionsCleared), ...(generation === 3 ? { gen23TreatmentType: toNonCoveredTreatmentType(benefitClass, treatmentCategory) || "BASE" } : {}) }} onChange={(values) => {
+
+
+          </fieldset>
+
+          {(generation === 2 || generation === 3) && <Gen23Inputs generation={generation} riderManaged={generation === 3} variant={samsungGen23Variant} insurerName={MASKED_INSURER} embedded institutionManaged hiddenKeys={new Set([...(careSetting === "OUTPATIENT" ? ["gen23CoveredCopay", "gen23NonCoveredExpense"] : []), ...gen23HiddenInTreatment(careSetting === "INPATIENT", generation === 3 && toNonCoveredTreatmentType(benefitClass, treatmentCategory) !== ""), ...(form.comparisonBasis === "FRESH_YEAR" ? ["gen23PriorPaidBenefit", "gen23BenefitLimitRestored"] : [])])} value={{ ...gen23Form, ...contractDetails, claimCause, nationalHealthInsuranceStatus: "APPLIED", gen23PolicyExclusionsCleared: String(policyExclusionsCleared), ...(generation === 3 ? { gen23TreatmentType: toNonCoveredTreatmentType(benefitClass, treatmentCategory) || "BASE" } : {}) }} onChange={(values) => {
             setGen23Form(values);
             const selectedCare = genericGen23CareSetting(values.gen23CareSetting);
             if (selectedCare && selectedCare !== careSetting) changeCareSetting(selectedCare);
@@ -412,19 +348,18 @@ export default function Step2Treatment({ form }: { form: M02Form }) {
         {/* 세대별 세부 입력: 1세대는 삼성 0904.2 D1 계산에 필요한 값을 여기서 입력한다. */}
         {generation === 1 && gen1Product === "SAMSUNG_0904_2" && (
           <fieldset className="form-card" aria-label="1세대 세부 입력">
-            <legend><h3>1세대 세부 입력 (D1 계산 조건)</h3></legend>
+            <legend><h3>1세대 세부 입력</h3></legend>
             <div className="form-grid">
               <label>
-                사고일·발병일부터 경과일 (필수)
-                <InputHelp title="사고일·발병일부터 경과일" description="상해는 사고일, 질병은 발병일부터 이번 진료일까지의 날수입니다. 1세대는 이 날부터 365일까지만 보장합니다." source="진료기록·진단서" />
+                사고일·발병일부터 경과일 <span className="required-mark">필수</span>
+                <small className="treatment-inline-hint">사고·발병일부터 이번 진료일까지의 일수</small>
                 <span className="input-unit-row"><input type="number" min="0" step="1" value={gen1DaysSinceAccident} onChange={(event) => setGen1DaysSinceAccident(event.target.value)} placeholder="예: 30" /><span className="input-unit-label">일</span></span>
               </label>
             </div>
-            {careSetting === "INPATIENT" && nationalHealthInsuranceStatus === "APPLIED" && <div className="form-grid">
+            {careSetting === "INPATIENT" && <div className="form-grid">
               <label>실제 부담액<input type="text" inputMode="numeric" value={formatWonInput(gen1CoveredRoomAndTreatment)} onChange={(event) => setGen1CoveredRoomAndTreatment(getWonInputValue(event.target.value))} />원</label>
               <label>병실료 차액<input type="text" inputMode="numeric" value={formatWonInput(gen1RoomDifference)} onChange={(event) => setGen1RoomDifference(getWonInputValue(event.target.value))} placeholder="없으면 0" />원</label>
             </div>}
-            {careSetting === "INPATIENT" && nationalHealthInsuranceStatus === "NOT_APPLIED" && <label>입원의료비 총액<input type="text" inputMode="numeric" value={formatWonInput(gen1NonNhiInpatientTotal)} onChange={(event) => setGen1NonNhiInpatientTotal(getWonInputValue(event.target.value))} />원</label>}
             {careSetting === "OUTPATIENT" && <p className="sample-note">통원 금액은 위의 ‘한 번 진료받을 때 내가 내는 금액’을 사용합니다.</p>}
 
           </fieldset>
@@ -467,8 +402,9 @@ export default function Step2Treatment({ form }: { form: M02Form }) {
             </button>
           )}
         </div>
-          </fieldset>
+          </div>
         </>}
+
 
         {plannedUsages.length >
           0 && (

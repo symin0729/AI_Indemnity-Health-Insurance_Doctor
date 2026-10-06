@@ -75,7 +75,10 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
     setTreatmentDate,
     setTreatmentDrafts,
     setTreatmentName,
+    treatmentCareSelected,
+    setTreatmentCareSelected,
     setTreatmentSampleNotice,
+    setTreatmentSampleLoaded,
     setUnitCost,
     severityClass,
     treatmentCategory,
@@ -120,6 +123,7 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
     setTreatmentSampleNotice("");
     setTreatmentName(draft.treatmentName);
     setCareSetting(draft.careSetting);
+    setTreatmentCareSelected(true);
     setBenefitClass(draft.benefitClass as BenefitClass);
     setSeverityClass(draft.severityClass as SeverityClass);
     setFrequency(draft.frequency);
@@ -160,6 +164,7 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
 
   const resetTreatmentForm = () => {
     const emptyDraft = createEmptyTreatmentDraft();
+    setTreatmentCareSelected(false);
     setGen23Form(emptyDraft.gen23Form);
     setTreatmentSampleNotice("");
     setTreatmentName(emptyDraft.treatmentName);
@@ -222,7 +227,7 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
 
     if (!treatmentName.trim()) {
       setErrorMessage(
-        "예정 치료명을 입력해주세요."
+        "치료 종류를 선택하고, 기타는 내용을 입력해주세요."
       );
 
       return null;
@@ -305,10 +310,6 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
       setErrorMessage("치료 원인(질병/상해)을 선택해주세요.");
       return null;
     }
-    if (nationalHealthInsuranceStatus === "UNKNOWN") {
-      setErrorMessage("이번 진료의 국민건강보험 적용 여부를 선택해주세요.");
-      return null;
-    }
     const daysSinceAccidentNumber = gen1DaysSinceAccident === "" ? null : Number(gen1DaysSinceAccident);
     // 경과일은 1세대 대표상품(0904.2) 세부 입력에서만 받는다.
     if (generation === 1 && gen1Product === "SAMSUNG_0904_2" && (daysSinceAccidentNumber === null || !Number.isInteger(daysSinceAccidentNumber) || daysSinceAccidentNumber < 0)) {
@@ -316,6 +317,14 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
       return null;
     }
 
+    if (!treatmentCareSelected) {
+      setErrorMessage("입원 또는 통원을 선택해주세요.");
+      return null;
+    }
+    if (benefitClass === "UNKNOWN") {
+      setErrorMessage("급여 또는 비급여를 선택해주세요.");
+      return null;
+    }
     const nonCoveredType = toNonCoveredTreatmentType(benefitClass, treatmentCategory);
     let gen23Values: Partial<MedicalUsage> = {};
     if (generation === 2 || generation === 3) {
@@ -323,7 +332,7 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
         gen23Values = {
           ...parseGen23Form(gen23Form),
           claimCause,
-          nationalHealthInsuranceStatus,
+          nationalHealthInsuranceStatus: "APPLIED" as const, // 건강보험 적용 여부는 묻지 않고 항상 적용으로 계산한다.
           gen23PolicyExclusionsCleared: policyExclusionsCleared || undefined,
           // 3세대 치료 분류는 공통 칸의 비급여 치료 종류에서 가져온다.
           ...(generation === 3 ? { gen23TreatmentType: nonCoveredType || "BASE" } : {}),
@@ -392,7 +401,7 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
         : {}),
 
       claimCause,
-      nationalHealthInsuranceStatus,
+      nationalHealthInsuranceStatus: "APPLIED" as const, // 건강보험 적용 여부는 묻지 않고 항상 적용으로 계산한다.
 
       ...(generation === 1 ? {
         gen1CoveredRoomAndTreatment: optionalAmount(gen1CoveredRoomAndTreatment),
@@ -535,6 +544,7 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
 
       setGen23Form(restoreGen23Form(sampleUsage));
       setTreatmentSampleNotice(scenario.notice);
+      setTreatmentSampleLoaded(true);
 
       applyTreatmentDraft(nextDraft);
       setIsTreatmentFormOpen(true);
@@ -561,6 +571,7 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
       usage.id
     );
 
+    setTreatmentCareSelected(true);
     setTreatmentName(
       usage.treatmentName
     );
@@ -630,6 +641,28 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
 
 
   // ========================================
+  // 다음 치료 추가(닫힌 입력 폼을 다시 연다)
+  // ========================================
+
+  const handleResetTreatments = () => {
+    resetTreatmentForm();
+    setPlannedUsages([]);
+    setTreatmentDrafts({});
+    treatmentSampleTemplatesRef.current = {};
+    setPendingDeleteUsage(null);
+    setTreatmentSampleLoaded(false);
+    setErrorMessage("");
+    setIsTreatmentFormOpen(true);
+  };
+
+  const handleOpenTreatmentForm = () => {
+    setErrorMessage("");
+    resetTreatmentForm();
+    setIsTreatmentFormOpen(true);
+  };
+
+
+  // ========================================
   // 수정 취소
   // ========================================
 
@@ -673,6 +706,8 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
     resetTreatmentForm,
     createCurrentUsage,
     handleAddTreatment,
+    handleOpenTreatmentForm,
+    handleResetTreatments,
     handleLoadSampleTreatments,
     handleEditTreatment,
     handleCancelEdit,

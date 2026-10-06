@@ -1,22 +1,21 @@
-import ExistingUsageFields from "./ExistingUsageFields";
 import type { M02Form } from './useM02Form';
+import { needsManualTherapyImprovementAssumption } from '../../domain/manualTherapyCount';
 
 export default function Step3Assumptions({ form }: { form: M02Form }) {
   const choices = [
     { label: '보장 제외 사유가 없다고 가정', description: '면책 여부를 아직 확인하지 않은 치료에만 적용합니다. 확인된 제외 사유나 중증 여부를 바꾸지는 않습니다.', checked: form.assumeNoPolicyExclusions, set: form.setAssumeNoPolicyExclusions },
     { label: '입력한 환자부담금 전액을 보장대상 금액으로 가정', description: '보장대상 금액을 따로 입력하지 않은 치료에만 적용합니다. 공제금과 한도는 약관대로 계산합니다.', checked: form.assumeEntireMedicalCostCovered, set: form.setAssumeEntireMedicalCostCovered },
+    ...(needsManualTherapyImprovementAssumption(form.plannedUsages) ? [{ label: '도수치료 10회 이후에도 증상 개선이 확인되어 보상된다고 가정', description: '도수·체외충격파·증식치료는 4·5세대 약관상 최초 10회까지 보장하고, 이후에는 검사결과 등으로 증상 개선이 확인되어야 보상합니다. 선택하지 않으면 11회 이후는 확인 필요로 남습니다.', checked: form.assumeManualTherapyImprovement, set: form.setAssumeManualTherapyImprovement }] : []),
     { label: '반복 치료를 각각 별도 방문으로 가정', description: '입력한 횟수마다 별도로 공제합니다. 같은 날 같은 담보로 받는 치료는 금액을 합쳐 한 항목으로 입력하세요.', checked: form.assumeEachOccurrenceSeparate, set: form.setAssumeEachOccurrenceSeparate },
-    ...(form.comparisonBasis === 'REMAINING_LIMITS' ? [{ label: '비워 둔 기존 사용분은 0으로 가정', description: '직접 입력한 지급액·횟수는 유지하고, 빈 사용분만 0으로 계산합니다.', checked: form.assumeNoPriorLimitUsage, set: form.setAssumeNoPriorLimitUsage }] : []),
   ];
   return <section id="input-step-4" tabIndex={-1} className="form-card comparison-assumptions">
     <span className="step-badge">STEP 4 · 명시적 계산 가정</span>
     <h2 className="card-title">계산에 적용할 가정을 선택해주세요</h2>
     <p className="card-description">확인되지 않은 조건에 적용할 가정만 선택하세요. 다음 입력 확인 페이지에서 계약·예정 치료와 선택한 가정을 검토합니다.</p>
-    <ExistingUsageFields form={form} />
     <h3 className="review-section-title">계산에 적용할 가정</h3>
     <div className="comparison-scope">
-      <strong>{form.comparisonBasis === 'FRESH_YEAR' ? '한도 사용 전부터 시작하는 1년 모의 비교' : '현재 계약의 기존 사용분을 반영한 비교'}</strong>
-      <p>유효한 실손 계약 1개 · 5세대 일반형 · 입력한 월 보험료 × 12</p>
+      <strong>한도 사용 전부터 시작하는 1년 모의 비교</strong>
+      <p>유효한 실손 계약 1개 · 5세대 계약전환형 · 입력한 월 보험료 × 12</p>
       <p>갱신에 따른 보험료 변화와 향후 할인·할증은 추정하지 않습니다.</p>
     </div>
     <div className="comparison-assumption-list">

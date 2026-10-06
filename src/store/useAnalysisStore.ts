@@ -17,6 +17,8 @@ export interface AnalysisCalculationAssumptions {
   comparisonBasis?: "FRESH_YEAR" | "REMAINING_LIMITS";
   /** 미래 비교에서 보장 제외 사유가 없다는 명시적 가정. 확인된 제외 사실은 덮어쓰지 않는다. */
   assumeNoPolicyExclusions?: boolean;
+  /** 도수·체외충격파·증식치료 최초 10회 이후에도 증상 개선·병변호전이 확인되어 보상되는 것으로 본다(4·5세대 약관). */
+  assumeManualTherapyImprovement?: boolean;
   /** 설계사 입력에서 명시한 단일 실손 계약 비교 범위. 다수보험 분담은 제외한다. */
   assumeSingleIndemnityContract?: boolean;
   /**
@@ -136,7 +138,7 @@ const initialState = {
     gen1ContractBasis: "SAMPLE_SIMULATION" as const,
     gen1D1Coverage: "UNKNOWN" as const,
     gen4NonCoveredRider: "UNKNOWN" as RiderEnrollmentStatus,
-    gen5ContractType: "GENERAL" as const,
+    gen5ContractType: "CONVERSION" as const,
     gen5SevereRider: "UNKNOWN" as RiderEnrollmentStatus,
     gen5NonSevereRider: "UNKNOWN" as RiderEnrollmentStatus,
     samsungGen23Variant: "UNKNOWN" as const,

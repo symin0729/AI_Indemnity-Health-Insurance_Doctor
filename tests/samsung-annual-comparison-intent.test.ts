@@ -53,7 +53,7 @@ describe('5세대는 새 계약으로 보고 올해 사용분 없이 시작한�
 
   it('결과에 5세대 가정을 표시한다', () => {
     const result = compare([usage()]);
-    expect(result.items[0].target.appliedAssumptions?.join()).toContain('신규 계약');
-    expect(result.items[0].current.appliedAssumptions?.join() ?? '').not.toContain('신규 계약');
+    expect(result.items[0].target.appliedAssumptions?.join()).toContain('전환 후 계약');
+    expect(result.items[0].current.appliedAssumptions?.join() ?? '').not.toContain('전환 후 계약');
   });
 });

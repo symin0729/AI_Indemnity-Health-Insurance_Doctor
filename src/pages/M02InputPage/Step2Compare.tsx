@@ -18,11 +18,11 @@ export default function Step2Compare({ form }: { form: M02Form }) {
   return (
     <section id="input-step-3" tabIndex={-1} className="compare-card">
         <span className="step-badge">
-          STEP 3 · 5세대 비교 조건
+          STEP 3 · 5세대 조건
         </span>
 
         <h2 className="card-title">
-          5세대 전환 비교
+          5세대 계약전환형 비교
         </h2>
 
         <p className="card-description">
@@ -35,6 +35,20 @@ export default function Step2Compare({ form }: { form: M02Form }) {
           <ul>{form.plannedUsages.map(usage => <li key={usage.id}>{usage.treatmentName} · {usage.careSetting === 'INPATIENT' ? '입원' : '통원'} · {usage.benefitClass === 'COVERED' ? '급여' : usage.benefitClass === 'NON_COVERED' ? '비급여' : '급여 구분 확인 필요'} · 회당 {usage.unitCost.toLocaleString('ko-KR')}원 · {usage.frequency}회</li>)}</ul>
           <p>치료·비용·횟수는 같고, 보험금은 각 계약의 가입 보장·공제·한도에 따라 달라집니다.</p>
           <button type="button" className="review-edit-button" onClick={() => form.goToInputStep(2)}>예정 치료 수정</button>
+        </section>
+
+        <section className="notice-box" aria-label="5세대 계약전환 조건">
+          <strong>삼성 5세대 계약전환형 약관으로 비교합니다</strong>
+          <p>기존 실손계약을 5세대로 전환하는 조건입니다. 전환 자격과 예정 치료의 계속 치료 적용 조건을 보험사에 확인해주세요. 미확인 시 보험금과 손익분기점 계산을 보류합니다.</p>
+          <label htmlFor="target-conversion-eligibility">전환 자격·계속 치료 적용 조건
+            <select id="target-conversion-eligibility" value={form.targetContractFactsForm.conversionEligibilityConfirmed ?? ''}
+              onChange={event => form.setTargetContractFactsForm(previous => ({ ...previous, conversionEligibilityConfirmed: event.target.value }))}>
+              <option value="">확인 필요</option>
+              <option value="true">보험사 확인 완료 — 전환 및 예정 치료 적용 가능</option>
+              <option value="false">적용 불가 또는 추가 확인 필요</option>
+            </select>
+          </label>
+          <p>계약전환 할인은 자동 적용하지 않습니다. 할인 적용 여부와 기간을 확인한 실제 전환 견적 보험료를 입력하세요.</p>
         </section>
 
         <label id="target-premium-help-area" htmlFor="target-premium">

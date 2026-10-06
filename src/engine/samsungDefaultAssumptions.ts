@@ -28,7 +28,7 @@ export function applySamsungDefaultAssumptions(
   if (!target && context.contractBenefitCap !== undefined) input.contractBenefitCap ??= context.contractBenefitCap;
   if (!target && context.perOccurrenceBenefitCap !== undefined && usage.careSetting === "OUTPATIENT") input.perOccurrenceBenefitCap ??= context.perOccurrenceBenefitCap;
   if (generation !== 4 && generation !== 5) return applied;
-  if (target) applied.push("5세대는 신규 계약으로 보아 올해 사용한 보험금·한도·횟수 없이 시작함");
+  if (target) applied.push("5세대는 전환 후 계약의 비교 시작 시점으로 보아 올해 사용한 보험금·한도·횟수 없이 시작함");
   const category = input.threeNonCoveredCategory ?? usage.samsungGen5Facts?.threeNonCoveredCategory ?? usage.treatmentCategory?.toUpperCase();
   const isThreeNonCovered = category === "MRI" || category === "MRI_MRA" || category === "MANUAL_THERAPY" || category === "INJECTION";
   const isSevere = usage.samsungGen5Facts

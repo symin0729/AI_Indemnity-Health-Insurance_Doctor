@@ -133,7 +133,6 @@ export type SubmissionInput = ContractStepInput & {
   selectedSampleId: string | null;
   isSampleConfirmed: boolean;
   isTargetPremiumHelpConfirmed: boolean;
-  isTreatmentHelpConfirmed: boolean;
   isStep3Confirmed: boolean;
   calculationAssumptions: AnalysisCalculationAssumptions;
   gen1ContractBasis: ProductCalculationSelections["gen1ContractBasis"];
@@ -262,7 +261,7 @@ export function buildSubmission(input: SubmissionInput): InputFailure | Submissi
       gen1D1Coverage: input.gen1D1Coverage,
       gen4NonCoveredRider: input.gen4NonCoveredRider,
       // 5세대는 현재 계약으로 입력하지 않는다. 5세대 특약은 STEP 2 비교 조건(target5GCoverages)에서만 다룬다.
-      gen5ContractType: "GENERAL",
+      gen5ContractType: "CONVERSION",
       gen5SevereRider: "UNKNOWN",
       gen5NonSevereRider: "UNKNOWN",
       samsungGen23Variant: input.samsungGen23Variant,

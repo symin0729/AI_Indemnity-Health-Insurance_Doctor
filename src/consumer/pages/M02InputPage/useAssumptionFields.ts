@@ -42,14 +42,16 @@ export function useAssumptionFields(deps: BaseApi & ContractApi & CompareApi & T
   );
 
 
-  const [comparisonBasis, setComparisonBasis] = useState<"FRESH_YEAR" | "REMAINING_LIMITS">(savedCalculationAssumptions.comparisonBasis ?? 'FRESH_YEAR');
+  const [comparisonBasis, setComparisonBasis] = useState<"FRESH_YEAR" | "REMAINING_LIMITS">('FRESH_YEAR'); // 소비자용도 기존 사용분을 받지 않고 항상 한도 사용 전부터 비교한다.
   const [assumeNoPolicyExclusions, setAssumeNoPolicyExclusions] = useState(savedCalculationAssumptions.assumeNoPolicyExclusions ?? false);
+  const [assumeManualTherapyImprovement, setAssumeManualTherapyImprovement] = useState(savedCalculationAssumptions.assumeManualTherapyImprovement ?? false);
 
   const [isStep3Confirmed, setIsStep3Confirmed] = useState(false);
 
 
   return {
     comparisonBasis, setComparisonBasis, assumeNoPolicyExclusions, setAssumeNoPolicyExclusions,
+    assumeManualTherapyImprovement, setAssumeManualTherapyImprovement,
     assumeEntireMedicalCostCovered,
     setAssumeEntireMedicalCostCovered,
     assumeNoPriorLimitUsage,
