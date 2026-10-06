@@ -11,8 +11,8 @@ describe("Gen23 input/confirmation/result display", () => {
     const gen2=renderToStaticMarkup(createElement(Gen23Inputs,{generation:2,value:{gen23CareSetting:"INPATIENT"},onChange:()=>{}}));
     const gen3=renderToStaticMarkup(createElement(Gen23Inputs,{generation:3,value:{gen23CareSetting:"OUTPATIENT",gen23TreatmentType:"MRI"},onChange:()=>{}}));
     for (const text of ["입력한 한 계산단위", "모르는 값은 비워두세요", "누적액은 이 청구 이전", "중복보험 계수는", "반복 치료의 연간 합계와 확정 보험금"]) expect(gen2).not.toContain(text); expect(gen2).not.toContain("3세대 치료 분류");
-    expect(gen2).toContain("<h3>2세대 삼성화재 계산 조건</h3>");
-    expect(gen3).toContain("<h3>3세대 삼성화재 계산 조건</h3>");
+    expect(gen2).toContain("<h3>2세대 OO 보험 계산 조건</h3>");
+    expect(gen3).toContain("<h3>3세대 OO 보험 계산 조건</h3>");
     expect(gen3).toContain("(필수)");
     expect(gen3).not.toContain("중복보험 계수는");
     expect(gen2).toContain("병실료 차액"); expect(gen2).toContain('value=""');
@@ -20,7 +20,7 @@ describe("Gen23 input/confirmation/result display", () => {
   });
   it("confirmation preserves unknown versus zero and false", () => {
     const html=renderToStaticMarkup(createElement(Gen23Summary,{generation:2,usage:{...usage,gen23RoomDifference:0,gen23OtherIndemnityPoliciesExist:false}}));
-    expect(html).toContain("확인 필요"); expect(html).toContain("<dd>0</dd>"); expect(html).toContain("아니요");
+    expect(html).toContain("확인 필요"); expect(html).toContain('gen23-summary-value">0</span>'); expect(html).toContain("아니요");
   });
   it("never shows a fabricated claim or annual total on missing inputs", () => {
     const html=renderToStaticMarkup(createElement(Gen23Results,{generation:3,variant:"UNKNOWN",results:[{usage,result:{status:"CONFIRMATION_REQUIRED",claim:null,reason:"상품 종형 확인 필요"}}],onEdit:()=>{},onConfirm:()=>{}}));

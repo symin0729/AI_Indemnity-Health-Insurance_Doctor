@@ -1,0 +1,465 @@
+/* M02-input 화면 전용 스타일. 이 화면 작업자만 수정합니다. */
+
+.nested-fieldset {
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+.nested-fieldset legend {
+  padding: 0 6px;
+  font-weight: 800;
+}
+
+.gen1-conditional-inputs {
+  margin: 20px 0;
+  padding: 20px;
+  border: 1px solid var(--pale);
+  border-radius: 16px;
+  background: #f6f9fc;
+}
+
+.gen1-conditional-inputs > h3 {
+  margin-top: 0;
+}
+
+.legacy-sample-picker { display: none; }
+
+.html-sample-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: -4px 0 20px;
+}
+
+.no-treatment-option {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 18px;
+  padding: 15px 16px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: border-color var(--duration-fast) ease, background var(--duration-fast) ease;
+}
+
+.no-treatment-option.is-selected {
+  border-color: var(--blue2);
+  background: #eef4fa;
+}
+
+.no-treatment-option strong { display: block; font-size: 14px; }
+
+.no-treatment-option small { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; font-weight: 500; }
+
+.sample-button {
+  padding: 10px 13px;
+  border: 1px solid var(--pale);
+  border-radius: 11px;
+  background: #f6f9fc;
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.sample-button:hover { background: #eaf1f8; border-color: var(--blue2); }
+
+.sample-button.required-confirm-button {
+  border-color: #dc2626;
+  background: #fff1f2;
+  color: #b91c1c;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+  font-weight: 900;
+}
+
+.sample-button.required-confirm-button:hover {
+  border-color: #b91c1c;
+  background: #ffe4e6;
+  color: #991b1b;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.14);
+}
+
+.sample-button.required-confirm-button.is-confirmed {
+  border-color: #991b1b;
+  background: #b91c1c;
+  color: #ffffff;
+  box-shadow: 0 5px 14px rgba(185, 28, 28, 0.22);
+}
+
+.input-unit-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 24rem;
+  margin-top: 8px;
+}
+
+.input-unit-row > input:not([type="checkbox"]):not([type="radio"]) {
+  flex: 1 1 0;
+  width: 0;
+  min-width: 0;
+  margin-top: 0;
+}
+
+.input-unit-label {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.required-mark {
+  display: inline-flex;
+  align-items: center;
+  min-height: 18px;
+  margin-left: 5px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: #f8ecec;
+  color: #9b4c4c;
+  font-size: 0.68rem;
+  font-weight: 850;
+  vertical-align: 1px;
+}
+
+#samsung-gen23-variant[aria-invalid="true"],
+#samsung-gen1-product[aria-invalid="true"],
+#samsung-gen4-type[aria-invalid="true"],
+[id^="gen3-rider-"][aria-invalid="true"] {
+  border-color: #c98b8b;
+  background-color: #fffafa;
+}
+
+.treatment-help-dialog {
+  width: min(100% - 32px, 480px);
+  max-height: calc(100dvh - 32px);
+  padding: 0;
+  border: 0;
+  border-radius: 16px;
+  color: var(--ink);
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.24);
+}
+
+.treatment-help-dialog::backdrop {
+  background: rgba(15, 23, 42, 0.48);
+  backdrop-filter: blur(4px);
+}
+
+/* 고객 보험 정보와 같은 제목 간격, 작업 버튼은 별도 행으로 정렬한다. */
+.treatment-heading-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  margin-top: 12px;
+}
+
+.treatment-heading-row .card-title {
+  margin: 0 0 14px;
+}
+
+.treatment-compact-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  max-width: 100%;
+}
+
+.treatment-compact-actions > button {
+  flex: 0 0 auto;
+  width: auto;
+  min-height: 42px;
+  min-width: 0;
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.html-sample-actions:has(+ .sample-note) { margin-bottom: 6px; }
+
+.sample-note { margin: 0 0 20px; padding-left: 12px; color: #98a2b3; font-size: 10px; line-height: 1.5; }
+
+.optional-mark { display: inline-flex; align-items: center; min-height: 18px; margin-left: 5px; padding: 1px 6px; border-radius: 999px; background: #eaf0f7; color: #4a6a8f; font-size: 0.68rem; font-weight: 850; vertical-align: 1px; }
+
+.select-like-field { display: block; margin-bottom: 18px; color: var(--ink); font-size: 0.94rem; font-weight: 700; }
+
+.select-like { display: flex; align-items: center; justify-content: space-between; gap: 12px; text-align: left; font-size: inherit; font-weight: inherit; cursor: pointer; }
+
+.select-like__chevron { font-size: 0.7rem; color: var(--muted); }
+
+.select-like-field > .no-treatment-option { box-sizing: border-box; width: 100%; min-height: 48px; margin: 8px 0 0; padding: 11px 13px; border: 1px solid #c9d3df; border-radius: var(--radius-sm); background: #fff; }
+
+.select-like-field > .no-treatment-option strong { font-size: inherit; font-weight: inherit; }
+
+.select-like-field .sample-note { display: block; margin: 4px 0 0; padding-left: 4px; }
+
+.select-like__panel .no-treatment-option { margin-top: 6px; }
+
+.rider-row { grid-column: 1 / -1; }
+
+.rider-row__boxes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 8px; }
+
+.rider-row__boxes .no-treatment-option { box-sizing: border-box; width: 100%; min-height: 48px; margin: 0; padding: 11px 13px; border: 1px solid #c9d3df; border-radius: var(--radius-sm); background: #fff; }
+
+.rider-row__boxes .no-treatment-option strong { font-size: 12px; font-weight: inherit; line-height: 1.35; }
+
+@media (max-width: 760px) { .rider-row__boxes { grid-template-columns: 1fr; } }
+
+.select-like-field .rider-row__hint { display: inline; margin: 0 0 0 8px; padding: 0; font-weight: 500; }
+
+.option-dropdown { position: relative; }
+
+.option-dropdown__list { position: absolute; z-index: 20; top: 100%; left: 0; right: 0; margin: 6px 0 0; padding: 6px; list-style: none; border: 1px solid #c9d3df; border-radius: var(--radius-sm); background: #fff; box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14); }
+
+.option-dropdown__item.is-selected strong { color: var(--blue2); }
+
+#samsung-gen23-variant.select-like[aria-invalid="true"] { border-color: #c98b8b; background-color: #fffafa; }
+
+/* 아직 고르지 않은 선택 칸은 안내 문구(또는 예시)를 회색으로 보여주고, 열었을 때 목록 글자는 원래 색으로 둔다 */
+select.is-placeholder { color: #98a2b3; }
+select.is-placeholder option { color: var(--color-text); }
+
+/* 박스가 두 개뿐인 줄(1세대 특약)은 두 칸으로 넓혀 설명이 한 줄에 보이게 한다 */
+.rider-row__boxes--two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 760px) { .rider-row__boxes--two { grid-template-columns: 1fr; } }
+/* 실손 세대 아래의 작은 안내 */
+.generation-note { display: block; margin: 6px 0 0; padding-left: 4px; font-weight: 500; }
+
+/* STEP 3은 후속 화면으로 교체할 수 있도록 빈 작업 영역만 유지합니다. */
+.step3-placeholder {
+  min-height: clamp(360px, 55vh, 680px);
+}
+
+/* 설계사 계약 정보: 카드 안의 중첩 테두리 대신 구분선과 제목으로 묶는다. */
+.contract-section {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-border, #dbe3ec);
+}
+.contract-section h3 { margin: 0 0 12px; font-size: 1.05rem; }
+.contract-section h4 { margin: 0 0 8px; font-size: 0.95rem; }
+.contract-section .sample-note { margin: 0 0 16px; font-size: 13px; line-height: 1.5; }
+
+.contract-field-help { color: var(--color-text-sub); font-size: 12px; font-weight: 400; line-height: 1.5; }
+.contract-field-inline-help { margin-left: 8px; }
+
+/* 입력 카드 제목과 설명 문장 사이 간격을 좁힌다. */
+.navy-input-page .card-title {
+  margin-bottom: 6px;
+}
+
+/* 입력 카드 제목 아래 설명 문장은 본문보다 한 단계 작게 보여준다(기본 글자 크기의 약 90%). */
+.navy-input-page .card-description {
+  font-size: 0.9rem;
+}
+
+/* 설계사용: 아직 고르지 않은 '필수 선택' 안내 문구를 회색으로 보여준다(소비자용은 기존 색 유지). */
+[data-app-mode="planner"] .option-dropdown__placeholder { color: #98a2b3; }
+
+/* The comparison policy is separate from contract facts and treatment amounts. */
+.comparison-basis-field { margin: 22px 0; padding: 18px 20px; background: #f4f7fa; border-radius: 12px; }
+.comparison-basis-field label { font-weight: 700; }
+.comparison-scope { padding: 18px 20px; margin: 22px 0; background: #f4f7fa; border-left: 3px solid #2d6fa8; border-radius: 8px; }
+.comparison-scope p { margin: 8px 0 0; color: var(--color-text-sub); font-size: .9rem; line-height: 1.6; }
+.comparison-assumption-list { display: grid; gap: 0; }
+.comparison-assumption { display: grid !important; grid-template-columns: 20px 1fr; align-items: start; gap: 12px; padding: 20px 0; margin: 0 !important; border-bottom: 1px solid var(--color-border); cursor: pointer; }
+.comparison-assumption input { width: 18px !important; height: 18px; margin: 3px 0 0; accent-color: #2d6fa8; }
+.comparison-assumption strong { display: block; line-height: 1.5; }
+.comparison-assumption small { display: block; color: var(--color-text-sub); margin-top: 6px; line-height: 1.6; font-size: .88rem; }
+.treatment-section { border: 0; border-top: 1px solid var(--color-border); padding: 24px 0 0; margin: 24px 0; min-width: 0; }
+.treatment-section legend { padding: 0 12px 0 0; }
+@media (max-width: 600px) { .comparison-basis-field, .comparison-scope { padding: 16px; } }
+
+.comparison-review-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 24px 0; }
+.comparison-review-grid > div { padding: 18px; border: 1px solid var(--color-border); border-radius: 12px; }
+.comparison-review-grid h3 { margin: 0 0 12px; font-size: 1rem; }
+.comparison-review-grid p, .comparison-review-grid li { color: var(--color-text-sub); font-size: .9rem; line-height: 1.6; }
+.comparison-review-grid ul { padding-left: 18px; }
+.review-edit-button { border: 0; background: transparent; color: #24658f; padding: 8px 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.review-section-title { margin: 28px 0 12px; }
+@media (max-width: 720px) { .comparison-review-grid { grid-template-columns: 1fr; } }
+
+/* 예정 치료 양식: 기본 정보, 금액, 보장 조건을 일정한 간격으로 구분한다. */
+#input-step-2 .treatment-input-group {
+  margin: 0 0 24px;
+  padding: 0 0 20px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  min-width: 0;
+}
+#input-step-2 .treatment-input-group > h3,
+#input-step-2 .treatment-input-group > legend {
+  margin: 0 0 16px;
+  padding: 0;
+}
+#input-step-2 .treatment-input-group .form-grid {
+  align-items: start;
+  column-gap: 16px;
+  row-gap: 18px;
+  margin-bottom: 18px;
+}
+#input-step-2 .treatment-input-group .form-grid > label {
+  margin-bottom: 0;
+}
+#input-step-2 .treatment-input-group .form-grid > div > .input-unit-row {
+  margin-top: 8px;
+}
+
+#input-step-2 .treatment-cause-care {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+#input-step-2 .treatment-cause-care > legend {
+  margin-bottom: 8px;
+  padding: 0;
+  font-size: 0.94rem;
+  font-weight: 700;
+}
+.treatment-care-options {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+#input-step-2 .treatment-care-options > label {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 10px 12px;
+}
+#input-step-2 .treatment-cause-care > .sample-note {
+  margin: 8px 0 0;
+  padding-left: 0;
+}
+
+.treatment-cause-care .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.treatment-kind-input { display: flex; align-items: center; gap: 8px; }
+.treatment-kind-input > input { flex: 1; min-width: 0; }
+.treatment-kind-input > button { flex-shrink: 0; white-space: nowrap; }
+
+#treatment-kind:has(option[value=""]:checked),
+#treatment-cause:has(option[value="UNKNOWN"]:checked),
+#input-step-2 select:has(option[value="UNKNOWN"]:checked) { color: #8b99ae; }
+#input-step-2 select option { color: var(--ink); }
+
+.treatment-coverage-layout { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
+.treatment-coverage-stack { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+#input-step-2 .treatment-coverage-stack label { margin: 0; }
+
+@media (max-width: 640px) { .treatment-coverage-layout { grid-template-columns: 1fr; } }
+
+#input-step-2 .treatment-cost-block {
+  margin-top: 20px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+#input-step-2 .treatment-field-heading {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 32px;
+}
+#input-step-2 .treatment-cause-care > legend { min-height: 32px; margin-bottom: 8px; }
+#input-step-2 .treatment-input-group input:not([type="checkbox"]):not([type="radio"]),
+#input-step-2 .treatment-input-group select {
+  min-height: 48px;
+  box-sizing: border-box;
+}
+#input-step-2 .treatment-input-group .input-unit-row {
+  position: relative;
+  display: block;
+  max-width: none;
+  width: 100%;
+}
+#input-step-2 .treatment-input-group .input-unit-row > input {
+  width: 100%;
+  padding-right: 38px;
+}
+#input-step-2 .treatment-input-group .input-unit-label {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+#input-step-2 section.treatment-cost-block { margin-top: 0; padding-top: 0; border-top: 0; }
+
+#input-step-2 .treatment-cause-row .treatment-care-options { margin-top: 0; }
+#input-step-2 .treatment-cause-row .treatment-care-options > label { min-height: 48px; }
+#input-step-2 .treatment-cause-row .sample-note { margin: 8px 0 0; padding-left: 0; }
+
+/* 치료 입력 박스는 같은 높이와 여백으로 맞춘다. */
+#input-step-2 .treatment-input-group input:not([type="checkbox"]):not([type="radio"]),
+#input-step-2 .treatment-input-group select {
+  width: 100%;
+  height: 48px;
+  min-height: 48px;
+  margin-top: 8px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  line-height: 26px;
+  border-radius: 11px;
+}
+#input-step-2 label[for="treatment-kind"] { margin-bottom: 8px; }
+#input-step-2 #treatment-kind,
+#input-step-2 #treatment-cause,
+#input-step-2 .treatment-kind-input > input { margin-top: 0; }
+#input-step-2 .treatment-cause-row .treatment-care-options > label {
+  height: 48px;
+  box-sizing: border-box;
+}
+
+#input-step-2 .treatment-input-group .input-unit-row > input:not([type="checkbox"]):not([type="radio"]) { margin-top: 0; }
+
+#input-step-2 .treatment-coverage-stack > label,
+#input-step-2 .treatment-coverage-stack select { min-width: 0; max-width: 100%; }
+#input-step-2 .treatment-coverage-stack select { text-overflow: ellipsis; }
+
+#input-step-2 .treatment-form-card { margin: 0 0 24px; min-width: 0; }
+#input-step-2 .treatment-form-card > legend { padding: 0 8px; }
+#input-step-2 .treatment-form-card > legend > h3 { margin: 0; }
+#input-step-2 .treatment-form-card > .treatment-cost-block { margin-bottom: 0; padding-bottom: 0; border-bottom: 0; }
+
+#input-step-2 .treatment-inline-hint {
+  margin-left: 6px;
+  color: #8793a5;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+/* 예정 치료 양식 간격 통일: 제목→입력 박스 16px, 칸 제목→입력 박스 8px, 칸과 칸 사이 18px. */
+#input-step-2 .treatment-input-group > legend > h3,
+#input-step-2 .treatment-input-group > h3 { margin: 0 0 16px; }
+#input-step-2 .treatment-input-group > legend { margin-bottom: 16px; }
+#input-step-2 .treatment-input-group label { margin-bottom: 0; line-height: 1.4; }
+#input-step-2 .treatment-input-group label > .input-unit-row { margin-top: 8px; }
+#input-step-2 .treatment-input-group .form-grid + .form-grid { margin-top: 0; }
+#input-step-2 .treatment-input-group .form-grid:last-child { margin-bottom: 0; }
+
+.treatment-heading-row .card-title { margin-bottom: 8px; }
+.treatment-heading-row .card-description { margin: 0 0 14px; }
+.treatment-heading-row .treatment-compact-actions { margin-bottom: 22px; }
+
+#input-step-2 .treatment-date-field > label { margin-bottom: 8px; }
+#input-step-2 .treatment-input-group .treatment-date-field input:not([type="checkbox"]):not([type="radio"]) { margin-top: 0; }

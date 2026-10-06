@@ -204,6 +204,7 @@ export function calculateSamsungGen5Claim(
     coverage: routing.coverage,
     result: calculateSamsungGen5(contractType, routing.coverage, {
       ...input,
+      careSetting: facts.careSetting,
       threeNonCoveredCategory: facts.threeNonCoveredCategory ?? input.threeNonCoveredCategory,
     }),
   };

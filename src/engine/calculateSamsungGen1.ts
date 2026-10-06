@@ -7,7 +7,7 @@ import {
 } from "./evaluateSamsungExecutionSpec";
 
 export type Gen1ProductSelection = "SAMSUNG_0904_2" | "OTHER" | "UNKNOWN";
-export type Gen1D1Coverage = "INJURY" | "DISEASE" | "BOTH" | "UNKNOWN";
+export type Gen1D1Coverage = "INJURY" | "DISEASE" | "BOTH" | "NONE" | "UNKNOWN";
 export type Gen1NhiStatus = "APPLIED" | "NOT_APPLIED" | "PARTIAL" | "UNKNOWN";
 
 export interface SamsungGen1RouteInput {
@@ -23,7 +23,8 @@ export type SamsungGen1RouteResult =
   | { status: "ROUTED"; ruleId: "G1-01" | "G1-02" | "G1-04" | "G1-05" }
   | { status: "UNSUPPORTED_PRODUCT"; reason: string }
   | { status: "RULE_NOT_VERIFIED"; reason: string }
-  | { status: "CONFIRMATION_REQUIRED"; reason: string };
+  | { status: "CONFIRMATION_REQUIRED"; reason: string }
+  | { status: "NOT_ENROLLED"; reason: string };
 
 const rules = new Map(
   (executionSpec.rules as SamsungExecutionRule[]).map((rule) => [rule.ruleId, rule]),
@@ -39,13 +40,17 @@ export function routeSamsungGen1Rule(input: SamsungGen1RouteInput): SamsungGen1R
   if (input.contractBasis === "ACTUAL_CONTRACT" && executionSpec.calculationEnabled !== true) {
     return { status: "RULE_NOT_VERIFIED", reason: "0904.2 Rule은 독립검수 전이므로 실제 계약 계산이 비활성화되어 있습니다." };
   }
+  if (input.d1Coverage === "NONE") {
+    return { status: "CONFIRMATION_REQUIRED", reason: "가입한 D1 특약이 없어 계산할 수 없습니다. 보험증권의 특약을 확인해주세요." };
+  }
   if (input.claimCause === "UNKNOWN" || input.d1Coverage === "UNKNOWN") {
     return { status: "CONFIRMATION_REQUIRED", reason: "질병·상해와 가입한 D1 담보를 확인해야 합니다." };
   }
   const covered = input.d1Coverage === "BOTH"
     || input.d1Coverage === input.claimCause;
   if (!covered) {
-    return { status: "CONFIRMATION_REQUIRED", reason: "선택한 질병·상해에 필요한 D1 담보가 가입되어 있지 않습니다." };
+    // 체크하지 않은 특약은 미가입으로 계산한다. 계산을 보류하지 않고 현재 계약은 보상 0원으로 처리한다.
+    return { status: "NOT_ENROLLED", reason: "선택한 진료의 원인(질병/상해)에 해당하는 D1 특약에 가입하지 않아 현재 계약은 보상하지 않습니다." };
   }
   if (input.nhiStatus === "PARTIAL") {
     return { status: "RULE_NOT_VERIFIED", reason: "건강보험 일부 적용 사례의 분리 계산 명세가 확인되지 않았습니다." };

@@ -6,6 +6,7 @@ import gen3Selected2 from "../rules/samsung/gen3-1704-1-selected2.json";
 import gen4 from "../rules/samsung/gen4-2107-1.json";
 import gen5 from "../rules/samsung/gen5-2605-1.json";
 import type { RuleSet } from "./loadRuleSet";
+import { GEN23_UNREGISTERED_REASON, type SamsungGen23Variant } from "../domain/samsungGen23Variant";
 
 const ruleSets: Record<string, unknown> = {
   "SAMSUNG_0904_2:default": gen1,
@@ -19,7 +20,7 @@ const ruleSets: Record<string, unknown> = {
 
 export type SamsungGen23RoutingInput = {
   generation: 2 | 3;
-  variant: "standard" | "selected2" | "UNKNOWN";
+  variant: SamsungGen23Variant;
 };
 
 export const resolveSamsungGen23Product = ({
@@ -33,6 +34,10 @@ export const resolveSamsungGen23Product = ({
     throw new Error(
       `${generation}세대 상품 종형을 선택해주세요.`
     );
+  }
+
+  if (variant === "standard2013" || variant === "selected2013" || variant === "unified2009") {
+    throw new Error(GEN23_UNREGISTERED_REASON);
   }
 
   if (generation === 2) {

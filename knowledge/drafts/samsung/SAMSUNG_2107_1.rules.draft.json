@@ -11,34 +11,46 @@
     {
       "id": "G4-01",
       "coverage": "상해급여 입원",
-      "page": 9,
+      "page": 39,
       "formula": "급여 본인부담금 × 80%",
-      "limit": "연간 보험가입금액 한도",
+      "limit": "상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000); 나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
       "status": "RULE_DRAFTED",
       "variant": "default",
       "evidenceIds": [
         "SAMSUNG_2107_1_E_G4-01"
       ],
-      "aiSourceValidated": true
+      "aiSourceValidated": true,
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 24,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "id": "G4-02",
       "coverage": "질병급여 입원",
-      "page": 9,
+      "page": 43,
       "formula": "급여 본인부담금 × 80%",
-      "limit": "연간 보험가입금액 한도",
+      "limit": "상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000); 나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
       "status": "RULE_DRAFTED",
       "variant": "default",
       "evidenceIds": [
         "SAMSUNG_2107_1_E_G4-02"
       ],
-      "aiSourceValidated": true
+      "aiSourceValidated": true,
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 25,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "id": "G4-08",
       "coverage": "상해급여 통원",
       "page": 39,
-      "formula": "급여 통원의료비 - MAX(의원·병원 10,000원/종합병원·상급종합병원 20,000원, 보장대상의료비 × 20%)",
+      "formula": "급여 통원의료비에서 의료기관별 1만/2만원과 보장대상의료비 20% 중 큰 금액을 공제",
       "limit": "상해급여 입원·통원 합산 연간 보험가입금액(최대 50,000,000원); 통원 1회당 최대 200,000원",
       "status": "RULE_DRAFTED",
       "variant": "default",
@@ -46,13 +58,19 @@
       "evidenceIds": [
         "SAMSUNG_2107_1_E_G4-08"
       ],
-      "aiSourceValidated": true
+      "aiSourceValidated": true,
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 31,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "id": "G4-09",
       "coverage": "질병급여 통원",
       "page": 43,
-      "formula": "급여 통원의료비 - MAX(의원·병원 10,000원/종합병원·상급종합병원 20,000원, 보장대상의료비 × 20%)",
+      "formula": "급여 통원의료비에서 의료기관별 1만/2만원과 보장대상의료비 20% 중 큰 금액을 공제",
       "limit": "질병급여 입원·통원 합산 연간 보험가입금액(최대 50,000,000원); 통원 1회당 최대 200,000원",
       "status": "RULE_DRAFTED",
       "variant": "default",
@@ -60,34 +78,52 @@
       "evidenceIds": [
         "SAMSUNG_2107_1_E_G4-09"
       ],
-      "aiSourceValidated": true
+      "aiSourceValidated": true,
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 32,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "id": "G4-03",
       "coverage": "일반 비급여 입원",
       "page": 95,
       "formula": "비급여 의료비(비급여 병실료 제외) × 70%",
-      "limit": "상급병실료 차액: 비급여 병실료 × 50%, 1일 평균 100,000원 한도",
+      "limit": "상급병실료 차액: 비급여 병실료 × 50%, 1일 평균 100,000원 한도; 상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000)",
       "status": "RULE_DRAFTED",
       "variant": "default",
       "evidenceIds": [
         "SAMSUNG_2107_1_E_G4-03"
       ],
-      "aiSourceValidated": true
+      "aiSourceValidated": true,
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 26,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "id": "G4-04",
       "coverage": "일반 비급여 통원",
       "page": 95,
       "formula": "비급여 통원의료비 - MAX(30,000원, 보장대상의료비 × 30%)",
-      "limit": "연 100회; 공제표 적용",
+      "limit": "상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000) / 연 최대 횟수 100 / 회당 한도 최대 200,000; 공제표 적용",
       "status": "RULE_DRAFTED",
       "variant": "default",
       "sourceCorrection": "상해비급여 통원 공제표가 있는 PDF 95페이지로 정규화",
       "evidenceIds": [
         "SAMSUNG_2107_1_E_G4-04"
       ],
-      "aiSourceValidated": true
+      "aiSourceValidated": true,
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 27,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "id": "G4-05",
@@ -101,7 +137,13 @@
       "evidenceIds": [
         "SAMSUNG_2107_1_E_G4-05"
       ],
-      "aiSourceValidated": true
+      "aiSourceValidated": true,
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 28,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "id": "G4-06",
@@ -114,7 +156,13 @@
       "evidenceIds": [
         "SAMSUNG_2107_1_E_G4-06"
       ],
-      "aiSourceValidated": true
+      "aiSourceValidated": true,
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 29,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "id": "G4-07",
@@ -127,7 +175,13 @@
       "evidenceIds": [
         "SAMSUNG_2107_1_E_G4-07"
       ],
-      "aiSourceValidated": true
+      "aiSourceValidated": true,
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 30,
+        "reviewDate": "2026-10-06"
+      }
     }
   ]
 }

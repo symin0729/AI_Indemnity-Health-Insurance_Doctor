@@ -366,7 +366,7 @@
           "benefitRate": 0.4
         }
       },
-      "limitText": "동일 질병당 50,000,000원; 진단확정일부터 365일",
+      "limitText": "동일 질병당 50,000,000원; 진단확정일부터 365일; 재보장 간격 180일",
       "requiredCoverages": [
         "DISEASE_D1_RIDER"
       ],
@@ -385,7 +385,7 @@
       ],
       "priorityChecks": [
         "정식 0904.2 PDF 113쪽이 질병 입원 제2조 조항인지 확인하고, 오분류된 0904.1 PDF의 118쪽 표기를 사용하지 않는다.",
-        "한도·횟수·합산 기준을 원문과 대조한다: 동일 질병당 50,000,000원; 진단확정일부터 365일",
+        "한도·횟수·합산 기준을 원문과 대조한다: 동일 질병당 50,000,000원; 진단확정일부터 365일; 재보장 간격 180일",
         "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
       ],
       "itemsToVerify": [
@@ -435,7 +435,7 @@
           "benefitRate": 0.4
         }
       },
-      "limitText": "나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
+      "limitText": "나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상; 1상해·1질병당 계약가입금액 한도(최대 50,000,000)",
       "requiredCoverages": [
         "VARIANT_STANDARD"
       ],
@@ -454,7 +454,7 @@
       ],
       "priorityChecks": [
         "종형이 'standard'인지 표제·소제목에서 확인하고 표준형과 선택형Ⅱ 수치를 섞지 않는다.",
-        "한도·횟수·합산 기준을 원문과 대조한다: 나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
+        "한도·횟수·합산 기준을 원문과 대조한다: 나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상; 1상해·1질병당 계약가입금액 한도(최대 50,000,000)",
         "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
       ],
       "itemsToVerify": [
@@ -492,6 +492,7 @@
         "minimumByInstitution": {
           "CLINIC": 10000,
           "HOSPITAL": 15000,
+          "GENERAL_HOSPITAL": 15000,
           "GENERAL_TERTIARY": 20000
         }
       },
@@ -594,7 +595,7 @@
       "pdfPath": "knowledge/documents/samsung/gen2/SAMSUNG_1611_7/samsung_gen2_1611_7_terms.pdf",
       "pdfSha256": "2f7c8e6bdfbd9a0b777789e6dc9b88b4d034434133733b00af6bc6bd1623b93c",
       "pdfPageCount": 218,
-      "pdfPage": 16,
+      "pdfPage": 50,
       "printedPage": null,
       "article": "상품요약서",
       "paragraph": "기관별 외래 공제",
@@ -605,6 +606,7 @@
         "minimumByInstitution": {
           "CLINIC": 10000,
           "HOSPITAL": 15000,
+          "GENERAL_HOSPITAL": 15000,
           "GENERAL_TERTIARY": 20000
         },
         "combinedWithRuleId": "G2-STD-02"
@@ -632,7 +634,7 @@
         "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
       ],
       "itemsToVerify": [
-        "원문이 다음 요약과 일치하는지: 의원 등 10,000원 / 병원 등 15,000원 / 종합전문·상급종합 20,000원",
+        "원문이 다음 요약과 일치하는지: 의원 등 10,000원 / 병원·일반 종합병원 등 15,000원 / 종합전문요양기관·상급종합병원 20,000원",
         "보장대상과 보상하지 않는 사항의 적용 조건",
         "자기부담 비율·정액 공제·둘 중 큰 금액의 적용 순서",
         "금액·횟수·일수 한도와 보험연도/사고/질병별 합산 기준",
@@ -682,7 +684,7 @@
           "benefitRate": 0.4
         }
       },
-      "limitText": "급여 10% + 비급여 20% 자기부담이 연간 2,000,000원 초과 시 초과분 보상",
+      "limitText": "급여 10% + 비급여 20% 자기부담이 연간 2,000,000원 초과 시 초과분 보상; 1상해·1질병당 계약가입금액 한도(최대 50,000,000)",
       "requiredCoverages": [
         "VARIANT_SELECTED2"
       ],
@@ -701,7 +703,7 @@
       ],
       "priorityChecks": [
         "종형이 'selected2'인지 표제·소제목에서 확인하고 표준형과 선택형Ⅱ 수치를 섞지 않는다.",
-        "한도·횟수·합산 기준을 원문과 대조한다: 급여 10% + 비급여 20% 자기부담이 연간 2,000,000원 초과 시 초과분 보상",
+        "한도·횟수·합산 기준을 원문과 대조한다: 급여 10% + 비급여 20% 자기부담이 연간 2,000,000원 초과 시 초과분 보상; 1상해·1질병당 계약가입금액 한도(최대 50,000,000)",
         "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
       ],
       "itemsToVerify": [
@@ -747,6 +749,7 @@
         "minimumByInstitution": {
           "CLINIC": 10000,
           "HOSPITAL": 15000,
+          "GENERAL_HOSPITAL": 15000,
           "GENERAL_TERTIARY": 20000
         }
       },
@@ -1055,7 +1058,7 @@
           "benefitRate": 0.4
         }
       },
-      "limitText": "연간 자기부담 상한 및 가입금액 적용",
+      "limitText": "연 자기부담 상한 2,000,000 / 1상해·1질병당 계약가입금액 한도(최대 50,000,000)",
       "requiredCoverages": [
         "VARIANT_SELECTED2"
       ],
@@ -1074,7 +1077,7 @@
       ],
       "priorityChecks": [
         "종형이 'selected2'인지 표제·소제목에서 확인하고 표준형과 선택형Ⅱ 수치를 섞지 않는다.",
-        "한도·횟수·합산 기준을 원문과 대조한다: 연간 자기부담 상한 및 가입금액 적용",
+        "한도·횟수·합산 기준을 원문과 대조한다: 연 자기부담 상한 2,000,000 / 1상해·1질병당 계약가입금액 한도(최대 50,000,000)",
         "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
       ],
       "itemsToVerify": [
@@ -1180,7 +1183,7 @@
           "benefitRate": 0.4
         }
       },
-      "limitText": "연간 자기부담 200만원 초과분 보상; 입원 보험가입금액 한도",
+      "limitText": "연간 자기부담 2,000,000원 초과분 보상; 1상해·1질병당 계약가입금액 한도(최대 50,000,000)",
       "requiredCoverages": [
         "VARIANT_STANDARD"
       ],
@@ -1199,7 +1202,7 @@
       ],
       "priorityChecks": [
         "종형이 'standard'인지 표제·소제목에서 확인하고 표준형과 선택형Ⅱ 수치를 섞지 않는다.",
-        "한도·횟수·합산 기준을 원문과 대조한다: 연간 자기부담 200만원 초과분 보상; 입원 보험가입금액 한도",
+        "한도·횟수·합산 기준을 원문과 대조한다: 연간 자기부담 2,000,000원 초과분 보상; 1상해·1질병당 계약가입금액 한도(최대 50,000,000)",
         "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
       ],
       "itemsToVerify": [
@@ -1237,6 +1240,7 @@
         "minimumByInstitution": {
           "CLINIC": 10000,
           "HOSPITAL": 15000,
+          "GENERAL_HOSPITAL": 15000,
           "GENERAL_TERTIARY": 20000
         }
       },
@@ -1360,6 +1364,7 @@
         "minimumByInstitution": {
           "CLINIC": 10000,
           "HOSPITAL": 15000,
+          "GENERAL_HOSPITAL": 15000,
           "GENERAL_TERTIARY": 20000
         }
       },
@@ -1485,11 +1490,12 @@
             "benefitRate": 0.8
           }
         ],
+        "annualDeductibleCap": 2000000,
         "nonNhiFallback": {
           "benefitRate": 0.4
         }
       },
-      "limitText": "연간 보험가입금액 한도",
+      "limitText": "상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000); 나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
       "requiredCoverages": [],
       "specialConditions": [
         "POLICY_EXCLUSIONS_MUST_BE_CLEARED",
@@ -1505,7 +1511,7 @@
         "면책·특약 미가입·필수 입력 누락"
       ],
       "priorityChecks": [
-        "한도·횟수·합산 기준을 원문과 대조한다: 연간 보험가입금액 한도",
+        "한도·횟수·합산 기준을 원문과 대조한다: 상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000); 나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
         "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
       ],
       "itemsToVerify": [
@@ -1544,11 +1550,12 @@
             "benefitRate": 0.8
           }
         ],
+        "annualDeductibleCap": 2000000,
         "nonNhiFallback": {
           "benefitRate": 0.4
         }
       },
-      "limitText": "연간 보험가입금액 한도",
+      "limitText": "상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000); 나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
       "requiredCoverages": [],
       "specialConditions": [
         "POLICY_EXCLUSIONS_MUST_BE_CLEARED",
@@ -1564,7 +1571,7 @@
         "면책·특약 미가입·필수 입력 누락"
       ],
       "priorityChecks": [
-        "한도·횟수·합산 기준을 원문과 대조한다: 연간 보험가입금액 한도",
+        "한도·횟수·합산 기준을 원문과 대조한다: 상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000); 나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
         "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
       ],
       "itemsToVerify": [
@@ -1721,7 +1728,7 @@
           }
         ]
       },
-      "limitText": "상급병실료 차액: 비급여 병실료 × 50%, 1일 평균 100,000원 한도",
+      "limitText": "상급병실료 차액: 비급여 병실료 × 50%, 1일 평균 100,000원 한도; 상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000)",
       "requiredCoverages": [
         "NON_COVERED_RIDER"
       ],
@@ -1739,7 +1746,7 @@
         "면책·특약 미가입·필수 입력 누락"
       ],
       "priorityChecks": [
-        "한도·횟수·합산 기준을 원문과 대조한다: 상급병실료 차액: 비급여 병실료 × 50%, 1일 평균 100,000원 한도",
+        "한도·횟수·합산 기준을 원문과 대조한다: 상급병실료 차액: 비급여 병실료 × 50%, 1일 평균 100,000원 한도; 상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000)",
         "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
       ],
       "itemsToVerify": [
@@ -1775,7 +1782,7 @@
         "deductibleRate": 0.3,
         "minimumAmount": 30000
       },
-      "limitText": "연 100회; 공제표 적용",
+      "limitText": "상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000) / 연 최대 횟수 100 / 회당 한도 최대 200,000; 공제표 적용",
       "requiredCoverages": [
         "NON_COVERED_RIDER"
       ],
@@ -1793,7 +1800,7 @@
         "면책·특약 미가입·필수 입력 누락"
       ],
       "priorityChecks": [
-        "한도·횟수·합산 기준을 원문과 대조한다: 연 100회; 공제표 적용",
+        "한도·횟수·합산 기준을 원문과 대조한다: 상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000) / 연 최대 횟수 100 / 회당 한도 최대 200,000; 공제표 적용",
         "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
       ],
       "itemsToVerify": [
@@ -1984,10 +1991,10 @@
       "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_general_terms.pdf",
       "pdfSha256": "126f5b033c77b852e797c58458a025897340b08b511c909d4905cad18ec987e5",
       "pdfPageCount": 160,
-      "pdfPage": 8,
-      "printedPage": 7,
-      "article": "쉽게 이해하는 상품 및 약관 요약서",
-      "paragraph": "급여 입원",
+      "pdfPage": 24,
+      "printedPage": 23,
+      "article": "제3조 (보장종목별 보상내용)",
+      "paragraph": "(1) 상해급여 제1항 입원",
       "coverage": "급여 입원",
       "calculationType": "RATE_BENEFIT",
       "calculation": {
@@ -1997,9 +2004,10 @@
             "basis": "ELIGIBLE_EXPENSE",
             "benefitRate": 0.8
           }
-        ]
+        ],
+        "annualDeductibleCap": 2000000
       },
-      "limitText": "급여 상해/질병 각각 연간 보험가입금액 한도",
+      "limitText": "상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000); 나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
       "requiredCoverages": [],
       "specialConditions": [
         "POLICY_EXCLUSIONS_MUST_BE_CLEARED",
@@ -2014,7 +2022,7 @@
         "면책·특약 미가입·필수 입력 누락"
       ],
       "priorityChecks": [
-        "한도·횟수·합산 기준을 원문과 대조한다: 급여 상해/질병 각각 연간 보험가입금액 한도",
+        "한도·횟수·합산 기준을 원문과 대조한다: 상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000); 나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
         "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
       ],
       "itemsToVerify": [
@@ -2041,10 +2049,10 @@
       "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_general_terms.pdf",
       "pdfSha256": "126f5b033c77b852e797c58458a025897340b08b511c909d4905cad18ec987e5",
       "pdfPageCount": 160,
-      "pdfPage": 8,
-      "printedPage": 7,
-      "article": "쉽게 이해하는 상품 및 약관 요약서",
-      "paragraph": "급여 통원",
+      "pdfPage": 24,
+      "printedPage": 23,
+      "article": "제3조 (보장종목별 보상내용)",
+      "paragraph": "(1) 상해급여 제1항 통원 표1",
       "coverage": "급여 통원",
       "calculationType": "COVERED_OUTPATIENT_MAX_DEDUCTIBLE",
       "calculation": {
@@ -2059,7 +2067,7 @@
           "GENERAL_TERTIARY": 20000
         }
       },
-      "limitText": "가입금액별 1회 통원 한도",
+      "limitText": "급여 상해/질병 각각 입원·통원 합산 연간 보험가입금액(최대 50,000,000원); 통원 1회당 최대 200,000원",
       "requiredCoverages": [],
       "specialConditions": [
         "POLICY_EXCLUSIONS_MUST_BE_CLEARED",
@@ -2074,7 +2082,7 @@
         "면책·특약 미가입·필수 입력 누락"
       ],
       "priorityChecks": [
-        "한도·횟수·합산 기준을 원문과 대조한다: 가입금액별 1회 통원 한도",
+        "한도·횟수·합산 기준을 원문과 대조한다: 급여 상해/질병 각각 입원·통원 합산 연간 보험가입금액(최대 50,000,000원); 통원 1회당 최대 200,000원",
         "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
       ],
       "itemsToVerify": [
@@ -2101,10 +2109,10 @@
       "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_general_terms.pdf",
       "pdfSha256": "126f5b033c77b852e797c58458a025897340b08b511c909d4905cad18ec987e5",
       "pdfPageCount": 160,
-      "pdfPage": 8,
-      "printedPage": 7,
-      "article": "쉽게 이해하는 상품 및 약관 요약서",
-      "paragraph": "중증 비급여 입원",
+      "pdfPage": 51,
+      "printedPage": 50,
+      "article": "제3조 (보장종목별 보상내용)",
+      "paragraph": "(1) 상해비급여 제1항 입원",
       "coverage": "중증 비급여 입원",
       "calculationType": "COMPONENT_SUM",
       "calculation": {
@@ -2125,7 +2133,7 @@
           "condition": "GENERAL_OR_TERTIARY_HOSPITAL_EXCLUDING_SPECIFIED_THREE"
         }
       },
-      "limitText": "상급종합·종합병원 자기부담 최대 5,000,000원(특정 3대 제외)",
+      "limitText": "상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000); 상급종합·종합병원 입원 공제금액 연 5,000,000원 상한. 근골격계 이학요법·체외충격파 및 주사료 제외, MRI 포함(PDF 62쪽).",
       "requiredCoverages": [
         "SPECIAL_RIDER_1"
       ],
@@ -2142,7 +2150,7 @@
         "면책·특약 미가입·필수 입력 누락"
       ],
       "priorityChecks": [
-        "한도·횟수·합산 기준을 원문과 대조한다: 상급종합·종합병원 자기부담 최대 5,000,000원(특정 3대 제외)",
+        "한도·횟수·합산 기준을 원문과 대조한다: 상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000); 상급종합·종합병원 입원 공제금액 연 5,000,000원 상한. 근골격계 이학요법·체외충격파 및 주사료 제외, MRI 포함(PDF 62쪽).",
         "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
       ],
       "itemsToVerify": [
@@ -2169,10 +2177,10 @@
       "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_general_terms.pdf",
       "pdfSha256": "126f5b033c77b852e797c58458a025897340b08b511c909d4905cad18ec987e5",
       "pdfPageCount": 160,
-      "pdfPage": 8,
-      "printedPage": 7,
-      "article": "쉽게 이해하는 상품 및 약관 요약서",
-      "paragraph": "중증 비급여 통원",
+      "pdfPage": 52,
+      "printedPage": 51,
+      "article": "제3조 (보장종목별 보상내용)",
+      "paragraph": "(1) 상해비급여 제1항 통원 표1",
       "coverage": "중증 비급여 통원",
       "calculationType": "EXPENSE_MINUS_MAX_DEDUCTIBLE",
       "calculation": {
@@ -2180,7 +2188,7 @@
         "deductibleRate": 0.3,
         "minimumAmount": 30000
       },
-      "limitText": "상해/질병 각각 연 최대 100회",
+      "limitText": "상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000) / 연 통원 100회 / 연 가입금액 5천만·3천만·1천만원별 1회 한도 20만·15만·10만원",
       "requiredCoverages": [
         "SPECIAL_RIDER_1"
       ],
@@ -2197,7 +2205,7 @@
         "면책·특약 미가입·필수 입력 누락"
       ],
       "priorityChecks": [
-        "한도·횟수·합산 기준을 원문과 대조한다: 상해/질병 각각 연 최대 100회",
+        "한도·횟수·합산 기준을 원문과 대조한다: 상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000) / 연 통원 100회 / 연 가입금액 5천만·3천만·1천만원별 1회 한도 20만·15만·10만원",
         "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
       ],
       "itemsToVerify": [
@@ -2224,10 +2232,10 @@
       "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_general_terms.pdf",
       "pdfSha256": "126f5b033c77b852e797c58458a025897340b08b511c909d4905cad18ec987e5",
       "pdfPageCount": 160,
-      "pdfPage": 9,
-      "printedPage": 8,
-      "article": "쉽게 이해하는 상품 및 약관 요약서",
-      "paragraph": "중증 비급여 3대",
+      "pdfPage": 55,
+      "printedPage": 54,
+      "article": "제3조 (보장종목별 보상내용)",
+      "paragraph": "(3) 3대비급여 제1항",
       "coverage": "중증 비급여 3대",
       "calculationType": "EXPENSE_MINUS_MAX_DEDUCTIBLE",
       "calculation": {
@@ -2283,8 +2291,8 @@
       "pdfPageCount": 160,
       "pdfPage": 64,
       "printedPage": 63,
-      "article": "제3조",
-      "paragraph": "제1항 (1) 상해비급여",
+      "article": "제3조 (보장종목별 보상내용)",
+      "paragraph": "(1) 상해비급여 제1항 입원",
       "coverage": "비중증 비급여 입원",
       "calculationType": "COMPONENT_SUM",
       "calculation": {
@@ -2301,7 +2309,7 @@
           }
         ]
       },
-      "limitText": "(상급)종합병원 외 병·의원은 회당 3,000,000원 한도",
+      "limitText": "상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 10,000,000) / 종합·상급종합병원 외 입원 1회 3,000,000원",
       "requiredCoverages": [
         "SPECIAL_RIDER_1",
         "SPECIAL_RIDER_2"
@@ -2319,7 +2327,7 @@
         "면책·특약 미가입·필수 입력 누락"
       ],
       "priorityChecks": [
-        "한도·횟수·합산 기준을 원문과 대조한다: (상급)종합병원 외 병·의원은 회당 3,000,000원 한도",
+        "한도·횟수·합산 기준을 원문과 대조한다: 상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 10,000,000) / 종합·상급종합병원 외 입원 1회 3,000,000원",
         "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
       ],
       "itemsToVerify": [
@@ -2346,10 +2354,10 @@
       "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_general_terms.pdf",
       "pdfSha256": "126f5b033c77b852e797c58458a025897340b08b511c909d4905cad18ec987e5",
       "pdfPageCount": 160,
-      "pdfPage": 64,
-      "printedPage": 63,
-      "article": "제3조",
-      "paragraph": "제1항 (1) 상해비급여",
+      "pdfPage": 65,
+      "printedPage": 64,
+      "article": "제3조 (보장종목별 보상내용)",
+      "paragraph": "(1) 상해비급여 제1항 통원 표1",
       "coverage": "비중증 비급여 통원",
       "calculationType": "EXPENSE_MINUS_MAX_DEDUCTIBLE",
       "calculation": {
@@ -2357,7 +2365,7 @@
         "deductibleRate": 0.5,
         "minimumAmount": 50000
       },
-      "limitText": "상해/질병 각각 연 최대 100일; 가입금액별 1일 한도",
+      "limitText": "상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 10,000,000) / 연 통원 100일 / 연 가입금액 1천만·600만·200만원별 1일 한도 20만·15만·10만원",
       "requiredCoverages": [
         "SPECIAL_RIDER_1",
         "SPECIAL_RIDER_2"
@@ -2375,12 +2383,12 @@
         "면책·특약 미가입·필수 입력 누락"
       ],
       "priorityChecks": [
-        "PDF 64쪽의 인쇄 쪽수가 63쪽인지 확인하고, 계약 유형에 따른 예외 조항을 섞지 않는다.",
-        "한도·횟수·합산 기준을 원문과 대조한다: 상해/질병 각각 연 최대 100일; 가입금액별 1일 한도",
+        "PDF 65쪽의 비중증 통원 1일 단위 조항을 확인하고, 계약 유형에 따른 예외 조항을 섞지 않는다.",
+        "한도·횟수·합산 기준을 원문과 대조한다: 상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 10,000,000) / 연 통원 100일 / 연 가입금액 1천만·600만·200만원별 1일 한도 20만·15만·10만원",
         "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
       ],
       "itemsToVerify": [
-        "원문이 다음 요약과 일치하는지: 보장대상의료비 - MAX(50,000원, 보장대상의료비 × 50%)",
+        "원문이 다음 요약과 일치하는지: 1일 외래·처방 합산 보장대상의료비 - MAX(50,000원, 해당 1일 보장대상의료비 × 50%)",
         "보장대상과 보상하지 않는 사항의 적용 조건",
         "자기부담 비율·정액 공제·둘 중 큰 금액의 적용 순서",
         "금액·횟수·일수 한도와 보험연도/사고/질병별 합산 기준",
@@ -2403,10 +2411,10 @@
       "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_general_terms.pdf",
       "pdfSha256": "126f5b033c77b852e797c58458a025897340b08b511c909d4905cad18ec987e5",
       "pdfPageCount": 160,
-      "pdfPage": 9,
-      "printedPage": 8,
-      "article": "쉽게 이해하는 상품 및 약관 요약서",
-      "paragraph": "비중증 비급여 MRI/MRA",
+      "pdfPage": 67,
+      "printedPage": 66,
+      "article": "제3조 (보장종목별 보상내용)",
+      "paragraph": "(3) 비급여 자기공명영상진단 제1항",
       "coverage": "비중증 비급여 MRI/MRA",
       "calculationType": "EXPENSE_MINUS_MAX_DEDUCTIBLE",
       "calculation": {
@@ -2459,10 +2467,10 @@
       "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_general_terms.pdf",
       "pdfSha256": "126f5b033c77b852e797c58458a025897340b08b511c909d4905cad18ec987e5",
       "pdfPageCount": 160,
-      "pdfPage": 10,
-      "printedPage": 9,
-      "article": "쉽게 이해하는 상품 및 약관 요약서",
-      "paragraph": "비중증 비급여 보험료 차등",
+      "pdfPage": 75,
+      "printedPage": 74,
+      "article": "제6조 (보험료의 계산)",
+      "paragraph": "제3항 요율 상대도 표 및 제4항~제5항",
       "coverage": "비중증 비급여 보험료 차등",
       "calculationType": "TIER_LOOKUP",
       "calculation": {
@@ -2542,10 +2550,10 @@
       "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_conversion_terms.pdf",
       "pdfSha256": "63b996663c352482402384778b7b23d4e13689b2d1888423d9c33a12597add9e",
       "pdfPageCount": 160,
-      "pdfPage": 8,
-      "printedPage": 7,
-      "article": "쉽게 이해하는 상품 및 약관 요약서",
-      "paragraph": "급여 입원",
+      "pdfPage": 24,
+      "printedPage": 23,
+      "article": "제3조 (보장종목별 보상내용)",
+      "paragraph": "(1) 상해급여 제1항 입원",
       "coverage": "급여 입원",
       "calculationType": "RATE_BENEFIT",
       "calculation": {
@@ -2555,9 +2563,10 @@
             "basis": "ELIGIBLE_EXPENSE",
             "benefitRate": 0.8
           }
-        ]
+        ],
+        "annualDeductibleCap": 2000000
       },
-      "limitText": "급여 상해/질병 각각 연간 보험가입금액 한도",
+      "limitText": "상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000); 나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
       "requiredCoverages": [],
       "specialConditions": [
         "POLICY_EXCLUSIONS_MUST_BE_CLEARED",
@@ -2574,7 +2583,7 @@
       ],
       "priorityChecks": [
         "계약전환·재개·자녀보험전환 세부유형과 전환 자격·계속 치료 적용 조건을 확인한다.",
-        "한도·횟수·합산 기준을 원문과 대조한다: 급여 상해/질병 각각 연간 보험가입금액 한도",
+        "한도·횟수·합산 기준을 원문과 대조한다: 상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000); 나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
         "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
       ],
       "itemsToVerify": [
@@ -2601,10 +2610,10 @@
       "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_conversion_terms.pdf",
       "pdfSha256": "63b996663c352482402384778b7b23d4e13689b2d1888423d9c33a12597add9e",
       "pdfPageCount": 160,
-      "pdfPage": 8,
-      "printedPage": 7,
-      "article": "쉽게 이해하는 상품 및 약관 요약서",
-      "paragraph": "급여 통원",
+      "pdfPage": 24,
+      "printedPage": 23,
+      "article": "제3조 (보장종목별 보상내용)",
+      "paragraph": "(1) 상해급여 제1항 통원 표1",
       "coverage": "급여 통원",
       "calculationType": "COVERED_OUTPATIENT_MAX_DEDUCTIBLE",
       "calculation": {
@@ -2619,7 +2628,7 @@
           "GENERAL_TERTIARY": 20000
         }
       },
-      "limitText": "가입금액별 1회 통원 한도",
+      "limitText": "급여 상해/질병 각각 입원·통원 합산 연간 보험가입금액(최대 50,000,000원); 통원 1회당 최대 200,000원",
       "requiredCoverages": [],
       "specialConditions": [
         "POLICY_EXCLUSIONS_MUST_BE_CLEARED",
@@ -2636,7 +2645,7 @@
       ],
       "priorityChecks": [
         "계약전환·재개·자녀보험전환 세부유형과 전환 자격·계속 치료 적용 조건을 확인한다.",
-        "한도·횟수·합산 기준을 원문과 대조한다: 가입금액별 1회 통원 한도",
+        "한도·횟수·합산 기준을 원문과 대조한다: 급여 상해/질병 각각 입원·통원 합산 연간 보험가입금액(최대 50,000,000원); 통원 1회당 최대 200,000원",
         "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
       ],
       "itemsToVerify": [
@@ -2663,10 +2672,10 @@
       "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_conversion_terms.pdf",
       "pdfSha256": "63b996663c352482402384778b7b23d4e13689b2d1888423d9c33a12597add9e",
       "pdfPageCount": 160,
-      "pdfPage": 8,
-      "printedPage": 7,
-      "article": "쉽게 이해하는 상품 및 약관 요약서",
-      "paragraph": "중증 비급여 입원",
+      "pdfPage": 51,
+      "printedPage": 50,
+      "article": "제3조 (보장종목별 보상내용)",
+      "paragraph": "(1) 상해비급여 제1항 입원",
       "coverage": "중증 비급여 입원",
       "calculationType": "COMPONENT_SUM",
       "calculation": {
@@ -2687,7 +2696,7 @@
           "condition": "GENERAL_OR_TERTIARY_HOSPITAL_EXCLUDING_SPECIFIED_THREE"
         }
       },
-      "limitText": "상급종합·종합병원 자기부담 최대 5,000,000원(특정 3대 제외)",
+      "limitText": "상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000); 상급종합·종합병원 입원 공제금액 연 5,000,000원 상한. 근골격계 이학요법·체외충격파 및 주사료 제외, MRI 포함(PDF 62쪽).",
       "requiredCoverages": [
         "SPECIAL_RIDER_1"
       ],
@@ -2706,7 +2715,7 @@
       ],
       "priorityChecks": [
         "계약전환·재개·자녀보험전환 세부유형과 전환 자격·계속 치료 적용 조건을 확인한다.",
-        "한도·횟수·합산 기준을 원문과 대조한다: 상급종합·종합병원 자기부담 최대 5,000,000원(특정 3대 제외)",
+        "한도·횟수·합산 기준을 원문과 대조한다: 상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000); 상급종합·종합병원 입원 공제금액 연 5,000,000원 상한. 근골격계 이학요법·체외충격파 및 주사료 제외, MRI 포함(PDF 62쪽).",
         "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
       ],
       "itemsToVerify": [
@@ -2733,10 +2742,10 @@
       "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_conversion_terms.pdf",
       "pdfSha256": "63b996663c352482402384778b7b23d4e13689b2d1888423d9c33a12597add9e",
       "pdfPageCount": 160,
-      "pdfPage": 8,
-      "printedPage": 7,
-      "article": "쉽게 이해하는 상품 및 약관 요약서",
-      "paragraph": "중증 비급여 통원",
+      "pdfPage": 52,
+      "printedPage": 51,
+      "article": "제3조 (보장종목별 보상내용)",
+      "paragraph": "(1) 상해비급여 제1항 통원 표1",
       "coverage": "중증 비급여 통원",
       "calculationType": "EXPENSE_MINUS_MAX_DEDUCTIBLE",
       "calculation": {
@@ -2744,7 +2753,7 @@
         "deductibleRate": 0.3,
         "minimumAmount": 30000
       },
-      "limitText": "상해/질병 각각 연 최대 100회",
+      "limitText": "상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000) / 연 통원 100회 / 연 가입금액 5천만·3천만·1천만원별 1회 한도 20만·15만·10만원",
       "requiredCoverages": [
         "SPECIAL_RIDER_1"
       ],
@@ -2763,7 +2772,7 @@
       ],
       "priorityChecks": [
         "계약전환·재개·자녀보험전환 세부유형과 전환 자격·계속 치료 적용 조건을 확인한다.",
-        "한도·횟수·합산 기준을 원문과 대조한다: 상해/질병 각각 연 최대 100회",
+        "한도·횟수·합산 기준을 원문과 대조한다: 상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000) / 연 통원 100회 / 연 가입금액 5천만·3천만·1천만원별 1회 한도 20만·15만·10만원",
         "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
       ],
       "itemsToVerify": [
@@ -2790,10 +2799,10 @@
       "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_conversion_terms.pdf",
       "pdfSha256": "63b996663c352482402384778b7b23d4e13689b2d1888423d9c33a12597add9e",
       "pdfPageCount": 160,
-      "pdfPage": 9,
-      "printedPage": 8,
-      "article": "쉽게 이해하는 상품 및 약관 요약서",
-      "paragraph": "중증 비급여 3대",
+      "pdfPage": 55,
+      "printedPage": 54,
+      "article": "제3조 (보장종목별 보상내용)",
+      "paragraph": "(3) 3대비급여 제1항",
       "coverage": "중증 비급여 3대",
       "calculationType": "EXPENSE_MINUS_MAX_DEDUCTIBLE",
       "calculation": {
@@ -2851,8 +2860,8 @@
       "pdfPageCount": 160,
       "pdfPage": 64,
       "printedPage": 63,
-      "article": "제3조",
-      "paragraph": "제1항 (1) 상해비급여",
+      "article": "제3조 (보장종목별 보상내용)",
+      "paragraph": "(1) 상해비급여 제1항 입원",
       "coverage": "비중증 비급여 입원",
       "calculationType": "COMPONENT_SUM",
       "calculation": {
@@ -2869,7 +2878,7 @@
           }
         ]
       },
-      "limitText": "(상급)종합병원 외 병·의원은 회당 3,000,000원 한도",
+      "limitText": "상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 10,000,000) / 종합·상급종합병원 외 입원 1회 3,000,000원",
       "requiredCoverages": [
         "SPECIAL_RIDER_1",
         "SPECIAL_RIDER_2"
@@ -2889,7 +2898,7 @@
       ],
       "priorityChecks": [
         "계약전환·재개·자녀보험전환 세부유형과 전환 자격·계속 치료 적용 조건을 확인한다.",
-        "한도·횟수·합산 기준을 원문과 대조한다: (상급)종합병원 외 병·의원은 회당 3,000,000원 한도",
+        "한도·횟수·합산 기준을 원문과 대조한다: 상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 10,000,000) / 종합·상급종합병원 외 입원 1회 3,000,000원",
         "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
       ],
       "itemsToVerify": [
@@ -2916,10 +2925,10 @@
       "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_conversion_terms.pdf",
       "pdfSha256": "63b996663c352482402384778b7b23d4e13689b2d1888423d9c33a12597add9e",
       "pdfPageCount": 160,
-      "pdfPage": 64,
-      "printedPage": 63,
-      "article": "제3조",
-      "paragraph": "제1항 (1) 상해비급여",
+      "pdfPage": 65,
+      "printedPage": 64,
+      "article": "제3조 (보장종목별 보상내용)",
+      "paragraph": "(1) 상해비급여 제1항 통원 표1",
       "coverage": "비중증 비급여 통원",
       "calculationType": "EXPENSE_MINUS_MAX_DEDUCTIBLE",
       "calculation": {
@@ -2927,7 +2936,7 @@
         "deductibleRate": 0.5,
         "minimumAmount": 50000
       },
-      "limitText": "상해/질병 각각 연 최대 100일; 가입금액별 1일 한도",
+      "limitText": "상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 10,000,000) / 연 통원 100일 / 연 가입금액 1천만·600만·200만원별 1일 한도 20만·15만·10만원",
       "requiredCoverages": [
         "SPECIAL_RIDER_1",
         "SPECIAL_RIDER_2"
@@ -2947,11 +2956,11 @@
       ],
       "priorityChecks": [
         "계약전환·재개·자녀보험전환 세부유형과 전환 자격·계속 치료 적용 조건을 확인한다.",
-        "한도·횟수·합산 기준을 원문과 대조한다: 상해/질병 각각 연 최대 100일; 가입금액별 1일 한도",
+        "한도·횟수·합산 기준을 원문과 대조한다: 상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 10,000,000) / 연 통원 100일 / 연 가입금액 1천만·600만·200만원별 1일 한도 20만·15만·10만원",
         "동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다."
       ],
       "itemsToVerify": [
-        "원문이 다음 요약과 일치하는지: 보장대상의료비 - MAX(50,000원, 보장대상의료비 × 50%)",
+        "원문이 다음 요약과 일치하는지: 1일 외래·처방 합산 보장대상의료비 - MAX(50,000원, 해당 1일 보장대상의료비 × 50%)",
         "보장대상과 보상하지 않는 사항의 적용 조건",
         "자기부담 비율·정액 공제·둘 중 큰 금액의 적용 순서",
         "금액·횟수·일수 한도와 보험연도/사고/질병별 합산 기준",
@@ -2974,10 +2983,10 @@
       "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_conversion_terms.pdf",
       "pdfSha256": "63b996663c352482402384778b7b23d4e13689b2d1888423d9c33a12597add9e",
       "pdfPageCount": 160,
-      "pdfPage": 9,
-      "printedPage": 8,
-      "article": "쉽게 이해하는 상품 및 약관 요약서",
-      "paragraph": "비중증 비급여 MRI/MRA",
+      "pdfPage": 67,
+      "printedPage": 66,
+      "article": "제3조 (보장종목별 보상내용)",
+      "paragraph": "(3) 비급여 자기공명영상진단 제1항",
       "coverage": "비중증 비급여 MRI/MRA",
       "calculationType": "EXPENSE_MINUS_MAX_DEDUCTIBLE",
       "calculation": {
@@ -3032,10 +3041,10 @@
       "pdfPath": "knowledge/documents/samsung/gen5/SAMSUNG_2605_1/samsung_gen5_2605_1_conversion_terms.pdf",
       "pdfSha256": "63b996663c352482402384778b7b23d4e13689b2d1888423d9c33a12597add9e",
       "pdfPageCount": 160,
-      "pdfPage": 10,
-      "printedPage": 9,
-      "article": "쉽게 이해하는 상품 및 약관 요약서",
-      "paragraph": "비중증 비급여 보험료 차등",
+      "pdfPage": 75,
+      "printedPage": 74,
+      "article": "제6조 (보험료의 계산)",
+      "paragraph": "제3항 요율 상대도 표 및 제4항~제5항",
       "coverage": "비중증 비급여 보험료 차등",
       "calculationType": "TIER_LOOKUP",
       "calculation": {

@@ -50,4 +50,16 @@ describe("Samsung 0904.2 generation 1 routing", () => {
     });
     expect("status" in missing && missing.status).toBe("CONFIRMATION_REQUIRED");
   });
+
+  it("가입한 D1 특약이 없으면 질병·상해 입력 여부와 관계없이 계산하지 않는다", () => {
+    const expected = { status: "CONFIRMATION_REQUIRED", reason: "가입한 D1 특약이 없어 계산할 수 없습니다. 보험증권의 특약을 확인해주세요." };
+    expect(routeSamsungGen1Rule({ ...base, d1Coverage: "NONE" })).toEqual(expected);
+    expect(routeSamsungGen1Rule({ ...base, d1Coverage: "NONE", claimCause: "UNKNOWN" })).toEqual(expected);
+  });
+
+  it("선택한 진료의 원인에 맞는 D1 특약이 없으면 미가입으로 보고 계산을 보류하지 않는다", () => {
+    const expected = { status: "NOT_ENROLLED", reason: "선택한 진료의 원인(질병/상해)에 해당하는 D1 특약에 가입하지 않아 현재 계약은 보상하지 않습니다." };
+    expect(routeSamsungGen1Rule({ ...base, d1Coverage: "INJURY", claimCause: "DISEASE" })).toEqual(expected);
+    expect(routeSamsungGen1Rule({ ...base, d1Coverage: "DISEASE", claimCause: "INJURY" })).toEqual(expected);
+  });
 });

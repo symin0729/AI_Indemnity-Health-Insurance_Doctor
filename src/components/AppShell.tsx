@@ -1,11 +1,14 @@
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import headerLogo from "../assets/header-logo.png";
+import mainLogo from "../assets/main-logo.png";
 
 import { useAnalysisStore } from "../store/useAnalysisStore";
+import ModeToggle from "./ModeToggle";
+import { useAppMode } from "./useAppMode";
+import "../styles/app-shell.css";
 
-type AppStep = 1 | 2 | 3 | 4 | 5 | 6;
+type AppStep = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
 type AppShellProps = {
   children: ReactNode;
@@ -13,6 +16,7 @@ type AppShellProps = {
   onStepChange?: (step: AppStep) => void;
   onReset?: () => void;
   showMvpNotice?: boolean;
+  hideResetButton?: boolean;
 };
 
 const STEP_ITEMS: Array<{
@@ -21,26 +25,30 @@ const STEP_ITEMS: Array<{
 }> = [
   {
     step: 1,
-    label: "내 보험 정보",
+    label: "고객 정보",
   },
   {
     step: 2,
-    label: "5세대·치료",
+    label: "예정 치료",
   },
   {
     step: 3,
-    label: "계산 가정",
+    label: "5세대 조건",
   },
   {
     step: 4,
-    label: "입력 확인",
+    label: "명시적 계산 가정",
   },
   {
     step: 5,
-    label: "비교 결과",
+    label: "입력 확인"
   },
   {
     step: 6,
+    label: "비교 결과",
+  },
+  {
+    step: 7,
     label: "챗봇",
   },
 ];
@@ -51,6 +59,7 @@ function AppShell({
   onStepChange,
   onReset,
   showMvpNotice = true,
+  hideResetButton = false,
 }: AppShellProps) {
   const navigate = useNavigate();
 
@@ -58,11 +67,13 @@ function AppShell({
     (state) => state.resetAnalysis
   );
 
+  const mode = useAnalysisStore((state) => state.mode);
+
   const [isResetModalOpen, setIsResetModalOpen] =
     useState(false);
 
   const handleStepClick = (step: AppStep) => {
-    if (step >= 5 && currentStep < 5) {
+    if (step >= 6 && currentStep < 6) {
       return;
     }
 
@@ -71,17 +82,14 @@ function AppShell({
       return;
     }
 
-    if (step <= 3) {
+    if (step <= 4) {
       navigate(`/input#input-step-${step}`);
       return;
     }
 
-    if (step === 4) {
-      navigate("/confirm");
-      return;
-    }
+    if (step === 5) { navigate("/confirm"); return; }
 
-    if (step === 5) {
+    if (step === 6) {
       navigate("/result");
       return;
     }
@@ -90,12 +98,7 @@ function AppShell({
   };
 
   const handleBrandClick = () => {
-    if (onStepChange) {
-      onStepChange(1);
-      return;
-    }
-
-    navigate("/input");
+    navigate("/");
   };
 
   const handleOpenReset = () => {
@@ -118,7 +121,9 @@ function AppShell({
     navigate("/input");
   };
 
-  const progressPercent = `${Math.min(currentStep, 5) * 20}%`;
+  const progressPercent = `${Math.min(currentStep, 6) / 6 * 100}%`;
+
+  useAppMode("planner");
 
   return (
     <>
@@ -128,17 +133,19 @@ function AppShell({
             type="button"
             className="app-shell-brand"
             onClick={handleBrandClick}
-            aria-label="AI 실손 닥터 첫 입력 단계로 이동"
+            aria-label="AI 실손 닥터 첫 화면으로 이동"
           >
             <img
               className="app-shell-logo"
-              src={headerLogo}
+              src={mainLogo}
               alt=""
               aria-hidden="true"
             />
 
             <span>AI 실손 닥터</span>
           </button>
+
+          <ModeToggle mode={mode} locked />
 
           <div className="app-shell-nav-right">
             <span className="app-shell-privacy">
@@ -149,13 +156,15 @@ function AppShell({
               서버 저장 없이 브라우저에서 계산
             </span>
 
-            <button
-              type="button"
-              className="app-shell-text-button"
-              onClick={handleOpenReset}
-            >
-              전체 초기화
-            </button>
+            {!hideResetButton && (
+              <button
+                type="button"
+                className="app-shell-text-button"
+                onClick={handleOpenReset}
+              >
+                초기화
+              </button>
+            )}
           </div>
         </div>
       </header>
@@ -183,7 +192,7 @@ function AppShell({
               const isDone =
                 item.step < currentStep;
 
-              const isDisabled = item.step >= 5 && currentStep < 5;
+              const isDisabled = item.step >= 6 && currentStep < 6;
 
               return (
                 <button
@@ -241,9 +250,9 @@ function AppShell({
           </div>
 
           <p className="app-shell-current-step" aria-live="polite">
-            {currentStep === 6
-              ? "선택 STEP 6 · 챗봇"
-              : `${currentStep} / 5 · ${STEP_ITEMS[currentStep - 1].label}`}
+            {currentStep === 7
+              ? "선택 STEP 7 · 챗봇"
+              : `${currentStep} / 6 · ${STEP_ITEMS[currentStep - 1].label}`}
           </p>
           <p className="app-shell-side-note">
             보험상품 권유나 보험금 지급 보장이
@@ -321,7 +330,7 @@ function AppShell({
                 className="app-shell-button app-shell-button-primary"
                 onClick={handleConfirmReset}
               >
-                전체 초기화
+                초기화
               </button>
             </div>
           </section>

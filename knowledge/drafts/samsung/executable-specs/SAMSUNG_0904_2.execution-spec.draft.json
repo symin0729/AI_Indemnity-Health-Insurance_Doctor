@@ -38,6 +38,12 @@
         }
       },
       "limitText": "1사고 50,000,000원; 사고일부터 365일",
+      "accumulation": {
+        "benefit": "G1-INJURY-INPATIENT",
+        "count": "G1-01",
+        "serviceDays": "G1-01",
+        "deductible": "G1-01"
+      },
       "requiresAccumulator": true,
       "enforcement": {
         "windowDays": 365,
@@ -83,6 +89,12 @@
         ]
       },
       "limitText": "1사고 50,000,000원; 사고일부터 365일",
+      "accumulation": {
+        "benefit": "G1-INJURY-INPATIENT",
+        "count": "G1-02",
+        "serviceDays": "G1-02",
+        "deductible": "G1-02"
+      },
       "requiresAccumulator": true,
       "enforcement": {
         "windowDays": 365,
@@ -128,6 +140,12 @@
         ]
       },
       "limitText": "전체 입원보상한도 내",
+      "accumulation": {
+        "benefit": "G1-03",
+        "count": "G1-03",
+        "serviceDays": "G1-03",
+        "deductible": "G1-03"
+      },
       "requiresAccumulator": false,
       "enforcement": null,
       "specialConditions": [
@@ -171,6 +189,12 @@
         }
       },
       "limitText": "1사고당 사고일부터 365일 이내 통산 30일; 1일 최고 100,000원",
+      "accumulation": {
+        "benefit": "G1-04",
+        "count": "G1-04",
+        "serviceDays": "G1-04",
+        "deductible": "G1-04"
+      },
       "requiresAccumulator": true,
       "enforcement": {
         "windowDays": 365,
@@ -225,7 +249,13 @@
           "benefitRate": 0.4
         }
       },
-      "limitText": "동일 질병당 50,000,000원; 진단확정일부터 365일",
+      "limitText": "동일 질병당 50,000,000원; 진단확정일부터 365일; 재보장 간격 180일",
+      "accumulation": {
+        "benefit": "G1-05",
+        "count": "G1-05",
+        "serviceDays": "G1-05",
+        "deductible": "G1-05"
+      },
       "requiresAccumulator": true,
       "enforcement": {
         "windowDays": 365,

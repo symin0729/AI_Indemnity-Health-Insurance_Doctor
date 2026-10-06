@@ -1,4 +1,6 @@
-import headerLogo from '../../assets/header-logo.png';
+import SamsungTreatmentComparison from "../../components/samsung/SamsungTreatmentComparison";
+import { prepareUsageForSamsungComparison } from "../../engine/prepareSamsungComparison";
+import mainLogo from '../../assets/main-logo.png';
 import AppShell from "../../components/AppShell";
 import {
   useEffect,
@@ -28,7 +30,6 @@ import type {
   ClaimCalculationItem,
 } from "../../domain/calculation";
 import type { MedicalUsage } from "../../domain/medical";
-import type { AnalysisCalculationAssumptions } from "../../store/useAnalysisStore";
 import {
   calculateBreakEvenBySimulation,
   type BreakEvenSimulationResult,
@@ -41,6 +42,7 @@ import {
   loadTreatmentSample,
   type TreatmentSampleKind,
 } from "../../services/sampleScenarioService";
+import "../../styles/M04-result.css";
 
 function getSavedSampleKind(usage: MedicalUsage): TreatmentSampleKind | null {
   const name = usage.treatmentName.replace(/\s/g, "").toUpperCase();
@@ -93,77 +95,7 @@ export function allocateCombinedTreatmentFrequencies(usages: MedicalUsage[], tot
  * 입력 화면의 세대별 필드를 삼성 공통 계산 입력으로 연결한다.
  * 계산 규칙은 바꾸지 않고, 사용자가 확인한 값을 엔진 형식으로 전달한다.
  */
-export function prepareUsageForSamsungComparison(
-  usage: MedicalUsage,
-  assumptions: AnalysisCalculationAssumptions,
-): MedicalUsage {
-  const source = usage.samsungCalculationInput ?? {};
-  const eligibleExpense =
-    source.eligibleExpense ??
-    usage.coveredAmount ??
-    (assumptions.assumeEntireMedicalCostCovered
-      ? usage.patientPaidAmount ?? usage.unitCost
-      : undefined);
-  const policyExclusionsCleared =
-    source.policyExclusionsCleared ?? usage.gen23PolicyExclusionsCleared;
-  const category = usage.treatmentCategory?.toUpperCase();
-  const threeNonCoveredCategory =
-    category === "MRI" || category === "MANUAL_THERAPY" || category === "INJECTION"
-      ? category
-      : undefined;
-  const aggregationUnit =
-    source.aggregationUnit ??
-    usage.gen23AggregationUnit ??
-    (category === "MRI"
-      ? "DIAGNOSTIC_ACTION"
-      : category === "MANUAL_THERAPY"
-        ? "TREATMENT"
-        : category === "INJECTION"
-          ? "VISIT"
-          : "VISIT");
-
-  return {
-    ...usage,
-    samsungCalculationInput: {
-      ...source,
-      eligibleExpense,
-      requiredCoverageConfirmed:
-        source.requiredCoverageConfirmed ?? usage.gen23RequiredCoverageConfirmed,
-      policyExclusionsCleared,
-      otherIndemnityPoliciesExist:
-        source.otherIndemnityPoliciesExist ?? usage.gen23OtherIndemnityPoliciesExist,
-      coveragePeriodConfirmed:
-        source.coveragePeriodConfirmed ?? usage.gen23CoveragePeriodConfirmed,
-      sameDayAggregationConfirmed:
-        source.sameDayAggregationConfirmed ?? usage.gen23SameDayAggregationConfirmed,
-      priorPaidBenefit: source.priorPaidBenefit ?? usage.gen23PriorPaidBenefit,
-      priorAnnualCount: source.priorAnnualCount ?? usage.gen23PriorAnnualCount,
-      priorEligibleDeductible:
-        source.priorEligibleDeductible ?? usage.gen23PriorEligibleDeductible,
-      contractBenefitCap: source.contractBenefitCap ?? usage.gen23ContractBenefitCap,
-      outpatientBenefitCap: source.outpatientBenefitCap ?? usage.gen23OutpatientBenefitCap,
-      prescriptionBenefitCap:
-        source.prescriptionBenefitCap ?? usage.gen23PrescriptionBenefitCap,
-      aggregationUnit,
-      threeNonCoveredCategory:
-        source.threeNonCoveredCategory ?? threeNonCoveredCategory,
-      threeNonCoveredExcludedFromBaseConfirmed:
-        source.threeNonCoveredExcludedFromBaseConfirmed ??
-        usage.gen23ThreeNonCoveredExcludedFromBaseConfirmed,
-    },
-    samsungGen5Facts:
-      usage.samsungGen5Facts ??
-      (usage.benefitClass === "NON_COVERED"
-        ? {
-            specialCaseDisease:
-              usage.severityClass === "SEVERE" ? "YES" : usage.severityClass === "NON_SEVERE" ? "NO" : "UNKNOWN",
-            treatmentRelatedness: usage.severityClass === "SEVERE" ? "RELATED" : "UNKNOWN",
-            policyExcludedTreatment: policyExclusionsCleared === true ? "NO" : "UNKNOWN",
-            ...(threeNonCoveredCategory ? { threeNonCoveredCategory } : {}),
-          }
-        : usage.samsungGen5Facts),
-  };
-}
+export { prepareUsageForSamsungComparison } from "../../engine/prepareSamsungComparison";
 
 export function createPremiumOnlyBreakEvenDisplay(
   currentAnnualPremium: number,
@@ -1367,7 +1299,7 @@ function M04ResultPage() {
     target5GMonthlyPremium === null
   ) {
     return (
-      <AppShell currentStep={5}><main className="navy-page">
+      <AppShell currentStep={6}><main className="navy-page">
         <header className="page-header">
           <span className="page-brand">
             AI 실손 닥터
@@ -1385,7 +1317,7 @@ function M04ResultPage() {
             type="button"
             className="primary-button"
             onClick={() =>
-              navigate("/input#input-step-2")
+              navigate("/input#input-step-1")
             }
           >
             입력 화면으로
@@ -1397,7 +1329,7 @@ function M04ResultPage() {
 
   if (isRuleLoading) {
     return (
-      <AppShell currentStep={5}><main className="navy-page">
+      <AppShell currentStep={6}><main className="navy-page">
         <header className="page-header">
           <span className="page-brand">
             AI 실손 닥터
@@ -1416,7 +1348,7 @@ function M04ResultPage() {
     !ruleSet
   ) {
     return (
-      <AppShell currentStep={5}><main className="navy-page">
+      <AppShell currentStep={6}><main className="navy-page">
         <header className="page-header">
           <span className="page-brand">
             AI 실손 닥터
@@ -1435,7 +1367,7 @@ function M04ResultPage() {
             type="button"
             className="secondary-button"
             onClick={() =>
-              navigate("/input#input-step-2")
+              navigate("/confirm")
             }
           >
             이전
@@ -1473,7 +1405,7 @@ function M04ResultPage() {
 
   if (!validation.valid) {
     return (
-      <AppShell currentStep={5}><main className="navy-page">
+      <AppShell currentStep={6}><main className="navy-page">
         <header className="page-header">
           <span className="page-brand">
             AI 실손 닥터
@@ -1498,7 +1430,7 @@ function M04ResultPage() {
             type="button"
             className="primary-button"
             onClick={() =>
-              navigate("/input#input-step-2")
+              navigate("/confirm")
             }
           >
             입력 수정하기
@@ -1540,6 +1472,13 @@ function M04ResultPage() {
   const targetWarnings = Array.from(new Set(
     samsungComparison.items.flatMap((item) => item.target.reasons),
   ));
+  // 입력하지 않아 계산 엔진이 약관 표준값 등으로 채운 항목. 설계사가 알 수 있도록 결과에 표시한다.
+  const currentEngineAssumptions = Array.from(new Set(
+    samsungComparison.items.flatMap((item) => item.current.appliedAssumptions ?? []),
+  ));
+  const targetEngineAssumptions = Array.from(new Set(
+    samsungComparison.items.flatMap((item) => item.target.appliedAssumptions ?? []),
+  ));
 
   const current = createSamsungScenarioDisplay({
     option: "CURRENT",
@@ -1547,7 +1486,7 @@ function M04ResultPage() {
     medicalCost: samsungComparison.medicalCost,
     insuranceBenefit: samsungComparison.currentClaimTotal,
     totalBurden: samsungComparison.currentTotal,
-    complete: samsungComparison.complete,
+    complete: samsungComparison.currentComplete,
     warnings: currentWarnings,
   });
   const target5G = createSamsungScenarioDisplay({
@@ -1556,7 +1495,7 @@ function M04ResultPage() {
     medicalCost: samsungComparison.medicalCost,
     insuranceBenefit: samsungComparison.targetClaimTotal,
     totalBurden: samsungComparison.targetTotal,
-    complete: samsungComparison.complete,
+    complete: samsungComparison.targetComplete,
     warnings: targetWarnings,
   });
   const target5GSaving =
@@ -1727,7 +1666,7 @@ function M04ResultPage() {
   };
 
   return (
-    <AppShell currentStep={5}><main className={`navy-page navy-result-page${isDownloadingPdf ? " is-pdf-exporting" : ""}`}>
+    <AppShell currentStep={6}><main className={`navy-page navy-result-page${isDownloadingPdf ? " is-pdf-exporting" : ""}`}>
       <header
         className="page-header"
         style={{
@@ -1761,7 +1700,7 @@ function M04ResultPage() {
               }}
             >
               <span className="step-badge">
-                STEP 5 · 비교 결과
+                STEP 6 · 비교 결과
               </span>
             </div>
 
@@ -1790,7 +1729,7 @@ function M04ResultPage() {
             }}
           >
             <img
-              src={headerLogo}
+              src={mainLogo}
               alt="AI 실손 닥터 보험 비교 결과 안내"
               style={{
                 width: "min(100%, 260px)",
@@ -1802,6 +1741,44 @@ function M04ResultPage() {
           </div>
         </div>
       </header>
+      <SamsungTreatmentComparison items={samsungComparison.items} generation={contract.generation} />
+
+
+      {(calculationAssumptions.assumeSingleIndemnityContract ||
+        calculationAssumptions.assumeEntireMedicalCostCovered ||
+        calculationAssumptions.assumeNoPriorLimitUsage ||
+        calculationAssumptions.assumeEachOccurrenceSeparate ||
+        currentEngineAssumptions.length > 0 ||
+        targetEngineAssumptions.length > 0) && (
+        <section className="result-assumption-summary" aria-labelledby="result-assumption-summary-title">
+          <div>
+            <span className="result-assumption-summary__badge">적용 조건</span>
+            <h2 id="result-assumption-summary-title">이 결과에 적용된 계산 가정</h2>
+          </div>
+          <ul>
+            <li>입력한 월 보험료 × 12와 같은 예정 치료를 비교합니다. 갱신 인상률·향후 할인·할증은 추정하지 않습니다.</li>
+            {calculationAssumptions.comparisonBasis === 'FRESH_YEAR' && <li>두 계약 모두 한도 사용 전부터 시작하는 1년 모의 비교입니다. 기존 사용분은 반영하지 않습니다.</li>}
+            {calculationAssumptions.comparisonBasis === 'REMAINING_LIMITS' && <li>현재 계약은 입력한 기존 사용분, 5세대는 전환 후 계약의 비교 시작 시점에서 사용분 0을 기준으로 비교합니다.</li>}
+            {calculationAssumptions.assumeNoPolicyExclusions && <li>미확인 면책 조건은 보장 제외 사유가 없다고 가정했습니다.</li>}
+            {calculationAssumptions.assumeSingleIndemnityContract && <li>실손 계약 1개 기준 비교 · 다른 실손 계약과의 보험금 분담은 반영하지 않음</li>}
+            {calculationAssumptions.assumeEntireMedicalCostCovered && (
+              <li>C가 없는 치료는 환자부담 의료비 M 전액을 보장대상으로 가정</li>
+            )}
+            {calculationAssumptions.assumeNoPriorLimitUsage && (
+              <li>확인되지 않은 기존 지급액과 한도·상한 사용량을 0으로 가정</li>
+            )}
+            {calculationAssumptions.assumeEachOccurrenceSeparate && (
+              <li>날짜·입원 구분이 없는 반복 치료를 각각 별도 방문으로 가정</li>
+            )}
+            {currentEngineAssumptions.map((text) => (
+              <li key={`current-${text}`}>현재 계약: {text}</li>
+            ))}
+            {targetEngineAssumptions.map((text) => (
+              <li key={`target-${text}`}>5세대: {text}</li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section
         className="app-card"
@@ -2524,7 +2501,7 @@ function M04ResultPage() {
       >
         <button
           type="button"
-          onClick={() => navigate("/input#input-step-2")}
+          onClick={() => navigate("/confirm")}
           style={{
             minHeight: "48px",
             border: "1px solid var(--color-border)",
@@ -2540,7 +2517,7 @@ function M04ResultPage() {
 
         <button
           type="button"
-          onClick={() => navigate("/input#input-step-2")}
+          onClick={() => navigate("/confirm")}
           style={{
             minHeight: "48px",
             border: "1px solid var(--color-primary-200, #b9d1ea)",

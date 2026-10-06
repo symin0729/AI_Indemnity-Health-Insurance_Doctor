@@ -1,10 +1,11 @@
 import { gen23CareSettingError } from "../domain/samsungGen23CareSetting";
+import { GEN23_UNREGISTERED_REASON, type SamsungGen23Variant } from "../domain/samsungGen23Variant";
 import { gen23TermsReference } from "./samsungGen23Sources";
 import type { MedicalUsage } from "../domain/medical";
 import { resolveSamsungGen23Product } from "./loadProductRuleSet";
 import { evaluateSamsungExecutionSpec, type SamsungDraftCalculationInput, type SamsungDraftCalculationResult, type SamsungExecutionRule } from "./evaluateSamsungExecutionSpec";
 
-export type Gen23Variant = "standard" | "selected2" | "UNKNOWN";
+export type Gen23Variant = SamsungGen23Variant;
 export type Gen23Outcome = (SamsungDraftCalculationResult & { evidenceIds: string[]; termsReference: string; resultLabel: "SAMPLE_SIMULATION" })
   | { status: "CONFIRMATION_REQUIRED" | "RULE_NOT_VERIFIED"; claim: null; reason: string };
 export interface Gen23Spec { calculationEnabled: boolean; rules: SamsungExecutionRule[] }
@@ -24,13 +25,11 @@ export function gen23Input(usage: MedicalUsage, variant: Gen23Variant, generatio
     nhiApplied: u.nationalHealthInsuranceStatus === "APPLIED" ? true : u.nationalHealthInsuranceStatus === "NOT_APPLIED" ? false : undefined,
     institution: u.gen23Institution,
     priorEligibleDeductible: u.gen23PriorEligibleDeductible, priorPaidBenefit: u.gen23PriorPaidBenefit,
-    priorAnnualCount: u.gen23PriorAnnualCount, priorContinuationCount: u.gen23PriorContinuationCount,
+    priorAnnualCount: u.gen23PriorAnnualCount,
     contractBenefitCap: u.gen23ContractBenefitCap, outpatientBenefitCap: u.gen23OutpatientBenefitCap,
     prescriptionBenefitCap: u.gen23PrescriptionBenefitCap,
     otherIndemnityPoliciesExist: u.gen23OtherIndemnityPoliciesExist, proportionalPaymentFactor: u.gen23ProportionalPaymentFactor,
-    coveragePeriod: u.gen23CoveragePeriod, coveragePeriodConfirmed: u.gen23CoveragePeriodConfirmed,
-    postTerminationContinuationConfirmed: u.gen23PostTerminationContinuationConfirmed,
-    daysSinceTermination: u.gen23DaysSinceTermination, sameDayAggregationConfirmed: u.gen23SameDayAggregationConfirmed,
+    sameDayAggregationConfirmed: u.gen23SameDayAggregationConfirmed,
     requiredCoverageConfirmed: u.gen23RequiredCoverageConfirmed, policyExclusionsCleared: u.gen23PolicyExclusionsCleared,
     benefitLimitRestored: u.gen23BenefitLimitRestored,
     threeNonCoveredCategory: category === "BASE" || category === "UNKNOWN" ? undefined : category,
@@ -45,6 +44,7 @@ export function gen23Input(usage: MedicalUsage, variant: Gen23Variant, generatio
 }
 export function calculateGen23Sample(generation: 2 | 3, variant: Gen23Variant, usage: MedicalUsage, specs: Record<"standard" | "selected2", Gen23Spec>, mode: "SAMPLE_SIMULATION" | "ACTUAL_CONTRACT" = "SAMPLE_SIMULATION"): Gen23Outcome {
   const hold = (reason: string): Gen23Outcome => ({ status: "CONFIRMATION_REQUIRED", claim: null, reason });
+  if (variant === "standard2013" || variant === "selected2013" || variant === "unified2009") return { status: "RULE_NOT_VERIFIED", claim: null, reason: GEN23_UNREGISTERED_REASON };
   if (variant !== "standard" && variant !== "selected2") return hold("상품 종형을 확인해주세요.");
   const product = resolveSamsungGen23Product({ generation, variant });
   const spec = specs[product.variant];

@@ -11,9 +11,9 @@
     {
       "id": "G5-CONV-01",
       "coverage": "급여 입원",
-      "page": 8,
+      "page": 24,
       "formula": "보장대상의료비 × 80% (자기부담 20%)",
-      "limit": "급여 상해/질병 각각 연간 보험가입금액 한도",
+      "limit": "상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000); 나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
       "status": "RULE_DRAFTED",
       "variant": "conversion",
       "evidenceIds": [
@@ -23,14 +23,20 @@
       "contractConditions": [
         "계약전환·재개·자녀보험전환 중 해당 세부유형 확인",
         "전환 자격 및 계속 치료 적용 조건 확인"
-      ]
+      ],
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 42,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "id": "G5-CONV-02",
       "coverage": "급여 통원",
-      "page": 8,
+      "page": 24,
       "formula": "보장대상의료비 - MAX(병원급별 공제 10,000~20,000원, 보장대상의료비×20%, 보장대상의료비×건강보험 본인부담률)",
-      "limit": "가입금액별 1회 통원 한도",
+      "limit": "급여 상해/질병 각각 입원·통원 합산 연간 보험가입금액(최대 50,000,000원); 통원 1회당 최대 200,000원",
       "status": "RULE_DRAFTED",
       "variant": "conversion",
       "evidenceIds": [
@@ -40,14 +46,20 @@
       "contractConditions": [
         "계약전환·재개·자녀보험전환 중 해당 세부유형 확인",
         "전환 자격 및 계속 치료 적용 조건 확인"
-      ]
+      ],
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 43,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "id": "G5-CONV-03",
       "coverage": "중증 비급여 입원",
-      "page": 8,
+      "page": 51,
       "formula": "(중증 비급여 입원의료비(비급여 병실료 제외) × 70%) + MIN(비급여 병실료 × 50%, 입원일수 × 100,000원)",
-      "limit": "상급종합·종합병원 자기부담 최대 5,000,000원(특정 3대 제외)",
+      "limit": "상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000); 상급종합·종합병원 입원 공제금액 연 5,000,000원 상한. 근골격계 이학요법·체외충격파 및 주사료 제외, MRI 포함(PDF 62쪽).",
       "status": "RULE_DRAFTED",
       "variant": "conversion",
       "sourceCorrection": "상급병실료 차액 50%(일평균 10만원 한도) 구성요소를 추가",
@@ -58,14 +70,20 @@
       "contractConditions": [
         "계약전환·재개·자녀보험전환 중 해당 세부유형 확인",
         "전환 자격 및 계속 치료 적용 조건 확인"
-      ]
+      ],
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 44,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "id": "G5-CONV-04",
       "coverage": "중증 비급여 통원",
-      "page": 8,
+      "page": 52,
       "formula": "보장대상의료비 - MAX(30,000원, 보장대상의료비 × 30%)",
-      "limit": "상해/질병 각각 연 최대 100회",
+      "limit": "상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000) / 연 통원 100회 / 연 가입금액 5천만·3천만·1천만원별 1회 한도 20만·15만·10만원",
       "status": "RULE_DRAFTED",
       "variant": "conversion",
       "evidenceIds": [
@@ -75,12 +93,18 @@
       "contractConditions": [
         "계약전환·재개·자녀보험전환 중 해당 세부유형 확인",
         "전환 자격 및 계속 치료 적용 조건 확인"
-      ]
+      ],
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 45,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "id": "G5-CONV-05",
       "coverage": "중증 비급여 3대",
-      "page": 9,
+      "page": 55,
       "formula": "각 행위별 보상대상의료비 - MAX(30,000원, 보상대상의료비 × 30%)",
       "limit": "근골격계 이학요법·체외충격파: 350만원/50회(최초 10회 후 증상 개선 확인 시 10회 단위); 주사 250만원/50회; MRI/MRA 300만원",
       "status": "RULE_DRAFTED",
@@ -93,14 +117,20 @@
       "contractConditions": [
         "계약전환·재개·자녀보험전환 중 해당 세부유형 확인",
         "전환 자격 및 계속 치료 적용 조건 확인"
-      ]
+      ],
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 46,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "id": "G5-CONV-06",
       "coverage": "비중증 비급여 입원",
       "page": 64,
       "formula": "(비중증 비급여 입원의료비(비급여 병실료 제외) × 50%) + MIN(비급여 병실료 × 50%, 입원일수 × 100,000원)",
-      "limit": "(상급)종합병원 외 병·의원은 회당 3,000,000원 한도",
+      "limit": "상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 10,000,000) / 종합·상급종합병원 외 입원 1회 3,000,000원",
       "status": "RULE_DRAFTED",
       "variant": "conversion",
       "sourceCorrection": "PDF 63페이지의 비급여 병실료 50%(일평균 10만원 한도) 구성요소를 추가",
@@ -111,14 +141,20 @@
       "contractConditions": [
         "계약전환·재개·자녀보험전환 중 해당 세부유형 확인",
         "전환 자격 및 계속 치료 적용 조건 확인"
-      ]
+      ],
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 47,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "id": "G5-CONV-07",
       "coverage": "비중증 비급여 통원",
-      "page": 64,
-      "formula": "보장대상의료비 - MAX(50,000원, 보장대상의료비 × 50%)",
-      "limit": "상해/질병 각각 연 최대 100일; 가입금액별 1일 한도",
+      "page": 65,
+      "formula": "1일 외래·처방 합산 보장대상의료비 - MAX(50,000원, 해당 1일 보장대상의료비 × 50%)",
+      "limit": "상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 10,000,000) / 연 통원 100일 / 연 가입금액 1천만·600만·200만원별 1일 한도 20만·15만·10만원",
       "status": "RULE_DRAFTED",
       "variant": "conversion",
       "evidenceIds": [
@@ -128,12 +164,18 @@
       "contractConditions": [
         "계약전환·재개·자녀보험전환 중 해당 세부유형 확인",
         "전환 자격 및 계속 치료 적용 조건 확인"
-      ]
+      ],
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 48,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "id": "G5-CONV-08",
       "coverage": "비중증 비급여 MRI/MRA",
-      "page": 9,
+      "page": 67,
       "formula": "보장대상의료비 - MAX(50,000원, 보장대상의료비 × 50%)",
       "limit": "연 2,000,000원",
       "status": "RULE_DRAFTED",
@@ -145,12 +187,18 @@
       "contractConditions": [
         "계약전환·재개·자녀보험전환 중 해당 세부유형 확인",
         "전환 자격 및 계속 치료 적용 조건 확인"
-      ]
+      ],
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 49,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "id": "G5-CONV-09",
       "coverage": "비중증 비급여 보험료 차등",
-      "page": 10,
+      "page": 75,
       "formula": "보험료 갱신 전 3개월 말일부터 직전 12개월 비중증 비급여 보험금: 0원=할인, 0원 초과~100만원 미만=100%, 100~150만원 미만=200%, 150~300만원 미만=300%, 300만원 이상=400%",
       "limit": "2028-05-06부터 적용; 장기요양 1·2등급 관련 비급여는 차등 산정에서 제외",
       "status": "RULE_DRAFTED",
@@ -163,7 +211,13 @@
       "contractConditions": [
         "계약전환·재개·자녀보험전환 중 해당 세부유형 확인",
         "전환 자격 및 계속 치료 적용 조건 확인"
-      ]
+      ],
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 50,
+        "reviewDate": "2026-10-06"
+      }
     }
   ]
 }

@@ -1,3 +1,4 @@
+import { confirmedContractFacts } from './fixtures/confirmed-contract-facts';
 import { describe, expect, it } from "vitest";
 import { loadTreatmentSample, sampleScenarioService } from "../src/services/sampleScenarioService";
 import { samplePolicyService } from "../src/services/samplePolicyService";
@@ -41,7 +42,7 @@ describe("explicit treatment sample loading", () => {
       [],
       selections,
       [usage],
-      scenario.calculationAssumptions,
+      { ...scenario.calculationAssumptions, targetContractFacts: confirmedContractFacts },
     );
     const breakEven = calculateSamsungAnnualBreakEven(
       contract,
@@ -49,7 +50,7 @@ describe("explicit treatment sample loading", () => {
       [],
       selections,
       [usage],
-      scenario.calculationAssumptions,
+      { ...scenario.calculationAssumptions, targetContractFacts: confirmedContractFacts },
       usage.id,
     );
 
@@ -68,8 +69,8 @@ describe("explicit treatment sample loading", () => {
       samsungGen23Variant: "standard" as const,
       gen5NonSevereRider: "ENROLLED" as const,
     };
-    const comparison = calculateSamsungAnnualComparison(contract, 35_000, ["SPECIAL_RIDER_2"], selections, [usage], scenario.calculationAssumptions);
-    const breakEven = calculateSamsungAnnualBreakEven(contract, 35_000, ["SPECIAL_RIDER_2"], selections, [usage], scenario.calculationAssumptions, usage.id);
+    const comparison = calculateSamsungAnnualComparison(contract, 35_000, ["SPECIAL_RIDER_2"], selections, [usage], { ...scenario.calculationAssumptions, targetContractFacts: confirmedContractFacts });
+    const breakEven = calculateSamsungAnnualBreakEven(contract, 35_000, ["SPECIAL_RIDER_2"], selections, [usage], { ...scenario.calculationAssumptions, targetContractFacts: confirmedContractFacts }, usage.id);
 
     expect(usage.frequency).toBe(8);
     expect(comparison.currentTotal).toBe(1_680_000);
@@ -91,8 +92,8 @@ describe("explicit treatment sample loading", () => {
       samsungGen23Variant: "standard" as const,
       gen5NonSevereRider: "ENROLLED" as const,
     };
-    const comparison = calculateSamsungAnnualComparison(contract, 35_000, ["SPECIAL_RIDER_2"], selections, usages, secondScenario.calculationAssumptions);
-    const breakEvens = usages.map((usage) => calculateSamsungAnnualBreakEven(contract, 35_000, ["SPECIAL_RIDER_2"], selections, usages, secondScenario.calculationAssumptions, usage.id));
+    const comparison = calculateSamsungAnnualComparison(contract, 35_000, ["SPECIAL_RIDER_2"], selections, usages, { ...secondScenario.calculationAssumptions, targetContractFacts: confirmedContractFacts });
+    const breakEvens = usages.map((usage) => calculateSamsungAnnualBreakEven(contract, 35_000, ["SPECIAL_RIDER_2"], selections, usages, { ...secondScenario.calculationAssumptions, targetContractFacts: confirmedContractFacts }, usage.id));
 
     expect(comparison.complete, `${firstKind}+${secondKind}`).toBe(true);
     expect(comparison.items).toHaveLength(2);
@@ -111,14 +112,15 @@ describe("explicit treatment sample loading", () => {
         ...useAnalysisStore.getState().productCalculationSelections,
         samsungGen23Variant: "standard" as const,
       };
-      const comparison = calculateSamsungAnnualComparison(contract, 35_000, [], selections, [usage], scenario.calculationAssumptions);
-      const breakEven = calculateSamsungAnnualBreakEven(contract, 35_000, [], selections, [usage], scenario.calculationAssumptions, usage.id);
+      const comparison = calculateSamsungAnnualComparison(contract, 35_000, [], selections, [usage], { ...scenario.calculationAssumptions, targetContractFacts: confirmedContractFacts });
+      const breakEven = calculateSamsungAnnualBreakEven(contract, 35_000, [], selections, [usage], { ...scenario.calculationAssumptions, targetContractFacts: confirmedContractFacts }, usage.id);
 
       expect(comparison.complete, sampleId).toBe(true);
       expect(comparison.currentTotal, sampleId).not.toBe(comparison.targetTotal);
       expect(breakEven?.status, sampleId).not.toBe("CONFIRMATION_REQUIRED");
       expect(breakEven?.points.length, sampleId).toBeGreaterThan(1);
-      expect(Math.abs(comparison.currentTotal! - comparison.targetTotal!), sampleId).toBeGreaterThanOrEqual(50_000);
+      // 5세대 급여 통원 1회 20만원 한도(약관 제6조 ⑤) 반영 후 외래 검사 샘플의 차이는 2만원 수준이다.
+      expect(Math.abs(comparison.currentTotal! - comparison.targetTotal!), sampleId).toBeGreaterThanOrEqual(10_000);
     }
   });
   it.each(["EXAM", "MRI"] as const)("restores %s Samsung inputs from saved Gen2/3 form fields", kind => {
@@ -126,13 +128,13 @@ describe("explicit treatment sample loading", () => {
     const scenario = loadTreatmentSample("NON_COVERED", 3, kind);
     const original = scenario.plannedUsages[0];
     const savedWithoutCommonInput = { ...original, samsungCalculationInput: undefined, samsungGen5Facts: undefined };
-    const usage = prepareUsageForSamsungComparison(savedWithoutCommonInput, scenario.calculationAssumptions);
+    const usage = prepareUsageForSamsungComparison(savedWithoutCommonInput, { ...scenario.calculationAssumptions, targetContractFacts: confirmedContractFacts });
     const selections = {
       ...useAnalysisStore.getState().productCalculationSelections,
       samsungGen23Variant: "standard" as const,
     };
-    const comparison = calculateSamsungAnnualComparison(contract, 35_000, [], selections, [usage], scenario.calculationAssumptions);
-    const breakEven = calculateSamsungAnnualBreakEven(contract, 35_000, [], selections, [usage], scenario.calculationAssumptions, usage.id);
+    const comparison = calculateSamsungAnnualComparison(contract, 35_000, [], selections, [usage], { ...scenario.calculationAssumptions, targetContractFacts: confirmedContractFacts });
+    const breakEven = calculateSamsungAnnualBreakEven(contract, 35_000, [], selections, [usage], { ...scenario.calculationAssumptions, targetContractFacts: confirmedContractFacts }, usage.id);
 
     expect(usage.samsungCalculationInput?.eligibleExpense).toBe(original.coveredAmount);
     expect(usage.samsungCalculationInput?.policyExclusionsCleared).toBe(true);
@@ -235,7 +237,8 @@ it("creates a slot draft from a loaded sample without losing treatment fields", 
   expect(draft.treatmentDate).toBe("2026-11-01");
   expect(draft.coveredAmount).toBe("300000");
   expect(draft.copayInstitution).toBe("TERTIARY");
-  expect(draft.gen23Form).toEqual({});
+  // 2·3세대 세부 입력도 샘플 값으로 채운다(비워 두면 치료를 추가할 때 샘플 값이 사라진다).
+  expect(draft.gen23Form).toMatchObject({ claimCause: "DISEASE" });
   expect(draft.sourceUsage?.samsungCalculationInput).toEqual(samsungCalculationInput);
 });
 

@@ -7,7 +7,7 @@ const rules = new Map<string, SamsungExecutionRule>(["standard", "selected2"].fl
 }));
 const base: Input = {
   nhiApplied: true, policyExclusionsCleared: true, otherIndemnityPoliciesExist: false,
-  coveragePeriodConfirmed: true, coveragePeriod: "ACTIVE", threeNonCoveredExcludedFromBaseConfirmed: true,
+  threeNonCoveredExcludedFromBaseConfirmed: true,
   sameDayAggregationConfirmed: true, priorAnnualCount: 0, priorPaidBenefit: 0, priorEligibleDeductible: 0,
   outpatientBenefitCap: 250000, prescriptionBenefitCap: 50000, contractBenefitCap: 50000000,
   roomDifference: 0, inpatientExcludingRoomDifference: 100000, coveredCopay: 100000, nonCoveredExpense: 0,
@@ -55,10 +55,9 @@ describe("1704.1 PDF-based base coverage", () => {
     paid("G3-STD-BASE-03", { eligibleExpense: 50000, nhiApplied: false }, 16000, 34000);
     paid("G3-SEL2-BASE-03", { coveredCopay: 0, nonCoveredExpense: 50000, nhiApplied: false }, 16000, 34000);
   });
-  it("base counts 179/180/181 and continuation 89/90/91", () => {
+  it("base counts 179/180/181", () => {
     for (const id of ["G3-STD-BASE-02", "G3-STD-BASE-03", "G3-SEL2-BASE-02", "G3-SEL2-BASE-03"]) {
       for (const n of [179,180,181]) paid(id, { eligibleExpense: 50000, coveredCopay: 0, nonCoveredExpense: 50000, priorAnnualCount: n }, n < 180 ? 40000 : 0);
-      for (const n of [89,90,91]) paid(id, { eligibleExpense: 50000, coveredCopay: 0, nonCoveredExpense: 50000, coveragePeriod: "POST_TERMINATION", daysSinceTermination: 180, postTerminationContinuationConfirmed: true, priorContinuationCount: n }, n < 90 ? 40000 : 0);
     }
   });
   it("caps and invalid or unknown base inputs", () => {
@@ -68,7 +67,6 @@ describe("1704.1 PDF-based base coverage", () => {
     blocked("G3-STD-BASE-01", { roomDifference: 1, inpatientDays: undefined });
     blocked("G3-STD-BASE-02", { prescriptionBenefitCap: 50001 });
     blocked("G3-STD-BASE-01", { threeNonCoveredExcludedFromBaseConfirmed: undefined });
-    blocked("G3-STD-BASE-01", { coveragePeriod: "POST_TERMINATION", daysSinceTermination: 181, postTerminationContinuationConfirmed: true });
   });
 });
 describe.each(riders)("1704.1 $category special rider", ({ id, category, unit, cap, count }) => {
@@ -96,12 +94,6 @@ describe.each(riders)("1704.1 $category special rider", ({ id, category, unit, c
     blocked(id, { ...input, aggregationUnit: undefined });
     blocked(id, { ...input, policyExclusionsCleared: false });
     for (const key of ["eligibleExpense", "priorPaidBenefit", "priorAnnualCount"]) for (const value of [NaN,Infinity,-Infinity]) blocked(id, { ...input, [key]: value });
-  });
-  it("continuation retains prior usage and only covers days 1 through 180", () => {
-    const continued: Input = { ...input, coveragePeriod: "POST_TERMINATION", postTerminationContinuationConfirmed: true, daysSinceTermination: 180, priorPaidBenefit: cap - 1 };
-    paid(id, continued, 1);
-    for (const days of [undefined,0,181]) blocked(id, { ...continued, daysSinceTermination: days });
-    blocked(id, { ...continued, postTerminationContinuationConfirmed: false });
   });
 });
 it("blocks unclassified injection and unreviewed rules", () => {

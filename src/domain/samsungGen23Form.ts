@@ -186,17 +186,6 @@ export const gen23Fields: readonly Gen23Field[] = [
     "scope": "outpatient"
   },
   {
-    "key": "gen23DaysSinceTermination",
-    "label": "계약 종료 후 경과일",
-    "kind": "number"
-  },
-  {
-    "key": "gen23PriorContinuationCount",
-    "label": "종료 후 이전 외래·처방 이용횟수",
-    "kind": "number",
-    "scope": "outpatient"
-  },
-  {
     "key": "gen23ProportionalPaymentFactor",
     "label": "검증된 비례보상계수 (0~1)",
     "kind": "number"
@@ -230,21 +219,6 @@ export const gen23Fields: readonly Gen23Field[] = [
     "scope": "special"
   },
   {
-    "key": "gen23CoveragePeriod",
-    "label": "보장기간",
-    "kind": "select",
-    "options": [
-      [
-        "ACTIVE",
-        "정상 보장기간 (갱신·재가입 확인 포함)"
-      ],
-      [
-        "POST_TERMINATION",
-        "계약 종료 후 계속 치료"
-      ]
-    ]
-  },
-  {
     "key": "gen23RequiredCoverageConfirmed",
     "label": "해당 상품·종형·담보 가입 확인",
     "kind": "boolean"
@@ -252,16 +226,6 @@ export const gen23Fields: readonly Gen23Field[] = [
   {
     "key": "gen23PolicyExclusionsCleared",
     "label": "면책·제외사항에 해당하지 않음 확인",
-    "kind": "boolean"
-  },
-  {
-    "key": "gen23CoveragePeriodConfirmed",
-    "label": "보장기간 검토 완료",
-    "kind": "boolean"
-  },
-  {
-    "key": "gen23PostTerminationContinuationConfirmed",
-    "label": "종료 당시 계속 중인 치료 조건 충족",
     "kind": "boolean"
   },
   {
