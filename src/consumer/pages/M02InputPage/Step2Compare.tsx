@@ -223,7 +223,7 @@ export default function Step2Compare({ form }: { form: M02Form }) {
           <span className="step-badge">STEP 3-2 · 5세대 비교 조건</span>
           <h2 className="card-title">5세대 전환 계약의 가입금액</h2>
           <p className="card-description">5세대로 전환할 때 가입할 보장의 가입금액을 입력해주세요. 선택한 보장의 한도를 적용해 계산합니다.</p>
-          <SamsungContractFactsFields value={form.targetContractFactsForm} onChange={form.setTargetContractFactsForm} generation={5} prefix="target-contract" mode="consumer" singleContract showSevere={hasTarget5GSpecialRider1} showNonSevere={hasTarget5GSpecialRider2} />
+          <SamsungContractFactsFields value={form.targetContractFactsForm} onChange={form.setTargetContractFactsForm} generation={5} prefix="target-contract" mode="consumer" compactLabels singleContract showSevere={hasTarget5GSpecialRider1} showNonSevere={hasTarget5GSpecialRider2} />
         </section>
       </section>
   );
