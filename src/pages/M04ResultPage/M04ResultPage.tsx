@@ -1883,7 +1883,7 @@ function M04ResultPage() {
           }}
         >
           <div>
-            <span className="step-badge">BREAK-EVEN</span>
+            <span className="step-badge">치료 횟수별 비교</span>
             <h2 className="card-title" style={{ marginTop: "10px" }}>
               손익분기 탐색
             </h2>

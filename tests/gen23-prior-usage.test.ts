@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { applyGen23ContractInputs, GEN23_SAMPLE_CONTRACT_DETAILS } from '../src/domain/contractDetails';
 import { applyGen23PriorUsage, gen23PriorFormFromUsages, parseGen23PriorUsage } from '../src/domain/gen23PriorUsage';
 import { calculateSamsungComparisonItem } from '../src/engine/calculateSamsungComparison';
-import { generationSelectedPatch, samplePolicyPatch } from '../src/pages/M02InputPage/contractTransitions';
+import { generationSelectedPatch, contractSamplePatch } from '../src/pages/M02InputPage/contractTransitions';
 import { samplePolicyService } from '../src/services/samplePolicyService';
 import { useAnalysisStore } from '../src/store/useAnalysisStore';
 import type { MedicalUsage } from '../src/domain/medical';
@@ -56,8 +56,7 @@ describe('2·3세대 올해 이용 내역은 담보별로 해당 치료에만 �
   it('세대를 바꾸면 비우고, STEP 1 샘플은 올해 이용 없음(0)으로 채운다', () => {
     expect(generationSelectedPatch(3, { selectedSampleId: null }).contractDetails).toEqual({});
     expect(GEN23_SAMPLE_CONTRACT_DETAILS.gen23PriorOutpatientCount).toBe('0');
-    const sample = samplePolicyService.load('NON_COVERED');
-    expect(samplePolicyPatch('NON_COVERED', sample).contractDetails).toMatchObject({ gen23PriorMriPaid: '0' });
+    expect(contractSamplePatch('GEN3').contractDetails).toMatchObject({ gen23PriorMriPaid: '0' });
   });
 });
 

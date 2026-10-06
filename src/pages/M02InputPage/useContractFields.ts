@@ -226,6 +226,7 @@ const [gen1D1Coverage, setGen1D1Coverage] =
       setContractDetails(patch.contractDetails);
       setCurrentContractFactsForm({});
     }
+    if (patch.currentContractFacts !== undefined) setCurrentContractFactsForm(patch.currentContractFacts);
   };
 
 

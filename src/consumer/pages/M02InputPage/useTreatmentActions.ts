@@ -582,6 +582,8 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
       setTreatmentSampleLoaded(true);
 
       applyTreatmentDraft(nextDraft);
+      // 샘플은 새 치료로 불러온다: 이전에 수정하던 치료의 '수정 중' 상태가 남아 있으면 안 된다.
+      setEditingUsageId(null);
       setIsTreatmentFormOpen(true);
       setErrorMessage("");
     } catch (error) {
