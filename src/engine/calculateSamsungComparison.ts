@@ -119,7 +119,9 @@ function calculateComparisonItem(contract: InsuranceContract, selections: Produc
     specifiedThreeNonCoveredTreatment: usage.samsungCalculationInput?.specifiedThreeNonCoveredTreatment
       ?? (['MANUAL_THERAPY', 'INJECTION'].includes(usage.samsungGen5Facts?.threeNonCoveredCategory ?? usage.treatmentCategory?.toUpperCase() ?? '')),
     ...(target ? contractFactsForUsage(assumptions.targetContractFacts ?? {}, usage, 5)
-      : assumptions.currentContractFacts ? contractFactsForUsage(assumptions.currentContractFacts, usage, generation) : {}),
+      : assumptions.currentContractFacts
+        ? Object.fromEntries(Object.entries(contractFactsForUsage(assumptions.currentContractFacts, usage, generation)).filter(([, value]) => value !== undefined))
+        : {}),
     eligibleExpense: usage.samsungCalculationInput?.eligibleExpense ?? expense,
     healthInsuranceCopayRate: usage.healthInsuranceCopayRate,
     institution: usage.institutionType,
@@ -139,7 +141,7 @@ function calculateComparisonItem(contract: InsuranceContract, selections: Produc
       ...input, coveredRoomAndTreatment: usage.gen1CoveredRoomAndTreatment ?? input.coveredRoomAndTreatment,
       roomDifference: usage.gen1RoomDifference ?? input.roomDifference, nonNhiInpatientTotal: usage.gen1NonNhiInpatientTotal ?? input.nonNhiInpatientTotal,
       // 명시한 인정금액이 없으면 "한 번 진료받을 때 내가 내는 금액"을 쓴다
-      outpatientExpense: usage.samsungCalculationInput?.eligibleExpense ?? usage.unitCost,
+      outpatientExpense: usage.samsungCalculationInput?.eligibleExpense ?? usage.patientPaidAmount ?? usage.unitCost,
       priorPaidBenefit: usage.gen1PriorPaidBenefit ?? input.priorPaidBenefit,
       priorServiceDays: usage.gen1PriorServiceDays ?? input.priorServiceDays,
       policyExclusionsCleared: input.policyExclusionsCleared ?? usage.gen1PolicyExclusionsCleared,

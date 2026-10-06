@@ -20,10 +20,25 @@ const baseUsage={id:'normal',treatmentName:'정상 통원',careSetting:'OUTPATIE
 it('gen1 screen adapter pays 95000 and retains precision exclusion confirmation',()=>expect(calculateSamsungComparisonItem({...contract,generation:1},selections,baseUsage,assumptions)).toMatchObject({claim:95000,ruleId:'G1-04'}));
 it('gen1 uses the explicitly entered eligible amount',()=>expect(calculateSamsungComparisonItem({...contract,generation:1},selections,{...baseUsage,samsungCalculationInput:{...baseUsage.samsungCalculationInput,eligibleExpense:50000}},assumptions)).toMatchObject({claim:45000,ruleId:'G1-04'}));
 it('gen1 outpatient uses the amount paid per visit, not the covered-amount field',()=>expect(calculateSamsungComparisonItem({...contract,generation:1},selections,{...baseUsage,unitCost:60000,coveredAmount:100000},assumptions)).toMatchObject({claim:55000,ruleId:'G1-04'}));
+it('gen1 uses patient-paid cost consistently with annual medical burden',()=>{
+ const usage={...baseUsage,patientPaidAmount:60000};
+ const result=calculateSamsungAnnualComparison({...contract,generation:1},35000,[],selections,[usage],assumptions);
+ expect(result.medicalCost).toBe(60000);
+ expect(result.currentClaimTotal).toBe(55000);
+ expect(result.currentTotal).toBe(60000*12+60000-55000);
+ expect(calculateSamsungComparisonItem({...contract,generation:1},selections,{...usage,samsungCalculationInput:{...usage.samsungCalculationInput,eligibleExpense:50000}},assumptions).claim).toBe(45000);
+});
 it('gen1 pays 0 and explains when the entered cause is not covered by the checked D1 rider',()=>expect(calculateSamsungComparisonItem({...contract,generation:1},{...selections,gen1D1Coverage:'DISEASE'},{...baseUsage,claimCause:'INJURY'},assumptions)).toMatchObject({claim:0,deductible:0,reasons:['선택한 진료의 원인(질병/상해)에 해당하는 D1 특약에 가입하지 않아 현재 계약은 보상하지 않습니다.']}));
 it('gen4 screen adapter pays 80000 and applies remaining annual cap',()=>{
  expect(calculateSamsungComparisonItem({...contract,generation:4},selections,baseUsage,assumptions)).toMatchObject({claim:80000,ruleId:'G4-08'});
  expect(calculateSamsungComparisonItem({...contract,generation:4},selections,{...baseUsage,samsungCalculationInput:{...baseUsage.samsungCalculationInput,priorPaidBenefit:49990000}},assumptions).claim).toBe(10000);
+});
+it('partial current contract facts retain entered caps while target caps stay independent',()=>{
+ const usage={...baseUsage,samsungCalculationInput:{...baseUsage.samsungCalculationInput,contractBenefitCap:30000,perOccurrenceBenefitCap:25000}};
+ const partial={...assumptions,currentContractFacts:{otherIndemnityPoliciesExist:false}};
+ expect(calculateSamsungComparisonItem({...contract,generation:4},selections,usage,partial).claim).toBe(25000);
+ expect(calculateSamsungComparisonItem({...contract,generation:4},selections,usage,{...partial,currentContractFacts:{coveredBenefitCap:20000,coveredOutpatientCap:15000}}).claim).toBe(15000);
+ expect(calculateSamsungComparisonItem({...contract,generation:4},selections,usage,partial,true).claim).toBe(70000);
 });
 it('gen5 covered needs no severe facts and compares independently',()=>{
  expect(calculateSamsungComparisonItem(contract,selections,baseUsage,assumptions)).toMatchObject({claim:70000,ruleId:'G5-02'});
