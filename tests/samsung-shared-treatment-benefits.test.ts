@@ -64,7 +64,7 @@ describe('같은 치료를 서로 다른 계약의 담보·가입금액에 연�
     expect(html).toContain('80,000원');
   });
   it.each([3, 4] as const)('%i세대 MRI 특약과 5세대 비중증 MRI는 같은 치료에 서로 다른 한도를 적용한다', generation => {
-    const source = loadTreatmentSample('NON_COVERED', generation, 'MRI').plannedUsages[0];
+    const source = loadTreatmentSample('NON_COVERED', generation, 'NON_COVERED_MRI').plannedUsages[0];
     const shared: MedicalUsage = { ...source, frequency: 2, unitCost: 100000, patientPaidAmount: 100000, coveredAmount: 100000,
       gen23CoveredCopay: 0, gen23NonCoveredExpense: 100000, gen23EligibleExpense: 100000,
       samsungCalculationInput: { ...source.samsungCalculationInput, eligibleExpense: 100000 },

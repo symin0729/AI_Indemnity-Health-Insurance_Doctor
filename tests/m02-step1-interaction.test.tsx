@@ -244,7 +244,7 @@ describe("STEP 2 치료 샘플 불러오기", () => {
     await user.selectOptions(generationSelect(), "3");
     expect(variantButton().textContent).toContain("필수 선택");
     await user.click(screen.getByRole("button", { name: "치료 샘플 불러오기" }));
-    await user.click(screen.getByRole("button", { name: "MRI 검사" }));
+    await user.click(screen.getByRole("button", { name: "비급여 외래 치료" }));
     expect((document.getElementById("treatment-kind") as HTMLSelectElement).value).not.toBe("");
     // STEP 1
     expect(variantButton().textContent).toContain("필수 선택");

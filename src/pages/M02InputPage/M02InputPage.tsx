@@ -1,3 +1,4 @@
+import { TREATMENT_SAMPLE_KINDS } from "../../services/sampleScenarioService";
 import AppShell from "../../components/AppShell";
 import { GEN23_UNREGISTERED_NOTE } from "../../domain/samsungGen23Variant";
 import { createPortal } from "react-dom";
@@ -128,9 +129,7 @@ function M02InputPage() {
           <h2 id="treatment-sample-title" className="card-title">치료 샘플 선택</h2>
           <p>가까운 예시를 고르면 입력칸이 채워집니다. 금액과 횟수는 연습용 가정이니 직접 수정하세요.</p>
           <div style={{ display: "grid", gap: "12px" }}>
-            <button type="button" className="sample-button" onClick={() => handleLoadSampleTreatments("OUTPATIENT")}>일반 외래 진료</button>
-            <button type="button" className="sample-button" onClick={() => handleLoadSampleTreatments("EXAM")}>외래 검사</button>
-            <button type="button" className="sample-button" onClick={() => handleLoadSampleTreatments("MRI")}>MRI 검사</button>
+            {TREATMENT_SAMPLE_KINDS.map(({ kind, label }) => <button key={kind} type="button" className="sample-button" onClick={() => handleLoadSampleTreatments(kind)}>{label}</button>)}
             <button type="button" className="secondary-button" onClick={() => treatmentSampleDialogRef.current?.close()}>닫기</button>
           </div>
         </section>
