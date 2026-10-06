@@ -1,6 +1,5 @@
 import SamsungTreatmentComparison from "../../components/samsung/SamsungTreatmentComparison";
 import { prepareUsageForSamsungComparison } from "../../engine/prepareSamsungComparison";
-import mainLogo from '../../assets/main-logo.png';
 import AppShell from "../../components/AppShell";
 import {
   useEffect,
@@ -178,7 +177,7 @@ export function BurdenComparisonChart({
       tone: "current",
     },
     {
-      label: "5세대 비교안",
+      label: "5세대 전환 시",
       shortLabel: "전환",
       value: displayedTarget,
       width: (displayedTarget / maximumBurden) * 100,
@@ -314,7 +313,7 @@ export function BreakEvenChart({ result }: { result: BreakEvenSimulationResult }
     <div className="break-even-chart">
       <div className="break-even-chart__legend" aria-hidden="true">
         <span><i className="is-current" />현재 계약 유지</span>
-        <span><i className="is-target" />5세대 비교안</span>
+        <span><i className="is-target" />5세대 전환 시</span>
         {result.threshold !== null && <span><i className="is-threshold" />손익분기 기준</span>}
       </div>
 
@@ -1099,9 +1098,7 @@ function ScenarioCard({
             보장 제외 ΣE
           </p>
           <strong>
-            {formatMoney(
-              result.totalExcludedAmount
-            )}
+            {result.totalExcludedAmount === null ? "미산출" : formatMoney(result.totalExcludedAmount)}
           </strong>
         </div>
 
@@ -1110,9 +1107,7 @@ function ScenarioCard({
             조정 자기부담 Σd*
           </p>
           <strong>
-            {formatMoney(
-              result.totalAdjustedDeductible
-            )}
+            {result.totalAdjustedDeductible === null ? "미산출" : formatMoney(result.totalAdjustedDeductible)}
           </strong>
         </div>
 
@@ -1121,9 +1116,7 @@ function ScenarioCard({
             한도초과 ΣU
           </p>
           <strong>
-            {formatMoney(
-              result.totalLimitExceededAmount
-            )}
+            {result.totalLimitExceededAmount === null ? "미산출" : formatMoney(result.totalLimitExceededAmount)}
           </strong>
         </div>
       </div>
@@ -1131,6 +1124,9 @@ function ScenarioCard({
       <div className="notice-box">
         총부담 공식은 연 보험료 + ΣM - ΣI 입니다.
         E, d*, U는 M-I의 분해값이므로 다시 더하지 않습니다.
+        {(result.totalExcludedAmount === null || result.totalAdjustedDeductible === null || result.totalLimitExceededAmount === null) && (
+          <p>“미산출”은 별도 집계하지 않은 분해 항목입니다. 총부담 계산에 필요한 조건의 미확인은 “확인 필요”로 표시합니다.</p>
+        )}
       </div>
 
       {result.items.map((item) => (
@@ -1302,7 +1298,7 @@ function M04ResultPage() {
           </span>
           <h1>보험 비교 결과</h1>
           <p className="page-description">
-            mvp-v2 계산 룰을 불러오는 중입니다.
+            {contract.generation === 2 || contract.generation === 3 ? '상품별 계산 룰을 불러오는 중입니다.' : '계산 룰을 불러오는 중입니다.'}
           </p>
         </header>
       </main></AppShell>
@@ -1489,12 +1485,12 @@ function M04ResultPage() {
         result.target5GSaving > 0
       ) {
         comparisonMessage =
-          `5세대 비교안의 연간 총부담이 현재 계약보다 ${result.target5GSaving.toLocaleString()}원 낮습니다.`;
+          `5세대 전환 시 연간 총부담이 현재 계약보다 ${result.target5GSaving.toLocaleString()}원 낮습니다.`;
       } else if (
         result.target5GSaving < 0
       ) {
         comparisonMessage =
-          `현재 계약의 연간 총부담이 5세대 비교안보다 ${Math.abs(
+          `현재 계약의 연간 총부담이 5세대 전환 시보다 ${Math.abs(
             result.target5GSaving
           ).toLocaleString()}원 낮습니다.`;
       } else {
@@ -1538,6 +1534,7 @@ function M04ResultPage() {
       ...calculationUsages[0],
       id: "combined-treatment-break-even",
       treatmentName: `전체 예정 치료 ${calculationUsages.length}개 합산`,
+      frequency: calculationUsages.reduce((sum, u) => sum + u.frequency, 0),
     };
     return [{
       usage,
@@ -1646,8 +1643,7 @@ function M04ResultPage() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns:
-              "minmax(0, 1.4fr) minmax(220px, 0.6fr)",
+            gridTemplateColumns: "minmax(0, 1fr)",
             gap: "clamp(22px, 5vw, 48px)",
             alignItems: "center",
           }}
@@ -1675,7 +1671,7 @@ function M04ResultPage() {
               className="page-description"
               style={{ maxWidth: "650px", marginBottom: "16px" }}
             >
-              같은 의료이용 조건에서 현재 계약 유지와 5세대 비교안의
+              같은 의료이용 조건에서 현재 계약 유지와 5세대 전환 시의
               연간 부담을 한눈에 비교했습니다.
             </p>
 
@@ -1684,65 +1680,9 @@ function M04ResultPage() {
             </span>
           </div>
 
-          <div
-            style={{
-              display: "grid",
-              placeItems: "center",
-              minHeight: "180px",
-            }}
-          >
-            <img
-              src={mainLogo}
-              alt="AI 실손 닥터 보험 비교 결과 안내"
-              style={{
-                width: "min(100%, 260px)",
-                maxHeight: "210px",
-                objectFit: "contain",
-                filter: "drop-shadow(0 16px 24px rgba(31, 95, 153, 0.15))",
-              }}
-            />
-          </div>
+
         </div>
       </header>
-      <SamsungTreatmentComparison items={samsungComparison.items} generation={contract.generation} />
-
-
-      {(calculationAssumptions.assumeSingleIndemnityContract ||
-        calculationAssumptions.assumeEntireMedicalCostCovered ||
-        calculationAssumptions.assumeNoPriorLimitUsage ||
-        calculationAssumptions.assumeEachOccurrenceSeparate ||
-        currentEngineAssumptions.length > 0 ||
-        targetEngineAssumptions.length > 0) && (
-        <section className="result-assumption-summary" aria-labelledby="result-assumption-summary-title">
-          <div>
-            <span className="result-assumption-summary__badge">적용 조건</span>
-            <h2 id="result-assumption-summary-title">이 결과에 적용된 계산 가정</h2>
-          </div>
-          <ul>
-            <li>입력한 월 보험료 × 12와 같은 예정 치료를 비교합니다. 갱신 인상률·향후 할인·할증은 추정하지 않습니다.</li>
-            {calculationAssumptions.comparisonBasis === 'FRESH_YEAR' && <li>두 계약 모두 한도 사용 전부터 시작하는 1년 모의 비교입니다. 기존 사용분은 반영하지 않습니다.</li>}
-            {calculationAssumptions.comparisonBasis === 'REMAINING_LIMITS' && <li>현재 계약은 입력한 기존 사용분, 5세대는 전환 후 계약의 비교 시작 시점에서 사용분 0을 기준으로 비교합니다.</li>}
-            {calculationAssumptions.assumeNoPolicyExclusions && <li>미확인 면책 조건은 보장 제외 사유가 없다고 가정했습니다.</li>}
-            {calculationAssumptions.assumeSingleIndemnityContract && <li>실손 계약 1개 기준 비교 · 다른 실손 계약과의 보험금 분담은 반영하지 않음</li>}
-            {calculationAssumptions.assumeEntireMedicalCostCovered && (
-              <li>C가 없는 치료는 환자부담 의료비 M 전액을 보장대상으로 가정</li>
-            )}
-            {calculationAssumptions.assumeNoPriorLimitUsage && (
-              <li>확인되지 않은 기존 지급액과 한도·상한 사용량을 0으로 가정</li>
-            )}
-            {calculationAssumptions.assumeEachOccurrenceSeparate && (
-              <li>날짜·입원 구분이 없는 반복 치료를 각각 별도 방문으로 가정</li>
-            )}
-            {currentEngineAssumptions.map((text) => (
-              <li key={`current-${text}`}>현재 계약: {text}</li>
-            ))}
-            {targetEngineAssumptions.map((text) => (
-              <li key={`target-${text}`}>5세대: {text}</li>
-            ))}
-          </ul>
-        </section>
-      )}
-
       <section
         className="app-card"
         style={{
@@ -1834,7 +1774,7 @@ function M04ResultPage() {
             }}
           >
             <p style={{ margin: "0 0 6px", color: "var(--color-text-sub)", fontWeight: 700 }}>
-              5세대 비교안
+              5세대 전환 시
             </p>
             <strong style={{ fontSize: "1.35rem" }}>
               {formatMoney(target5G.totalBurden)}
@@ -1876,11 +1816,52 @@ function M04ResultPage() {
         />
 
         <ScenarioCard
-          title="5세대 비교안"
+          title="5세대 전환 시"
           subtitle="입력한 5세대 보험료와 특약 조건 기준"
           result={target5G}
         />
       </div>
+
+      {(calculationAssumptions.assumeSingleIndemnityContract ||
+        calculationAssumptions.assumeEntireMedicalCostCovered ||
+        calculationAssumptions.assumeNoPriorLimitUsage ||
+        calculationAssumptions.assumeEachOccurrenceSeparate ||
+        currentEngineAssumptions.length > 0 ||
+        targetEngineAssumptions.length > 0) && (
+        <section className="result-assumption-summary" aria-labelledby="result-assumption-summary-title">
+          <div>
+            <span className="result-assumption-summary__badge">적용 조건</span>
+            <h2 id="result-assumption-summary-title">이 결과에 적용된 계산 가정</h2>
+          </div>
+          <ul>
+            <li>입력한 월 보험료 × 12와 같은 예정 치료를 비교합니다. 갱신 인상률·향후 할인·할증은 추정하지 않습니다.</li>
+            {calculationAssumptions.comparisonBasis === 'FRESH_YEAR' && <li>두 계약 모두 한도 사용 전부터 시작하는 1년 모의 비교입니다. 기존 사용분은 반영하지 않습니다.</li>}
+            {calculationAssumptions.comparisonBasis === 'REMAINING_LIMITS' && <li>현재 계약은 입력한 기존 사용분, 5세대는 전환 후 계약의 비교 시작 시점에서 사용분 0을 기준으로 비교합니다.</li>}
+            {calculationAssumptions.assumeNoPolicyExclusions && <li>미확인 면책 조건은 보장 제외 사유가 없다고 가정했습니다.</li>}
+            {calculationAssumptions.assumeSingleIndemnityContract && <li>실손 계약 1개 기준 비교 · 다른 실손 계약과의 보험금 분담은 반영하지 않음</li>}
+            {calculationAssumptions.assumeEntireMedicalCostCovered && (
+              <li>C가 없는 치료는 환자부담 의료비 M 전액을 보장대상으로 가정</li>
+            )}
+            {calculationAssumptions.assumeNoPriorLimitUsage && (
+              <li>확인되지 않은 기존 지급액과 한도·상한 사용량을 0으로 가정</li>
+            )}
+            {calculationAssumptions.assumeEachOccurrenceSeparate && (
+              <li>날짜·입원 구분이 없는 반복 치료를 각각 별도 방문으로 가정</li>
+            )}
+            {currentEngineAssumptions.map((text) => (
+              <li key={`current-${text}`}>현재 계약: {text}</li>
+            ))}
+            {targetEngineAssumptions.map((text) => (
+              <li key={`target-${text}`}>5세대: {text}</li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <SamsungTreatmentComparison items={samsungComparison.items} generation={contract.generation} />
+
+
+
 
       <section
         className="form-card"
@@ -1907,8 +1888,9 @@ function M04ResultPage() {
               손익분기 탐색
             </h2>
             <p className="card-description" style={{ marginBottom: 0 }}>
-              등록한 치료를 하나로 합산하고, 전체 이용 횟수를 0~{SAMSUNG_BREAK_EVEN_MAX_FREQUENCY}회로 바꾸며
-              계산 엔진을 다시 실행해 유리한 선택지가 바뀌는 구간을 찾습니다.
+              입력한 치료 구성 비율과 회당 의료비를 유지하고, 전체 이용 횟수를 0~{SAMSUNG_BREAK_EVEN_MAX_FREQUENCY}회로 바꾸며
+              현재 계약 유지와 5세대 전환 시 연간 총부담이 역전되는 구간을 찾습니다.
+              치료별 횟수는 정수로 배분하므로 구성 비율에 소폭 차이가 생길 수 있습니다.
             </p>
           </div>
         </div>
@@ -1940,6 +1922,9 @@ function M04ResultPage() {
                   치료 항목
                 </p>
                 <h3 style={{ margin: "0 0 8px" }}>{usage.treatmentName}</h3>
+                <p className="treatment-meta" style={{ margin: "0 0 8px" }}>
+                  입력한 전체 예정 이용 횟수: {usage.frequency.toLocaleString()}회
+                </p>
 
                 {!breakEven ? (
                   <p className="treatment-meta" style={{ marginBottom: 0 }}>
@@ -2332,10 +2317,11 @@ function M04ResultPage() {
               기존 한도·상한 사용량 0
             </p>
             <strong>
-              {calculationAssumptions
-                .assumeNoPriorLimitUsage
-                ? "적용"
-                : "적용 안 함"}
+              {calculationAssumptions.comparisonBasis !== "REMAINING_LIMITS"
+                ? "양쪽 계약 모두 0에서 시작"
+                : calculationAssumptions.assumeNoPriorLimitUsage
+                ? "입력한 기존 사용분 반영 · 빈 값만 0 가정"
+                : "입력한 기존 사용분 반영"}
             </strong>
           </div>
 
@@ -2359,7 +2345,7 @@ function M04ResultPage() {
           </div>
         )}
 
-        {!calculationAssumptions
+        {calculationAssumptions.comparisonBasis === "REMAINING_LIMITS" && !calculationAssumptions
           .assumeNoPriorLimitUsage && (
           <div className="notice-box">
             기존 지급한도 사용액과 자기부담상한 누적액을 확인하지 않은 경우 0원으로 자동 처리하지 않습니다.

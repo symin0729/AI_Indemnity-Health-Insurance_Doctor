@@ -66,10 +66,15 @@ export function Gen23Inputs({ generation, value, onChange, insurerName = "OO 보
   </fieldset>;
 }
 export function Gen23Summary({ usage, generation }: { usage: MedicalUsage; generation: 2 | 3 }) {
-  return <details><summary>{generation}세대 계산 입력·확인 필요 항목</summary><ul className="gen23-summary-list">{gen23Fields.filter(f => !f.generation || f.generation === generation).map(f => {
+  const care = usage.gen23CareSetting ?? usage.careSetting;
+  const special = generation === 3 && usage.gen23TreatmentType && usage.gen23TreatmentType !== "BASE";
+  return <details><summary>{generation}세대 계산 입력·확인 필요 항목</summary><table className="gen23-summary-table"><tbody>{gen23Fields.filter(f =>
+    (!f.generation || f.generation === generation) &&
+    (!f.scope || !care || (f.scope === "inpatient" ? care === "INPATIENT" && !special : f.scope === "special" ? special : care !== "INPATIENT" && !special))
+  ).map(f => {
     const v = usage[f.key];
     const displayValue = v === undefined ? "확인 필요" : typeof v === "boolean" ? v ? "예 / 확인" : "아니요" : f.options?.find(([key]) => key === v)?.[1] ?? String(v);
     const isUnknown = v === undefined || v === "" || v === "UNKNOWN";
-    return <li key={f.key} className="gen23-summary-item"><span className="gen23-summary-label">{f.label}</span><span className={`gen23-summary-value${isUnknown ? " is-unknown" : ""}`}>{displayValue}</span></li>;
-  })}</ul></details>;
+    return <tr key={f.key} className="gen23-summary-item"><th scope="row" className="gen23-summary-label">{f.label}</th><td className="gen23-summary-value"><span className={`gen23-summary-value${isUnknown ? " is-unknown" : ""}`}>{displayValue}</span></td></tr>;
+  })}</tbody></table></details>;
 }
