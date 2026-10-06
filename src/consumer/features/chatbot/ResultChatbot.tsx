@@ -96,11 +96,11 @@ export default function ResultChatbot() {
   };
 
   return (
-    <AppShell currentStep={6} showMvpNotice={false}>
+    <AppShell currentStep={7} showMvpNotice={false}>
       <main className="navy-page chat-page">
         <header className="chat-hero">
           <div>
-            <span className="step-badge">선택 STEP 6 · 보험 이해 도우미</span>
+            <span className="step-badge">선택 STEP 7 · 보험 이해 도우미</span>
             <h1>실손보험, 궁금한 점을<br />쉽게 물어보세요.</h1>
             <p>공식 자료를 바탕으로 5세대 전환을 판단할 때 필요한 질문에 답합니다.</p>
           </div>

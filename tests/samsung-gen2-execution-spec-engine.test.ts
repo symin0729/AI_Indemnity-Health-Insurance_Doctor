@@ -8,14 +8,14 @@ const rules = new Map<string, SamsungExecutionRule>(["standard", "selected2"].fl
 }));
 const inpatient: Input = {
   nhiApplied: true, requiredCoverageConfirmed: true, policyExclusionsCleared: true,
-  otherIndemnityPoliciesExist: false, coveragePeriodConfirmed: true,
-  inpatientExcludingRoomDifference: 100000, roomDifference: 0, coveragePeriod: "ACTIVE",
+  otherIndemnityPoliciesExist: false,
+  inpatientExcludingRoomDifference: 100000, roomDifference: 0,
   priorEligibleDeductible: 0, priorPaidBenefit: 0, contractBenefitCap: 50000000,
 };
 const outpatient: Input = {
   nhiApplied: true, requiredCoverageConfirmed: true, policyExclusionsCleared: true,
-  otherIndemnityPoliciesExist: false, coveragePeriodConfirmed: true,
-  coveragePeriod: "ACTIVE", sameDayAggregationConfirmed: true,
+  otherIndemnityPoliciesExist: false,
+  sameDayAggregationConfirmed: true,
   eligibleExpense: 50000, institution: "CLINIC", priorAnnualCount: 0,
   outpatientBenefitCap: 250000, prescriptionBenefitCap: 50000,
 };
@@ -85,22 +85,6 @@ describe("Samsung 1611.7 C01–C06", () => {
     paid("G2-STD-03", { ...outpatient, priorAnnualCount: 179 }, 40000, 10000, 10000);
     paid("G2-STD-03", { ...outpatient, priorAnnualCount: 180 }, 0, 10000, 10000);
   });
-  it("Test 11 continuation has separate 90 visit/prescription counters and 180 days", () => {
-    for (const id of ["G2-STD-02", "G2-STD-03", "G2-SEL2-02", "G2-SEL2-03"]) {
-      const input: Input = { ...outpatient, coveredCopay: 0, nonCoveredExpense: 50000, coveragePeriod: "POST_TERMINATION", postTerminationContinuationConfirmed: true, daysSinceTermination: 180, priorContinuationCount: 89, priorAnnualCount: 180 };
-      paid(id, input, 40000, 10000, 10000);
-      paid(id, { ...input, priorContinuationCount: 90 }, 0, 10000, 10000);
-      paid(id, { ...input, daysSinceTermination: 181 }, 0, 10000, 10000);
-    }
-  });
-  it("Test 12 blocks unconfirmed period, eligibility, day and continuation count", () => {
-    blocked("G2-STD-02", { ...outpatient, coveragePeriod: undefined }, "정상 보장기간");
-    blocked("G2-STD-02", { ...outpatient, coveragePeriod: "UNKNOWN" }, "정상 보장기간");
-    const input: Input = { ...outpatient, coveragePeriod: "POST_TERMINATION", daysSinceTermination: 1, priorContinuationCount: 0 };
-    blocked("G2-STD-02", input, "계속 치료 조건");
-    blocked("G2-STD-02", { ...input, postTerminationContinuationConfirmed: true, daysSinceTermination: undefined }, "경과일");
-    blocked("G2-STD-02", { ...input, postTerminationContinuationConfirmed: true, priorContinuationCount: undefined }, "기존 외래");
-  });
   it("Test 13 no other insurance preserves payment", () => paid("G2-STD-01", inpatient, 80000, 20000, 20000));
   it("Test 14 other insurance without a factor requires confirmation", () => blocked("G2-STD-01", { ...inpatient, otherIndemnityPoliciesExist: true }, "계약별 보상책임액"));
   it("Test 15 verified external factor still multiplies capped benefit", () => paid("G2-STD-01", { ...inpatient, otherIndemnityPoliciesExist: true, proportionalPaymentFactor: 0.5, priorEligibleDeductible: 1990000 }, 45000, 20000, 20000, 10000));
@@ -108,17 +92,6 @@ describe("Samsung 1611.7 C01–C06", () => {
     blocked("G2-STD-02", { ...outpatient, prescriptionBenefitCap: undefined, perOccurrenceBenefitCap: 250000 }, "각각 확인");
     blocked("G2-STD-02", { ...outpatient, perOccurrenceBenefitCap: 300000 }, "일치하지");
     for (const factor of [NaN, Infinity, -0.1, 1.1]) blocked("G2-STD-01", { ...inpatient, otherIndemnityPoliciesExist: true, proportionalPaymentFactor: factor }, factor === 1.1 ? "0~1" : "유한한");
-  });
-  it("requires inpatient continuation eligibility and days 1 through 180", () => {
-    for (const id of ["G2-STD-01", "G2-SEL2-01"]) {
-      const input: Input = { ...inpatient, coveredCopay: 100000, nonCoveredExpense: 0, coveragePeriod: "POST_TERMINATION", postTerminationContinuationConfirmed: true, daysSinceTermination: 180 };
-      expect(run(id, input).status).toBe("DRAFT_CALCULATED");
-      for (const days of [undefined, 0, 181]) blocked(id, { ...input, daysSinceTermination: days }, "180일");
-      for (const confirmed of [undefined, false]) blocked(id, { ...input, postTerminationContinuationConfirmed: confirmed }, "계속 중인");
-      blocked(id, { ...input, coveragePeriod: undefined }, "정상 보장기간");
-      const exhausted = run(id, { ...input, priorPaidBenefit: 50000000, benefitLimitRestored: true });
-      expect(exhausted.claim).toBe(0); // 1611.7 종료 후 계속 입원에는 제3조의 복원 조항 미적용.
-    }
   });
   it("rejects all non-finite inpatient accumulators without rejecting valid zero", () => {
     for (const key of ["priorEligibleDeductible", "priorPaidBenefit", "contractBenefitCap", "inpatientDays", "roomDifference"]) {

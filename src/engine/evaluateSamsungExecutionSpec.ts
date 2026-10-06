@@ -6,6 +6,7 @@ export type SamsungInstitution =
   | "GENERAL_HOSPITAL";
 
 export interface SamsungDraftCalculationInput {
+  careSetting?: 'INPATIENT' | 'OUTPATIENT';
   contractType?: "GENERAL" | "CONVERSION";
   conversionContractSubtype?: "CONTRACT_CONVERSION" | "RESUMPTION" | "CHILD_CONVERSION";
   conversionEligibilityConfirmed?: boolean;
@@ -43,13 +44,6 @@ export interface SamsungDraftCalculationInput {
   prescriptionBenefitCap?: number;
   benefitLimitRestored?: boolean;
   otherIndemnityPoliciesExist?: boolean;
-  coveragePeriodConfirmed?: boolean;
-  /** 2세대 통원: 갱신·재가입 등 정상 보장 해당 여부도 호출자가 확인합니다. */
-  coveragePeriod?: "ACTIVE" | "POST_TERMINATION" | "UNKNOWN";
-  postTerminationContinuationConfirmed?: boolean;
-  daysSinceTermination?: number;
-  /** 종료 후 계속 치료 기간 내 누적 외래 횟수 또는 처방 건수(현재 건 제외). */
-  priorContinuationCount?: number;
   sameDayAggregationConfirmed?: boolean;
   threeNonCoveredCategory?: "MANUAL_THERAPY" | "INJECTION" | "MRI";
   threeNonCoveredExcludedFromBaseConfirmed?: boolean;
@@ -64,6 +58,8 @@ export interface SamsungExecutionRule {
   ruleId: string;
   generation?: number;
   variant?: string;
+  coverage?: string;
+  limitText?: string;
   requiredCoverages?: string[];
   calculation: Record<string, unknown> & { type: string };
   source: {
@@ -88,15 +84,28 @@ export interface SamsungExecutionRule {
     requiresPerOccurrenceBenefitCap?: boolean;
     maxPerOccurrenceBenefitCap?: number;
     fixedPerOccurrenceBenefitCap?: number;
+    perOccurrenceCapByContract?: Record<string, number>;
     fixedPerOccurrenceCapAppliesWhen?: string;
     requiresContractBenefitCap?: boolean;
     categoryLimits?: Record<string, SamsungExecutionRule["enforcement"]>;
     aggregationUnitMustBeProvided?: boolean;
     appliesWhen?: string;
+    deductibleCapInpatientOnly?: boolean;
   } | null;
 }
 
+export interface SamsungCalculationDetails {
+  coverage: string;
+  limitText?: string;
+  /** 실제 평가에 사용한 한도. 계약 가입금액과 약관 한도 중 적용값이다. */
+  benefitCap?: number;
+  perOccurrenceCap?: number;
+  priorPaidBenefit?: number;
+  source: SamsungExecutionRule['source'];
+}
+
 export interface SamsungDraftCalculationResult {
+  calculationDetails?: SamsungCalculationDetails;
   ruleId: string;
   claim: number | null;
   deductible: number | null;
@@ -151,6 +160,7 @@ function institutionMinimum(
   institution: SamsungInstitution | undefined,
 ): number | null {
   if (!institution) return null;
+  if (institution === "GENERAL_HOSPITAL") return table.GENERAL_HOSPITAL ?? table.HOSPITAL ?? table.GENERAL_TERTIARY ?? null;
   if (institution === "CLINIC_HOSPITAL") return table.CLINIC_HOSPITAL ?? table.CLINIC ?? null;
   return table[institution] ?? null;
 }
@@ -183,6 +193,11 @@ function calculated(
     enforcement = enforcement.categoryLimits[input.threeNonCoveredCategory] ?? null;
     if (!enforcement) return confirmation(rule, "해당 3대 비급여 치료 종류의 한도 규칙을 찾을 수 없습니다.");
   }
+  const calculationDetails: SamsungCalculationDetails = {
+    coverage: rule.coverage ?? rule.ruleId, limitText: rule.limitText,
+    perOccurrenceCap: typeof rule.calculation.perOccurrenceBenefitCap === 'number' ? rule.calculation.perOccurrenceBenefitCap : undefined,
+    priorPaidBenefit: input.priorPaidBenefit, source: rule.source,
+  };
   let enforcedClaim = Math.max(0, claim);
   let enforcedDeductible = deductible;
   const enforcementWarnings: string[] = [];
@@ -207,23 +222,6 @@ function calculated(
     ? input.priorServiceDays
     : input.priorAnnualCount;
   if ([2, 3].includes(rule.generation ?? 0) && enforcement?.requiresPerOccurrenceBenefitCap) {
-    if (input.coveragePeriod !== "ACTIVE" && input.coveragePeriod !== "POST_TERMINATION") {
-      return confirmation(rule, "정상 보장기간인지 계약 종료 후 계속 치료인지 확인해야 합니다.");
-    }
-    if (input.coveragePeriod === "POST_TERMINATION") {
-      const days = amount(input, "daysSinceTermination");
-      if (input.postTerminationContinuationConfirmed !== true || days === null || !Number.isInteger(days) || days < 1) {
-        return confirmation(rule, "계약 종료 후 계속 치료 조건 충족 여부와 종료 다음 날부터의 경과일을 확인해야 합니다.");
-      }
-      // 1611.7 계속 치료: 종료 다음 날부터 180일, 외래 90회·처방 90건.
-      // 조건 충족 자체를 추론하지 않고 확인된 입력만 사용합니다.
-      enforcement = { ...enforcement, maxAnnualCount: 90 };
-      usedCount = input.priorContinuationCount;
-      if (days > 180) {
-        enforcedClaim = 0;
-        enforcementWarnings.push("계약 종료 후 계속 치료 180일 보상기간을 초과했습니다.");
-      }
-    }
     if (usedCount === undefined || !Number.isInteger(usedCount) || usedCount < 0) {
       return confirmation(rule, "해당 보장기간의 기존 외래 횟수 또는 처방 건수를 확인해야 합니다.");
     }
@@ -236,7 +234,7 @@ function calculated(
   if (enforcement?.maxAnnualCount !== undefined && usedCount !== undefined
     && usedCount >= enforcement.maxAnnualCount) {
     enforcedClaim = 0;
-    enforcementWarnings.push(`${rule.generation === 2 && input.coveragePeriod === "POST_TERMINATION" ? "계약 종료 후 계속 치료" : "연간"} ${enforcement.maxAnnualCount}회/일 한도를 소진했습니다.`);
+    enforcementWarnings.push(`연간 ${enforcement.maxAnnualCount}회/일 한도를 소진했습니다.`);
   }
   if ([2, 3, 4, 5].includes(rule.generation ?? 0) && enforcement?.maxAnnualCount !== undefined && usedCount === undefined) {
     return confirmation(rule, `연간 ${enforcement.maxAnnualCount}회/건 한도 적용을 위해 기존 이용 횟수가 필요합니다.`);
@@ -252,9 +250,10 @@ function calculated(
   // 2~4세대 입원의 연 자기부담 상한은 건강보험 적용 의료비의 자기부담만 대상으로 한다(건강보험 미적용 40% 보상분 제외).
   const capBasis = [2, 3, 4].includes(rule.generation ?? 0) ? capEligibleDeductible : enforcedDeductible;
   const deductibleCapApplies =
+    (!enforcement?.deductibleCapInpatientOnly || input.careSetting === 'INPATIENT') &&
     (![2, 3, 4].includes(rule.generation ?? 0) || (capBasis !== null && capBasis > 0)) &&
     (enforcement?.appliesWhen !== "GENERAL_OR_TERTIARY_HOSPITAL_EXCLUDING_SPECIFIED_THREE"
-      || (input.institution === "GENERAL_TERTIARY" && input.specifiedThreeNonCoveredTreatment === false));
+      || ((input.institution === "GENERAL_TERTIARY" || input.institution === "GENERAL_HOSPITAL") && input.specifiedThreeNonCoveredTreatment === false));
 
   if ([2, 3, 4, 5].includes(rule.generation ?? 0) && enforcement?.annualDeductibleCap !== undefined && deductibleCapApplies && enforcedDeductible !== null
     && input.priorEligibleDeductible === undefined) {
@@ -275,10 +274,11 @@ function calculated(
     let annualCap = enforcement.annualBenefitCap;
     if (enforcement.requiresContractBenefitCap) {
       if (input.contractBenefitCap === undefined || input.contractBenefitCap <= 0) {
-        return confirmation(rule, "계약의 연간 보험가입금액이 필요합니다(약관상 최대 5천만원).");
+        return confirmation(rule, `해당 담보의 실제 연간 보험가입금액이 필요합니다(최대 ${annualCap.toLocaleString("ko-KR")}원).`);
       }
       annualCap = Math.min(annualCap, input.contractBenefitCap);
     }
+    calculationDetails.benefitCap = annualCap;
     enforcedClaim = Math.min(enforcedClaim, Math.max(0, annualCap - input.priorPaidBenefit));
   }
   if (enforcement?.benefitCap !== undefined) {
@@ -291,8 +291,9 @@ function calculated(
     if (input.priorPaidBenefit === undefined) {
       return confirmation(rule, `누적 ${cap.toLocaleString("ko-KR")}원 한도 적용을 위해 기지급 보험금이 필요합니다.`);
     }
+    calculationDetails.benefitCap = cap;
     let priorPaidBenefit = input.priorPaidBenefit;
-    if ([2, 3].includes(rule.generation ?? 0) && input.coveragePeriod !== "POST_TERMINATION" && priorPaidBenefit >= cap) {
+    if ([2, 3].includes(rule.generation ?? 0) && priorPaidBenefit >= cap) {
       if (input.benefitLimitRestored === undefined) {
         return confirmation(rule, "입원 한도 소진 후 90일/365일 기준에 따른 보상한도 복원 여부 확인이 필요합니다.");
       }
@@ -317,6 +318,13 @@ function calculated(
     if (cap === undefined || cap <= 0 || cap > maximumCap) {
       return confirmation(rule, `통원의료비의 계약상 회당 보험가입금액(최대 ${maximumCap.toLocaleString("ko-KR")}원)이 필요합니다.`);
     }
+    calculationDetails.perOccurrenceCap = cap;
+    enforcedClaim = Math.min(enforcedClaim, cap);
+  }
+  if (enforcement?.perOccurrenceCapByContract) {
+    const cap = enforcement.perOccurrenceCapByContract[String(input.contractBenefitCap)];
+    if (cap === undefined) return confirmation(rule, "해당 담보의 가입금액별 통원 한도를 확인해야 합니다.");
+    calculationDetails.perOccurrenceCap = cap;
     enforcedClaim = Math.min(enforcedClaim, cap);
   }
   if (enforcement?.fixedPerOccurrenceBenefitCap !== undefined) {
@@ -324,11 +332,14 @@ function calculated(
       return confirmation(rule, "입원 회당 한도 적용을 위해 의료기관 종별이 필요합니다.");
     }
     const applies = enforcement.fixedPerOccurrenceCapAppliesWhen !== "NON_GENERAL_OR_TERTIARY_HOSPITAL"
-      || input.institution !== "GENERAL_TERTIARY";
-    if (applies) enforcedClaim = Math.min(enforcedClaim, enforcement.fixedPerOccurrenceBenefitCap);
+      || (input.institution !== "GENERAL_TERTIARY" && input.institution !== "GENERAL_HOSPITAL");
+    if (applies) {
+      calculationDetails.perOccurrenceCap = Math.min(calculationDetails.perOccurrenceCap ?? Infinity, enforcement.fixedPerOccurrenceBenefitCap);
+      enforcedClaim = Math.min(enforcedClaim, enforcement.fixedPerOccurrenceBenefitCap);
+    }
   }
   if (input.proportionalPaymentFactor !== undefined) {
-    if (([2, 3].includes(rule.generation ?? 0) && !Number.isFinite(input.proportionalPaymentFactor))
+    if ((!Number.isFinite(input.proportionalPaymentFactor))
       || input.proportionalPaymentFactor < 0 || input.proportionalPaymentFactor > 1) {
       return confirmation(rule, "다수계약 비례보상 계수는 0~1 사이여야 합니다.");
     }
@@ -340,6 +351,7 @@ function calculated(
     ...(rule.generation === 2 ? { gen2Trace: {
       deductible, capEligibleDeductible, restored, enforcedDeductible, enforcedClaim,
     } } : {}),
+    calculationDetails,
     enforcementTrace: {
       capEligibleDeductible: capBasis,
       restoredDeductible: restored,
@@ -366,6 +378,16 @@ export function evaluateSamsungExecutionSpec(
   input: SamsungDraftCalculationInput,
 ): SamsungDraftCalculationResult {
   const calculation = rule.calculation;
+  if ([4, 5].includes(rule.generation ?? 0)) {
+    for (const [key, value] of Object.entries(input)) {
+      if (typeof value === "number" && (!Number.isFinite(value) || value < 0)) return confirmation(rule, `${key}: 유한한 0 이상의 숫자가 필요합니다.`);
+    }
+    if (input.proportionalPaymentFactor !== undefined && input.otherIndemnityPoliciesExist === false) return confirmation(rule, "다수보험 없음과 비례보상 계수 입력이 서로 일치하지 않습니다.");
+    if (rule.enforcement?.requiresContractBenefitCap && input.contractBenefitCap !== undefined
+      && (input.contractBenefitCap <= 0 || input.contractBenefitCap > (rule.enforcement.annualBenefitCap ?? 50000000))) {
+      return confirmation(rule, "해당 담보의 실제 가입금액과 약관상 최대 한도를 확인해야 합니다.");
+    }
+  }
   if (input.healthInsuranceCopayRate !== undefined && (!Number.isFinite(input.healthInsuranceCopayRate) || input.healthInsuranceCopayRate < 0 || input.healthInsuranceCopayRate > 1)) return confirmation(rule, "건강보험 본인부담률은 0~1 범위여야 합니다.");
   if (rule.generation === 1 && rule.enforcement?.windowDays !== undefined && (input.daysSinceAccidentOrDiagnosis === undefined || !Number.isInteger(input.daysSinceAccidentOrDiagnosis))) return confirmation(rule, "사고·발병일부터의 경과일 확인이 필요합니다.");
   if (rule.generation === 1 && rule.enforcement?.maxServiceDays !== undefined && (input.priorServiceDays === undefined || !Number.isInteger(input.priorServiceDays))) return confirmation(rule, "기존 통원 이용일수 확인이 필요합니다.");
@@ -382,17 +404,6 @@ export function evaluateSamsungExecutionSpec(
     const inpatient = calculation.type === "COMPONENT_SUM";
     const special = rule.generation === 3 && (/^G3-STD-0[1-3]$/.test(rule.ruleId) || rule.ruleId === "G3-SEL2-02");
     if (inpatient || special) {
-      if (input.coveragePeriod !== "ACTIVE" && input.coveragePeriod !== "POST_TERMINATION") {
-        return confirmation(rule, "정상 보장기간인지 계약 종료 후 계속 치료인지 확인해야 합니다.");
-      }
-      if (input.coveragePeriod === "POST_TERMINATION") {
-        // 1611.7 PDF 48/53/106/112; 1704.1 PDF 49/53/107/112, 특약 167/174/180.
-        // 갱신·동일회사 재가입은 연장된 ACTIVE로 확인해야 합니다.
-        if (input.postTerminationContinuationConfirmed !== true || !Number.isInteger(input.daysSinceTermination)
-          || input.daysSinceTermination! < 1 || input.daysSinceTermination! > 180) {
-          return confirmation(rule, "종료 시 계속 중인 치료 여부와 종료일 제외 180일 이내 보장기간을 확인해야 합니다.");
-        }
-      }
     }
     if (input.contractBenefitCap !== undefined && (input.contractBenefitCap <= 0 || input.contractBenefitCap > 50000000)) {
       return confirmation(rule, "입원 보험가입금액은 0원 초과 5천만원 이하여야 합니다.");
@@ -479,9 +490,6 @@ export function evaluateSamsungExecutionSpec(
     if ([2, 3, 4, 5].includes(rule.generation ?? 0) && input.otherIndemnityPoliciesExist && input.proportionalPaymentFactor === undefined) {
       return confirmation(rule, "다수보험 비례분담 계산에 필요한 계약별 보상책임액이 필요합니다.");
     }
-    if ([2, 3, 4, 5].includes(rule.generation ?? 0) && input.coveragePeriodConfirmed !== true) {
-      return confirmation(rule, "보험기간 또는 계약 종료 후 계속 치료 보상기간에 해당하는지 확인해야 합니다.");
-    }
     if ((rule.generation === 2 || (rule.generation === 3 && rule.ruleId.includes("BASE")))
       && rule.enforcement?.maxAnnualCount !== undefined
       && input.sameDayAggregationConfirmed !== true) {
@@ -503,6 +511,9 @@ export function evaluateSamsungExecutionSpec(
     }
     if (rule.generation === 5 && ["G5-04", "G5-07", "G5-CONV-04", "G5-CONV-07"].includes(rule.ruleId) && !input.claimCause) {
       return confirmation(rule, "연간 통원 횟수·일수 한도를 적용하려면 상해·질병 구분이 필요합니다.");
+    }
+    if (rule.generation === 5 && /^(G5-|G5-CONV-)(02|04|07)$/.test(rule.ruleId) && input.sameDayAggregationConfirmed !== true) {
+      return confirmation(rule, "같은 날 외래·처방을 담보별 통원 1회 또는 1일 기준으로 합산했는지 확인해야 합니다.");
     }
     if (rule.ruleId === "G1-02" && input.nhiApplied !== false) {
       return confirmation(rule, "G1-02는 국민건강보험 미적용 입원 사례에만 적용합니다.");

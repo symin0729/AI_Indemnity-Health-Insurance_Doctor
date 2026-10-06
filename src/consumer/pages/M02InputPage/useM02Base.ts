@@ -12,16 +12,16 @@ export function useM02Base() {
 
   const navigate = useNavigate();
 
-  const [activeStep, setActiveStep] = useState<1 | 2 | 3>(() => {
+  const [activeStep, setActiveStep] = useState<1 | 2 | 3 | 4>(() => {
     const hashStep = Number(window.location.hash.match(/input-step-(\d)/)?.[1]);
-    return hashStep === 2 || hashStep === 3 ? hashStep : 1;
+    return hashStep === 2 || hashStep === 3 || hashStep === 4 ? hashStep : 1;
   });
 
   const [transitionDirection, setTransitionDirection] =
     useState<"forward" | "backward">("forward");
 
 
-  const goToInputStep = (step: 1 | 2 | 3) => {
+  const goToInputStep = (step: 1 | 2 | 3 | 4) => {
     setTransitionDirection(step >= activeStep ? "forward" : "backward");
     setActiveStep(step);
     window.history.replaceState(null, "", `/consumer/input#input-step-${step}`);
@@ -189,7 +189,7 @@ const [samsungGen23Variant, setSamsungGen23Variant] =
 
   const showTargetPremiumHelp = () => {
     setErrorMessage("");
-    goToInputStep(2);
+    goToInputStep(3);
     window.requestAnimationFrame(() => {
       window.requestAnimationFrame(() => {
         document.getElementById("target-premium-help-area")?.scrollIntoView({

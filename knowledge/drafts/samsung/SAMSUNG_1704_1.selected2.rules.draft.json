@@ -13,14 +13,20 @@
       "coverage": "선택형Ⅱ 기본형 입원",
       "page": 26,
       "formula": "(급여 본인부담금 × 90%) + (비급여 실제부담액 × 80%) + MIN(상급병실료 차액 × 50%, 입원일수 × 100,000원)",
-      "limit": "연간 자기부담 상한 및 가입금액 적용",
+      "limit": "연 자기부담 상한 2,000,000 / 1상해·1질병당 계약가입금액 한도(최대 50,000,000)",
       "variant": "selected2",
       "status": "RULE_DRAFTED",
       "sourceCorrection": "적용 범위를 입원으로 명확화하고 상급병실료 구성요소를 추가",
       "evidenceIds": [
         "SAMSUNG_1704_1_E_G3-SEL2-01"
       ],
-      "aiSourceValidated": true
+      "aiSourceValidated": true,
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 14,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "id": "G3-SEL2-02",
@@ -34,7 +40,13 @@
       "evidenceIds": [
         "SAMSUNG_1704_1_E_G3-SEL2-02"
       ],
-      "aiSourceValidated": true
+      "aiSourceValidated": true,
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 15,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "id": "G3-SEL2-BASE-02",
@@ -48,7 +60,13 @@
       "evidenceIds": [
         "SAMSUNG_1704_1_E_G3-SEL2-BASE-02"
       ],
-      "aiSourceValidated": true
+      "aiSourceValidated": true,
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 16,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "id": "G3-SEL2-BASE-03",
@@ -62,7 +80,13 @@
       "evidenceIds": [
         "SAMSUNG_1704_1_E_G3-SEL2-BASE-03"
       ],
-      "aiSourceValidated": true
+      "aiSourceValidated": true,
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 17,
+        "reviewDate": "2026-10-06"
+      }
     }
   ]
 }

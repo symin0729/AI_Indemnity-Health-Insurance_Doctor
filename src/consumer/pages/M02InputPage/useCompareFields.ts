@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { samsungContractForm, type SamsungContractForm } from '../../../domain/samsungContractFacts';
 
 import type { BaseApi } from "./useM02Base";
 import type { ContractApi } from "./useContractFields";
@@ -8,6 +9,7 @@ export function useCompareFields(deps: BaseApi & ContractApi) {
     savedTarget5GCoverages,
     savedTarget5GMonthlyPremium,
   } = deps;
+  const [targetContractFactsForm, setTargetContractFactsForm] = useState<SamsungContractForm>(() => samsungContractForm(deps.savedCalculationAssumptions.targetContractFacts));
 
 
   // ========================================
@@ -67,6 +69,8 @@ export function useCompareFields(deps: BaseApi & ContractApi) {
   };
 
   return {
+    targetContractFactsForm,
+    setTargetContractFactsForm,
     target5GMonthlyPremium,
     setTarget5GMonthlyPremiumInput,
     hasTarget5GSpecialRider1,

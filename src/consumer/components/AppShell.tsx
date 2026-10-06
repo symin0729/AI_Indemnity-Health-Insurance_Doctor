@@ -5,9 +5,10 @@ import headerLogo from "../../assets/header-logo.png";
 
 import { useAnalysisStore } from "../store/useAnalysisStore";
 import ModeToggle from "../../components/ModeToggle";
+import { useAppMode } from "../../components/useAppMode";
 import "../../styles/app-shell.css";
 
-type AppStep = 1 | 2 | 3 | 4 | 5 | 6;
+type AppStep = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
 type AppShellProps = {
   children: ReactNode;
@@ -28,22 +29,26 @@ const STEP_ITEMS: Array<{
   },
   {
     step: 2,
-    label: "5세대·치료",
+    label: "예정 치료",
   },
   {
     step: 3,
-    label: "계산 가정",
+    label: "5세대 비교 조건",
   },
   {
     step: 4,
-    label: "입력 확인",
+    label: "명시적 계산 가정",
   },
   {
     step: 5,
-    label: "비교 결과",
+    label: "입력 확인"
   },
   {
     step: 6,
+    label: "비교 결과",
+  },
+  {
+    step: 7,
     label: "챗봇",
   },
 ];
@@ -68,7 +73,7 @@ function AppShell({
     useState(false);
 
   const handleStepClick = (step: AppStep) => {
-    if (step >= 5 && currentStep < 5) {
+    if (step >= 6 && currentStep < 6) {
       return;
     }
 
@@ -77,17 +82,14 @@ function AppShell({
       return;
     }
 
-    if (step <= 3) {
+    if (step <= 4) {
       navigate(`/consumer/input#input-step-${step}`);
       return;
     }
 
-    if (step === 4) {
-      navigate("/consumer/confirm");
-      return;
-    }
+    if (step === 5) { navigate("/consumer/confirm"); return; }
 
-    if (step === 5) {
+    if (step === 6) {
       navigate("/consumer/result");
       return;
     }
@@ -119,7 +121,9 @@ function AppShell({
     navigate("/consumer/input");
   };
 
-  const progressPercent = `${Math.min(currentStep, 5) * 20}%`;
+  const progressPercent = `${Math.min(currentStep, 6) / 6 * 100}%`;
+
+  useAppMode("consumer");
 
   return (
     <>
@@ -188,7 +192,7 @@ function AppShell({
               const isDone =
                 item.step < currentStep;
 
-              const isDisabled = item.step >= 5 && currentStep < 5;
+              const isDisabled = item.step >= 6 && currentStep < 6;
 
               return (
                 <button
@@ -246,9 +250,9 @@ function AppShell({
           </div>
 
           <p className="app-shell-current-step" aria-live="polite">
-            {currentStep === 6
-              ? "선택 STEP 6 · 챗봇"
-              : `${currentStep} / 5 · ${STEP_ITEMS[currentStep - 1].label}`}
+            {currentStep === 7
+              ? "선택 STEP 7 · 챗봇"
+              : `${currentStep} / 6 · ${STEP_ITEMS[currentStep - 1].label}`}
           </p>
           <p className="app-shell-side-note">
             보험상품 권유나 보험금 지급 보장이

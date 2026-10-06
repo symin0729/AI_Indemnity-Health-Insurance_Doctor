@@ -64,8 +64,8 @@ describe("Samsung two-person independent review package", () => {
     expect(byId.get("G1-05")?.printedPage).toBeNull();
     expect(byId.get("G4-05")?.priorityChecks.join(" ")).toContain("최초 10회");
     expect(byId.get("G5-05")?.priorityChecks.join(" ")).toContain("10회 단위");
-    expect(byId.get("G5-07")?.pdfPage).toBe(64);
-    expect(byId.get("G5-07")?.printedPage).toBe(63);
+    expect(byId.get("G5-07")?.pdfPage).toBe(65);
+    expect(byId.get("G5-07")?.printedPage).toBe(64);
     expect(byId.get("G5-07")?.priorityChecks.join(" ")).toContain("계약 유형");
     for (const item of review.reviewItems.filter((entry) => entry.productCode === "SAMSUNG_1611_7" || entry.productCode === "SAMSUNG_1704_1")) {
       expect(item.priorityChecks.join(" ")).toContain(item.variant);

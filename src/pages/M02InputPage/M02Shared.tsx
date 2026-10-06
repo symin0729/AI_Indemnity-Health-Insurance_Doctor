@@ -14,10 +14,14 @@ export function IsoDateInput({
   value,
   onChange,
   placeholder = "YYYY-MM-DD",
+  id,
+  required = false,
 }: {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  id?: string;
+  required?: boolean;
 }) {
   const pickerRef = useRef<HTMLInputElement>(null);
 
@@ -40,6 +44,9 @@ export function IsoDateInput({
   return (
     <div style={{ position: "relative", width: "100%" }}>
       <input
+        id={id}
+        required={required}
+        aria-required={required || undefined}
         type="text"
         inputMode="numeric"
         autoComplete="off"

@@ -1,3 +1,5 @@
+import SamsungTreatmentComparison from "../../../components/samsung/SamsungTreatmentComparison";
+import { prepareUsageForSamsungComparison } from "../../../engine/prepareSamsungComparison";
 import headerLogo from '../../../assets/header-logo.png';
 import AppShell from "../../components/AppShell";
 import {
@@ -28,7 +30,6 @@ import type {
   ClaimCalculationItem,
 } from "../../../domain/calculation";
 import type { MedicalUsage } from "../../../domain/medical";
-import type { AnalysisCalculationAssumptions } from "../../store/useAnalysisStore";
 import {
   calculateBreakEvenBySimulation,
   type BreakEvenSimulationResult,
@@ -94,77 +95,7 @@ export function allocateCombinedTreatmentFrequencies(usages: MedicalUsage[], tot
  * 입력 화면의 세대별 필드를 삼성 공통 계산 입력으로 연결한다.
  * 계산 규칙은 바꾸지 않고, 사용자가 확인한 값을 엔진 형식으로 전달한다.
  */
-export function prepareUsageForSamsungComparison(
-  usage: MedicalUsage,
-  assumptions: AnalysisCalculationAssumptions,
-): MedicalUsage {
-  const source = usage.samsungCalculationInput ?? {};
-  const eligibleExpense =
-    source.eligibleExpense ??
-    usage.coveredAmount ??
-    (assumptions.assumeEntireMedicalCostCovered
-      ? usage.patientPaidAmount ?? usage.unitCost
-      : undefined);
-  const policyExclusionsCleared =
-    source.policyExclusionsCleared ?? usage.gen23PolicyExclusionsCleared;
-  const category = usage.treatmentCategory?.toUpperCase();
-  const threeNonCoveredCategory =
-    category === "MRI" || category === "MANUAL_THERAPY" || category === "INJECTION"
-      ? category
-      : undefined;
-  const aggregationUnit =
-    source.aggregationUnit ??
-    usage.gen23AggregationUnit ??
-    (category === "MRI"
-      ? "DIAGNOSTIC_ACTION"
-      : category === "MANUAL_THERAPY"
-        ? "TREATMENT"
-        : category === "INJECTION"
-          ? "VISIT"
-          : "VISIT");
-
-  return {
-    ...usage,
-    samsungCalculationInput: {
-      ...source,
-      eligibleExpense,
-      requiredCoverageConfirmed:
-        source.requiredCoverageConfirmed ?? usage.gen23RequiredCoverageConfirmed,
-      policyExclusionsCleared,
-      otherIndemnityPoliciesExist:
-        source.otherIndemnityPoliciesExist ?? usage.gen23OtherIndemnityPoliciesExist,
-      coveragePeriodConfirmed:
-        source.coveragePeriodConfirmed ?? usage.gen23CoveragePeriodConfirmed,
-      sameDayAggregationConfirmed:
-        source.sameDayAggregationConfirmed ?? usage.gen23SameDayAggregationConfirmed,
-      priorPaidBenefit: source.priorPaidBenefit ?? usage.gen23PriorPaidBenefit,
-      priorAnnualCount: source.priorAnnualCount ?? usage.gen23PriorAnnualCount,
-      priorEligibleDeductible:
-        source.priorEligibleDeductible ?? usage.gen23PriorEligibleDeductible,
-      contractBenefitCap: source.contractBenefitCap ?? usage.gen23ContractBenefitCap,
-      outpatientBenefitCap: source.outpatientBenefitCap ?? usage.gen23OutpatientBenefitCap,
-      prescriptionBenefitCap:
-        source.prescriptionBenefitCap ?? usage.gen23PrescriptionBenefitCap,
-      aggregationUnit,
-      threeNonCoveredCategory:
-        source.threeNonCoveredCategory ?? threeNonCoveredCategory,
-      threeNonCoveredExcludedFromBaseConfirmed:
-        source.threeNonCoveredExcludedFromBaseConfirmed ??
-        usage.gen23ThreeNonCoveredExcludedFromBaseConfirmed,
-    },
-    samsungGen5Facts:
-      usage.samsungGen5Facts ??
-      (usage.benefitClass === "NON_COVERED"
-        ? {
-            specialCaseDisease:
-              usage.severityClass === "SEVERE" ? "YES" : usage.severityClass === "NON_SEVERE" ? "NO" : "UNKNOWN",
-            treatmentRelatedness: usage.severityClass === "SEVERE" ? "RELATED" : "UNKNOWN",
-            policyExcludedTreatment: policyExclusionsCleared === true ? "NO" : "UNKNOWN",
-            ...(threeNonCoveredCategory ? { threeNonCoveredCategory } : {}),
-          }
-        : usage.samsungGen5Facts),
-  };
-}
+export { prepareUsageForSamsungComparison } from "../../../engine/prepareSamsungComparison";
 
 export function createPremiumOnlyBreakEvenDisplay(
   currentAnnualPremium: number,
@@ -1368,7 +1299,7 @@ function M04ResultPage() {
     target5GMonthlyPremium === null
   ) {
     return (
-      <AppShell currentStep={5}><main className="navy-page">
+      <AppShell currentStep={6}><main className="navy-page">
         <header className="page-header">
           <span className="page-brand">
             AI 실손 닥터
@@ -1386,7 +1317,7 @@ function M04ResultPage() {
             type="button"
             className="primary-button"
             onClick={() =>
-              navigate("/consumer/input#input-step-2")
+              navigate("/consumer/input#input-step-1")
             }
           >
             입력 화면으로
@@ -1398,7 +1329,7 @@ function M04ResultPage() {
 
   if (isRuleLoading) {
     return (
-      <AppShell currentStep={5}><main className="navy-page">
+      <AppShell currentStep={6}><main className="navy-page">
         <header className="page-header">
           <span className="page-brand">
             AI 실손 닥터
@@ -1417,7 +1348,7 @@ function M04ResultPage() {
     !ruleSet
   ) {
     return (
-      <AppShell currentStep={5}><main className="navy-page">
+      <AppShell currentStep={6}><main className="navy-page">
         <header className="page-header">
           <span className="page-brand">
             AI 실손 닥터
@@ -1436,7 +1367,7 @@ function M04ResultPage() {
             type="button"
             className="secondary-button"
             onClick={() =>
-              navigate("/consumer/input#input-step-2")
+              navigate("/consumer/confirm")
             }
           >
             이전
@@ -1474,7 +1405,7 @@ function M04ResultPage() {
 
   if (!validation.valid) {
     return (
-      <AppShell currentStep={5}><main className="navy-page">
+      <AppShell currentStep={6}><main className="navy-page">
         <header className="page-header">
           <span className="page-brand">
             AI 실손 닥터
@@ -1499,7 +1430,7 @@ function M04ResultPage() {
             type="button"
             className="primary-button"
             onClick={() =>
-              navigate("/consumer/input#input-step-2")
+              navigate("/consumer/confirm")
             }
           >
             입력 수정하기
@@ -1548,7 +1479,7 @@ function M04ResultPage() {
     medicalCost: samsungComparison.medicalCost,
     insuranceBenefit: samsungComparison.currentClaimTotal,
     totalBurden: samsungComparison.currentTotal,
-    complete: samsungComparison.complete,
+    complete: samsungComparison.currentComplete,
     warnings: currentWarnings,
   });
   const target5G = createSamsungScenarioDisplay({
@@ -1557,7 +1488,7 @@ function M04ResultPage() {
     medicalCost: samsungComparison.medicalCost,
     insuranceBenefit: samsungComparison.targetClaimTotal,
     totalBurden: samsungComparison.targetTotal,
-    complete: samsungComparison.complete,
+    complete: samsungComparison.targetComplete,
     warnings: targetWarnings,
   });
   const target5GSaving =
@@ -1728,7 +1659,7 @@ function M04ResultPage() {
   };
 
   return (
-    <AppShell currentStep={5}><main className={`navy-page navy-result-page${isDownloadingPdf ? " is-pdf-exporting" : ""}`}>
+    <AppShell currentStep={6}><main className={`navy-page navy-result-page${isDownloadingPdf ? " is-pdf-exporting" : ""}`}>
       <header
         className="page-header"
         style={{
@@ -1762,7 +1693,7 @@ function M04ResultPage() {
               }}
             >
               <span className="step-badge">
-                STEP 5 · 비교 결과
+                STEP 6 · 비교 결과
               </span>
             </div>
 
@@ -1803,6 +1734,8 @@ function M04ResultPage() {
           </div>
         </div>
       </header>
+      <SamsungTreatmentComparison items={samsungComparison.items} generation={contract.generation} />
+
 
       <section
         className="app-card"
@@ -2525,7 +2458,7 @@ function M04ResultPage() {
       >
         <button
           type="button"
-          onClick={() => navigate("/consumer/input#input-step-2")}
+          onClick={() => navigate("/consumer/confirm")}
           style={{
             minHeight: "48px",
             border: "1px solid var(--color-border)",
@@ -2541,7 +2474,7 @@ function M04ResultPage() {
 
         <button
           type="button"
-          onClick={() => navigate("/consumer/input#input-step-2")}
+          onClick={() => navigate("/consumer/confirm")}
           style={{
             minHeight: "48px",
             border: "1px solid var(--color-primary-200, #b9d1ea)",

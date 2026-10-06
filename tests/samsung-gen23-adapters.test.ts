@@ -56,9 +56,8 @@ describe("Gen2/Gen3 adapters", () => {
       expect(calc("standard",{...usage,gen23PriorPaidBenefit:NaN}).status).toBe("CONFIRMATION_REQUIRED");
     }
   });
-  it("passes continuation, caps and proportional factor unchanged", () => {
+  it("passes caps and proportional factor unchanged", () => {
     expect(gen2("standard",{...usage,gen23RoomDifference:400000,gen23InpatientDays:1,gen23PriorEligibleDeductible:1990000,gen23OtherIndemnityPoliciesExist:true,gen23ProportionalPaymentFactor:.5})).toMatchObject({claim:95000});
-    expect(gen2("standard",{...usage,gen23CoveragePeriod:"POST_TERMINATION",gen23DaysSinceTermination:181,gen23PostTerminationContinuationConfirmed:true}).status).toBe("CONFIRMATION_REQUIRED");
     expect(gen2("standard",{...usage,careSetting:"OUTPATIENT",gen23CareSetting:"OUTPATIENT",gen23PriorAnnualCount:180})).toMatchObject({claim:0});
   });
 });

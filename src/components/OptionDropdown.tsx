@@ -80,7 +80,7 @@ function OptionDropdown({ id, value, options, placeholder, invalid = false, onCh
         onClick={() => (isOpen ? setIsOpen(false) : open())}
         onKeyDown={onKeyDown}
       >
-        <span>{selected ? selected.label : placeholder}</span>
+        <span className={selected ? undefined : "option-dropdown__placeholder"}>{selected ? selected.label : placeholder}</span>
         <span aria-hidden="true" className="select-like__chevron">{isOpen ? "▲" : "▼"}</span>
       </button>
       {isOpen && (

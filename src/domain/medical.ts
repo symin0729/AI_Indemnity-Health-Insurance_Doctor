@@ -222,9 +222,6 @@ export interface MedicalUsage {
   /** 계산 시작 전 연간 통원/처방 횟수 */
   gen23PriorAnnualCount?: number;
 
-  /** 계약 종료 후 계속보장 계산 시 기존 이용 횟수 */
-  gen23PriorContinuationCount?: number;
-
   /** 계약상 1회당 보장한도 */
   gen23ContractBenefitCap?: number;
 
@@ -239,18 +236,6 @@ export interface MedicalUsage {
 
   /** 다른 보험이 있을 때의 비례보상 계수 */
   gen23ProportionalPaymentFactor?: number;
-
-  /** 보장기간 */
-  gen23CoveragePeriod?: "ACTIVE" | "POST_TERMINATION" | "UNKNOWN";
-
-  /** 보장기간 상태 확인 여부 */
-  gen23CoveragePeriodConfirmed?: boolean;
-
-  /** 계약 종료 후 계속보장 확인 여부 */
-  gen23PostTerminationContinuationConfirmed?: boolean;
-
-  /** 계약 종료 후 경과일 */
-  gen23DaysSinceTermination?: number;
 
   /** 동일 날짜 합산 확인 여부 */
   gen23SameDayAggregationConfirmed?: boolean;

@@ -26,6 +26,12 @@
         "minimumAmount": 20000
       },
       "limitText": "연 3,500,000원 / 50회; 세 치료횟수 합산",
+      "accumulation": {
+        "benefit": "G3-STD-01",
+        "count": "G3-STD-01",
+        "serviceDays": "G3-STD-01",
+        "deductible": "G3-STD-01"
+      },
       "requiresAccumulator": true,
       "enforcement": {
         "annualBenefitCap": 3500000,
@@ -69,6 +75,12 @@
         "minimumAmount": 20000
       },
       "limitText": "연 2,500,000원 / 입원·통원 합산 50회",
+      "accumulation": {
+        "benefit": "G3-STD-02",
+        "count": "G3-STD-02",
+        "serviceDays": "G3-STD-02",
+        "deductible": "G3-STD-02"
+      },
       "requiresAccumulator": true,
       "enforcement": {
         "annualBenefitCap": 2500000,
@@ -112,6 +124,12 @@
         "minimumAmount": 20000
       },
       "limitText": "연 3,000,000원; 복수 진단행위는 각 행위별 1회 공제·한도",
+      "accumulation": {
+        "benefit": "G3-STD-03",
+        "count": "G3-STD-03",
+        "serviceDays": "G3-STD-03",
+        "deductible": "G3-STD-03"
+      },
       "requiresAccumulator": true,
       "enforcement": {
         "annualBenefitCap": 3000000,
@@ -167,7 +185,13 @@
           "benefitRate": 0.4
         }
       },
-      "limitText": "연간 자기부담 200만원 초과분 보상; 입원 보험가입금액 한도",
+      "limitText": "연간 자기부담 2,000,000원 초과분 보상; 1상해·1질병당 계약가입금액 한도(최대 50,000,000)",
+      "accumulation": {
+        "benefit": "G3-STD-BASE-01",
+        "count": "G3-STD-BASE-01",
+        "serviceDays": "G3-STD-BASE-01",
+        "deductible": "G3-STD-BASE-01"
+      },
       "requiresAccumulator": true,
       "enforcement": {
         "annualDeductibleCap": 2000000,
@@ -210,10 +234,17 @@
         "minimumByInstitution": {
           "CLINIC": 10000,
           "HOSPITAL": 15000,
+          "GENERAL_HOSPITAL": 15000,
           "GENERAL_TERTIARY": 20000
         }
       },
       "limitText": "매년 계약해당일부터 1년간 방문 180회",
+      "accumulation": {
+        "benefit": "G3-STD-BASE-02",
+        "count": "G3-STD-BASE-02",
+        "serviceDays": "G3-STD-BASE-02",
+        "deductible": "G3-STD-BASE-02"
+      },
       "requiresAccumulator": true,
       "enforcement": {
         "maxAnnualCount": 180,
@@ -256,7 +287,13 @@
         "minimumAmount": 8000
       },
       "limitText": "매년 계약해당일부터 1년간 처방전 180건",
-      "requiresAccumulator": false,
+      "accumulation": {
+        "benefit": "G3-STD-BASE-03",
+        "count": "G3-STD-BASE-03",
+        "serviceDays": "G3-STD-BASE-03",
+        "deductible": "G3-STD-BASE-03"
+      },
+      "requiresAccumulator": true,
       "enforcement": {
         "maxAnnualCount": 180,
         "countUnit": "PRESCRIPTION",

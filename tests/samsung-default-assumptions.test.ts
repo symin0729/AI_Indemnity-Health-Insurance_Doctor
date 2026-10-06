@@ -15,22 +15,16 @@ const run = (usage: object, gen: 4 | 5 = 4) => {
 };
 
 describe('4·5세대 기본 가정', () => {
-  it('4세대 급여 통원은 입력하지 않은 확인값을 기본 가정으로 채워 계산한다', () => {
+  it('4세대는 계약정보를 입력하지 않으면 계산을 보류한다', () => {
     const result = run({});
-    expect(result.claim).not.toBeNull();
-    expect(result.ruleId).toBe('G4-09');
-    expect(result.appliedAssumptions).toEqual(expect.arrayContaining([
-      '급여 주계약에 가입한 것으로 봄',
-      '다른 실손의료보험 계약은 없는 것으로 봄',
-      '정상 보장기간(유효한 계약)으로 봄',
-      '통원 회당 보험가입금액은 약관상 최대 20만 원으로 봄',
-    ]));
+    expect(result.claim).toBeNull();
+    expect(result.appliedAssumptions?.join()).not.toMatch(/없는 것으로|정상 보장기간|최대/);
   });
 
-  it('5세대 전환 대상도 같은 기본 가정으로 계산한다', () => {
+  it('5세대 비교 계약도 실제 계약정보가 없으면 계산을 보류한다', () => {
     const result = run({}, 5);
-    expect(result.claim).not.toBeNull();
-    expect(result.appliedAssumptions).toContain('다른 실손의료보험 계약은 없는 것으로 봄');
+    expect(result.claim).toBeNull();
+    expect(result.appliedAssumptions).not.toContain('다른 실손의료보험 계약은 없는 것으로 봄');
   });
 
   it('사용자가 입력한 값은 기본 가정으로 덮어쓰지 않는다', () => {

@@ -46,7 +46,7 @@ export type InputFailure = {
   /** 화면 상단에 표시할 오류 문구 */
   message?: string;
   /** 오류 후 이동할 입력 단계 */
-  goToStep?: 1 | 2;
+  goToStep?: 1 | 2 | 3 | 4;
   /** 오류 후 초점을 둘 입력칸 id */
   focusId?: string;
   /** 문구 대신 별도 동작이 필요한 경우 */
@@ -116,6 +116,7 @@ export function validateContractStep(input: ContractStepInput): InputFailure | n
   }
 
   if (isGen1CoverageMissing(input)) return GEN1_COVERAGE_REQUIRED_FAILURE;
+  if (!isValidIsoDate(input.inceptionDate)) return { ok: false, message: '보험 가입일을 실제 날짜로 입력해주세요.', focusId: 'current-inception-date' };
 
   return null;
 }
@@ -153,13 +154,6 @@ export type Submission = {
 
 /** 확인 화면으로 넘어가기 전 전체 검증과 저장할 값 만들기 */
 export function buildSubmission(input: SubmissionInput): InputFailure | Submission {
-  if (!input.isTargetPremiumHelpConfirmed) return { ok: false, reveal: "TARGET_PREMIUM_HELP" };
-  if (!input.isTreatmentHelpConfirmed) {
-    return { ok: false, message: "STEP 3의 필수 입력 안내를 읽고 확인해주세요." };
-  }
-  if (!input.isStep3Confirmed) {
-    return { ok: false, message: "입력 내용을 확인하고 ‘예정치료를 입력하셨나요?’에 체크해주세요." };
-  }
   if (input.plannedUsages.length === 0) {
     return { ok: false, message: "예정 치료를 입력한 뒤 하단의 ‘추가하기’ 버튼을 눌러 등록해주세요.", goToStep: 2 };
   }
@@ -219,6 +213,14 @@ export function buildSubmission(input: SubmissionInput): InputFailure | Submissi
   }
   if (!input.target5GMonthlyPremium || targetPremiumNumber <= 0) {
     return { ok: false, message: "비교용 5세대 월 보험료를 올바르게 입력해주세요." };
+  }
+
+  const { contractBenefitCap, perOccurrenceBenefitCap } = input.calculationAssumptions;
+  if (contractBenefitCap !== undefined && (!Number.isFinite(contractBenefitCap) || contractBenefitCap <= 0 || contractBenefitCap > 50_000_000)) {
+    return { ok: false, message: "연간 보험가입금액은 0원보다 크고 5천만 원 이하로 입력하거나 비워주세요.", focusId: "contract-benefit-cap", goToStep: 1 };
+  }
+  if (perOccurrenceBenefitCap !== undefined && (!Number.isFinite(perOccurrenceBenefitCap) || perOccurrenceBenefitCap <= 0 || perOccurrenceBenefitCap > 200_000)) {
+    return { ok: false, message: "통원 1회당 보험가입금액은 0원보다 크고 20만 원 이하로 입력하거나 비워주세요.", focusId: "per-occurrence-benefit-cap", goToStep: 1 };
   }
 
   const finalUsages = [...input.plannedUsages];

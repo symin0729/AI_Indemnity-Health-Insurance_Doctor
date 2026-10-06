@@ -8,6 +8,8 @@ import {
 } from "../src/engine/calculateSamsungGen5";
 
 const common = {
+  sameDayAggregationConfirmed: true,
+  contractBenefitCap: 10_000_000,
   policyExclusionsCleared: true,
   otherIndemnityPoliciesExist: false,
   coveragePeriodConfirmed: true,
@@ -124,6 +126,9 @@ describe("Samsung generation-5 product calculation routing", () => {
       healthInsuranceCopayRate: 0.3,
       institution: "CLINIC_HOSPITAL",
       nhiApplied: true,
+      priorPaidBenefit: 0,
+      contractBenefitCap: 50_000_000,
+      perOccurrenceBenefitCap: 200_000,
     });
     expect(result.claim).toBe(70_000);
   });

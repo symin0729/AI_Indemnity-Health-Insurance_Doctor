@@ -42,9 +42,14 @@ export function useAssumptionFields(deps: BaseApi & ContractApi & CompareApi & T
   );
 
 
+  const [comparisonBasis, setComparisonBasis] = useState<"FRESH_YEAR" | "REMAINING_LIMITS">(savedCalculationAssumptions.comparisonBasis ?? 'FRESH_YEAR');
+  const [assumeNoPolicyExclusions, setAssumeNoPolicyExclusions] = useState(savedCalculationAssumptions.assumeNoPolicyExclusions ?? false);
+
   const [isStep3Confirmed, setIsStep3Confirmed] = useState(false);
 
+
   return {
+    comparisonBasis, setComparisonBasis, assumeNoPolicyExclusions, setAssumeNoPolicyExclusions,
     assumeEntireMedicalCostCovered,
     setAssumeEntireMedicalCostCovered,
     assumeNoPriorLimitUsage,

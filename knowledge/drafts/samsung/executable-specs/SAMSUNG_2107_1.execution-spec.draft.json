@@ -30,7 +30,13 @@
           "benefitRate": 0.4
         }
       },
-      "limitText": "연간 보험가입금액 한도; 나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
+      "limitText": "상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000); 나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
+      "accumulation": {
+        "benefit": "G4-COVERED-INJURY",
+        "count": "G4-01",
+        "serviceDays": "G4-01",
+        "deductible": "G4-COVERED-INPATIENT"
+      },
       "requiresAccumulator": true,
       "enforcement": {
         "annualBenefitCap": 50000000,
@@ -78,7 +84,13 @@
           "benefitRate": 0.4
         }
       },
-      "limitText": "연간 보험가입금액 한도; 나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
+      "limitText": "상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000); 나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
+      "accumulation": {
+        "benefit": "G4-COVERED-DISEASE",
+        "count": "G4-02",
+        "serviceDays": "G4-02",
+        "deductible": "G4-COVERED-INPATIENT"
+      },
       "requiresAccumulator": true,
       "enforcement": {
         "annualBenefitCap": 50000000,
@@ -123,6 +135,12 @@
         }
       },
       "limitText": "상해급여 입원·통원 합산 연간 보험가입금액(최대 50,000,000원); 통원 1회당 최대 200,000원",
+      "accumulation": {
+        "benefit": "G4-COVERED-INJURY",
+        "count": "G4-08",
+        "serviceDays": "G4-08",
+        "deductible": "G4-08"
+      },
       "requiresAccumulator": true,
       "enforcement": {
         "annualBenefitCap": 50000000,
@@ -168,6 +186,12 @@
         }
       },
       "limitText": "질병급여 입원·통원 합산 연간 보험가입금액(최대 50,000,000원); 통원 1회당 최대 200,000원",
+      "accumulation": {
+        "benefit": "G4-COVERED-DISEASE",
+        "count": "G4-09",
+        "serviceDays": "G4-09",
+        "deductible": "G4-09"
+      },
       "requiresAccumulator": true,
       "enforcement": {
         "annualBenefitCap": 50000000,
@@ -219,8 +243,14 @@
           }
         ]
       },
-      "limitText": "상급병실료 차액: 비급여 병실료 × 50%, 1일 평균 100,000원 한도",
-      "requiresAccumulator": false,
+      "limitText": "상급병실료 차액: 비급여 병실료 × 50%, 1일 평균 100,000원 한도; 상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000)",
+      "accumulation": {
+        "benefit": "G4-NONCOVERED-GENERAL-{cause}",
+        "count": "G4-03",
+        "serviceDays": "G4-03",
+        "deductible": "G4-03"
+      },
+      "requiresAccumulator": true,
       "enforcement": {
         "annualBenefitCap": 50000000,
         "requiresContractBenefitCap": true
@@ -260,7 +290,13 @@
         "deductibleRate": 0.3,
         "minimumAmount": 30000
       },
-      "limitText": "연 100회; 공제표 적용",
+      "limitText": "상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000) / 연 최대 횟수 100 / 회당 한도 최대 200,000; 공제표 적용",
+      "accumulation": {
+        "benefit": "G4-NONCOVERED-GENERAL-{cause}",
+        "count": "G4-04-{cause}",
+        "serviceDays": "G4-04",
+        "deductible": "G4-04"
+      },
       "requiresAccumulator": true,
       "enforcement": {
         "annualBenefitCap": 50000000,
@@ -306,6 +342,12 @@
         "minimumAmount": 30000
       },
       "limitText": "연 3,500,000원 / 50회; 최초 10회 보장 후 검사결과로 증상 개선·병변호전이 확인된 경우에만 10회 단위로 연간 50회까지",
+      "accumulation": {
+        "benefit": "G4-05",
+        "count": "G4-05",
+        "serviceDays": "G4-05",
+        "deductible": "G4-05"
+      },
       "requiresAccumulator": true,
       "enforcement": {
         "annualBenefitCap": 3500000,
@@ -350,6 +392,12 @@
         "minimumAmount": 30000
       },
       "limitText": "연 2,500,000원 / 50회",
+      "accumulation": {
+        "benefit": "G4-06",
+        "count": "G4-06",
+        "serviceDays": "G4-06",
+        "deductible": "G4-06"
+      },
       "requiresAccumulator": true,
       "enforcement": {
         "annualBenefitCap": 2500000,
@@ -392,6 +440,12 @@
         "minimumAmount": 30000
       },
       "limitText": "연 3,000,000원",
+      "accumulation": {
+        "benefit": "G4-07",
+        "count": "G4-07",
+        "serviceDays": "G4-07",
+        "deductible": "G4-07"
+      },
       "requiresAccumulator": true,
       "enforcement": {
         "annualBenefitCap": 3000000,

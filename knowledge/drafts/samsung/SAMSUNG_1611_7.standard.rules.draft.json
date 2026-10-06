@@ -13,14 +13,20 @@
       "coverage": "입원",
       "page": 16,
       "formula": "(입원실료·입원제비용·입원수술비의 본인 실제부담액 × 80%) + MIN(상급병실료 차액 × 50%, 입원일수 × 100,000원)",
-      "limit": "나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
+      "limit": "나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상; 1상해·1질병당 계약가입금액 한도(최대 50,000,000)",
       "variant": "standard",
       "status": "RULE_DRAFTED",
       "sourceCorrection": "PDF 요약서의 상급병실료 차액 50%(일평균 10만원 한도) 구성요소를 추가",
       "evidenceIds": [
         "SAMSUNG_1611_7_E_G2-STD-01"
       ],
-      "aiSourceValidated": true
+      "aiSourceValidated": true,
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 10,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "id": "G2-STD-02",
@@ -33,7 +39,13 @@
       "evidenceIds": [
         "SAMSUNG_1611_7_E_G2-STD-02"
       ],
-      "aiSourceValidated": true
+      "aiSourceValidated": true,
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 11,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "id": "G2-STD-03",
@@ -46,20 +58,32 @@
       "evidenceIds": [
         "SAMSUNG_1611_7_E_G2-STD-03"
       ],
-      "aiSourceValidated": true
+      "aiSourceValidated": true,
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 12,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "id": "G2-STD-04",
       "coverage": "기관별 외래 공제",
-      "page": 16,
-      "formula": "의원 등 10,000원 / 병원 등 15,000원 / 종합전문·상급종합 20,000원",
+      "page": 50,
+      "formula": "의원 등 10,000원 / 병원·일반 종합병원 등 15,000원 / 종합전문요양기관·상급종합병원 20,000원",
       "limit": "공제금액과 20% 중 큰 금액",
       "variant": "standard",
       "status": "RULE_DRAFTED",
       "evidenceIds": [
         "SAMSUNG_1611_7_E_G2-STD-04"
       ],
-      "aiSourceValidated": true
+      "aiSourceValidated": true,
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 13,
+        "reviewDate": "2026-10-06"
+      }
     }
   ]
 }

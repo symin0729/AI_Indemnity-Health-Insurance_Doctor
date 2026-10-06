@@ -1,0 +1,310 @@
+{
+  "G1-01": {
+    "benefit": "G1-INJURY-INPATIENT",
+    "count": "G1-01",
+    "serviceDays": "G1-01",
+    "deductible": "G1-01"
+  },
+  "G1-02": {
+    "benefit": "G1-INJURY-INPATIENT",
+    "count": "G1-02",
+    "serviceDays": "G1-02",
+    "deductible": "G1-02"
+  },
+  "G1-03": {
+    "benefit": "G1-03",
+    "count": "G1-03",
+    "serviceDays": "G1-03",
+    "deductible": "G1-03"
+  },
+  "G1-04": {
+    "benefit": "G1-04",
+    "count": "G1-04",
+    "serviceDays": "G1-04",
+    "deductible": "G1-04"
+  },
+  "G1-05": {
+    "benefit": "G1-05",
+    "count": "G1-05",
+    "serviceDays": "G1-05",
+    "deductible": "G1-05"
+  },
+  "G2-SEL2-01": {
+    "benefit": "G2-SEL2-01",
+    "count": "G2-SEL2-01",
+    "serviceDays": "G2-SEL2-01",
+    "deductible": "G2-SEL2-01"
+  },
+  "G2-SEL2-02": {
+    "benefit": "G2-SEL2-02",
+    "count": "G2-SEL2-02",
+    "serviceDays": "G2-SEL2-02",
+    "deductible": "G2-SEL2-02"
+  },
+  "G2-SEL2-03": {
+    "benefit": "G2-SEL2-03",
+    "count": "G2-SEL2-03",
+    "serviceDays": "G2-SEL2-03",
+    "deductible": "G2-SEL2-03"
+  },
+  "G2-STD-01": {
+    "benefit": "G2-STD-01",
+    "count": "G2-STD-01",
+    "serviceDays": "G2-STD-01",
+    "deductible": "G2-STD-01"
+  },
+  "G2-STD-02": {
+    "benefit": "G2-STD-02",
+    "count": "G2-STD-02",
+    "serviceDays": "G2-STD-02",
+    "deductible": "G2-STD-02"
+  },
+  "G2-STD-03": {
+    "benefit": "G2-STD-03",
+    "count": "G2-STD-03",
+    "serviceDays": "G2-STD-03",
+    "deductible": "G2-STD-03"
+  },
+  "G2-STD-04": {
+    "benefit": "G2-STD-04",
+    "count": "G2-STD-04",
+    "serviceDays": "G2-STD-04",
+    "deductible": "G2-STD-04"
+  },
+  "G3-SEL2-01": {
+    "benefit": "G3-SEL2-01",
+    "count": "G3-SEL2-01",
+    "serviceDays": "G3-SEL2-01",
+    "deductible": "G3-SEL2-01"
+  },
+  "G3-SEL2-02": {
+    "benefit": "G3-SEL2-02",
+    "count": "G3-SEL2-02",
+    "serviceDays": "G3-SEL2-02",
+    "deductible": "G3-SEL2-02"
+  },
+  "G3-SEL2-BASE-02": {
+    "benefit": "G3-SEL2-BASE-02",
+    "count": "G3-SEL2-BASE-02",
+    "serviceDays": "G3-SEL2-BASE-02",
+    "deductible": "G3-SEL2-BASE-02"
+  },
+  "G3-SEL2-BASE-03": {
+    "benefit": "G3-SEL2-BASE-03",
+    "count": "G3-SEL2-BASE-03",
+    "serviceDays": "G3-SEL2-BASE-03",
+    "deductible": "G3-SEL2-BASE-03"
+  },
+  "G3-STD-01": {
+    "benefit": "G3-STD-01",
+    "count": "G3-STD-01",
+    "serviceDays": "G3-STD-01",
+    "deductible": "G3-STD-01"
+  },
+  "G3-STD-02": {
+    "benefit": "G3-STD-02",
+    "count": "G3-STD-02",
+    "serviceDays": "G3-STD-02",
+    "deductible": "G3-STD-02"
+  },
+  "G3-STD-03": {
+    "benefit": "G3-STD-03",
+    "count": "G3-STD-03",
+    "serviceDays": "G3-STD-03",
+    "deductible": "G3-STD-03"
+  },
+  "G3-STD-BASE-01": {
+    "benefit": "G3-STD-BASE-01",
+    "count": "G3-STD-BASE-01",
+    "serviceDays": "G3-STD-BASE-01",
+    "deductible": "G3-STD-BASE-01"
+  },
+  "G3-STD-BASE-02": {
+    "benefit": "G3-STD-BASE-02",
+    "count": "G3-STD-BASE-02",
+    "serviceDays": "G3-STD-BASE-02",
+    "deductible": "G3-STD-BASE-02"
+  },
+  "G3-STD-BASE-03": {
+    "benefit": "G3-STD-BASE-03",
+    "count": "G3-STD-BASE-03",
+    "serviceDays": "G3-STD-BASE-03",
+    "deductible": "G3-STD-BASE-03"
+  },
+  "G4-01": {
+    "benefit": "G4-COVERED-INJURY",
+    "count": "G4-01",
+    "serviceDays": "G4-01",
+    "deductible": "G4-COVERED-INPATIENT"
+  },
+  "G4-02": {
+    "benefit": "G4-COVERED-DISEASE",
+    "count": "G4-02",
+    "serviceDays": "G4-02",
+    "deductible": "G4-COVERED-INPATIENT"
+  },
+  "G4-03": {
+    "benefit": "G4-NONCOVERED-GENERAL-{cause}",
+    "count": "G4-03",
+    "serviceDays": "G4-03",
+    "deductible": "G4-03"
+  },
+  "G4-04": {
+    "benefit": "G4-NONCOVERED-GENERAL-{cause}",
+    "count": "G4-04-{cause}",
+    "serviceDays": "G4-04",
+    "deductible": "G4-04"
+  },
+  "G4-05": {
+    "benefit": "G4-05",
+    "count": "G4-05",
+    "serviceDays": "G4-05",
+    "deductible": "G4-05"
+  },
+  "G4-06": {
+    "benefit": "G4-06",
+    "count": "G4-06",
+    "serviceDays": "G4-06",
+    "deductible": "G4-06"
+  },
+  "G4-07": {
+    "benefit": "G4-07",
+    "count": "G4-07",
+    "serviceDays": "G4-07",
+    "deductible": "G4-07"
+  },
+  "G4-08": {
+    "benefit": "G4-COVERED-INJURY",
+    "count": "G4-08",
+    "serviceDays": "G4-08",
+    "deductible": "G4-08"
+  },
+  "G4-09": {
+    "benefit": "G4-COVERED-DISEASE",
+    "count": "G4-09",
+    "serviceDays": "G4-09",
+    "deductible": "G4-09"
+  },
+  "G5-01": {
+    "benefit": "G5-GENERAL-COVERED-{cause}",
+    "count": "G5-01-{cause}",
+    "serviceDays": "G5-01-{cause}",
+    "deductible": "G5-01"
+  },
+  "G5-02": {
+    "benefit": "G5-GENERAL-COVERED-{cause}",
+    "count": "G5-02-{cause}",
+    "serviceDays": "G5-02-{cause}",
+    "deductible": "G5-02"
+  },
+  "G5-03": {
+    "benefit": "G5-GENERAL-SEVERE-GENERAL-{cause}",
+    "count": "G5-03-{cause}",
+    "serviceDays": "G5-03-{cause}",
+    "deductible": "G5-GENERAL-SEVERE-INPATIENT"
+  },
+  "G5-04": {
+    "benefit": "G5-GENERAL-SEVERE-GENERAL-{cause}",
+    "count": "G5-04-{cause}",
+    "serviceDays": "G5-04-{cause}",
+    "deductible": "G5-04"
+  },
+  "G5-05": {
+    "benefit": "G5-GENERAL-SEVERE-THREE-{category}",
+    "count": "G5-05-{cause}",
+    "serviceDays": "G5-05-{cause}",
+    "deductible": "G5-05",
+    "deductibleOverrides": [
+      {
+        "category": "MRI",
+        "careSetting": "INPATIENT",
+        "group": "G5-GENERAL-SEVERE-INPATIENT"
+      }
+    ]
+  },
+  "G5-06": {
+    "benefit": "G5-GENERAL-NONSEVERE-GENERAL-{cause}",
+    "count": "G5-06-{cause}",
+    "serviceDays": "G5-06-{cause}",
+    "deductible": "G5-06"
+  },
+  "G5-07": {
+    "benefit": "G5-GENERAL-NONSEVERE-GENERAL-{cause}",
+    "count": "G5-07-{cause}",
+    "serviceDays": "G5-07-{cause}",
+    "deductible": "G5-07"
+  },
+  "G5-08": {
+    "benefit": "G5-08",
+    "count": "G5-08-{cause}",
+    "serviceDays": "G5-08-{cause}",
+    "deductible": "G5-08"
+  },
+  "G5-09": {
+    "benefit": "G5-09",
+    "count": "G5-09-{cause}",
+    "serviceDays": "G5-09-{cause}",
+    "deductible": "G5-09"
+  },
+  "G5-CONV-01": {
+    "benefit": "G5-CONVERSION-COVERED-{cause}",
+    "count": "G5-CONV-01-{cause}",
+    "serviceDays": "G5-CONV-01-{cause}",
+    "deductible": "G5-CONV-01"
+  },
+  "G5-CONV-02": {
+    "benefit": "G5-CONVERSION-COVERED-{cause}",
+    "count": "G5-CONV-02-{cause}",
+    "serviceDays": "G5-CONV-02-{cause}",
+    "deductible": "G5-CONV-02"
+  },
+  "G5-CONV-03": {
+    "benefit": "G5-CONVERSION-SEVERE-GENERAL-{cause}",
+    "count": "G5-CONV-03-{cause}",
+    "serviceDays": "G5-CONV-03-{cause}",
+    "deductible": "G5-CONVERSION-SEVERE-INPATIENT"
+  },
+  "G5-CONV-04": {
+    "benefit": "G5-CONVERSION-SEVERE-GENERAL-{cause}",
+    "count": "G5-CONV-04-{cause}",
+    "serviceDays": "G5-CONV-04-{cause}",
+    "deductible": "G5-CONV-04"
+  },
+  "G5-CONV-05": {
+    "benefit": "G5-CONVERSION-SEVERE-THREE-{category}",
+    "count": "G5-CONV-05-{cause}",
+    "serviceDays": "G5-CONV-05-{cause}",
+    "deductible": "G5-CONV-05",
+    "deductibleOverrides": [
+      {
+        "category": "MRI",
+        "careSetting": "INPATIENT",
+        "group": "G5-CONVERSION-SEVERE-INPATIENT"
+      }
+    ]
+  },
+  "G5-CONV-06": {
+    "benefit": "G5-CONVERSION-NONSEVERE-GENERAL-{cause}",
+    "count": "G5-CONV-06-{cause}",
+    "serviceDays": "G5-CONV-06-{cause}",
+    "deductible": "G5-CONV-06"
+  },
+  "G5-CONV-07": {
+    "benefit": "G5-CONVERSION-NONSEVERE-GENERAL-{cause}",
+    "count": "G5-CONV-07-{cause}",
+    "serviceDays": "G5-CONV-07-{cause}",
+    "deductible": "G5-CONV-07"
+  },
+  "G5-CONV-08": {
+    "benefit": "G5-CONV-08",
+    "count": "G5-CONV-08-{cause}",
+    "serviceDays": "G5-CONV-08-{cause}",
+    "deductible": "G5-CONV-08"
+  },
+  "G5-CONV-09": {
+    "benefit": "G5-CONV-09",
+    "count": "G5-CONV-09-{cause}",
+    "serviceDays": "G5-CONV-09-{cause}",
+    "deductible": "G5-CONV-09"
+  }
+}

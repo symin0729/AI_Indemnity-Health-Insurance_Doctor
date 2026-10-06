@@ -38,7 +38,11 @@ describe("Samsung execution-spec draft engine", () => {
       policyExclusionsCleared: true,
       otherIndemnityPoliciesExist: false,
       coveragePeriodConfirmed: true,
+      sameDayAggregationConfirmed: true,
       contractType: "GENERAL",
+      priorPaidBenefit: 0,
+      contractBenefitCap: 50_000_000,
+      perOccurrenceBenefitCap: 200_000,
     });
     expect(result.deductible).toBe(30_000);
     expect(result.claim).toBe(70_000);
@@ -51,6 +55,7 @@ describe("Samsung execution-spec draft engine", () => {
       policyExclusionsCleared: true,
       otherIndemnityPoliciesExist: false,
       coveragePeriodConfirmed: true,
+      sameDayAggregationConfirmed: true,
     });
     expect(result.status).toBe("CONFIRMATION_REQUIRED");
   });
@@ -62,9 +67,11 @@ describe("Samsung execution-spec draft engine", () => {
       policyExclusionsCleared: true,
       otherIndemnityPoliciesExist: false,
       coveragePeriodConfirmed: true,
+      sameDayAggregationConfirmed: true,
       contractType: "GENERAL",
       claimCause: "INJURY",
       priorServiceDays: 100,
+      contractBenefitCap: 10_000_000,
       priorPaidBenefit: 0,
     });
     expect(result.status).toBe("DRAFT_CALCULATED");
@@ -106,6 +113,10 @@ describe("Samsung execution-spec draft engine", () => {
       policyExclusionsCleared: true,
       otherIndemnityPoliciesExist: false,
       coveragePeriodConfirmed: true,
+      sameDayAggregationConfirmed: true,
+      priorPaidBenefit: 0,
+      contractBenefitCap: 50_000_000,
+      perOccurrenceBenefitCap: 200_000,
     });
     expect(calculated.status).toBe("DRAFT_CALCULATED");
     expect(calculated.claim).toBe(70_000);
@@ -123,6 +134,7 @@ describe("Samsung execution-spec draft engine", () => {
       priorPaidBenefit: 0,
       otherIndemnityPoliciesExist: false,
       coveragePeriodConfirmed: true,
+      sameDayAggregationConfirmed: true,
       coveragePeriod: "ACTIVE",
     });
     expect(result.deductible).toBe(10_000);
@@ -140,6 +152,7 @@ describe("Samsung execution-spec draft engine", () => {
       priorPaidBenefit: 0,
       otherIndemnityPoliciesExist: false,
       coveragePeriodConfirmed: true,
+      sameDayAggregationConfirmed: true,
       coveragePeriod: "ACTIVE",
     });
     expect(result.claim).toBe(40_000);
@@ -184,6 +197,7 @@ describe("Samsung execution-spec draft engine", () => {
       priorPaidBenefit: 0,
       otherIndemnityPoliciesExist: false,
       coveragePeriodConfirmed: true,
+      sameDayAggregationConfirmed: true,
       coveragePeriod: "ACTIVE",
       aggregationUnit: "TREATMENT",
     });
@@ -199,6 +213,7 @@ describe("Samsung execution-spec draft engine", () => {
       priorPaidBenefit: 0,
       otherIndemnityPoliciesExist: false,
       coveragePeriodConfirmed: true,
+      sameDayAggregationConfirmed: true,
       coveragePeriod: "ACTIVE",
     });
     expect(result.status).toBe("CONFIRMATION_REQUIRED");
@@ -213,6 +228,7 @@ describe("Samsung execution-spec draft engine", () => {
       priorPaidBenefit: 2_480_000,
       otherIndemnityPoliciesExist: false,
       coveragePeriodConfirmed: true,
+      sameDayAggregationConfirmed: true,
       threeNonCoveredCategory: "INJECTION",
       coveragePeriod: "ACTIVE",
       aggregationUnit: "VISIT",
@@ -232,6 +248,7 @@ describe("Samsung execution-spec draft engine", () => {
       contractBenefitCap: 50_000_000,
       otherIndemnityPoliciesExist: false,
       coveragePeriodConfirmed: true,
+      sameDayAggregationConfirmed: true,
       coveragePeriod: "ACTIVE",
     });
     expect(result.status).toBe("CONFIRMATION_REQUIRED");
@@ -370,6 +387,7 @@ describe("Samsung execution-spec draft engine", () => {
       policyExclusionsCleared: true,
       otherIndemnityPoliciesExist: false,
       coveragePeriodConfirmed: true,
+      sameDayAggregationConfirmed: true,
       aggregationUnit: "DIAGNOSTIC_ACTION",
     });
     expect(result.claim).toBe(50_000);

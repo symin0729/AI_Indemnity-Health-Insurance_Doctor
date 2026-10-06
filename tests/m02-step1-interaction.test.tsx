@@ -13,6 +13,8 @@ import { useAnalysisStore } from "../src/store/useAnalysisStore";
  */
 beforeEach(() => {
   useAnalysisStore.getState().resetAnalysis();
+  window.history.replaceState(null, "", "/input");
+  window.scrollTo = () => {};
   Element.prototype.scrollIntoView = () => {};
   // jsdom에는 <dialog>의 열기·닫기가 없어 화면 코드가 호출할 수 있게 비워 둔다.
   HTMLDialogElement.prototype.showModal ??= function showModal(this: HTMLDialogElement) { this.setAttribute("open", ""); };
@@ -237,6 +239,7 @@ describe("1세대 필수 입력", () => {
 
 describe("STEP 2 치료 샘플 불러오기", () => {
   it("예정 치료만 채우고 STEP 1(종형·특약)과 STEP 3(계산 가정)은 건드리지 않는다", async () => {
+    window.history.replaceState(null, "", "/input#input-step-2");
     const user = renderPage();
     await user.selectOptions(generationSelect(), "3");
     expect(variantButton().textContent).toContain("필수 선택");
@@ -249,5 +252,66 @@ describe("STEP 2 치료 샘플 불러오기", () => {
     // STEP 3
     const assumptions = within(visiblePanel(3)).getAllByRole("checkbox", { hidden: true }) as HTMLInputElement[];
     expect(assumptions.every((box) => !box.checked)).toBe(true);
+  });
+});
+
+describe('설계사용 계약 상세 필수 입력', () => {
+  it('가입금액 누락은 다음 단계와 사이드바 이동 모두 막는다', async () => {
+    const user = renderPage();
+    await user.click(screen.getByRole('button', { name: '샘플 불러오기' }));
+    const cap = document.getElementById('contract-detail-gen23ContractBenefitCap') as HTMLInputElement;
+    await user.clear(cap);
+    expect(cap.required).toBe(true);
+    await user.click(nextButton());
+    expect(visiblePanel(1).hidden).toBe(false);
+    expect(screen.getByRole('alert').textContent).toContain('입원 가입금액');
+    await user.click(screen.getByRole('button', { name: '2단계 예정 치료' }));
+    expect(visiblePanel(1).hidden).toBe(false);
+    await user.type(cap, '30000000');
+    await user.click(nextButton());
+    expect(visiblePanel(2).hidden).toBe(false);
+  });
+
+  it('보험기간 구분과 종료 후 계속치료 칸은 묻지 않고, 중복 계약 칸도 없다', async () => {
+    const user = renderPage();
+    await user.click(screen.getByRole('button', { name: '샘플 불러오기' }));
+    for (const key of ['gen23CoveragePeriod', 'gen23CoveragePeriodConfirmed', 'gen23DaysSinceTermination', 'gen23PostTerminationContinuationConfirmed', 'gen23OtherIndemnityPoliciesExist', 'gen23ProportionalPaymentFactor']) {
+      expect(document.getElementById(`contract-detail-${key}`), key).toBeNull();
+    }
+    await user.click(nextButton());
+    expect(screen.queryByRole('alert')).toBeNull();
+    expect(visiblePanel(2).hidden).toBe(false);
+  });
+
+  it('4세대 미가입 특약의 가입금액을 숨기고 가입 시 필수로 받는다', async () => {
+    const user = renderPage();
+    await user.selectOptions(generationSelect(), '4');
+    expect(document.getElementById('current-contract-nonCoveredBenefitCap')).toBeNull();
+    await user.click(step1().getByRole('checkbox', { name: '비급여 특약' }));
+    expect((document.getElementById('current-contract-nonCoveredBenefitCap') as HTMLInputElement).required).toBe(true);
+    await user.type(premiumInput(), '50000');
+    await user.type(document.getElementById('current-contract-coveredBenefitCap') as HTMLInputElement, '50000000');
+    await user.type(document.getElementById('current-contract-coveredOutpatientCap') as HTMLInputElement, '200000');
+    expect(document.getElementById('current-contract-other')).toBeNull();
+    expect(document.getElementById('target-contract-other')).toBeNull();
+    expect(document.getElementById('current-contract-period')).toBeNull();
+    await user.click(nextButton());
+    expect(screen.getByRole('alert').textContent).toContain('비급여 연간 가입금액');
+    await user.click(step1().getByRole('checkbox', { name: '비급여 특약' }));
+    await user.click(nextButton());
+    expect(visiblePanel(2).hidden).toBe(false);
+  });
+
+  it('갱신 주기와 재가입 주기는 기존 위치에서 바로 입력할 수 있다', async () => {
+    const user = renderPage();
+    await user.selectOptions(generationSelect(), '3');
+    const renewal = step1().getByRole('spinbutton', { name: /갱신 주기/ });
+    const reentry = step1().getByRole('spinbutton', { name: /재가입 주기/ });
+    expect(renewal.closest('details')).toBeNull();
+    expect(reentry.closest('details')).toBeNull();
+    await user.type(renewal, '12');
+    await user.type(reentry, '15');
+    expect((renewal as HTMLInputElement).value).toBe('12');
+    expect((reentry as HTMLInputElement).value).toBe('15');
   });
 });

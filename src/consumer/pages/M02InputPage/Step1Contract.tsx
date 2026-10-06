@@ -8,6 +8,7 @@ import { SAMPLE_POLICY_OPTIONS } from "../../../services/samplePolicyService";
 import { type SamsungGen23Variant } from "../../store/useAnalysisStore";
 import { formatWonInput, getWonInputValue, IsoDateInput } from "./M02Shared";
 import type { M02Form } from "./useM02Form";
+import Step1ContractDetails from "./Step1ContractDetails";
 
 export default function Step1Contract({ form }: { form: M02Form }) {
   const {
@@ -52,9 +53,10 @@ export default function Step1Contract({ form }: { form: M02Form }) {
   const generation = isGenerationSelected ? formGeneration : 0;
 
   return (
+    <>
     <section id="input-step-1" tabIndex={-1} className="form-card">
         <span className="step-badge">
-          STEP 1
+          STEP 1-1 · 내 보험 정보
         </span>
 
         <h2 className="card-title">
@@ -295,9 +297,10 @@ export default function Step1Contract({ form }: { form: M02Form }) {
         </label>
 
         <label>
-          실손 세대
+          실손 세대 <span className="required-mark">필수</span>
           <select
             id="generation-select"
+            required aria-required="true"
             className={isGenerationSelected ? undefined : "is-placeholder"}
             value={isGenerationPickerOpen || !isGenerationSelected ? "" : generation}
             onMouseDown={() => setIsGenerationPickerOpen(true)}
@@ -320,8 +323,8 @@ export default function Step1Contract({ form }: { form: M02Form }) {
         </label>
 
         <label>
-          가입일
-          <IsoDateInput
+          가입일 <span className="required-mark">필수</span>
+          <IsoDateInput id="current-inception-date" required
             value={inceptionDate}
             onChange={(value) => applyContractPatch(inceptionDateTypedPatch(value))}
             placeholder="YYYY-MM-DD (예: 2018-03-01)"
@@ -350,6 +353,7 @@ export default function Step1Contract({ form }: { form: M02Form }) {
             가입 상품 <span className="required-mark">필수</span>
             <select
               id="samsung-gen1-product"
+              className={gen1Product === "UNKNOWN" ? "is-placeholder" : undefined}
               value={gen1Product}
               required
               aria-required="true"
@@ -382,7 +386,7 @@ export default function Step1Contract({ form }: { form: M02Form }) {
         {generation === 4 ? (
           <div className="select-like-field">
             <span id="gen4-rider-title">
-              특약 가입 여부 <span className="optional-mark">선택</span>
+              특약 가입 여부 <span className="optional-mark">가입한 특약만 선택</span>
             </span>
             <label className="no-treatment-option">
               <input
@@ -397,10 +401,11 @@ export default function Step1Contract({ form }: { form: M02Form }) {
         ) : null}
 
         <label>
-          현재 월 보험료
+          현재 월 보험료 <span className="required-mark">필수</span>
           <span className="input-unit-row"><input
             type="text"
             inputMode="numeric"
+            id="current-monthly-premium" required aria-required="true"
             value={
               formatWonInput(monthlyPremium)
             }
@@ -446,7 +451,7 @@ export default function Step1Contract({ form }: { form: M02Form }) {
         {generation === 3 ? (
           <div className="select-like-field rider-row">
             <span id="gen3-rider-title">
-              특약 가입 여부 <span className="optional-mark">선택</span>
+              특약 가입 여부 <span className="optional-mark">가입한 특약만 선택</span>
               <small className="sample-note rider-row__hint">가입한 특약만 체크. 체크하지 않은 특약은 미가입으로 계산.</small>
             </span>
             <div className="rider-row__boxes" role="group" aria-labelledby="gen3-rider-title">
@@ -502,6 +507,23 @@ export default function Step1Contract({ form }: { form: M02Form }) {
             /><span className="input-unit-label">년</span></span>
           </label>
         </div>
+
       </section>
+
+      {isGenerationSelected && (
+        <section className="form-card" aria-label="가입한 보장의 가입금액">
+          <span className="step-badge">STEP 1-2 · 내 보험 정보</span>
+          <h2 className="card-title">가입한 보장의 가입금액</h2>
+          {generation === 1 ? (
+            <p className="card-description">1세대는 가입금액과 한도가 약관에 정해져 있어 따로 입력할 내용이 없습니다.</p>
+          ) : (
+            <>
+              <p className="card-description">보험증권에 기재된 가입금액을 입력해주세요. 가입한 담보의 한도만 계산에 사용합니다.</p>
+        <Step1ContractDetails form={form} />
+            </>
+          )}
+        </section>
+      )}
+    </>
   );
 }

@@ -42,7 +42,13 @@
           "benefitRate": 0.4
         }
       },
-      "limitText": "급여 10% + 비급여 20% 자기부담이 연간 2,000,000원 초과 시 초과분 보상",
+      "limitText": "급여 10% + 비급여 20% 자기부담이 연간 2,000,000원 초과 시 초과분 보상; 1상해·1질병당 계약가입금액 한도(최대 50,000,000)",
+      "accumulation": {
+        "benefit": "G2-SEL2-01",
+        "count": "G2-SEL2-01",
+        "serviceDays": "G2-SEL2-01",
+        "deductible": "G2-SEL2-01"
+      },
       "requiresAccumulator": true,
       "enforcement": {
         "annualDeductibleCap": 2000000,
@@ -93,10 +99,17 @@
         "minimumByInstitution": {
           "CLINIC": 10000,
           "HOSPITAL": 15000,
+          "GENERAL_HOSPITAL": 15000,
           "GENERAL_TERTIARY": 20000
         }
       },
       "limitText": "연간 방문 180회; 처방전 180건",
+      "accumulation": {
+        "benefit": "G2-SEL2-02",
+        "count": "G2-SEL2-02",
+        "serviceDays": "G2-SEL2-02",
+        "deductible": "G2-SEL2-02"
+      },
       "requiresAccumulator": true,
       "enforcement": {
         "maxAnnualCount": 180,
@@ -148,7 +161,13 @@
         "minimumAmount": 8000
       },
       "limitText": "매년 계약해당일부터 1년간 처방전 180건",
-      "requiresAccumulator": false,
+      "accumulation": {
+        "benefit": "G2-SEL2-03",
+        "count": "G2-SEL2-03",
+        "serviceDays": "G2-SEL2-03",
+        "deductible": "G2-SEL2-03"
+      },
+      "requiresAccumulator": true,
       "enforcement": {
         "maxAnnualCount": 180,
         "countUnit": "PRESCRIPTION",

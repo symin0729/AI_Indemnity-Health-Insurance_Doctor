@@ -1,3 +1,4 @@
+import { confirmedContractFacts } from './fixtures/confirmed-contract-facts';
 import { describe, expect, it } from 'vitest';
 import { calculateSamsungGen4Claim } from '../src/engine/calculateSamsungGen4';
 import { calculateSamsungGen5 } from '../src/engine/calculateSamsungGen5';
@@ -62,7 +63,7 @@ describe('급여 입원 연 200만원 자기부담 상한', () => {
   it('4세대 연간 비교에서 상해·질병 입원의 자기부담을 합산해 상한을 적용한다', () => {
     const contract = { insurer: '삼성화재', productName: 'x', inceptionDate: '2022-01-01', generation: 4 as const, monthlyPremium: 50_000, renewalCycleMonths: null, reentryCycleMonths: null, coverages: [] };
     const selections = { ...useAnalysisStore.getState().productCalculationSelections, gen4NonCoveredRider: 'NOT_ENROLLED' as const };
-    const assumptions = { assumeEntireMedicalCostCovered: true, assumeNoPriorLimitUsage: true, assumeEachOccurrenceSeparate: true };
+    const assumptions = { targetContractFacts: confirmedContractFacts, currentContractFacts: confirmedContractFacts, assumeEntireMedicalCostCovered: true, assumeNoPriorLimitUsage: true, assumeEachOccurrenceSeparate: true };
     const usage = (id: string, claimCause: 'INJURY' | 'DISEASE') => ({ id, treatmentName: id, careSetting: 'INPATIENT' as const, benefitClass: 'COVERED' as const, severityClass: 'UNKNOWN' as const, frequency: 1, unitCost: 10_000_000, coveredAmount: 10_000_000, institutionType: 'GENERAL_TERTIARY' as const, claimCause, nationalHealthInsuranceStatus: 'APPLIED' as const, samsungCalculationInput: { policyExclusionsCleared: true } });
     const result = calculateSamsungAnnualComparison(contract, 60_000, [], selections, [usage('injury', 'INJURY'), usage('disease', 'DISEASE')], assumptions);
     // 각 800만원 보상 + 두 번째 입원에서 합산 자기부담 400만원 중 상한 초과 200만원 보상
