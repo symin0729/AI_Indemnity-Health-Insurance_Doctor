@@ -99,6 +99,11 @@ function classifiedScenario(
   facts: SamsungGen5ObjectiveFacts,
 ): SamsungGen5ConditionalScenario {
   const classification = severe ? "SEVERE" : "NON_SEVERE";
+  // 금융위원회 2026.5.4. 보도자료: 특약2는 근골격계 물리치료·체외충격파·비급여 주사제를 제외한다.
+  // https://www.fsc.go.kr/po010101/86831
+  if (!severe && (facts.threeNonCoveredCategory === "MANUAL_THERAPY" || facts.threeNonCoveredCategory === "INJECTION")) {
+    return { classification, coverage: null, covered: false, reason: "비중증 도수·체외충격파·증식치료 및 비급여 주사제는 5세대 특약2 보장 대상에서 제외됩니다." };
+  }
   const rider = severe ? enrollment.severeNonCoveredRider : enrollment.nonSevereNonCoveredRider;
   if (rider !== "ENROLLED") {
     return { classification, coverage: null, covered: rider === "UNKNOWN" ? null : false, reason: `${severe ? "특약1" : "특약2"} 가입 여부` };

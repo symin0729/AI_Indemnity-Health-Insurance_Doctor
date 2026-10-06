@@ -61,3 +61,24 @@ it('앞선 미확인 치료가 같은 한도에 미칠 영향을 뒤 치료에�
   expect(result.items[1].target.reasons.join(' ')).toContain('앞선 미확인 치료');
   expect(result.currentClaimTotal).toBe(320000);
 });
+
+it.each([2, 3] as const)('%s세대: 전액 가정보다 직접 입력한 인정금액을 우선한다', generation => {
+  const precise: MedicalUsage = { ...usage, coveredAmount: undefined, frequency: 1,
+    gen23RequiredCoverageConfirmed: true, gen23RiderEnrollmentStatus: 'ENROLLED',
+    gen23PolicyExclusionsCleared: true, gen23OutpatientBenefitCap: 250000, gen23PrescriptionBenefitCap: 50000,
+    gen23ThreeNonCoveredExcludedFromBaseConfirmed: true,
+    samsungCalculationInput: { eligibleExpense: 50000 },
+  };
+  const result = calculateSamsungComparisonItem({ ...contract, generation }, { ...selections, samsungGen23Variant: 'standard' }, precise, { ...policy, assumeNoPriorLimitUsage: true, assumeEntireMedicalCostCovered: true });
+  expect(result.claim, result.reasons.join(" / ")).toBe(40000);
+  expect(precise.samsungCalculationInput?.eligibleExpense).toBe(50000);
+});
+
+it('1세대: 확인된 제외 사유를 면책 없음 가정으로 덮지 않는다', () => {
+  const run = (cleared: boolean) => calculateSamsungComparisonItem({ ...contract, generation: 1 },
+    { ...selections, gen1Product: 'SAMSUNG_0904_2', gen1D1Coverage: 'BOTH', gen1ContractBasis: 'SAMPLE_SIMULATION' },
+    { ...usage, claimCause: 'INJURY', frequency: 1, gen1PolicyExclusionsCleared: cleared, gen1PriorServiceDays: 0, samsungCalculationInput: { daysSinceAccidentOrDiagnosis: 1 } },
+    { ...policy, assumeNoPriorLimitUsage: true });
+  expect(run(true).claim).not.toBeNull();
+  expect(run(false).claim).toBeNull();
+});

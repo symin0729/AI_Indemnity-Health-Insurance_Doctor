@@ -622,6 +622,8 @@ function M03ConfirmPage() {
           <article className="planner-assumption-item"><strong>비교 시작 조건과 기존 사용분</strong><p>{calculationAssumptions.comparisonBasis !== 'REMAINING_LIMITS' ? '한도 사용 전부터 1년 비교: 양쪽 계약 모두 기존 사용분 0에서 시작' : calculationAssumptions.assumeNoPriorLimitUsage ? '현재 계약의 입력한 기존 사용분을 반영하고 빈 값만 0으로 가정. 5세대는 기존 사용분 0에서 시작' : '현재 계약의 입력한 기존 사용분 반영. 미확인 사용분은 확인 필요로 표시. 5세대는 기존 사용분 0에서 시작'}</p></article>
           <article className="planner-assumption-item"><strong>치료 방문·합산 단위</strong><p>{calculationAssumptions.assumeEachOccurrenceSeparate ? '반복 치료를 각각 별도 방문으로 가정' : '입력한 방문 구분을 사용하고 미확인 반복 치료는 확인 필요로 표시'}</p></article>
           {calculationAssumptions.assumeManualTherapyImprovement && <article className="planner-assumption-item"><strong>도수치료 10회 이후</strong><p>증상 개선이 확인되어 보상된다고 가정(4·5세대 약관의 최초 10회 이후 조건)</p></article>}
+          {calculationAssumptions.assumeNonSevereNonCovered && <article className="planner-assumption-item"><strong>5세대 비급여 중증 여부</strong><p>산정특례 질환 치료가 아닌 비중증 비급여로 가정</p></article>}
+          {calculationAssumptions.assumeNonCoveredInpatientSmallHospital && <article className="planner-assumption-item"><strong>5세대 비급여 입원 의료기관</strong><p>종합·상급종합병원이 아닌 병원(1회 입원 한도 300만원 적용)으로 가정</p></article>}
           <button type="button" className="planner-assumption-edit" onClick={() => navigate('/consumer/input#input-step-4')}>명시적 계산 가정 수정하기</button>
         </div>
 

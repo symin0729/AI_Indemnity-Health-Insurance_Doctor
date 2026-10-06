@@ -118,7 +118,7 @@ export default function Step2Compare({ form }: { form: M02Form }) {
                 fontSize: "0.82rem",
               }}
             >
-              {riderDetailVisible.special1 ? "숨김" : "보이기"}
+              {riderDetailVisible.special1 ? "설명 숨김" : "설명"}
             </button>
           </div>
 
@@ -134,8 +134,10 @@ export default function Step2Compare({ form }: { form: M02Form }) {
           >
             <h3 style={{ margin: "0 0 10px" }}>중증 비급여 (특약1)</h3>
             <ul className="target-rider-summary">
-              <li><strong>적용 대상</strong><span>산정특례 대상 질환과 관련된 비급여 치료</span></li>
-              <li><strong>자기부담률</strong><span>일반 중증 비급여 30%</span></li>
+              <li><strong>보상 대상</strong><span>산정특례 대상 질환(암·뇌혈관·심장질환·희귀난치성질환 등) 및 그 질환과 의학적 인과관계가 분명한 합병증의 비급여 치료</span></li>
+              <li><strong>입원 보상</strong><span>보장대상 의료비의 70% (자기부담률 30%, 기존 보장 수준 유지)</span></li>
+              <li><strong>통원 공제</strong><span>3만원과 보장대상 의료비의 30% 중 큰 금액을 공제</span></li>
+              <li><strong>상급병실</strong><span>비급여 병실료의 50% (1일 평균 10만원 한도)</span></li>
               <li><strong>연간 한도</strong><span>상해·질병 각각 입원·통원 합산 가입금액 적용</span></li>
             </ul>
             <table className="target-rider-cap-table">
@@ -145,8 +147,9 @@ export default function Step2Compare({ form }: { form: M02Form }) {
             </table>
             <ul className="target-rider-summary target-rider-summary-extra">
               <li><strong>입원 자기부담 상한</strong><span>종합·상급종합병원 입원은 연 500만원. 근골격계 이학요법·체외충격파와 주사는 상한에서 제외되며, MRI는 포함됩니다.</span></li>
-              <li><strong>3대 비급여</strong><span>도수·체외충격파·증식치료, 주사, MRI/MRA는 별도 공제·금액·횟수 한도를 적용합니다.</span></li>
+              <li><strong>3대 비급여</strong><span>도수·체외충격파·증식치료, 주사, MRI/MRA도 산정특례 대상 질환으로 인한 경우에만 보상하며, 별도 공제·금액·횟수 한도를 적용합니다.</span></li>
             </ul>
+            <p className="sample-note">출처: 금융위원회·금융감독원 5세대 실손보험 보도자료(2026.5.4) 5쪽, 손해보험협회 실손의료보험 안내(2026.10.3), 삼성화재 5세대 약관 8·50·52쪽</p>
           </div>
 
           <div
@@ -179,7 +182,7 @@ export default function Step2Compare({ form }: { form: M02Form }) {
                 fontSize: "0.82rem",
               }}
             >
-              {riderDetailVisible.special2 ? "숨김" : "보이기"}
+              {riderDetailVisible.special2 ? "설명 숨김" : "설명"}
             </button>
           </div>
 
@@ -195,8 +198,10 @@ export default function Step2Compare({ form }: { form: M02Form }) {
           >
             <h3 style={{ margin: "0 0 10px" }}>비중증 비급여 (특약2)</h3>
             <ul className="target-rider-summary">
-              <li><strong>적용 대상</strong><span>중증 비급여 외 보장대상 비급여 치료</span></li>
-              <li><strong>자기부담률</strong><span>50%</span></li>
+              <li><strong>보상 대상</strong><span>특약1에서 보장하지 않는 비급여 치료 (산정특례 대상 질환이 아닌 질환의 치료)</span></li>
+              <li><strong>입원 보상</strong><span>보장대상 의료비의 50% (자기부담률 50%, 한도 1천만원으로 낮춤)</span></li>
+              <li><strong>통원 공제</strong><span>5만원과 보장대상 의료비의 50% 중 큰 금액을 공제</span></li>
+              <li><strong>상급병실</strong><span>비급여 병실료의 50% (1일 평균 10만원 한도)</span></li>
               <li><strong>연간 한도</strong><span>상해·질병 각각 입원·통원 합산 가입금액 적용</span></li>
             </ul>
             <table className="target-rider-cap-table">
@@ -210,6 +215,7 @@ export default function Step2Compare({ form }: { form: M02Form }) {
               <li><strong>보장 제외</strong><span>진료내역과 약관에 따라 확인합니다.</span></li>
               <li><strong>보험료 차등</strong><span>2028년 5월 6일부터 적용. 비중증 보험금 수령액에 따른 구간과 제외 대상을 별도로 확인합니다.</span></li>
             </ul>
+            <p className="sample-note target-rider-source">출처: 금융위원회·금융감독원 5세대 실손보험 보도자료(2026.5.4) 5쪽, 손해보험협회 실손의료보험 안내(2026.10.3), 삼성화재 5세대 약관 8·52·64쪽</p>
           </div>
         </div>
 

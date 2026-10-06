@@ -5,7 +5,7 @@ import { Gen23Inputs } from "../../../components/samsung/Gen23Inputs";
 import { MASKED_INSURER } from "../../../domain/displayMask";
 import { GEN23_CONTRACT_DETAIL_KEYS } from "../../../domain/contractDetails";
 import { NON_COVERED_TREATMENT_TYPES, nonCoveredTreatmentTypeLabel, toNonCoveredTreatmentType } from "../../../domain/nonCoveredTreatmentType";
-import type { BenefitClass, ClaimCause, SeverityClass } from "../../../domain/medical";
+import type { BenefitClass, ClaimCause } from "../../../domain/medical";
 import { formatWonInput, getWonInputValue, IsoDateInput } from "./M02Shared";
 import type { M02Form } from "./useM02Form";
 
@@ -26,13 +26,11 @@ export default function Step2Treatment({ form }: { form: M02Form }) {
   const {
     treatmentCareSelected,
     claimCause,
-    gen1CoveredRoomAndTreatment,
     policyExclusionsCleared,
     gen1DaysSinceAccident,
     gen1Product,
     gen1RoomDifference,
     setClaimCause,
-    setGen1CoveredRoomAndTreatment,
     setGen1DaysSinceAccident,
     setGen1RoomDifference,
     applyCopayDefault,
@@ -69,11 +67,9 @@ export default function Step2Treatment({ form }: { form: M02Form }) {
     setGen23Form,
     setHealthInsuranceCopayRatePercent,
     setInstitutionType,
-    setSeverityClass,
     setTreatmentDate,
     setTreatmentName,
     setUnitCost,
-    severityClass,
     treatmentDate,
     treatmentName,
     treatmentSampleDialogRef,
@@ -82,6 +78,18 @@ export default function Step2Treatment({ form }: { form: M02Form }) {
     unitCost,
   } = form;
 
+  const handleInstitutionChange = (value: CopayInstitution | "") => {
+    setCopayInstitution(value);
+    setInstitutionType(value === "TERTIARY" || value === "GENERAL" ? "GENERAL_TERTIARY" : value === "CLINIC" || value === "HOSPITAL" ? "CLINIC_HOSPITAL" : "");
+    applyCopayDefault(careSetting, value);
+    if (generation === 2 || generation === 3) {
+      const institution = value === "TERTIARY" ? "GENERAL_TERTIARY" : value === "GENERAL" || value === "HOSPITAL" ? "HOSPITAL" : value === "CLINIC" ? "CLINIC" : "";
+      setGen23Form(previous => ({ ...previous, gen23Institution: institution }));
+    }
+  };
+  // 2세대, 그리고 3세대 일반 치료의 입원은 위의 예상 금액에서 병실료 차액만 따로 받는다.
+  const gen3NonCoveredType = generation === 3 ? toNonCoveredTreatmentType(benefitClass, treatmentCategory) : "";
+  const gen23SplitInpatient = careSetting === "INPATIENT" && (generation === 2 || (generation === 3 && gen3NonCoveredType === ""));
   return (
     <section id="input-step-2" tabIndex={-1} className="form-card">
         {treatmentSampleNotice && <p className="notice-box" role="status">{treatmentSampleNotice}</p>}
@@ -202,16 +210,7 @@ export default function Step2Treatment({ form }: { form: M02Form }) {
             <span className="treatment-field-heading">
             의료기관 종별 {careSetting === "OUTPATIENT" && <span className="required-mark">필수</span>}
             </span>
-            <select id="copay-institution" value={copayInstitution || institutionType} onChange={(e) => {
-              const value = e.target.value as CopayInstitution | "";
-              setCopayInstitution(value);
-              setInstitutionType(value === "TERTIARY" || value === "GENERAL" ? "GENERAL_TERTIARY" : value === "CLINIC" || value === "HOSPITAL" ? "CLINIC_HOSPITAL" : "");
-              applyCopayDefault(careSetting, value);
-              if (generation === 2 || generation === 3) {
-                const institution = value === "TERTIARY" ? "GENERAL_TERTIARY" : value === "GENERAL" || value === "HOSPITAL" ? "HOSPITAL" : value === "CLINIC" ? "CLINIC" : "";
-                setGen23Form(previous => ({ ...previous, gen23Institution: institution }));
-              }
-            }}>
+            <select id="copay-institution" value={copayInstitution || institutionType} onChange={(e) => handleInstitutionChange(e.target.value as CopayInstitution | "")}>
               <option value="" disabled hidden>선택해주세요</option>
               {!copayInstitution && institutionType && <option value={institutionType}>기존 분류 — 세부 종별을 선택해주세요</option>}
               <option value="TERTIARY">상급종합병원 (대형 대학병원 등)</option>
@@ -249,16 +248,6 @@ export default function Step2Treatment({ form }: { form: M02Form }) {
               placeholder="예: 40"
             /><span className="input-unit-label">%</span></span>
           </label>}
-        </div>}
-        {benefitClass === "NON_COVERED" && <div className="treatment-coverage-stack">
-          <label>
-            <span className="treatment-field-heading">산정특례 및 치료 관련성</span>
-            <select value={severityClass} onChange={(e) => setSeverityClass(e.target.value as SeverityClass)}>
-              <option value="UNKNOWN">모름</option>
-              <option value="SEVERE">산정특례 질환 치료 또는 관련 합병증으로 확인됨</option>
-              <option value="NON_SEVERE">산정특례 미적용 또는 다른 질환 치료로 확인됨</option>
-            </select>
-          </label>
         </div>}
         </>}
 
@@ -328,26 +317,31 @@ export default function Step2Treatment({ form }: { form: M02Form }) {
 
 
 
-          </fieldset>
-
-          {(generation === 2 || generation === 3) && <Gen23Inputs generation={generation} riderManaged={generation === 3} variant={samsungGen23Variant} insurerName={MASKED_INSURER} embedded institutionManaged hiddenKeys={new Set([...(careSetting === "OUTPATIENT" ? ["gen23CoveredCopay", "gen23NonCoveredExpense"] : []), ...gen23HiddenInTreatment(careSetting === "INPATIENT", generation === 3 && toNonCoveredTreatmentType(benefitClass, treatmentCategory) !== ""), ...(form.comparisonBasis === "FRESH_YEAR" ? ["gen23PriorPaidBenefit", "gen23BenefitLimitRestored"] : [])])} value={{ ...gen23Form, ...contractDetails, claimCause, nationalHealthInsuranceStatus: "APPLIED", gen23PolicyExclusionsCleared: String(policyExclusionsCleared), ...(generation === 3 ? { gen23TreatmentType: toNonCoveredTreatmentType(benefitClass, treatmentCategory) || "BASE" } : {}) }} onChange={(values) => {
+          {(generation === 2 || generation === 3) && <Gen23Inputs generation={generation} roomDifferenceOptional={gen23SplitInpatient} riderManaged={generation === 3} variant={samsungGen23Variant} insurerName={MASKED_INSURER} embedded institutionManaged hiddenKeys={new Set([...(careSetting === "OUTPATIENT" ? ["gen23CoveredCopay", "gen23NonCoveredExpense"] : []), ...(gen23SplitInpatient ? ["gen23CoveredCopay", "gen23NonCoveredExpense", "gen23InpatientExcludingRoomDifference", "gen23NonNhiInpatientTotal"] : []),
+              // 3세대: 특약 대상 치료는 인정금액으로 계산하므로 급여·비급여 칸을 받지 않고, 일반 치료의 '3대 특약 제외 확인'은 치료 종류로 갈음한다. 주사 확인은 주사일 때만 묻는다.
+              ...(generation === 3 ? ["gen23ThreeNonCoveredExcludedFromBaseConfirmed", ...(gen3NonCoveredType !== "" ? ["gen23CoveredCopay", "gen23NonCoveredExpense"] : []), ...(gen3NonCoveredType !== "INJECTION" ? ["gen23InjectionRiderEligibleConfirmed"] : [])] : []), ...gen23HiddenInTreatment(careSetting === "INPATIENT", generation === 3 && toNonCoveredTreatmentType(benefitClass, treatmentCategory) !== ""), ...(form.comparisonBasis === "FRESH_YEAR" ? ["gen23PriorPaidBenefit", "gen23BenefitLimitRestored"] : [])])} value={{ ...gen23Form, ...contractDetails, gen23CareSetting: gen23Form.gen23CareSetting || (careSetting === "INPATIENT" ? "INPATIENT" : "OUTPATIENT"), claimCause, nationalHealthInsuranceStatus: "APPLIED", gen23PolicyExclusionsCleared: String(policyExclusionsCleared), ...(generation === 3 ? { gen23TreatmentType: toNonCoveredTreatmentType(benefitClass, treatmentCategory) || "BASE" } : {}) }} onChange={(values) => {
             setGen23Form(values);
             const selectedCare = genericGen23CareSetting(values.gen23CareSetting);
             if (selectedCare && selectedCare !== careSetting) changeCareSetting(selectedCare);
           }} />}
 
         {generation === 4 && careSetting === 'INPATIENT' && benefitClass === 'NON_COVERED' && <fieldset className="treatment-section">
-          <legend><h3>입원 비용 구분</h3></legend>
-          <p className="sample-note">병실료 차액은 보상 비율과 하루 한도가 달라 따로 계산합니다. 위 보장대상 금액에 포함된 차액을 입력하세요.</p>
+          <legend><h3>4세대 세부 보장 및 계약 확인</h3></legend>
           <div className="form-grid">
-            <label>병실료 차액 (없으면 0)<span className="input-unit-row"><input type="text" inputMode="numeric" value={formatWonInput(gen1RoomDifference)} onChange={event => setGen1RoomDifference(getWonInputValue(event.target.value))} /><span className="input-unit-label">원</span></span></label>
-            {Number(gen1RoomDifference) > 0 && <label>입원일수<span className="input-unit-row"><input type="number" min="1" step="1" value={gen23Form.gen23InpatientDays ?? ''} onChange={event => setGen23Form({ ...gen23Form, gen23InpatientDays: event.target.value })} /><span className="input-unit-label">일</span></span></label>}
+            <label>
+              <span className="gen1-field-heading">입원일 수{Number(gen1RoomDifference) > 0 && <span className="required-mark">필수</span>}</span>
+              <span className="input-unit-row"><input aria-label="입원일 수" type="number" min="1" step="1" value={gen23Form.gen23InpatientDays ?? ''} onChange={event => setGen23Form({ ...gen23Form, gen23InpatientDays: event.target.value })} placeholder={Number(gen1RoomDifference) > 0 ? "예: 7" : "예: 7 · 모르면 비워두세요"} /><span className="input-unit-label">일</span></span>
+            </label>
+            <label>
+              <span className="gen1-field-heading">병실료 차액 <small className="treatment-inline-hint">상급병실(1~2인실)을 쓸 때만 입력, 다인실이면 비워두세요</small></span>
+              <span className="input-unit-row"><input aria-label="병실료 차액" type="text" inputMode="numeric" value={formatWonInput(gen1RoomDifference)} onChange={event => setGen1RoomDifference(getWonInputValue(event.target.value))} placeholder="예: 200,000 · 모르면 비워두세요" /><span className="input-unit-label">원</span></span>
+            </label>
           </div>
         </fieldset>}
 
         {/* 세대별 세부 입력: 1세대는 삼성 0904.2 D1 계산에 필요한 값을 여기서 입력한다. */}
         {generation === 1 && gen1Product === "SAMSUNG_0904_2" && (
-          <fieldset className="form-card" aria-label="1세대 세부 입력">
+          <fieldset className="form-card gen1-detail-inputs" aria-label="1세대 세부 입력">
             <legend><h3>1세대 세부 입력</h3></legend>
             <div className="form-grid">
               <label>
@@ -357,10 +351,11 @@ export default function Step2Treatment({ form }: { form: M02Form }) {
               </label>
             </div>
             {careSetting === "INPATIENT" && <div className="form-grid">
-              <label>실제 부담액<input type="text" inputMode="numeric" value={formatWonInput(gen1CoveredRoomAndTreatment)} onChange={(event) => setGen1CoveredRoomAndTreatment(getWonInputValue(event.target.value))} />원</label>
-              <label>병실료 차액<input type="text" inputMode="numeric" value={formatWonInput(gen1RoomDifference)} onChange={(event) => setGen1RoomDifference(getWonInputValue(event.target.value))} placeholder="없으면 0" />원</label>
+              <label>
+                <span className="gen1-field-heading">병실료 차액 <small className="treatment-inline-hint">상급병실(1~2인실)을 쓸 때만 입력, 다인실이면 비워두세요</small></span>
+                <span className="input-unit-row"><input aria-label="병실료 차액" type="text" inputMode="numeric" value={formatWonInput(gen1RoomDifference)} onChange={(event) => setGen1RoomDifference(getWonInputValue(event.target.value))} placeholder="예: 200,000" /><span className="input-unit-label">원</span></span>
+              </label>
             </div>}
-            {careSetting === "OUTPATIENT" && <p className="sample-note">통원 금액은 위의 ‘한 번 진료받을 때 내가 내는 금액’을 사용합니다.</p>}
 
           </fieldset>
         )}
@@ -372,7 +367,7 @@ export default function Step2Treatment({ form }: { form: M02Form }) {
           </div>
         )}
 
-        <div className="button-group">
+        <div className="button-group treatment-submit-actions">
           <button
             type="button"
             className={
@@ -402,6 +397,7 @@ export default function Step2Treatment({ form }: { form: M02Form }) {
             </button>
           )}
         </div>
+          </fieldset>
           </div>
         </>}
 
@@ -422,13 +418,6 @@ export default function Step2Treatment({ form }: { form: M02Form }) {
                 const isEditing =
                   editingUsageId ===
                   usage.id;
-
-                const severityLabel =
-                  usage.severityClass === "SEVERE"
-                    ? "산정특례 질환 치료 또는 관련 합병증으로 확인됨"
-                    : usage.severityClass === "NON_SEVERE"
-                      ? "산정특례 미적용 또는 다른 질환 치료로 확인됨"
-                      : "산정특례 여부 확인 필요";
 
                 return (
                   <article
@@ -483,11 +472,6 @@ export default function Step2Treatment({ form }: { form: M02Form }) {
                           {usage.treatmentDate}
                         </div>
                       )}
-
-                      <div>
-                        <strong style={{ marginRight: "8px" }}>산정특례 및 치료 관련성:</strong>
-                        {severityLabel}
-                      </div>
 
                       {usage.coveredAmount !== undefined && (
                         <div>

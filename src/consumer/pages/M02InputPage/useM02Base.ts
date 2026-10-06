@@ -21,7 +21,11 @@ export function useM02Base() {
     useState<"forward" | "backward">("forward");
 
 
+  // STEP 4의 "예정 치료에서 직접 입력·수정하기"로 들어왔을 때만 STEP 2에 "4단계로 돌아가기"를 보여 준다.
+  const [returnToAssumptions, setReturnToAssumptions] = useState(false);
+
   const goToInputStep = (step: 1 | 2 | 3 | 4) => {
+    if (step !== 2) setReturnToAssumptions(false);
     setTransitionDirection(step >= activeStep ? "forward" : "backward");
     setActiveStep(step);
     window.history.replaceState(null, "", `/consumer/input#input-step-${step}`);
@@ -207,6 +211,8 @@ const [samsungGen23Variant, setSamsungGen23Variant] =
     transitionDirection,
     setTransitionDirection,
     goToInputStep,
+    returnToAssumptions,
+    setReturnToAssumptions,
     MAX_TREATMENTS,
     savedContract,
     savedTarget5GMonthlyPremium,
