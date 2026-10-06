@@ -131,6 +131,8 @@ function calculateComparisonItem(contract: InsuranceContract, selections: Produc
   if (target) {
     input.conversionContractSubtype = 'CONTRACT_CONVERSION';
     input.conversionEligibilityConfirmed = assumptions.targetContractFacts?.conversionEligibilityConfirmed;
+    input.conversionSimulationAssumed = true;
+    appliedAssumptions.push('5세대로 전환 가능한 계약을 전제로 한 모의 비교이며, 실제 전환 가능 여부와 보험금 지급을 확정하지 않음');
   }
   if (assumptions.assumeNoPriorLimitUsage) {
     input.priorPaidBenefit ??= 0; input.priorAnnualCount ??= 0; input.priorServiceDays ??= 0; input.priorEligibleDeductible ??= 0;

@@ -106,3 +106,13 @@ it('5세대 본문 근거는 실제 조항명을 쓰고 한도 표시에서 중�
   expect(draft.rules.find((rule: {id: string}) => rule.id === 'G1-01').limit).toBe('1사고 50,000,000원; 사고일부터 365일');
   expect(draft.rules.find((rule: {id: string}) => rule.id === 'G1-05').limit).toContain('재보장 간격 180일');
 });
+
+it('requires both separate conversion confirmations and preserves them on reload', () => {
+  for (const available of ['false', 'true']) for (const treatment of ['false', 'true']) {
+    const facts = parseSamsungContractFacts({ conversionAvailableConfirmed: available, ongoingTreatmentCoveredConfirmed: treatment, conversionEligibilityConfirmed: 'true' }, 5);
+    expect(facts.conversionEligibilityConfirmed).toBe(available === 'true' && treatment === 'true');
+    expect(samsungContractForm(facts).conversionAvailableConfirmed).toBe(available);
+    expect(samsungContractForm(facts).ongoingTreatmentCoveredConfirmed).toBe(treatment);
+  }
+  expect(parseSamsungContractFacts({ conversionEligibilityConfirmed: 'true' }, 5).conversionEligibilityConfirmed).toBe(true);
+});

@@ -1,4 +1,3 @@
-import { InputHelp } from "../../../components/InputHelp";
 import { formatWonInput, getWonInputValue } from "./M02Shared";
 import type { M02Form } from "./useM02Form";
 import SamsungContractFactsFields from '../../../components/samsung/SamsungContractFactsFields';
@@ -27,33 +26,11 @@ export default function Step2Compare({ form }: { form: M02Form }) {
 
         <p className="card-description">
           2단계에서 입력한 동일한 예정 치료를 현재 보험과 5세대에 각각 적용합니다.
-          여기서는 5세대의 견적 보험료와 가입할 보장만 입력하세요.
         </p>
 
-        <section className="notice-box" aria-label="두 계약에 공통으로 적용할 예정 치료">
-          <strong>동일한 의료 이용으로 비교합니다</strong>
-          <ul>{form.plannedUsages.map(usage => <li key={usage.id}>{usage.treatmentName} · {usage.careSetting === 'INPATIENT' ? '입원' : '통원'} · {usage.benefitClass === 'COVERED' ? '급여' : usage.benefitClass === 'NON_COVERED' ? '비급여' : '급여 구분 확인 필요'} · 회당 {usage.unitCost.toLocaleString('ko-KR')}원 · {usage.frequency}회</li>)}</ul>
-          <p>치료·비용·횟수는 같고, 보험금은 각 계약의 가입 보장·공제·한도에 따라 달라집니다.</p>
-          <button type="button" className="review-edit-button" onClick={() => form.goToInputStep(2)}>예정 치료 수정</button>
-        </section>
-
-        <section className="notice-box" aria-label="5세대 계약전환 조건">
-          <strong>삼성 5세대 계약전환형 약관으로 비교합니다</strong>
-          <p>기존 실손계약을 5세대로 전환하는 조건입니다. 전환 자격과 예정 치료의 계속 치료 적용 조건을 보험사에 확인해주세요. 미확인 시 보험금과 손익분기점 계산을 보류합니다.</p>
-          <label htmlFor="target-conversion-eligibility">전환 자격·계속 치료 적용 조건
-            <select id="target-conversion-eligibility" value={form.targetContractFactsForm.conversionEligibilityConfirmed ?? ''}
-              onChange={event => form.setTargetContractFactsForm(previous => ({ ...previous, conversionEligibilityConfirmed: event.target.value }))}>
-              <option value="">확인 필요</option>
-              <option value="true">보험사 확인 완료 — 전환 및 예정 치료 적용 가능</option>
-              <option value="false">적용 불가 또는 추가 확인 필요</option>
-            </select>
-          </label>
-          <p>계약전환 할인은 자동 적용하지 않습니다. 할인 적용 여부와 기간을 확인한 실제 전환 견적 보험료를 입력하세요.</p>
-        </section>
 
         <label id="target-premium-help-area" htmlFor="target-premium">
-          비교용 5세대 월 보험료 (필수)
-            <InputHelp title="비교용 5세대 월 보험료" description="5세대 전환 시 예상되는 월 보험료입니다. 현재 보험료와 구분하고, 보험사에서 받은 견적을 입력하세요." source="보험사의 전환 견적 또는 상담" />
+          월 보험료 <span className="required-mark">필수</span>
           <span className="input-unit-row"><input id="target-premium"
             type="text"
             inputMode="numeric"
@@ -72,7 +49,6 @@ export default function Step2Compare({ form }: { form: M02Form }) {
         <div className="select-like-field" style={{ marginTop: "14px", marginBottom: 0 }}>
           <span id="target-rider-title">
             특약 가입 여부 <span className="optional-mark">선택</span>
-            <small className="sample-note rider-row__hint">전환 견적에서 가입할 특약을 체크하세요. 현재 보험의 특약은 자동으로 복사되지 않습니다.</small>
           </span>
         </div>
 
@@ -183,15 +159,15 @@ export default function Step2Compare({ form }: { form: M02Form }) {
           </div>
         </div>
 
-        <p className="notice-box" role="status">
-          {hasTarget5GSpecialRider1 || hasTarget5GSpecialRider2
-            ? `5세대 비교안: 급여 주계약 + ${[hasTarget5GSpecialRider1 && '특약1(중증 비급여)', hasTarget5GSpecialRider2 && '특약2(비중증 비급여)'].filter(Boolean).join(' + ')}`
-            : '5세대 비교안: 급여 주계약만 선택되어 있습니다. 비급여 특약 미가입 조건으로 비교합니다.'}
-        </p>
-        <fieldset className="form-card" aria-label="5세대 비교 계약 상세">
-          <legend>5세대 비교 계약의 가입금액</legend>
+        {(hasTarget5GSpecialRider1 || hasTarget5GSpecialRider2) && <p className="notice-box" role="status">
+          {`5세대 비교안: 급여 주계약 + ${[hasTarget5GSpecialRider1 && '특약1(중증 비급여)', hasTarget5GSpecialRider2 && '특약2(비중증 비급여)'].filter(Boolean).join(' + ')}`}
+        </p>}
+        <section className="form-card" aria-label="5세대 비교 계약 상세">
+          <span className="step-badge">STEP 3-2 · 5세대 비교 조건</span>
+          <h2 className="card-title">5세대 전환 계약의 가입금액</h2>
+          <p className="card-description">전환 견적에 기재된 가입금액을 입력해주세요. 가입한 담보의 한도만 계산에 사용하며, 급여 연간 한도는 상해·질병 각각 입원·통원을 합산합니다.</p>
           <SamsungContractFactsFields value={form.targetContractFactsForm} onChange={form.setTargetContractFactsForm} generation={5} prefix="target-contract" mode="consumer" singleContract showSevere={hasTarget5GSpecialRider1} showNonSevere={hasTarget5GSpecialRider2} />
-        </fieldset>
+        </section>
         <div className="notice-box">
           비교용 보험료는 사용자가 직접
           입력한 가정값입니다. 실제 5세대

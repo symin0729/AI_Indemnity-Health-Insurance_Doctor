@@ -6,12 +6,13 @@ const formatWonInput = (value: string) => value ? Number(getWonInputValue(value)
 /** 화면 문구 구분(설계사용·소비자용). 값과 입력 검증은 두 모드가 같다. */
 export type ContractFactsMode = 'planner' | 'consumer';
 
-export default function SamsungContractFactsFields({ value, onChange, generation, prefix, requiredFields = false, showNonCovered = true, showSevere = true, showNonSevere = true, singleContract = false, mode = 'planner' }: {
+export default function SamsungContractFactsFields({ value, onChange, generation, prefix, requiredFields = false, compactLabels = false, showNonCovered = true, showSevere = true, showNonSevere = true, singleContract = false, mode = 'planner' }: {
   value: SamsungContractForm;
   onChange: (value: SamsungContractForm) => void;
   generation: 4 | 5;
   prefix: string;
   requiredFields?: boolean;
+  compactLabels?: boolean;
   showNonCovered?: boolean;
   showSevere?: boolean;
   showNonSevere?: boolean;
@@ -20,7 +21,7 @@ export default function SamsungContractFactsFields({ value, onChange, generation
   mode?: ContractFactsMode;
 }) {
   const planner = mode === 'planner';
-  const capHelp: Partial<Record<keyof SamsungContractForm, string>> = planner ? { coveredBenefitCap: COVERED_ANNUAL_CAP_HELP, coveredOutpatientCap: COVERED_OUTPATIENT_CAP_HELP } : {};
+  const capHelp: Partial<Record<keyof SamsungContractForm, string>> = planner && !compactLabels ? { coveredBenefitCap: COVERED_ANNUAL_CAP_HELP, coveredOutpatientCap: COVERED_OUTPATIENT_CAP_HELP } : {};
   const fields = [
     ['coveredBenefitCap', '급여 연간 가입금액 (상해·질병 각각, 최대 5천만원)'],
     ['coveredOutpatientCap', '급여 통원 1회 가입금액 (최대 20만원)'],
@@ -32,13 +33,14 @@ export default function SamsungContractFactsFields({ value, onChange, generation
     if (generation === 5 && key === 'nonSevereBenefitCap') return showNonSevere;
     return showNonCovered || !key.startsWith('nonCovered');
   });
-  const requiredMark = requiredFields ? <span className="required-mark">필수</span> : null;
+  const requiredMark = requiredFields || compactLabels ? <span className="required-mark">필수</span> : null;
   return <>
-    {!requiredFields && <p className="sample-note">보험증권 또는 전환 견적에서 해당 담보의 실제 가입금액을 확인해주세요. 필요한 정보가 비어 있으면 계산을 보류합니다. 입원·통원은 같은 담보의 연간 한도를 함께 사용합니다.</p>}
+    {!requiredFields && !compactLabels && <p className="sample-note">보험증권 또는 전환 견적에서 해당 담보의 실제 가입금액을 확인해주세요. 필요한 정보가 비어 있으면 계산을 보류합니다. 입원·통원은 같은 담보의 연간 한도를 함께 사용합니다.</p>}
     <div className="form-grid">
-      {visibleFields.map(([key, label]) => <label key={key} htmlFor={`${prefix}-${key}`}><span>{requiredFields ? label.split(' (')[0] : label} {requiredMark}{capHelp[key] && <small className="contract-field-help contract-field-inline-help">{capHelp[key]}</small>}</span>
+      {visibleFields.map(([key, label]) => <label key={key} htmlFor={`${prefix}-${key}`}><span>{requiredFields || compactLabels ? label.split(' (')[0] : label} {requiredMark}{capHelp[key] && <small className="contract-field-help contract-field-inline-help">{capHelp[key]}</small>}</span>
         <span className="input-unit-row"><input required={requiredFields} aria-required={requiredFields || undefined} id={`${prefix}-${key}`} type="text" inputMode="numeric" value={formatWonInput(value[key] ?? '')} onChange={(event) => onChange({ ...value, [key]: getWonInputValue(event.target.value) })} placeholder="확인된 가입금액" /><span className="input-unit-label">원</span></span>
         {requiredFields && <small className="contract-field-help">{key.includes('Outpatient') ? '1회 최대 20만 원' : '연간 최대 5천만 원'}</small>}
+        {compactLabels && <small className="contract-field-help">{label.match(/\((.+)\)/)?.[1]}</small>}
       </label>)}
 
       {!singleContract && <label htmlFor={`${prefix}-other`}><span>다른 실손 계약이 있나요? {requiredMark}</span>

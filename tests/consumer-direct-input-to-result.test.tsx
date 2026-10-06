@@ -101,7 +101,6 @@ async function fillStep2(user: UserEvent, treatment: TreatmentInput) {
 }
 
 async function fillStep3(user: UserEvent, options: { submit?: boolean } = {}) {
-  await user.selectOptions(document.getElementById("target-conversion-eligibility") as HTMLSelectElement, "true");
   await user.type(document.getElementById("target-premium") as HTMLInputElement, "30000");
   await user.click(panel(3).getByRole("checkbox", { name: /^중증 비급여 특약/ }));
   await user.click(panel(3).getByRole("checkbox", { name: /비중증 비급여 특약/ }));
@@ -293,13 +292,13 @@ describe("소비자용 직접 입력부터 비교 결과까지", () => {
     expect(calculateSaved().complete).toBe(true);
   });
 
-  it("공통 치료 요약을 보여주고 미가입 5세대 특약의 숨겨진 금액은 계산에서 제외한다", async () => {
+  it("공통 치료 요약을 숨기고 미가입 5세대 특약의 숨겨진 금액은 계산에서 제외한다", async () => {
     const user = renderPage();
     await fillStep1(user, 4);
     await fillStep2(user, { careSetting: "OUTPATIENT", benefitClass: "COVERED", cost: "100000", cause: "DISEASE" });
     const step3 = panel(3);
-    expect(step3.getByRole('region', { name: '두 계약에 공통으로 적용할 예정 치료' }).textContent).toContain('직접 입력 치료');
-    expect(step3.getByRole('status').textContent).toContain('비급여 특약 미가입');
+    expect(step3.queryByRole('region', { name: '두 계약에 공통으로 적용할 예정 치료' })).toBeNull();
+    expect(step3.queryByRole('status')).toBeNull(); // 특약을 고르지 않으면 안내 문구를 띄우지 않는다
     expect(document.getElementById('target-contract-nonCoveredBenefitCap')).toBeNull();
     expect(document.getElementById('target-contract-nonSevereBenefitCap')).toBeNull();
     const severe = step3.getByRole('checkbox', { name: /^중증 비급여 특약/ });
@@ -310,7 +309,6 @@ describe("소비자용 직접 입력부터 비교 결과까지", () => {
     expect(document.getElementById('target-contract-nonCoveredBenefitCap')).toBeNull();
     await user.type(document.getElementById('target-premium') as HTMLInputElement, '30000');
     await fillContractFacts(user, 'target-contract');
-    await user.selectOptions(document.getElementById('target-conversion-eligibility') as HTMLSelectElement, 'true');
     await user.click(nextButton());
     expect(alertText()).toBe('');
     await user.click(panel(4).getByRole('checkbox', { name: /^보장 제외 사유가 없다고 가정/ }));
