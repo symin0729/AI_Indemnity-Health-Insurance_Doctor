@@ -572,18 +572,12 @@ function M03ConfirmPage() {
 
                 <details className="planner-treatment-details">
                   <summary>정밀 계산 입력 보기</summary>
+                  <ul className="gen23-summary-list">
+                    <li className="gen23-summary-item"><span className="gen23-summary-label">진료 예정일</span><span className={`gen23-summary-value${!usage.treatmentDate ? " is-unknown" : ""}`}>{usage.treatmentDate ?? "미입력"}</span></li>
+                    <li className="gen23-summary-item"><span className="gen23-summary-label">의료기관 종별</span><span className={`gen23-summary-value${!usage.institutionType ? " is-unknown" : ""}`}>{usage.institutionType === "CLINIC_HOSPITAL" ? "병·의원" : usage.institutionType === "GENERAL_TERTIARY" ? "종합·상급종합병원" : "미입력"}</span></li>
+                    <li className="gen23-summary-item"><span className="gen23-summary-label">건강보험 본인부담률 r</span><span className={`gen23-summary-value${usage.healthInsuranceCopayRate === undefined ? " is-unknown" : ""}`}>{usage.healthInsuranceCopayRate === undefined ? "미입력" : `${(usage.healthInsuranceCopayRate * 100).toLocaleString()}%`}</span></li>
+                  </ul>
                   {(contract.generation === 2 || contract.generation === 3) && <Gen23Summary generation={contract.generation} usage={usage} />}
-                  <div className="form-grid">
-                    <div><p className="amount-label">진료 예정일</p><strong>{usage.treatmentDate ?? "미입력"}</strong></div>
-                    <div>
-                      <p className="amount-label">의료기관 종별</p>
-                      <strong>{usage.institutionType === "CLINIC_HOSPITAL" ? "병·의원" : usage.institutionType === "GENERAL_TERTIARY" ? "종합·상급종합병원" : "미입력"}</strong>
-                    </div>
-                    <div>
-                      <p className="amount-label">건강보험 본인부담률 r</p>
-                      <strong>{usage.healthInsuranceCopayRate === undefined ? "미입력" : `${(usage.healthInsuranceCopayRate * 100).toLocaleString()}%`}</strong>
-                    </div>
-                  </div>
                 </details>
               </article>
             );

@@ -572,18 +572,12 @@ function M03ConfirmPage() {
 
                 <details className="planner-treatment-details">
                   <summary>정밀 계산 입력 보기</summary>
+                  <ul className="gen23-summary-list">
+                    <li className="gen23-summary-item"><span className="gen23-summary-label">진료 예정일</span><span className={`gen23-summary-value${!usage.treatmentDate ? " is-unknown" : ""}`}>{usage.treatmentDate ?? "미입력"}</span></li>
+                    <li className="gen23-summary-item"><span className="gen23-summary-label">의료기관 종별</span><span className={`gen23-summary-value${!usage.institutionType ? " is-unknown" : ""}`}>{usage.institutionType === "CLINIC_HOSPITAL" ? "병·의원" : usage.institutionType === "GENERAL_TERTIARY" ? "종합·상급종합병원" : "미입력"}</span></li>
+                    <li className="gen23-summary-item"><span className="gen23-summary-label">건강보험 본인부담률 r</span><span className={`gen23-summary-value${usage.healthInsuranceCopayRate === undefined ? " is-unknown" : ""}`}>{usage.healthInsuranceCopayRate === undefined ? "미입력" : `${(usage.healthInsuranceCopayRate * 100).toLocaleString()}%`}</span></li>
+                  </ul>
                   {(contract.generation === 2 || contract.generation === 3) && <Gen23Summary generation={contract.generation} usage={usage} />}
-                  <div className="form-grid">
-                    <div><p className="amount-label">진료 예정일</p><strong>{usage.treatmentDate ?? "미입력"}</strong></div>
-                    <div>
-                      <p className="amount-label">의료기관 종별</p>
-                      <strong>{usage.institutionType === "CLINIC_HOSPITAL" ? "병·의원" : usage.institutionType === "GENERAL_TERTIARY" ? "종합·상급종합병원" : "미입력"}</strong>
-                    </div>
-                    <div>
-                      <p className="amount-label">건강보험 본인부담률 r</p>
-                      <strong>{usage.healthInsuranceCopayRate === undefined ? "미입력" : `${(usage.healthInsuranceCopayRate * 100).toLocaleString()}%`}</strong>
-                    </div>
-                  </div>
                 </details>
               </article>
             );
@@ -629,22 +623,67 @@ function M03ConfirmPage() {
         </div>
 
         <div role="region" className="planner-assumption-list" aria-label="선택한 계산 가정 확인">
-          <article className="planner-assumption-item"><strong>보장 제외 사유</strong><p>{calculationAssumptions.assumeNoPolicyExclusions ? '미확인 치료에는 보장 제외 사유가 없다는 가정 적용' : '확인된 사실만 적용하며 미확인 조건은 확인 필요로 표시'}</p></article>
-          <article className="planner-assumption-item"><strong>보장대상 인정금액(C)</strong><p>{missingCoveredAmountCount === 0 ? '입력한 인정금액 사용' : calculationAssumptions.assumeEntireMedicalCostCovered ? '미입력 치료는 환자부담 의료비 전액을 보장대상 금액으로 가정' : '미입력 보장대상 금액은 확인 필요로 표시'}</p></article>
-          <article className="planner-assumption-item"><strong>비교 시작 조건과 기존 사용분</strong><p>{calculationAssumptions.comparisonBasis !== 'REMAINING_LIMITS' ? '한도 사용 전부터 1년 비교: 양쪽 계약 모두 기존 사용분 0에서 시작' : calculationAssumptions.assumeNoPriorLimitUsage ? '현재 계약의 입력한 기존 사용분을 반영하고 빈 값만 0으로 가정. 5세대는 기존 사용분 0에서 시작' : '현재 계약의 입력한 기존 사용분 반영. 미확인 사용분은 확인 필요로 표시. 5세대는 기존 사용분 0에서 시작'}</p></article>
-          <article className="planner-assumption-item"><strong>치료 방문·합산 단위</strong><p>{calculationAssumptions.assumeEachOccurrenceSeparate ? '반복 치료를 각각 별도 방문으로 가정' : '입력한 방문 구분을 사용하고 미확인 반복 치료는 확인 필요로 표시'}</p></article>
+
+          <article className="planner-assumption-item">
+            <div className="planner-assumption-item__heading">
+              <div>
+                <strong>보장 제외 사유</strong>
+                <small>{calculationAssumptions.assumeNoPolicyExclusions ? '미확인 치료에도 보장 제외 사유가 없다고 가정합니다.' : '확인된 사실만 반영하고, 미확인 조건은 확인 필요로 표시합니다.'}</small>
+              </div>
+              <span className={`planner-assumption-status ${calculationAssumptions.assumeNoPolicyExclusions ? 'is-assumed' : 'is-confirmed'}`}>
+                {calculationAssumptions.assumeNoPolicyExclusions ? '가정 적용' : '입력값 적용'}
+              </span>
+            </div>
+          </article>
+
+          <article className="planner-assumption-item">
+            <div className="planner-assumption-item__heading">
+              <div>
+                <strong>보장대상 인정금액 (C)</strong>
+                <small>{missingCoveredAmountCount === 0 ? '입력한 인정금액을 그대로 사용합니다.' : calculationAssumptions.assumeEntireMedicalCostCovered ? `미입력 치료 ${missingCoveredAmountCount}건은 환자 부담 의료비 전액을 인정금액으로 가정합니다.` : `미입력 치료 ${missingCoveredAmountCount}건의 보장대상 금액은 확인 필요로 표시됩니다.`}</small>
+              </div>
+              <span className={`planner-assumption-status ${missingCoveredAmountCount === 0 ? 'is-confirmed' : calculationAssumptions.assumeEntireMedicalCostCovered ? 'is-assumed' : 'is-required'}`}>
+                {missingCoveredAmountCount === 0 ? '입력값 적용' : calculationAssumptions.assumeEntireMedicalCostCovered ? '가정 적용' : '확인 필요'}
+              </span>
+            </div>
+          </article>
+
+          <article className="planner-assumption-item">
+            <div className="planner-assumption-item__heading">
+              <div>
+                <strong>비교 시작 조건 · 기존 사용분</strong>
+                <small>{calculationAssumptions.comparisonBasis !== 'REMAINING_LIMITS' ? '양쪽 계약 모두 한도 사용 전(기존 사용분 0)부터 1년을 비교합니다.' : calculationAssumptions.assumeNoPriorLimitUsage ? '현재 계약은 입력한 기존 사용분을 반영하고, 빈 값은 0으로 가정합니다. 5세대는 0에서 시작합니다.' : '현재 계약은 입력한 기존 사용분을 반영합니다. 미확인 사용분은 확인 필요로 표시됩니다. 5세대는 0에서 시작합니다.'}</small>
+              </div>
+              <span className={`planner-assumption-status ${calculationAssumptions.comparisonBasis !== 'REMAINING_LIMITS' ? 'is-confirmed' : calculationAssumptions.assumeNoPriorLimitUsage ? 'is-assumed' : 'is-confirmed'}`}>
+                {calculationAssumptions.comparisonBasis !== 'REMAINING_LIMITS' ? '한도 전 비교' : calculationAssumptions.assumeNoPriorLimitUsage ? '가정 적용' : '입력값 적용'}
+              </span>
+            </div>
+          </article>
+
+          <article className="planner-assumption-item">
+            <div className="planner-assumption-item__heading">
+              <div>
+                <strong>치료 방문 · 합산 단위</strong>
+                <small>{calculationAssumptions.assumeEachOccurrenceSeparate ? '반복 치료를 각각 별도 방문으로 가정합니다.' : '입력한 방문 구분을 사용하고, 미확인 반복 치료는 확인 필요로 표시합니다.'}</small>
+              </div>
+              <span className={`planner-assumption-status ${calculationAssumptions.assumeEachOccurrenceSeparate ? 'is-assumed' : 'is-confirmed'}`}>
+                {calculationAssumptions.assumeEachOccurrenceSeparate ? '가정 적용' : '입력값 적용'}
+              </span>
+            </div>
+          </article>
+
           <button type="button" className="planner-assumption-edit" onClick={() => navigate('/input#input-step-4')}>명시적 계산 가정 수정하기</button>
         </div>
 
         <details className="planner-calculation-details">
           <summary>계산 방식 자세히 보기</summary>
-          <div className="form-grid">
-            <div><p className="amount-label">적용 규칙</p><strong>{contract.generation}세대 상품별 실행 스펙</strong></div>
-            <div><p className="amount-label">검산 상태</p><strong>초안 검산</strong></div>
-            <div><p className="amount-label">보험료 계산</p><strong>월 보험료 × 12개월</strong></div>
-            <div><p className="amount-label">치료비 계산</p><strong>회차별 약관 계산 후 연간 합산</strong></div>
-            <div><p className="amount-label">총부담 계산</p><strong>연 보험료 + ΣM - ΣI</strong></div>
-          </div>
+          <ul className="gen23-summary-list">
+            <li className="gen23-summary-item"><span className="gen23-summary-label">적용 규칙</span><span className="gen23-summary-value">{contract.generation}세대 상품별 실행 스펙</span></li>
+            <li className="gen23-summary-item"><span className="gen23-summary-label">검산 상태</span><span className="gen23-summary-value">초안 검산</span></li>
+            <li className="gen23-summary-item"><span className="gen23-summary-label">보험료 계산</span><span className="gen23-summary-value">월 보험료 × 12개월</span></li>
+            <li className="gen23-summary-item"><span className="gen23-summary-label">치료비 계산</span><span className="gen23-summary-value">회차별 약관 계산 후 연간 합산</span></li>
+            <li className="gen23-summary-item"><span className="gen23-summary-label">총부담 계산</span><span className="gen23-summary-value">연 보험료 + ΣM − ΣI</span></li>
+          </ul>
         </details>
 
       </section>

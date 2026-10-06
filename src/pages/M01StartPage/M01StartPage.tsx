@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import ModeToggle from "../../components/ModeToggle";
 import { useAnalysisStore } from "../../store/useAnalysisStore";
+import mainLogo from "../../assets/main-logo.png";
 import headerLogo from "../../assets/header-logo.png";
 import "../../styles/M01-start.css";
 
@@ -26,7 +27,7 @@ const modeContent: Record<StartMode, {
     tabHint: "내 실손보험 간편 비교",
     badge: "내 실손보험, 쉽게 확인",
     title: ["보험료뿐 아니라", "달라지는 보장까지 비교하세요."],
-    description: "현재 실손보험을 유지할 때와 5세대로 전환할 때의 연간 총부담을 같은 의료이용 조건에서 비교합니다.",
+    description: "현재 유지·5세대 전환의 연간 총부담을 같은 의료이용 조건에서 비교합니다.",
     stepsTitle: "이렇게 간단하게 확인합니다.",
     stepsDescription: "알고 있는 정보만 입력해도 비교할 수 있고, 모르는 항목은 일반적인 값으로 추정해 알려드립니다.",
     steps: [
@@ -49,7 +50,7 @@ const modeContent: Record<StartMode, {
     tabHint: "고객 상담용 정밀 비교",
     badge: "설계사 상담용 · 약관 기반 5세대 실손 전환 비교",
     title: ["고객 상담에 바로 쓰는", "실손 전환 정밀 비교"],
-    description: "고객의 계약과 예정 치료를 정밀하게 입력해 현재 계약 유지와 5세대 전환의 연간 총부담, 보장 차이, 계산 근거를 확인하고 고객 상담에 활용 가능합니다.",
+    description: "계약·치료를 입력하면 연간 부담·보장 차이·계산 근거를 상담에 바로 확인합니다.",
     stepsTitle: "상담에서는 이렇게 사용합니다.",
     stepsDescription: "입력한 계약과 예정 치료를 구조화된 계산 규칙에 적용해 결과와 근거를 함께 보여드립니다.",
     steps: [
@@ -119,7 +120,7 @@ function M01StartPage() {
       <header className="start-page__header">
         <div className="start-page__nav">
           <div className="start-page__brand">
-            <img className="start-page__logo" src={headerLogo} alt="" aria-hidden="true" />
+            <img className="start-page__logo" src={mainLogo} alt="" aria-hidden="true" />
             <span>AI 실손 닥터</span>
           </div>
           <ModeToggle mode={mode} onChange={selectMode} />
@@ -131,7 +132,7 @@ function M01StartPage() {
           <section className="start-hero">
             <div className="start-hero__copy">
               <span className="start-hero__badge">{content.badge}</span>
-              <h1>{content.title[0]}<br />{content.title[1]}</h1>
+              <h1>{content.title[0]}{content.title[1] && <><br />{content.title[1]}</>}</h1>
               <p>{content.description}</p>
             </div>
             <div className="start-hero__visual">

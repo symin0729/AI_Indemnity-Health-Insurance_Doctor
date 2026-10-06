@@ -71,16 +71,16 @@
 
 .planner-assumption-list {
   display: grid;
-  gap: 12px;
-  margin-top: 20px;
+  gap: 10px;
+  margin-top: 16px;
 }
 
 .planner-assumption-item {
   display: grid;
-  gap: 14px;
-  padding: 18px 20px;
+  gap: 0;
+  padding: 14px 16px;
   border: 1px solid #cbd7e5;
-  border-radius: 15px;
+  border-radius: 13px;
   background: #fff;
 }
 
@@ -315,6 +315,49 @@
   font-size: 0.86rem;
   font-weight: 800;
   cursor: pointer;
+}
+
+/* gen23 요약 목록: "라벨 : 값" 한 줄 형식 */
+.gen23-summary-list {
+  margin: 8px 0 10px;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 5px;
+}
+
+.gen23-summary-item {
+  display: flex;
+  align-items: baseline;
+  gap: 0;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.gen23-summary-label {
+  color: #4b5e72;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.gen23-summary-label::after {
+  content: " : ";
+  color: #94a3b8;
+  font-weight: 400;
+  white-space: pre;
+}
+
+.gen23-summary-value {
+  color: #1a2e44;
+  font-weight: 700;
+}
+
+.gen23-summary-value.is-unknown {
+  color: #92400e;
+  background: #fef3c7;
+  padding: 0 5px;
+  border-radius: 4px;
+  font-weight: 600;
 }
 
 .planner-treatment-details[open] summary {
