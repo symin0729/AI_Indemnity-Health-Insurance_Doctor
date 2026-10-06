@@ -326,6 +326,21 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
       return null;
     }
     const nonCoveredType = toNonCoveredTreatmentType(benefitClass, treatmentCategory);
+    // 1세대 입원은 위의 예상 금액을 '병실료 차액'과 '그 외 부담액'으로 서비스가 나눠 계산한다. 차액을 비워 두면 다인실(0원)로 본다.
+    const gen1SplitInpatient = generation === 1 && gen1Product === "SAMSUNG_0904_2" && careSetting === "INPATIENT";
+    const gen1RoomDifferenceNumber = optionalAmount(gen1RoomDifference) ?? 0;
+    if (gen1SplitInpatient && (!Number.isFinite(gen1RoomDifferenceNumber) || gen1RoomDifferenceNumber < 0 || gen1RoomDifferenceNumber > unitCostNumber)) {
+      setErrorMessage("병실료 차액은 0원 이상이고, 위에서 입력한 예상 금액을 넘을 수 없습니다.");
+      return null;
+    }
+    // 4세대 일반 비급여 입원도 병실료 차액은 위의 예상 금액 안에 포함된 금액이므로 총액을 넘을 수 없다.
+    if (generation === 4 && careSetting === "INPATIENT" && benefitClass === "NON_COVERED") {
+      const roomDifference = optionalAmount(gen1RoomDifference) ?? 0;
+      if (!Number.isFinite(roomDifference) || roomDifference < 0 || roomDifference > unitCostNumber) {
+        setErrorMessage("병실료 차액은 0원 이상이고, 위에서 입력한 예상 금액을 넘을 수 없습니다.");
+        return null;
+      }
+    }
     let gen23Values: Partial<MedicalUsage> = {};
     if (generation === 2 || generation === 3) {
       try {
@@ -336,9 +351,26 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
           gen23PolicyExclusionsCleared: policyExclusionsCleared || undefined,
           // 3세대 치료 분류는 공통 칸의 비급여 치료 종류에서 가져온다.
           ...(generation === 3 ? { gen23TreatmentType: nonCoveredType || "BASE" } : {}),
+          // 3세대 일반 치료는 치료 종류를 '일반'으로 고른 것이 곧 도수·주사·MRI 금액을 뺐다는 뜻이다.
+          ...(generation === 3 && nonCoveredType === "" ? { gen23ThreeNonCoveredExcludedFromBaseConfirmed: true } : {}),
         };
+        // 계산 구분은 선택지를 따로 비워 둘 수 없으므로, 고르지 않았다면 위에서 고른 입원·통원을 그대로 쓴다.
+        gen23Values = { ...gen23Values, gen23CareSetting: gen23Values.gen23CareSetting ?? (careSetting === "INPATIENT" ? "INPATIENT" : "OUTPATIENT") };
         const careError = gen23CareSettingError({ careSetting, gen23CareSetting: gen23Values.gen23CareSetting });
         if (careError) throw new Error(careError);
+        // 2세대 입원은 위의 예상 금액을 '병실료 차액'과 '그 외 금액'으로 서비스가 나눠 계산한다. 차액을 비워 두면 다인실(0원)로 본다.
+        if ((generation === 2 || (generation === 3 && nonCoveredType === "")) && careSetting === "INPATIENT") {
+          const roomDifference = gen23Values.gen23RoomDifference ?? 0;
+          if (roomDifference > unitCostNumber) throw new Error("병실료 차액은 위에서 입력한 예상 금액을 넘을 수 없습니다.");
+          const rest = unitCostNumber - roomDifference;
+          gen23Values = {
+            ...gen23Values,
+            gen23RoomDifference: roomDifference,
+            ...(samsungGen23Variant === "selected2"
+              ? { gen23CoveredCopay: benefitClass === "COVERED" ? rest : 0, gen23NonCoveredExpense: benefitClass === "NON_COVERED" ? rest : 0 }
+              : { gen23InpatientExcludingRoomDifference: rest }),
+          };
+        }
       }
       catch (error) { setErrorMessage(error instanceof Error ? error.message : "계산 입력을 확인해주세요."); return null; }
     }
@@ -380,11 +412,14 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
       // 5세대 판정값은 화면 입력(중증 여부·면책 확인·치료 종류)으로 계산 시점에 다시 만든다. 샘플 값이 남지 않게 비운다.
       samsungGen5Facts: undefined,
 
-      ...(copayInstitution ? { copayInstitution } : {}),
+      // 소비자용은 비급여 입원에서 의료기관 종별을 묻지 않는다. 앞서 급여로 고른 종별이나 샘플 값이 남아 5세대 계산에 몰래 쓰이지 않게 비운다.
+      ...(benefitClass === "NON_COVERED" && careSetting === "INPATIENT"
+        ? { copayInstitution: undefined, institutionType: undefined }
+        : {
+            ...(copayInstitution ? { copayInstitution } : {}),
+            ...(institutionType ? { institutionType } : {}),
+          }),
       ...(copayRegion ? { copayRegion } : {}),
-      ...(institutionType
-        ? { institutionType }
-        : {}),
 
       ...(copayRatePercentNumber !== null
         ? {
@@ -404,8 +439,8 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
       nationalHealthInsuranceStatus: "APPLIED" as const, // 건강보험 적용 여부는 묻지 않고 항상 적용으로 계산한다.
 
       ...(generation === 1 ? {
-        gen1CoveredRoomAndTreatment: optionalAmount(gen1CoveredRoomAndTreatment),
-        gen1RoomDifference: optionalAmount(gen1RoomDifference),
+        gen1CoveredRoomAndTreatment: gen1SplitInpatient ? Math.max(unitCostNumber - gen1RoomDifferenceNumber, 0) : optionalAmount(gen1CoveredRoomAndTreatment),
+        gen1RoomDifference: gen1SplitInpatient ? gen1RoomDifferenceNumber : optionalAmount(gen1RoomDifference),
         gen1NonNhiInpatientTotal: optionalAmount(gen1NonNhiInpatientTotal),
         gen1PriorPaidBenefit: optionalAmount(gen1PriorPaidBenefit),
         gen1PriorServiceDays: optionalAmount(gen1PriorServiceDays),

@@ -563,3 +563,127 @@ select.is-placeholder option { color: var(--color-text); }
 .target-premium-examples .target-rider-cap-table th,
 .target-premium-examples .target-rider-cap-table td { padding: 4px 6px; line-height: 1.35; }
 .target-premium-examples .target-premium-note { font-size: 9px; line-height: 1.4; margin-top: 4px; }
+
+/* 명시적 가정: 앞 단계의 카드·테두리·네이비 강조를 유지한다. */
+.assumptions-layout { outline: none; }
+.assumption-guide { padding: 16px 18px; background: #f4f7fa; border-radius: 10px; font-size: 13px; line-height: 1.7; }
+.assumption-guide p { margin: 6px 0 0; color: var(--color-text-sub); }
+.assumption-checklist-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 24px; }
+.assumption-checklist-heading h3 { font-size: 15px; }
+.assumption-checklist-heading > span { font-size: 12px; color: var(--color-text-sub); }
+.assumptions-layout .comparison-assumption-list { gap: 12px; }
+.assumptions-layout .comparison-assumption { padding: 18px; border: 1px solid var(--color-border); border-radius: 12px; background: #fff; }
+.assumptions-layout .comparison-assumption.is-selected { border-color: #2d6fa8; background: #f5f9fd; }
+.assumptions-layout .comparison-assumption:focus-within { outline: 2px solid #2d6fa8; outline-offset: 3px; }
+.assumptions-layout .comparison-assumption strong { font-size: 14px; }
+.assumptions-layout .assumption-affected { color: #245981; font-weight: 600; overflow-wrap: anywhere; }
+.assumption-edit-link { margin: 18px 0 0; padding: 8px 0; border: 0; background: transparent; color: #245981; cursor: pointer; font: inherit; font-size: 13px; text-decoration: underline; text-underline-offset: 4px; }
+.assumption-basis-list { margin: 0; font-size: 13px; line-height: 1.7; }
+.assumption-basis-list > div { display: grid; grid-template-columns: 115px minmax(0, 1fr); gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--color-border); }
+.assumption-basis-list dt { font-weight: 700; }
+.assumption-basis-list dd { margin: 0; color: var(--color-text-sub); }
+@media (max-width: 640px) { .assumption-basis-list > div { grid-template-columns: 1fr; gap: 4px; } .assumptions-layout .comparison-assumption { padding: 14px; } }
+
+.navy-page .treatment-submit-actions { justify-content: flex-end; border-top: 0; padding-top: 0; margin-top: 16px; gap: 10px; }
+.treatment-submit-actions > button { min-width: 112px; }
+@media (max-width: 640px) { .navy-page .treatment-submit-actions { flex-direction: row; flex-wrap: wrap; } .treatment-submit-actions > button { flex: 0 1 auto; width: auto; } }
+
+#input-step-2 .gen1-detail-inputs .gen1-field-heading { display: block; line-height: 1.6; }
+#input-step-2 .gen1-detail-inputs .input-unit-row { position: relative; display: block; max-width: none; }
+#input-step-2 .gen1-detail-inputs .input-unit-row > input { box-sizing: border-box; width: 100%; padding-right: 42px; }
+#input-step-2 .gen1-detail-inputs .input-unit-label { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+#input-step-2 .gen1-detail-inputs input::placeholder { color: #8793a5; font-weight: 400; }
+
+/* 1세대 세부 입력: 설명은 제목 옆에 두고, 자리가 모자라면 문장째 아래로 내려가 중간에서 끊기지 않게 한다. */
+#input-step-2 .gen1-detail-inputs .treatment-inline-hint { display: inline-block; margin: 0 0 0 6px; vertical-align: baseline; }
+
+/* 1세대 세부 입력: 제목·필수·설명이 한 줄에 들어가도록 칸을 전체 폭으로 쓰고, 입력 박스는 반 폭으로 둔다. */
+#input-step-2 .gen1-detail-inputs .form-grid > label { grid-column: 1 / -1; }
+@media (min-width: 641px) { #input-step-2 .gen1-detail-inputs .form-grid > label > .input-unit-row { max-width: calc(50% - 8px); } }
+#input-step-2 .gen1-detail-inputs .treatment-inline-hint { white-space: nowrap; }
+@media (max-width: 640px) { #input-step-2 .gen1-detail-inputs .treatment-inline-hint { white-space: normal; } }
+
+/* 단위(원·회·일) 글자는 label 안팎 어디에 있든 같은 크기·굵기로 맞춘다. */
+#input-step-2 .input-unit-label { font-size: 0.94rem; font-weight: 700; color: var(--ink); line-height: 1; }
+
+/* 치료 입력 양식 안의 세대별 세부 입력: 같은 카드 안의 옅은 배경 패널로 묶어, 위 입력에 딸린 추가 입력임을 보여 준다. */
+#input-step-2 .treatment-form-card > fieldset.form-card,
+#input-step-2 .treatment-form-card > .treatment-section {
+  margin: 32px -16px 0; padding: 20px 16px 24px; min-width: 0;
+  border: 1px solid var(--line); border-radius: 16px; box-shadow: none; background: rgba(244, 247, 251, 0.7);
+}
+#input-step-2 .treatment-form-card > fieldset.form-card > legend,
+#input-step-2 .treatment-form-card > .treatment-section > legend { float: none; width: auto; margin: 0 0 12px; padding: 0 4px; }
+#input-step-2 .treatment-form-card > fieldset.form-card > legend > h3,
+#input-step-2 .treatment-form-card > .treatment-section > legend > h3 { margin: 0; font-size: 1rem; }
+
+/* 개조식 안내: 줄마다 점을 붙여 짧게 나열한다. */
+#input-step-2 .treatment-hint-list { display: block; margin: 4px 0 8px; color: #8793a5; font-size: 11px; font-weight: 400; line-height: 1.6; }
+#input-step-2 .treatment-hint-list > span { display: block; padding-left: 10px; text-indent: -10px; }
+#input-step-2 .treatment-hint-list > span::before { content: "· "; }
+
+/* 추가하기 버튼은 치료 정보 카드 안쪽 아래에 둔다. */
+#input-step-2 .treatment-form-card > .treatment-submit-actions { margin-top: 24px; padding-top: 0; border-top: 0; }
+#input-step-2 .treatment-form-card > .notice-box { margin-top: 16px; }
+
+/* 4세대 입원 비용 구분: 1~3세대 세부 입력과 같은 칸 모양. */
+#input-step-2 .treatment-form-card > .treatment-section .gen1-field-heading { display: block; line-height: 1.6; }
+#input-step-2 .treatment-form-card > .treatment-section .input-unit-row { position: relative; display: block; max-width: none; }
+#input-step-2 .treatment-form-card > .treatment-section .input-unit-row > input { box-sizing: border-box; width: 100%; padding-right: 42px; }
+#input-step-2 .treatment-form-card > .treatment-section .input-unit-label { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+#input-step-2 .treatment-form-card > .treatment-section input::placeholder { color: #8793a5; font-weight: 400; }
+#input-step-2 .treatment-form-card > .treatment-section .treatment-inline-hint { display: inline-block; margin: 0 0 0 6px; white-space: nowrap; }
+@media (max-width: 640px) { #input-step-2 .treatment-form-card > .treatment-section .treatment-inline-hint { white-space: normal; } }
+
+/* 5세대 세부 보장 및 계약 확인: 다른 세대 세부 보장 패널과 같은 모양, 안내문은 한 줄로 둔다. */
+#input-step-2 .gen5-detail-inputs .gen1-field-heading { display: block; line-height: 1.6; }
+#input-step-2 .gen5-detail-inputs .treatment-inline-hint { display: inline-block; margin: 0 0 0 6px; white-space: nowrap; }
+@media (max-width: 640px) { #input-step-2 .gen5-detail-inputs .treatment-inline-hint { white-space: normal; } }
+
+/* STEP 3-3: 치료별 확인 카드. */
+.gen5-usage-list { display: grid; gap: 16px; }
+.gen5-usage-card { min-width: 0; margin: 0; padding: 16px 20px 20px; border: 1px solid var(--line); border-radius: 16px; background: rgba(244, 247, 251, 0.7); }
+.gen5-usage-card > legend { padding: 0 6px; font-weight: 700; }
+.gen5-usage-card .gen1-field-heading { display: block; line-height: 1.6; }
+.gen5-usage-card .treatment-inline-hint { display: inline-block; margin: 0 0 0 6px; white-space: nowrap; color: #8793a5; font-size: 11px; font-weight: 400; }
+.gen5-usage-card .treatment-hint-list { display: block; margin: 4px 0 0; color: #9b4c4c; font-size: 11px; font-weight: 400; }
+@media (max-width: 640px) { .gen5-usage-card .treatment-inline-hint { white-space: normal; } }
+
+.gen5-usage-card .treatment-hint-list { color: #8793a5; margin: 4px 0 8px; }
+.gen5-usage-card select + .treatment-hint-list { color: #9b4c4c; margin: 6px 0 0; }
+.gen5-usage-card label > .treatment-hint-list + .treatment-hint-list { margin-top: 0; }
+
+.target-rider-source.sample-note { margin: 24px 0 0; padding-left: 0; text-indent: 0; }
+
+/* STEP 3-3 설명은 줄마다 점을 붙여 한 줄씩 나눠 보인다(STEP 2 전용 규칙이 여기에는 적용되지 않는다). */
+.gen5-usage-card .treatment-hint-list > span { display: block; padding-left: 10px; text-indent: -10px; line-height: 1.6; }
+.gen5-usage-card .treatment-hint-list > span::before { content: "· "; }
+.gen5-usage-card .treatment-hint-list > span.gen5-source { margin-top: 2px; font-size: 10.5px; opacity: 0.85; }
+.gen5-usage-card .treatment-hint-list > span.gen5-source::before { content: ""; }
+.gen5-usage-card .treatment-hint-list > span.gen5-source { padding-left: 0; text-indent: 0; }
+
+/* STEP 3-3: 두 질문의 설명 길이가 달라도 선택 박스는 같은 높이(아래쪽)에 나란히 놓는다. */
+.gen5-usage-card .form-grid { align-items: stretch; }
+.gen5-usage-card .form-grid > label { display: flex; flex-direction: column; margin: 0; }
+.gen5-usage-card .form-grid > label > select { margin-top: auto; width: 100%; min-height: 48px; box-sizing: border-box; }
+.gen5-usage-card .form-grid > label > .treatment-hint-list { margin-bottom: 10px; }
+@media (max-width: 640px) { .gen5-usage-card .form-grid > label > select { margin-top: 8px; } }
+
+/* 소비자용 STEP 4: 체크 기준·결과 차이를 한눈에 보이게 한다. */
+.assumption-easy { display: grid; gap: 6px; }
+.assumption-easy > small { display: block; line-height: 1.6; }
+.assumption-easy .assumption-explain { color: var(--color-text-sub, #5b6677); }
+.assumption-easy .assumption-when,
+.assumption-easy .assumption-when-not,
+.assumption-easy .assumption-effect { display: grid; grid-template-columns: 8.5em minmax(0, 1fr); gap: 8px; align-items: start; }
+.assumption-easy small > b { font-weight: 700; color: #24506f; }
+.assumption-easy .assumption-when-not > b { color: #9b4c4c; }
+.assumption-easy .assumption-note { font-size: 0.8rem; opacity: 0.85; }
+@media (max-width: 640px) { .assumption-easy .assumption-when, .assumption-easy .assumption-when-not, .assumption-easy .assumption-effect { grid-template-columns: 1fr; gap: 2px; } }
+
+/* 설계사용 STEP 4: 근거 줄은 작은 글씨로 구분한다. */
+.comparison-assumption .assumption-source { display: block; margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--color-border, #d9e0ea); font-size: 0.78rem; line-height: 1.6; opacity: 0.9; }
+
+/* 4단계에서 수정하러 온 경우: 돌아가기 버튼을 '다음 단계' 바로 왼쪽에 붙인다. */
+.button-group .return-to-assumptions { margin-left: auto; }
+.button-group .return-to-assumptions + .primary-button { margin-left: 0; }

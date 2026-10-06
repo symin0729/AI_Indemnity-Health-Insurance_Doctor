@@ -19,6 +19,10 @@ export interface AnalysisCalculationAssumptions {
   assumeNoPolicyExclusions?: boolean;
   /** 도수·체외충격파·증식치료 최초 10회 이후에도 증상 개선·병변호전이 확인되어 보상되는 것으로 본다(4·5세대 약관). */
   assumeManualTherapyImprovement?: boolean;
+  /** 5세대 비급여: 산정특례 질환 치료 여부를 묻지 않고 비중증으로 가정(소비자용). */
+  assumeNonSevereNonCovered?: boolean;
+  /** 5세대 비급여 입원: 의료기관 종별을 묻지 않고 종합·상급종합병원이 아닌 병원으로 가정(소비자용). */
+  assumeNonCoveredInpatientSmallHospital?: boolean;
   /** 설계사 입력에서 명시한 단일 실손 계약 비교 범위. 다수보험 분담은 제외한다. */
   assumeSingleIndemnityContract?: boolean;
   /**
