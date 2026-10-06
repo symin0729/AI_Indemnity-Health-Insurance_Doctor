@@ -1,6 +1,5 @@
 import SamsungTreatmentComparison from "../../../components/samsung/SamsungTreatmentComparison";
 import { prepareUsageForSamsungComparison } from "../../../engine/prepareSamsungComparison";
-import mainLogo from '../../../assets/main-logo.png';
 import AppShell from "../../components/AppShell";
 import {
   useEffect,
@@ -212,7 +211,7 @@ export function BurdenComparisonChart({
       tone: "current",
     },
     {
-      label: "5세대 비교안",
+      label: "5세대로 전환할 경우",
       shortLabel: "전환",
       value: displayedTarget,
       width: (displayedTarget / maximumBurden) * 100,
@@ -231,9 +230,9 @@ export function BurdenComparisonChart({
     <div className="burden-chart" aria-label="연간 총부담 금액 비교 그래프">
       <div className="burden-chart__heading">
         <div>
-          <span className="burden-chart__eyebrow">{isFullBurdenAvailable ? "금액 차이 시각화" : "확정 보험료 시각화"}</span>
-          <h3>{isFullBurdenAvailable ? "연간 총부담 비교" : "연간 보험료 비교"}</h3>
-          <p>{isFullBurdenAvailable ? "룰엔진 계산 결과를 기준으로 막대 길이가 자동 반영됩니다." : "의료비 계산 전에도 확인된 연 보험료 차이를 표시합니다."}</p>
+          <span className="burden-chart__eyebrow">{isFullBurdenAvailable ? "예상 부담 차이" : "입력한 보험료 비교"}</span>
+          <h3>{isFullBurdenAvailable ? "1년 예상 부담 비교" : "연간 보험료 비교"}</h3>
+          <p>{isFullBurdenAvailable ? "보험료와 보험금을 받고 남는 치료비를 합한 예상 금액입니다." : "의료비 계산 전에도 확인된 연 보험료 차이를 표시합니다."}</p>
         </div>
         <div className="burden-chart__difference">
           <small>연간 차이</small>
@@ -348,7 +347,7 @@ export function BreakEvenChart({ result }: { result: BreakEvenSimulationResult }
     <div className="break-even-chart">
       <div className="break-even-chart__legend" aria-hidden="true">
         <span><i className="is-current" />현재 계약 유지</span>
-        <span><i className="is-target" />5세대 비교안</span>
+        <span><i className="is-target" />5세대로 전환할 경우</span>
         {result.threshold !== null && <span><i className="is-threshold" />손익분기 기준</span>}
       </div>
 
@@ -356,7 +355,7 @@ export function BreakEvenChart({ result }: { result: BreakEvenSimulationResult }
         <svg
           viewBox={`0 0 ${width} ${height}`}
           role="img"
-          aria-label={`치료 횟수 ${minimumFrequency}회부터 ${maximumFrequency}회까지 현재 계약과 5세대의 연간 총부담 비교`}
+          aria-label={`치료 횟수 ${minimumFrequency}회부터 ${maximumFrequency}회까지 현재 계약과 5세대의 1년 예상 부담 비교`}
         >
           {yTicks.map((tick) => (
             <g key={tick}>
@@ -558,7 +557,7 @@ function ClaimDetail({
               margin: "0 0 4px",
             }}
           >
-            최종 의료비 부담 M-I
+            보험금을 받고 남는 치료비
           </p>
 
           <strong>
@@ -572,7 +571,7 @@ function ClaimDetail({
       <div className="form-grid">
         <div>
           <p className="amount-label">
-            의료비 M
+            예상 치료비
           </p>
           <strong>
             {formatMoney(
@@ -583,7 +582,7 @@ function ClaimDetail({
 
         <div>
           <p className="amount-label">
-            보장대상 C
+            보장대상 금액
           </p>
           <strong>
             {formatMoney(
@@ -594,7 +593,7 @@ function ClaimDetail({
 
         <div>
           <p className="amount-label">
-            보장 제외 E
+            보장 제외 금액
           </p>
           <strong>
             {formatMoney(
@@ -605,7 +604,7 @@ function ClaimDetail({
 
         <div>
           <p className="amount-label">
-            기본 자기부담 d
+            기본 자기부담금
           </p>
           <strong>
             {formatMoney(
@@ -616,7 +615,7 @@ function ClaimDetail({
 
         <div>
           <p className="amount-label">
-            조정 자기부담 d*
+            자기부담금
           </p>
           <strong>
             {formatMoney(
@@ -627,7 +626,7 @@ function ClaimDetail({
 
         <div>
           <p className="amount-label">
-            한도 전 보험금 q
+            보험금 (한도 전)
           </p>
           <strong>
             {formatMoney(
@@ -638,7 +637,7 @@ function ClaimDetail({
 
         <div>
           <p className="amount-label">
-            최종 보험금 I
+            최종 보험금
           </p>
           <strong>
             {formatMoney(
@@ -649,7 +648,7 @@ function ClaimDetail({
 
         <div>
           <p className="amount-label">
-            한도초과 U
+            한도 초과 금액
           </p>
           <strong>
             {formatMoney(
@@ -698,16 +697,16 @@ function ClaimDetail({
                   marginBottom: "4px",
                 }}
               >
-                적용 근거
+                계산 근거
               </p>
 
               <strong>
-                Rule Trace
+                세부 내역
               </strong>
             </div>
 
             <span className="rule-info">
-              {item.traces.length}개 룰
+              {item.traces.length}개 항목
             </span>
           </div>
 
@@ -811,7 +810,7 @@ function ClaimDetail({
                   >
                     <div>
                       <p className="amount-label">
-                        Rule ID
+                        계산 규칙 번호
                       </p>
                       <strong>
                         {trace.ruleId}
@@ -1064,7 +1063,7 @@ function ScenarioCard({
         }}
       >
         <p className="amount-label">
-          연간 총부담 T
+          1년 예상 총부담
         </p>
         <p className="amount">
           {formatMoney(
@@ -1097,7 +1096,7 @@ function ScenarioCard({
 
         <div style={{ padding: "12px", borderRadius: "12px", background: "var(--color-surface-soft)" }}>
           <p className="amount-label">
-            총 의료비 ΣM
+            예상 치료비
           </p>
           <strong>
             {formatMoney(
@@ -1108,7 +1107,7 @@ function ScenarioCard({
 
         <div style={{ padding: "12px", borderRadius: "12px", background: "var(--color-surface-soft)" }}>
           <p className="amount-label">
-            총 보험금 ΣI
+            받을 수 있는 보험금
           </p>
           <strong>
             {formatMoney(
@@ -1119,7 +1118,7 @@ function ScenarioCard({
 
         <div style={{ padding: "12px", borderRadius: "12px", background: "var(--color-surface-soft)" }}>
           <p className="amount-label">
-            최종 의료비 부담
+            보험금을 받고 남는 치료비
           </p>
           <strong>
             {formatMoney(
@@ -1130,7 +1129,7 @@ function ScenarioCard({
 
         <div style={{ padding: "12px", borderRadius: "12px", background: "var(--color-surface-soft)" }}>
           <p className="amount-label">
-            보장 제외 ΣE
+            보장 제외 금액
           </p>
           <strong>
             {formatMoney(
@@ -1141,7 +1140,7 @@ function ScenarioCard({
 
         <div style={{ padding: "12px", borderRadius: "12px", background: "var(--color-surface-soft)" }}>
           <p className="amount-label">
-            조정 자기부담 Σd*
+            자기부담금
           </p>
           <strong>
             {formatMoney(
@@ -1152,7 +1151,7 @@ function ScenarioCard({
 
         <div style={{ padding: "12px", borderRadius: "12px", background: "var(--color-surface-soft)" }}>
           <p className="amount-label">
-            한도초과 ΣU
+            한도 초과 금액
           </p>
           <strong>
             {formatMoney(
@@ -1163,8 +1162,9 @@ function ScenarioCard({
       </div>
 
       <div className="notice-box">
-        총부담 공식은 연 보험료 + ΣM - ΣI 입니다.
-        E, d*, U는 M-I의 분해값이므로 다시 더하지 않습니다.
+        <p style={{ margin: "0 0 6px", fontWeight: 700 }}>1년 예상 부담 = 1년 보험료 + 예상 치료비 − 받을 수 있는 보험금</p>
+        <p style={{ margin: "0 0 4px" }}>보장 제외 금액, 자기부담금, 한도 초과 금액은 이미 '보험금을 받고 남는 치료비'에 포함되어 있어 따로 더하지 않습니다.</p>
+        <small style={{ color: "var(--color-text-sub)" }}>계산식: 연 보험료 + ΣM − ΣI (E·d*·U는 M−I의 분해값)</small>
       </div>
 
       {result.items.map((item) => (
@@ -1516,12 +1516,12 @@ function M04ResultPage() {
         result.target5GSaving > 0
       ) {
         comparisonMessage =
-          `5세대 비교안의 연간 총부담이 현재 계약보다 ${result.target5GSaving.toLocaleString()}원 낮습니다.`;
+          `5세대로 전환하면 1년 예상 부담이 현재 계약을 유지할 때보다 ${result.target5GSaving.toLocaleString()}원 낮습니다.`;
       } else if (
         result.target5GSaving < 0
       ) {
         comparisonMessage =
-          `현재 계약의 연간 총부담이 5세대 비교안보다 ${Math.abs(
+          `현재 계약을 유지하면 1년 예상 부담이 5세대로 전환할 때보다 ${Math.abs(
             result.target5GSaving
           ).toLocaleString()}원 낮습니다.`;
       } else {
@@ -1674,8 +1674,7 @@ function M04ResultPage() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns:
-              "minmax(0, 1.4fr) minmax(220px, 0.6fr)",
+            gridTemplateColumns: "minmax(0, 1fr)",
             gap: "clamp(22px, 5vw, 48px)",
             alignItems: "center",
           }}
@@ -1703,38 +1702,18 @@ function M04ResultPage() {
               className="page-description"
               style={{ maxWidth: "650px", marginBottom: "16px" }}
             >
-              같은 의료이용 조건에서 현재 계약 유지와 5세대 비교안의
-              연간 부담을 한눈에 비교했습니다.
+              입력한 치료를 동일하게 받는다고 가정하고, 현재 보험을 유지할 때와
+              5세대로 전환할 때의 1년 예상 부담을 비교했습니다.
             </p>
 
             <span className="rule-info">
-              엔진 {result.engineVersion} · 룰셋 {result.rulesetVersion}
+              계산 기준 버전: {result.engineVersion} · {result.rulesetVersion}
             </span>
           </div>
 
-          <div
-            style={{
-              display: "grid",
-              placeItems: "center",
-              minHeight: "180px",
-            }}
-          >
-            <img
-              src={mainLogo}
-              alt="AI 실손 닥터 보험 비교 결과 안내"
-              style={{
-                width: "min(100%, 260px)",
-                maxHeight: "210px",
-                objectFit: "contain",
-                filter: "drop-shadow(0 16px 24px rgba(31, 95, 153, 0.15))",
-              }}
-            />
-          </div>
+
         </div>
       </header>
-      <SamsungTreatmentComparison items={samsungComparison.items} generation={contract.generation} />
-
-
       <section
         className="app-card"
         style={{
@@ -1766,7 +1745,7 @@ function M04ResultPage() {
                 letterSpacing: "0.02em",
               }}
             >
-              1년 예상 비교 결론
+              입력한 조건으로 비교한 1년 예상 결과
             </p>
             <h2
               className="card-title"
@@ -1826,7 +1805,7 @@ function M04ResultPage() {
             }}
           >
             <p style={{ margin: "0 0 6px", color: "var(--color-text-sub)", fontWeight: 700 }}>
-              5세대 비교안
+              5세대로 전환할 경우
             </p>
             <strong style={{ fontSize: "1.35rem" }}>
               {formatMoney(target5G.totalBurden)}
@@ -1857,6 +1836,7 @@ function M04ResultPage() {
           gridTemplateColumns:
             "repeat(auto-fit, minmax(min(100%, 380px), 1fr))",
           gap: "22px",
+          marginTop: "18px",
           width: "100%",
           alignItems: "stretch",
         }}
@@ -1868,11 +1848,14 @@ function M04ResultPage() {
         />
 
         <ScenarioCard
-          title="5세대 비교안"
+          title="5세대로 전환할 경우"
           subtitle="입력한 5세대 보험료와 특약 조건 기준"
           result={target5G}
         />
       </div>
+
+      <SamsungTreatmentComparison items={samsungComparison.items} generation={contract.generation} />
+
 
       <section
         className="form-card"
@@ -1894,13 +1877,13 @@ function M04ResultPage() {
           }}
         >
           <div>
-            <span className="step-badge">BREAK-EVEN</span>
+            <span className="step-badge">치료 횟수별 비교</span>
             <h2 className="card-title" style={{ marginTop: "10px" }}>
-              손익분기 탐색
+              치료 횟수가 달라지면 결과는?
             </h2>
             <p className="card-description" style={{ marginBottom: 0 }}>
-              등록한 치료를 하나로 합산하고, 전체 이용 횟수를 0~{SAMSUNG_BREAK_EVEN_MAX_FREQUENCY}회로 바꾸며
-              계산 엔진을 다시 실행해 유리한 선택지가 바뀌는 구간을 찾습니다.
+              입력한 치료비와 치료 구성 비율을 유지하고, 전체 치료 횟수를 0~{SAMSUNG_BREAK_EVEN_MAX_FREQUENCY}회로 바꾸어 비교합니다.
+              이 범위에서 어느 쪽의 예상 부담이 더 낮은지 확인할 수 있습니다.
             </p>
           </div>
         </div>
@@ -1932,10 +1915,13 @@ function M04ResultPage() {
                   치료 항목
                 </p>
                 <h3 style={{ margin: "0 0 8px" }}>{usage.treatmentName}</h3>
+                <p className="treatment-meta" style={{ margin: "0 0 8px" }}>
+                  입력한 1년 예상 치료 횟수: {usage.frequency.toLocaleString()}회
+                </p>
 
                 {!breakEven ? (
                   <p className="treatment-meta" style={{ marginBottom: 0 }}>
-                    손익분기 탐색을 실행할 수 없습니다.
+                    치료 횟수별 비교에 필요한 정보를 확인해 주세요.
                   </p>
                 ) : (
                   <>
@@ -1952,8 +1938,12 @@ function M04ResultPage() {
                       {isPremiumOnly
                         ? "보험료 기준선"
                         : breakEven.status === "AVAILABLE"
-                        ? "변곡점 확인"
-                        : breakEven.status}
+                        ? "부담이 더 낮은 선택지가 바뀜"
+                        : breakEven.status === "NO_REVERSAL"
+                          ? "확인한 횟수 범위에서 변화 없음"
+                          : breakEven.status === "MULTIPLE_REVERSALS"
+                            ? "부담이 더 낮은 선택지가 여러 번 바뀜"
+                            : "추가 확인 필요"}
                     </span>
                   </>
                 )}
@@ -2303,13 +2293,13 @@ function M04ResultPage() {
 
       <section className="form-card">
         <h2 className="card-title">
-          계산 가정 및 확인 필요 사항
+          이번 비교의 가정과 확인할 내용
         </h2>
 
         <div className="form-grid">
           <div>
             <p className="amount-label">
-              C 미입력 시 M 전체 보장대상
+              보장 범위 미입력 시 치료비 전체 보장대상 가정
             </p>
             <strong>
               {calculationAssumptions
@@ -2321,7 +2311,7 @@ function M04ResultPage() {
 
           <div>
             <p className="amount-label">
-              기존 한도·상한 사용량 0
+              기존 한도·상한 사용액을 0원으로 가정
             </p>
             <strong>
               {calculationAssumptions
@@ -2333,7 +2323,7 @@ function M04ResultPage() {
 
           <div>
             <p className="amount-label">
-              여러 회 치료를 서로 다른 계산 단위로 처리
+              같은 치료 여러 번 → 매 회 별도 청구로 처리
             </p>
             <strong>
               {calculationAssumptions
@@ -2347,7 +2337,7 @@ function M04ResultPage() {
         {!calculationAssumptions
           .assumeEntireMedicalCostCovered && (
           <div className="notice-box">
-            C를 입력하지 않은 치료는 M 전체를 자동으로 보장대상으로 간주하지 않습니다.
+            보장 범위를 따로 입력하지 않은 치료는 치료비 전체를 보장대상으로 자동 처리하지 않습니다.
           </div>
         )}
 
@@ -2361,7 +2351,7 @@ function M04ResultPage() {
         {!calculationAssumptions
           .assumeEachOccurrenceSeparate && (
           <div className="notice-box">
-            날짜·입원건 정보가 없는 여러 회 치료를 서로 다른 계산 단위로 자동 처리하지 않습니다.
+            날짜·입원 정보가 없는 경우 같은 치료를 여러 번 받더라도 매 회 별도 청구로 자동 처리하지 않습니다.
           </div>
         )}
 
@@ -2412,7 +2402,7 @@ function M04ResultPage() {
             gap: "12px",
           }}
         >
-          <span>기술 정보 · 재현 정보</span>
+          <span>계산에 사용한 기술 정보</span>
           <span className="rule-info">필요할 때 펼치기</span>
         </summary>
 
