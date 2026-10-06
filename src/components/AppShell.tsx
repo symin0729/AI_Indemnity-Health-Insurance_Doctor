@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import headerLogo from "../assets/header-logo.png";
+import mainLogo from "../assets/main-logo.png";
 
 import { useAnalysisStore } from "../store/useAnalysisStore";
 import ModeToggle from "./ModeToggle";
@@ -137,7 +137,7 @@ function AppShell({
           >
             <img
               className="app-shell-logo"
-              src={headerLogo}
+              src={mainLogo}
               alt=""
               aria-hidden="true"
             />

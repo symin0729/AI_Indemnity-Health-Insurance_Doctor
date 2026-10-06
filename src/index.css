@@ -215,11 +215,13 @@ a {
 }
 
 .app-shell-logo {
-  width: 59px;
-  height: 39px;
+  width: 42px;
+  height: 42px;
   display: block;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: center 18%;
   flex: 0 0 auto;
+  border-radius: 50%;
 }
 
 .app-shell-nav-right {
