@@ -14,6 +14,7 @@ function M02InputPage() {
     activeStep,
     errorMessage,
     goToInputStep,
+    returnToAssumptions,
     handleCancelRemoveTreatment,
     handleCancelResetAll,
     handleConfirmRemoveTreatment,
@@ -94,6 +95,8 @@ function M02InputPage() {
         >
           이전
         </button>
+
+        {activeStep === 2 && returnToAssumptions && <button type="button" className="secondary-button return-to-assumptions" onClick={() => goToInputStep(4)}>← 4. 명시적 계산 가정으로 돌아가기</button>}
 
         <button
           type="button"

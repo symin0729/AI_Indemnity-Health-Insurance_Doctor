@@ -25,7 +25,7 @@ const MAX_SUPPORTED_ANNUAL_USAGE_FREQUENCY = 10_000;
 export const samsungCalculationLabel = (generation: number) => `${generation}세대 · 상품별 실행 스펙 · 초안 검산`;
 
 function normalizeGen23Usage(usage: MedicalUsage, assumptions: AnalysisCalculationAssumptions): MedicalUsage {
-  const expense = usage.coveredAmount ?? (assumptions.assumeEntireMedicalCostCovered ? usage.patientPaidAmount ?? usage.unitCost : undefined);
+  const expense = usage.samsungCalculationInput?.eligibleExpense ?? usage.coveredAmount ?? (assumptions.assumeEntireMedicalCostCovered ? usage.patientPaidAmount ?? usage.unitCost : undefined);
   const category = usage.samsungGen5Facts?.threeNonCoveredCategory ?? usage.treatmentCategory?.toUpperCase();
   const treatmentType = category === 'MANUAL_THERAPY' || category === 'INJECTION' || category === 'MRI'
     ? category
@@ -64,6 +64,10 @@ export function calculateSamsungComparisonItem(contract: InsuranceContract, sele
   if (!target && contract.generation === 1 && usage.careSetting === 'OUTPATIENT') {
     usage = { ...usage, samsungCalculationInput: { ...usage.samsungCalculationInput, eligibleExpense: explicitEligibleExpense } };
   }
+  // 1세대 전용 확인값도 공통 가정에 앞서 보존한다.
+  if (!target && contract.generation === 1 && usage.samsungCalculationInput?.policyExclusionsCleared === undefined && usage.gen1PolicyExclusionsCleared !== undefined) {
+    usage = { ...usage, samsungCalculationInput: { ...usage.samsungCalculationInput, policyExclusionsCleared: usage.gen1PolicyExclusionsCleared } };
+  }
   // Planner comparisons use one contract even when a persisted case contains old sharing inputs.
   if (assumptions.assumeSingleIndemnityContract) {
     usage = { ...usage, gen23OtherIndemnityPoliciesExist: false, gen23ProportionalPaymentFactor: undefined,
@@ -89,6 +93,21 @@ export function calculateSamsungComparisonItem(contract: InsuranceContract, sele
     && usage.samsungCalculationInput?.improvementEvidenceConfirmed === undefined) {
     usage = { ...usage, samsungCalculationInput: { ...usage.samsungCalculationInput, improvementEvidenceConfirmed: true } };
     if (usage.frequency > 10 && (target || contract.generation === 4)) appliedAssumptions.push('도수·체외충격파·증식치료는 10회 이후에도 증상 개선이 확인되어 보상되는 것으로 봄');
+  }
+  // 5세대 비급여: 소비자용은 산정특례 여부·의료기관 종별을 묻지 않으므로 선택한 가정으로만 채운다. 입력한 값은 바꾸지 않는다.
+  if ((target || contract.generation === 5) && usage.benefitClass === 'NON_COVERED') {
+    // 5세대 중증 비급여 특약(특약1)이 없으면 중증 여부를 따로 묻지 않고 비중증으로 본다(입원 종별은 특약을 선택하면 따로 받는다).
+    const noSevereRider = target && !contract.coverages.includes('SPECIAL_RIDER_1');
+    const severeAssumed = assumptions.assumeNonSevereNonCovered || noSevereRider;
+    const institutionAssumed = assumptions.assumeNonCoveredInpatientSmallHospital;
+    if (severeAssumed && usage.severityClass === 'UNKNOWN' && usage.samsungGen5Facts?.specialCaseDisease === 'UNKNOWN') {
+      usage = { ...usage, samsungGen5Facts: { ...usage.samsungGen5Facts, specialCaseDisease: 'NO' } };
+      appliedAssumptions.push(noSevereRider ? '5세대 중증 비급여 특약(특약1)이 없어 산정특례 여부를 묻지 않고 비중증 비급여로 봄' : '5세대 비급여는 산정특례 질환 치료가 아닌 비중증 비급여로 봄');
+    }
+    if (institutionAssumed && usage.careSetting === 'INPATIENT' && !usage.institutionType) {
+      usage = { ...usage, institutionType: 'CLINIC_HOSPITAL' };
+      appliedAssumptions.push('5세대 비급여 입원은 종합·상급종합병원이 아닌 병원(1회 입원 한도 300만원 적용)으로 봄');
+    }
   }
   if (assumptions.assumeEachOccurrenceSeparate) {
     usage = { ...usage, gen23SameDayAggregationConfirmed: usage.gen23SameDayAggregationConfirmed ?? true,
@@ -164,9 +183,34 @@ function calculateComparisonItem(contract: InsuranceContract, selections: Produc
   const facts = usage.samsungGen5Facts ?? (usage.benefitClass === 'COVERED' ? {specialCaseDisease: 'UNKNOWN' as const, treatmentRelatedness: 'UNKNOWN' as const, policyExcludedTreatment: 'UNKNOWN' as const} : undefined);
   if (!facts) return hold('5세대 산정특례·치료 관련성·보장 제외 여부 확인이 필요합니다.');
   if (target) input.requiredCoverageConfirmed = true;
+  // 5세대 급여 입원: 상급병실료 차액은 급여가 아니라 비급여 병실료이므로 급여 인정금액에서 뺀다(약관: 급여 본인부담금의 80%).
+  // 인정금액(C)을 직접 입력한 경우에는 그 값이 이미 급여분이라고 보고 건드리지 않는다.
+  const gen5RoomDifference = usage.careSetting === 'INPATIENT' && usage.benefitClass === 'COVERED'
+    ? usage.samsungCalculationInput?.roomDifference ?? usage.gen23RoomDifference ?? usage.gen1RoomDifference ?? 0 : 0;
+  const gen5RoomDays = usage.samsungCalculationInput?.inpatientDays ?? usage.gen23InpatientDays;
+  const gen5RoomSplit = gen5RoomDifference > 0 && usage.coveredAmount === undefined && input.eligibleExpense !== undefined;
+  if (gen5RoomSplit) input.eligibleExpense = Math.max(input.eligibleExpense! - gen5RoomDifference, 0);
+  const gen5RiderEnrolled = target ? contract.coverages.includes('SPECIAL_RIDER_1') || contract.coverages.includes('SPECIAL_RIDER_2')
+    : selections.gen5SevereRider === 'ENROLLED' || selections.gen5NonSevereRider === 'ENROLLED';
   const result = calculateSamsungGen5Claim(target ? 'CONVERSION' : selections.gen5ContractType, target ? {baseCovered:'ENROLLED',severeNonCoveredRider:contract.coverages.includes('SPECIAL_RIDER_1')?'ENROLLED':'NOT_ENROLLED',nonSevereNonCoveredRider:contract.coverages.includes('SPECIAL_RIDER_2')?'ENROLLED':'NOT_ENROLLED'} : {baseCovered:input.requiredCoverageConfirmed ? 'ENROLLED':'UNKNOWN',severeNonCoveredRider:selections.gen5SevereRider,nonSevereNonCoveredRider:selections.gen5NonSevereRider}, {...facts,benefitClass:usage.benefitClass,careSetting:usage.careSetting}, input);
   if (result.status === 'NOT_COVERED') return {claim:0,deductible:0,capEligibleDeductible:0,reasons:[result.reason],ruleId:''};
-  return result.status === 'CALCULATED' ? {calculationDetails:result.result.calculationDetails,claim:result.result.claim,deductible:result.result.deductible,capEligibleDeductible:result.result.enforcementTrace?.capEligibleDeductible ?? result.result.deductible,reasons:result.result.warnings,ruleId:result.result.ruleId} : hold('reason' in result ? result.reason : '분류 확인이 필요합니다.');
+  if (result.status !== 'CALCULATED') return hold('reason' in result ? result.reason : '분류 확인이 필요합니다.');
+  let claim = result.result.claim;
+  let deductible = result.result.deductible;
+  if (gen5RoomSplit && claim !== null && deductible !== null) {
+    if (gen5RiderEnrolled) {
+      // 비급여 특약의 상급병실 보상: 비급여 병실료의 50%, 1일 평균 10만원 한도(중증·비중증 특약 동일).
+      if (gen5RoomDays === undefined || !Number.isInteger(gen5RoomDays) || gen5RoomDays < 1) return hold('병실료 일당 한도 적용을 위해 입원일 수가 필요합니다.');
+      const roomBenefit = Math.min(gen5RoomDifference * 0.5, 100_000 * gen5RoomDays);
+      claim += roomBenefit;
+      deductible += gen5RoomDifference - roomBenefit;
+      appliedAssumptions.push('5세대 급여 입원의 병실료 차액은 급여가 아니므로 비급여 특약의 상급병실 보상(50%, 1일 평균 10만원 한도)으로 계산함');
+    } else {
+      deductible += gen5RoomDifference;
+      appliedAssumptions.push('5세대 급여 입원의 병실료 차액은 비급여 특약 대상이라 특약 미가입 상태에서는 보상하지 않음');
+    }
+  }
+  return {calculationDetails:result.result.calculationDetails,claim,deductible,capEligibleDeductible:result.result.enforcementTrace?.capEligibleDeductible ?? result.result.deductible,reasons:result.result.warnings,ruleId:result.result.ruleId};
 }
 
 

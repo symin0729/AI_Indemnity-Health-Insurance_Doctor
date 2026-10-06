@@ -3,6 +3,7 @@ import { validateContractStep } from './inputModel';
 import { targetContractFormForSelection, currentContractFormForSelection, singleContractDetails, validateContractDetails } from './contractRequirements';
 import { buildSubmission } from "./inputModel";
 import { needsManualTherapyImprovementAssumption } from "../../domain/manualTherapyCount";
+import { usagesNeedingInstitutionAssumption, usagesNeedingSeverityAssumption } from "../../domain/gen5NonCoveredAssumptions";
 import { parseSamsungContractFacts } from '../../domain/samsungContractFacts';
 import { applyGen23ContractInputs } from "../../domain/contractDetails";
 import { samplePolicyPatch } from "./contractTransitions";
@@ -55,6 +56,8 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
     resetTreatmentForm,
     samsungGen23Variant,
     selectedSampleId,
+    setAssumeNoPolicyExclusions,
+    setAssumeManualTherapyImprovement,
     setAssumeEachOccurrenceSeparate,
     setAssumeEntireMedicalCostCovered,
     setAssumeNoPriorLimitUsage,
@@ -147,6 +150,8 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
       false
     );
     setAssumeNoPriorLimitUsage(false);
+    setAssumeNoPolicyExclusions(false);
+    setAssumeManualTherapyImprovement(false);
     setAssumeEachOccurrenceSeparate(
       false
     );
@@ -277,6 +282,19 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
     }
     try { parseSamsungContractFacts(targetContractFormForSelection(targetContractFactsForm, hasTarget5GSpecialRider1, hasTarget5GSpecialRider2), 5); }
     catch (error) { setErrorMessage(error instanceof Error ? error.message : '5세대 가입금액을 확인해주세요.'); return; }
+    // 5세대 비급여 특약을 선택했다면, 특약 보장을 판단하는 데 필요한 값이 비어 있는 비급여 치료는 예정 치료에서 입력하게 한다.
+    if (hasTarget5GSpecialRider1 || hasTarget5GSpecialRider2) {
+      const needSeverity = hasTarget5GSpecialRider1 ? usagesNeedingSeverityAssumption(plannedUsages) : [];
+      if (needSeverity.length) {
+        setErrorMessage(`5세대 비급여 특약을 선택했습니다. 아래 ‘5세대 세부 보장 및 계약 확인’에서 산정특례 질환 치료 여부를 선택해주세요: ${needSeverity.map(usage => usage.treatmentName).join(', ')}`);
+        return;
+      }
+      const needInstitution = usagesNeedingInstitutionAssumption(plannedUsages);
+      if (needInstitution.length) {
+        setErrorMessage(`5세대 비급여 특약을 선택했습니다. 아래 ‘5세대 세부 보장 및 계약 확인’에서 비급여 입원이 종합병원 이상(상급종합병원 포함)인지 선택해주세요: ${needInstitution.map(usage => usage.treatmentName).join(', ')}`);
+        return;
+      }
+    }
     goToInputStep(4);
   };
 

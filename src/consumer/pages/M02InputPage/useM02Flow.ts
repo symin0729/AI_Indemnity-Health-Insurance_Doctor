@@ -3,6 +3,7 @@ import { validateContractStep } from './inputModel';
 import { targetContractFormForSelection, currentContractFormForSelection, singleContractDetails, validateContractDetails } from './contractRequirements';
 import { buildSubmission } from "./inputModel";
 import { needsManualTherapyImprovementAssumption } from "../../../domain/manualTherapyCount";
+import { usagesNeedingInstitutionAssumption, usagesNeedingSeverityAssumption } from "../../../domain/gen5NonCoveredAssumptions";
 import { parseSamsungContractFacts } from '../../../domain/samsungContractFacts';
 import { applyGen23ContractInputs } from "../../../domain/contractDetails";
 import { samplePolicyPatch } from "./contractTransitions";
@@ -22,6 +23,8 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
     comparisonBasis,
     assumeNoPolicyExclusions,
     assumeManualTherapyImprovement,
+    assumeNonSevereNonCovered,
+    assumeNonCoveredInpatientSmallHospital,
     assumeEachOccurrenceSeparate,
     assumeEntireMedicalCostCovered,
     assumeNoPriorLimitUsage,
@@ -55,6 +58,8 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
     resetTreatmentForm,
     samsungGen23Variant,
     selectedSampleId,
+    setAssumeNoPolicyExclusions,
+    setAssumeManualTherapyImprovement,
     setAssumeEachOccurrenceSeparate,
     setAssumeEntireMedicalCostCovered,
     setAssumeNoPriorLimitUsage,
@@ -147,6 +152,8 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
       false
     );
     setAssumeNoPriorLimitUsage(false);
+    setAssumeNoPolicyExclusions(false);
+    setAssumeManualTherapyImprovement(false);
     setAssumeEachOccurrenceSeparate(
       false
     );
@@ -232,6 +239,9 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
         assumeNoPolicyExclusions,
         // 도수치료 10회 초과가 아니면 남아 있는 선택이 결과에 영향을 주지 않게 한다.
         assumeManualTherapyImprovement: assumeManualTherapyImprovement && needsManualTherapyImprovementAssumption(plannedUsages),
+        // 5세대 비급여 특약을 선택하고 해당 치료가 있을 때만 남긴다.
+        assumeNonSevereNonCovered: assumeNonSevereNonCovered && hasTarget5GSpecialRider1 && usagesNeedingSeverityAssumption(plannedUsages).length > 0,
+        assumeNonCoveredInpatientSmallHospital: assumeNonCoveredInpatientSmallHospital && (hasTarget5GSpecialRider1 || hasTarget5GSpecialRider2) && usagesNeedingInstitutionAssumption(plannedUsages).length > 0,
         assumeSingleIndemnityContract: true,
         assumeEntireMedicalCostCovered,
         assumeNoPriorLimitUsage,
