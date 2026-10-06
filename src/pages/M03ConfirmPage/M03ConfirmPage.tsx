@@ -1,3 +1,4 @@
+import { hasRequiredPriorUsage } from "../../domain/priorUsageConfirmation";
 import { gen23CareSettingLabel } from "../../domain/samsungGen23CareSetting";
 import { Gen23Summary } from "../../components/samsung/Gen23Inputs";
 import AppShell from "../../components/AppShell";
@@ -148,12 +149,9 @@ function M03ConfirmPage() {
       usage.gen23EligibleExpense === undefined
   ).length;
 
-  const hasPriorUsageInputForAllTreatments = usages.every((usage) => {
-    const gen = contract.generation;
-    if (gen === 1) return usage.gen1PriorPaidBenefit !== undefined || usage.gen1PriorServiceDays !== undefined || usage.samsungCalculationInput?.priorPaidBenefit !== undefined;
-    if (gen === 2 || gen === 3) return usage.gen23PriorPaidBenefit !== undefined || usage.gen23PriorAnnualCount !== undefined || usage.gen23PriorEligibleDeductible !== undefined;
-    return usage.samsungCalculationInput?.priorPaidBenefit !== undefined || usage.samsungCalculationInput?.priorAnnualCount !== undefined;
-  });
+  const hasPriorUsageInputForAllTreatments = usages.every((usage) =>
+    hasRequiredPriorUsage(contract.generation, usage, calculationAssumptions, productCalculationSelections)
+  );
 
   const needsVisitUnitConfirmation = usages.some(
     (usage) =>
@@ -370,7 +368,7 @@ function M03ConfirmPage() {
                   {contract.coverages.includes(
                     "SPECIAL_RIDER_1"
                   )
-                    ? "가입으로 입력"
+                    ? "가입"
                     : "미가입으로 입력"}
                 </strong>
               </div>
@@ -384,7 +382,7 @@ function M03ConfirmPage() {
                   {contract.coverages.includes(
                     "SPECIAL_RIDER_2"
                   )
-                    ? "가입으로 입력"
+                    ? "가입"
                     : "미가입으로 입력"}
                 </strong>
               </div>
@@ -399,7 +397,7 @@ function M03ConfirmPage() {
                 {contract.coverages.includes(
                   "NON_COVERED"
                 )
-                  ? "가입으로 입력"
+                  ? "가입"
                   : "미가입으로 입력"}
               </strong>
             </div>
@@ -416,7 +414,7 @@ function M03ConfirmPage() {
         <h2 className="card-title">
           5세대 계약전환 조건 확인
         </h2>
-          <p className="notice-box">삼성 5세대 계약전환형 · 전환 자격·계속 치료 조건: {calculationAssumptions.targetContractFacts?.conversionEligibilityConfirmed === true ? '확인 완료' : '미확인 — 계산 보류'}</p>
+          <p className="notice-box">삼성 5세대 계약전환형 · 전환 자격·계속 치료 조건: {calculationAssumptions.targetContractFacts?.conversionEligibilityConfirmed === true ? '확인 완료' : '미확인 · 전환 가능을 가정한 모의 비교'}</p>
 
         <div className="form-grid">
           <div>
@@ -438,7 +436,7 @@ function M03ConfirmPage() {
               {target5GCoverages.includes(
                 "SPECIAL_RIDER_1"
               )
-                ? "가입으로 입력"
+                ? "가입"
                 : "미가입으로 입력"}
             </strong>
           </div>
@@ -452,7 +450,7 @@ function M03ConfirmPage() {
               {target5GCoverages.includes(
                 "SPECIAL_RIDER_2"
               )
-                ? "가입으로 입력"
+                ? "가입"
                 : "미가입으로 입력"}
             </strong>
           </div>
@@ -566,11 +564,11 @@ function M03ConfirmPage() {
 
                 <details className="planner-treatment-details">
                   <summary>정밀 계산 입력 보기</summary>
-                  <ul className="gen23-summary-list">
-                    <li className="gen23-summary-item"><span className="gen23-summary-label">진료 예정일</span><span className={`gen23-summary-value${!usage.treatmentDate ? " is-unknown" : ""}`}>{usage.treatmentDate ?? "미입력"}</span></li>
-                    <li className="gen23-summary-item"><span className="gen23-summary-label">의료기관 종별</span><span className={`gen23-summary-value${!usage.institutionType ? " is-unknown" : ""}`}>{usage.institutionType === "CLINIC_HOSPITAL" ? "병·의원" : usage.institutionType === "GENERAL_TERTIARY" ? "종합·상급종합병원" : "미입력"}</span></li>
-                    <li className="gen23-summary-item"><span className="gen23-summary-label">건강보험 본인부담률 r</span><span className={`gen23-summary-value${usage.healthInsuranceCopayRate === undefined ? " is-unknown" : ""}`}>{usage.healthInsuranceCopayRate === undefined ? "미입력" : `${(usage.healthInsuranceCopayRate * 100).toLocaleString()}%`}</span></li>
-                  </ul>
+                  <table className="gen23-summary-table"><tbody>
+                    <tr className="gen23-summary-item"><th scope="row" className="gen23-summary-label">진료 예정일</th><td className="gen23-summary-value"><span className={`gen23-summary-value${!usage.treatmentDate ? " is-unknown" : ""}`}>{usage.treatmentDate ?? "미입력"}</span></td></tr>
+                    <tr className="gen23-summary-item"><th scope="row" className="gen23-summary-label">의료기관 종별</th><td className="gen23-summary-value"><span className={`gen23-summary-value${!usage.institutionType ? " is-unknown" : ""}`}>{usage.institutionType === "CLINIC_HOSPITAL" ? "병·의원" : usage.institutionType === "GENERAL_TERTIARY" ? "종합·상급종합병원" : "미입력"}</span></td></tr>
+                    <tr className="gen23-summary-item"><th scope="row" className="gen23-summary-label">건강보험 본인부담률 r</th><td className="gen23-summary-value"><span className={`gen23-summary-value${usage.healthInsuranceCopayRate === undefined ? " is-unknown" : ""}`}>{usage.healthInsuranceCopayRate === undefined ? "미입력" : `${(usage.healthInsuranceCopayRate * 100).toLocaleString()}%`}</span></td></tr>
+                  </tbody></table>
                   {(contract.generation === 2 || contract.generation === 3) && <Gen23Summary generation={contract.generation} usage={usage} />}
                 </details>
               </article>
@@ -662,7 +660,7 @@ function M03ConfirmPage() {
             <div className="planner-assumption-item__heading">
               <div>
                 <strong>비교 시작 조건 · 기존 사용분</strong>
-                <small>{calculationAssumptions.comparisonBasis !== 'REMAINING_LIMITS' ? '한도 사용 전부터 1년 비교: 양쪽 계약 모두 기존 사용분 0에서 시작합니다.' : calculationAssumptions.assumeNoPriorLimitUsage ? '현재 계약의 기존 사용분을 반영하고 빈 값은 0으로 가정합니다. 5세대는 0에서 시작합니다.' : '현재 계약의 입력한 기존 사용분을 반영합니다. 미확인 사용분은 확인 필요로 표시됩니다. 5세대는 0에서 시작합니다.'}</small>
+                <small>{calculationAssumptions.comparisonBasis !== 'REMAINING_LIMITS' ? <>한도 사용 전부터 1년 비교:<br />양쪽 계약 모두 기존 사용분 0에서 시작합니다.</> : calculationAssumptions.assumeNoPriorLimitUsage ? '현재 계약의 기존 사용분을 반영하고 빈 값은 0으로 가정합니다. 5세대는 0에서 시작합니다.' : '현재 계약의 입력한 기존 사용분을 반영합니다. 미확인 사용분은 확인 필요로 표시됩니다. 5세대는 0에서 시작합니다.'}</small>
               </div>
               <span className={`planner-assumption-status ${calculationAssumptions.comparisonBasis !== 'REMAINING_LIMITS' ? 'is-confirmed' : calculationAssumptions.assumeNoPriorLimitUsage ? 'is-assumed' : 'is-confirmed'}`}>
                 {calculationAssumptions.comparisonBasis !== 'REMAINING_LIMITS' ? '한도 전 비교' : calculationAssumptions.assumeNoPriorLimitUsage ? '가정 적용' : '입력값 적용'}
@@ -685,13 +683,13 @@ function M03ConfirmPage() {
 
         <details className="planner-calculation-details">
           <summary>계산 방식 자세히 보기</summary>
-          <ul className="gen23-summary-list">
-            <li className="gen23-summary-item"><span className="gen23-summary-label">적용 규칙</span><span className="gen23-summary-value">{contract.generation}세대 상품별 실행 스펙</span></li>
-            <li className="gen23-summary-item"><span className="gen23-summary-label">검산 상태</span><span className="gen23-summary-value">초안 검산</span></li>
-            <li className="gen23-summary-item"><span className="gen23-summary-label">보험료 계산</span><span className="gen23-summary-value">월 보험료 × 12개월</span></li>
-            <li className="gen23-summary-item"><span className="gen23-summary-label">치료비 계산</span><span className="gen23-summary-value">회차별 약관 계산 후 연간 합산</span></li>
-            <li className="gen23-summary-item"><span className="gen23-summary-label">총부담 계산</span><span className="gen23-summary-value">연 보험료 + ΣM − ΣI</span></li>
-          </ul>
+          <table className="gen23-summary-table"><tbody>
+            <tr className="gen23-summary-item"><th scope="row" className="gen23-summary-label">적용 규칙</th><td className="gen23-summary-value">{contract.generation}세대 상품별 실행 스펙</td></tr>
+            <tr className="gen23-summary-item"><th scope="row" className="gen23-summary-label">검산 상태</th><td className="gen23-summary-value">초안 검산</td></tr>
+            <tr className="gen23-summary-item"><th scope="row" className="gen23-summary-label">보험료 계산</th><td className="gen23-summary-value">월 보험료 × 12개월</td></tr>
+            <tr className="gen23-summary-item"><th scope="row" className="gen23-summary-label">치료비 계산</th><td className="gen23-summary-value">회차별 약관 계산 후 연간 합산</td></tr>
+            <tr className="gen23-summary-item"><th scope="row" className="gen23-summary-label">총부담 계산</th><td className="gen23-summary-value">연 보험료 + ΣM − ΣI</td></tr>
+          </tbody></table>
         </details>
 
       </section>

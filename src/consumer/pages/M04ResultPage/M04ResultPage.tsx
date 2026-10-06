@@ -285,8 +285,8 @@ export function BreakEvenChart({ result }: { result: BreakEvenSimulationResult }
   }
 
   const width = 720;
-  const height = 340;
-  const padding = { top: 22, right: 18, bottom: 38, left: 76 };
+  const height = 368;
+  const padding = { top: 22, right: 18, bottom: 62, left: 76 };
   const plotWidth = width - padding.left - padding.right;
   const plotHeight = height - padding.top - padding.bottom;
   const minimumFrequency = result.rangeChecked.min;
@@ -384,7 +384,7 @@ export function BreakEvenChart({ result }: { result: BreakEvenSimulationResult }
               <text
                 className="break-even-chart__axis-label"
                 x={x(tick)}
-                y={height - 10}
+                y={height - padding.bottom + 26}
                 textAnchor="middle"
               >
                 {tick}회
@@ -423,7 +423,7 @@ export function BreakEvenChart({ result }: { result: BreakEvenSimulationResult }
           <polyline className="break-even-chart__line break-even-chart__line--current" points={currentPoints} />
           <polyline className="break-even-chart__line break-even-chart__line--target" points={targetPoints} />
 
-          <text className="break-even-chart__axis-title" x={padding.left + plotWidth / 2} y={height - 1} textAnchor="middle">
+          <text className="break-even-chart__axis-title" x={padding.left + plotWidth / 2} y={height - padding.bottom + 50} textAnchor="middle">
             연간 병원 이용 횟수
           </text>
 
@@ -1232,6 +1232,7 @@ function M04ResultPage() {
   ] = useState(false);
 
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
+  const [showVersionInfo, setShowVersionInfo] = useState(false);
 
   useEffect(() => {
     const fetchRuleSet = async () => {
@@ -1663,7 +1664,7 @@ function M04ResultPage() {
         style={{
           position: "relative",
           overflow: "hidden",
-          padding: "clamp(26px, 5vw, 46px)",
+          padding: "clamp(14px, 2.5vw, 22px) clamp(16px, 3vw, 26px)",
           border: "1px solid var(--color-border)",
           borderRadius: "26px",
           background:
@@ -1674,9 +1675,9 @@ function M04ResultPage() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "minmax(0, 1fr)",
-            gap: "clamp(22px, 5vw, 48px)",
-            alignItems: "center",
+            gridTemplateColumns: "minmax(0, 1fr) auto",
+            gap: "clamp(12px, 3vw, 24px)",
+            alignItems: "start",
           }}
         >
           <div style={{ minWidth: 0 }}>
@@ -1686,7 +1687,7 @@ function M04ResultPage() {
                 gap: "8px",
                 alignItems: "center",
                 flexWrap: "wrap",
-                marginBottom: "14px",
+                marginBottom: "6px",
               }}
             >
               <span className="step-badge">
@@ -1694,24 +1695,48 @@ function M04ResultPage() {
               </span>
             </div>
 
-            <h1 style={{ marginBottom: "12px" }}>
+            <h1 style={{ marginBottom: "6px" }}>
               보험 비교 결과
             </h1>
 
             <p
               className="page-description"
-              style={{ maxWidth: "650px", marginBottom: "16px" }}
+              style={{ maxWidth: "650px", marginBottom: "4px" }}
             >
               입력한 치료를 동일하게 받는다고 가정하고, 현재 보험을 유지할 때와
               5세대로 전환할 때의 1년 예상 부담을 비교했습니다.
             </p>
 
-            <span className="rule-info">
-              계산 기준 버전: {result.engineVersion} · {result.rulesetVersion}
-            </span>
           </div>
 
-
+          <div style={{ position: "relative", alignSelf: "start" }}>
+            <button
+              type="button"
+              className="rule-info"
+              onClick={() => setShowVersionInfo(v => !v)}
+              style={{ background: "none", border: "none", cursor: "pointer", padding: "4px 6px" }}
+            >
+              계산 기준 버전
+            </button>
+            {showVersionInfo && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "calc(100% + 6px)",
+                  right: 0,
+                  background: "#ffffff",
+                  border: "1px solid var(--color-border)",
+                  borderRadius: "10px",
+                  padding: "10px 14px",
+                  zIndex: 10,
+                  boxShadow: "0 4px 16px rgba(18,54,89,0.12)",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                <span className="rule-info">{result.engineVersion} · {result.rulesetVersion}</span>
+              </div>
+            )}
+          </div>
         </div>
       </header>
       <section
@@ -1883,7 +1908,7 @@ function M04ResultPage() {
             </h2>
             <p className="card-description" style={{ marginBottom: 0 }}>
               입력한 치료비와 치료 구성 비율을 유지하고, 전체 치료 횟수를 0~{SAMSUNG_BREAK_EVEN_MAX_FREQUENCY}회로 바꾸어 비교합니다.
-              이 범위에서 어느 쪽의 예상 부담이 더 낮은지 확인할 수 있습니다.
+              <br />이 범위에서 어느 쪽의 예상 부담이 더 낮은지 확인할 수 있습니다.
             </p>
           </div>
         </div>
@@ -1997,16 +2022,6 @@ function M04ResultPage() {
 
       {/* 실손보험 세대 변천사 */}
       <section className="generation-guide-section">
-        <div className="generation-guide-heading">
-          <span className="step-badge">
-            GUIDE
-          </span>
-
-          <h2>
-            실손보험 세대 변천사
-          </h2>
-        </div>
-
         <div
           className="comparison-summary"
           style={{
@@ -2019,6 +2034,15 @@ function M04ResultPage() {
               "linear-gradient(135deg, var(--color-primary-050) 0%, #ffffff 78%)",
           }}
         >
+        <div className="generation-guide-heading" style={{ paddingInline: 0, marginBottom: "18px" }}>
+          <span className="step-badge">
+            GUIDE
+          </span>
+
+          <h2>
+            실손보험 세대 변천사
+          </h2>
+        </div>
           <div
             style={{
               display: "flex",
@@ -2050,8 +2074,8 @@ function M04ResultPage() {
                   marginBottom: "6px",
                 }}
               >
-                내 계약은 어디에 있고,
-                무엇과 비교하고 있을까요?
+                내 계약은 어디에 있고, 무엇과 비교하고 있을까요?
+                <span className="rule-info" style={{ display: "inline-block", marginLeft: "10px", verticalAlign: "middle" }}>1세대 → 5세대</span>
               </h3>
 
               <p
@@ -2061,17 +2085,10 @@ function M04ResultPage() {
                   maxWidth: "700px",
                 }}
               >
-                실손보험은 세대가 바뀌면서
-                보장 구조와 자기부담 방식도
-                달라져 왔습니다. 아래 연표에서
-                현재 계약과 5세대 비교 대상을
-                확인할 수 있습니다.
+                실손보험은 세대가 바뀌면서 보장 구조와 자기부담 방식도 달라져 왔습니다.
+                <br />아래 연표에서 현재 계약과 5세대 비교 대상을 확인할 수 있습니다.
               </p>
             </div>
-
-            <span className="rule-info">
-              1세대 → 5세대
-            </span>
           </div>
 
           <div
@@ -2282,11 +2299,8 @@ function M04ResultPage() {
                 "1px solid var(--color-border)",
             }}
           >
-            세대 구분만으로 실제 보장 내용을
-            확정할 수는 없습니다. 가입 시기,
-            상품, 특약과 약관에 따라 세부
-            조건이 달라질 수 있으므로 계산 결과와
-            확인 필요 항목을 함께 확인해 주세요.
+            세대 구분만으로 실제 보장 내용을 확정할 수는 없습니다.
+            <br />가입 시기, 상품, 특약과 약관에 따라 세부 조건이 달라질 수 있으므로 계산 결과와 확인 필요 항목을 함께 확인해 주세요.
           </p>
         </div>
       </section>
@@ -2296,66 +2310,54 @@ function M04ResultPage() {
           이번 비교의 가정과 확인할 내용
         </h2>
 
-        <div className="form-grid">
-          <div>
-            <p className="amount-label">
-              보장 범위 미입력 시 치료비 전체 보장대상 가정
-            </p>
-            <strong>
-              {calculationAssumptions
-                .assumeEntireMedicalCostCovered
-                ? "적용"
-                : "적용 안 함"}
-            </strong>
-          </div>
-
-          <div>
-            <p className="amount-label">
-              기존 한도·상한 사용액을 0원으로 가정
-            </p>
-            <strong>
-              {calculationAssumptions
-                .assumeNoPriorLimitUsage
-                ? "적용"
-                : "적용 안 함"}
-            </strong>
-          </div>
-
-          <div>
-            <p className="amount-label">
-              같은 치료 여러 번 → 매 회 별도 청구로 처리
-            </p>
-            <strong>
-              {calculationAssumptions
-                .assumeEachOccurrenceSeparate
-                ? "적용"
-                : "적용 안 함"}
-            </strong>
-          </div>
+        <div style={{ display: "grid", gap: "8px" }}>
+          {[
+            {
+              label: "보장 범위 미입력 시 치료비 전체 보장대상 가정",
+              applied: calculationAssumptions.assumeEntireMedicalCostCovered,
+              note: "보장 범위를 따로 입력하지 않은 치료는 치료비 전체를 보장대상으로 자동 처리하지 않습니다.",
+            },
+            {
+              label: "기존 한도·상한 사용액을 0원으로 가정",
+              applied: calculationAssumptions.assumeNoPriorLimitUsage,
+              note: "기존 지급한도 사용액과 자기부담상한 누적액을 확인하지 않은 경우 0원으로 자동 처리하지 않습니다.",
+            },
+            {
+              label: "같은 치료 여러 번 → 매 회 별도 청구로 처리",
+              applied: calculationAssumptions.assumeEachOccurrenceSeparate,
+              note: "날짜·입원 정보가 없는 경우 같은 치료를 여러 번 받더라도 매 회 별도 청구로 자동 처리하지 않습니다.",
+            },
+          ].map(({ label, applied, note }) => (
+            <div
+              key={label}
+              style={{
+                display: "flex",
+                alignItems: "flex-start",
+                justifyContent: "space-between",
+                gap: "16px",
+                padding: "8px 20px",
+                border: `1px solid ${applied ? "var(--color-primary-100)" : "var(--color-border)"}`,
+                borderRadius: "14px",
+                background: applied ? "var(--color-primary-050)" : "var(--color-surface-soft)",
+              }}
+            >
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <p style={{ margin: 0, fontWeight: 800, fontSize: "0.95rem", lineHeight: 1.4 }}>{label}</p>
+                {!applied && (
+                  <p style={{ margin: "4px 0 0", fontSize: "0.82rem", color: "var(--color-text-sub)", lineHeight: 1.5 }}>{note}</p>
+                )}
+              </div>
+              <span
+                className={applied ? "status-badge success" : "status-badge warning"}
+                style={{ whiteSpace: "nowrap", flexShrink: 0, marginTop: "2px" }}
+              >
+                {applied ? "적용" : "적용 안 함"}
+              </span>
+            </div>
+          ))}
         </div>
 
-        {!calculationAssumptions
-          .assumeEntireMedicalCostCovered && (
-          <div className="notice-box">
-            보장 범위를 따로 입력하지 않은 치료는 치료비 전체를 보장대상으로 자동 처리하지 않습니다.
-          </div>
-        )}
-
-        {!calculationAssumptions
-          .assumeNoPriorLimitUsage && (
-          <div className="notice-box">
-            기존 지급한도 사용액과 자기부담상한 누적액을 확인하지 않은 경우 0원으로 자동 처리하지 않습니다.
-          </div>
-        )}
-
-        {!calculationAssumptions
-          .assumeEachOccurrenceSeparate && (
-          <div className="notice-box">
-            날짜·입원 정보가 없는 경우 같은 치료를 여러 번 받더라도 매 회 별도 청구로 자동 처리하지 않습니다.
-          </div>
-        )}
-
-        <div className="notice-box">
+        <div className="notice-box" style={{ padding: "8px 16px" }}>
           선택형 할인특약(C안)은 실제 시행 여부, 대상 상품, 보험료 견적이 확인되기 전까지 정보성 옵션으로만 표시하며 현재 총부담 계산에는 반영하지 않습니다.
         </div>
 
@@ -2365,7 +2367,7 @@ function M04ResultPage() {
               "선택형 할인특약(C안)"
             )
         ).length > 0 && (
-          <div className="notice-box warning">
+          <div className="notice-box warning" style={{ padding: "4px 16px" }}>
             {result.warnings
               .filter(
                 (warning) =>
@@ -2403,7 +2405,7 @@ function M04ResultPage() {
           }}
         >
           <span>계산에 사용한 기술 정보</span>
-          <span className="rule-info">필요할 때 펼치기</span>
+          <span className="rule-info">펼치기</span>
         </summary>
 
         <div
