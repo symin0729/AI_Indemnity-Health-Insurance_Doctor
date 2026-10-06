@@ -1,4 +1,9 @@
+import { gen3EnrollmentForTreatment } from '../../domain/gen3Riders';
+import { validateContractStep } from './inputModel';
+import { targetContractFormForSelection, currentContractFormForSelection, singleContractDetails, validateContractDetails } from './contractRequirements';
 import { buildSubmission } from "./inputModel";
+import { parseSamsungContractFacts } from '../../domain/samsungContractFacts';
+import { applyGen23ContractInputs } from "../../domain/contractDetails";
 import { samplePolicyPatch } from "./contractTransitions";
 import { samplePolicyService, type SampleId } from "../../services/samplePolicyService";
 
@@ -13,9 +18,16 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
   const {
     applyContractPatch,
     applyInputFailure,
+    comparisonBasis,
+    assumeNoPolicyExclusions,
     assumeEachOccurrenceSeparate,
     assumeEntireMedicalCostCovered,
     assumeNoPriorLimitUsage,
+    contractDetails,
+    currentContractFactsForm,
+    targetContractFactsForm,
+    setCurrentContractFactsForm,
+    setTargetContractFactsForm,
     editingUsageId,
     gen1ContractBasis,
     gen1D1Coverage,
@@ -76,7 +88,6 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
     setTarget5GMonthlyPremium,
     setTarget5GMonthlyPremiumInput,
     setUsages,
-    showTargetPremiumHelp,
     target5GMonthlyPremium,
     treatmentSampleTemplatesRef,
   } = deps;
@@ -87,7 +98,7 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
   // ========================================
 
   /**
-   * STEP 1의 "샘플 불러오기": 현재 계약(내 보험 정보)만 채운다.
+   * STEP 1의 "샘플 불러오기": 현재 계약(고객 보험 정보)만 채운다.
    * STEP 2(5세대 비교 조건, 예정 치료)와 STEP 3(계산 가정)은 건드리지 않는다.
    */
   const handleLoadSamplePolicy = (
@@ -111,6 +122,8 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
   // ========================================
 
   const resetLocalForm = () => {
+    setCurrentContractFactsForm({});
+    setTargetContractFactsForm({});
     setInsurerLabel("");
     setProductLabel("");
     setInceptionDate("");
@@ -161,6 +174,36 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
   const handleNext = () => {
     setErrorMessage("");
 
+    const contractFailure = validateContractStep({ generation, generationSelected: isGenerationSelected, inceptionDate, gen1D1Coverage, insurerLabel, productLabel, monthlyPremium, samsungGen23Variant, gen1Product })
+      ?? validateContractDetails({ generation, contractDetails, currentContractFactsForm, gen4NonCoveredRider });
+    if (contractFailure) { applyInputFailure({ ...contractFailure, goToStep: 1 }); return; }
+
+    // STEP 1의 계약 상세(2·3세대 가입금액 등)를 확정 시점에 모든 예정 치료에 반영한다.
+    let usagesWithContractDetails: typeof plannedUsages = plannedUsages.map(usage => ({
+      ...usage,
+      samsungCalculationInput: { ...usage.samsungCalculationInput, otherIndemnityPoliciesExist: false, proportionalPaymentFactor: undefined },
+    }));
+    if (generation === 2 || generation === 3) {
+      try {
+        const inputs = singleContractDetails(contractDetails, samsungGen23Variant);
+        usagesWithContractDetails = usagesWithContractDetails.map((usage) => applyGen23ContractInputs(generation === 3 ? { ...usage, gen23RiderEnrollmentStatus: gen3EnrollmentForTreatment(usage.gen23TreatmentType, gen3Riders) } : usage, inputs));
+      } catch (error) {
+        setErrorMessage(`고객 보험 정보(STEP 1)의 가입금액·계약 상세를 확인해주세요. ${error instanceof Error ? error.message : ""}`);
+        goToInputStep(1);
+        return;
+      }
+    }
+
+    let contractFacts;
+    try {
+      contractFacts = {
+        ...(generation === 4 ? { currentContractFacts: parseSamsungContractFacts(currentContractFormForSelection(currentContractFactsForm, gen4NonCoveredRider), 4) } : {}),
+        targetContractFacts: parseSamsungContractFacts(targetContractFormForSelection(targetContractFactsForm, hasTarget5GSpecialRider1, hasTarget5GSpecialRider2), 5),
+      };
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : '계약 상세를 확인해주세요.');
+      return;
+    }
     const result = buildSubmission({
       generation,
       generationSelected: isGenerationSelected,
@@ -179,7 +222,7 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
       target5GMonthlyPremium,
       hasTarget5GSpecialRider1,
       hasTarget5GSpecialRider2,
-      plannedUsages,
+      plannedUsages: usagesWithContractDetails,
       editingUsageId,
       selectedSampleId,
       isSampleConfirmed,
@@ -187,9 +230,13 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
       isTreatmentHelpConfirmed,
       isStep3Confirmed,
       calculationAssumptions: {
+        comparisonBasis,
+        assumeNoPolicyExclusions,
+        assumeSingleIndemnityContract: true,
         assumeEntireMedicalCostCovered,
         assumeNoPriorLimitUsage,
         assumeEachOccurrenceSeparate,
+        ...contractFacts,
       },
     });
 
@@ -211,14 +258,6 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
 
   const handleStep2Next = () => {
     setErrorMessage("");
-    if (!target5GMonthlyPremium || Number(target5GMonthlyPremium) <= 0) {
-      setErrorMessage("비교용 5세대 월 보험료를 올바르게 입력해주세요.");
-      return;
-    }
-    if (!isTargetPremiumHelpConfirmed) {
-      showTargetPremiumHelp();
-      return;
-    }
     if (plannedUsages.length === 0) {
       setErrorMessage("예정 치료를 입력한 뒤 하단의 ‘추가하기’ 버튼을 눌러 등록해주세요.");
       return;
@@ -230,12 +269,24 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
     goToInputStep(3);
   };
 
+  const handleStep3Next = () => {
+    setErrorMessage('');
+    if (!target5GMonthlyPremium || !Number.isFinite(Number(target5GMonthlyPremium)) || Number(target5GMonthlyPremium) <= 0) {
+      setErrorMessage('비교용 5세대 월 보험료를 올바르게 입력해주세요.');
+      return;
+    }
+    try { parseSamsungContractFacts(targetContractFormForSelection(targetContractFactsForm, hasTarget5GSpecialRider1, hasTarget5GSpecialRider2), 5); }
+    catch (error) { setErrorMessage(error instanceof Error ? error.message : '5세대 가입금액을 확인해주세요.'); return; }
+    goToInputStep(4);
+  };
+
   return {
     handleLoadSamplePolicy,
     resetLocalForm,
     handleConfirmResetAll,
     handleNext,
     handleStep2Next,
+    handleStep3Next,
   };
 }
 

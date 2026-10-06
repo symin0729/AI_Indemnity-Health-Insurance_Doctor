@@ -24,13 +24,21 @@
             "basis": "ELIGIBLE_EXPENSE",
             "benefitRate": 0.8
           }
-        ]
+        ],
+        "annualDeductibleCap": 2000000
       },
-      "limitText": "급여 상해/질병 각각 연간 보험가입금액 한도",
+      "limitText": "상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000); 나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
+      "accumulation": {
+        "benefit": "G5-CONVERSION-COVERED-{cause}",
+        "count": "G5-CONV-01-{cause}",
+        "serviceDays": "G5-CONV-01-{cause}",
+        "deductible": "G5-CONV-01"
+      },
       "requiresAccumulator": true,
       "enforcement": {
         "annualBenefitCap": 50000000,
-        "requiresContractBenefitCap": true
+        "requiresContractBenefitCap": true,
+        "annualDeductibleCap": 2000000
       },
       "specialConditions": [
         "POLICY_EXCLUSIONS_MUST_BE_CLEARED",
@@ -46,10 +54,10 @@
         "applicableContractTypes": [
           "CONVERSION"
         ],
-        "article": "쉽게 이해하는 상품 및 약관 요약서",
-        "paragraph": "급여 입원",
-        "pdfPage": 8,
-        "printedPage": 7
+        "article": "제3조 (보장종목별 보상내용)",
+        "paragraph": "(1) 상해급여 제1항 입원",
+        "pdfPage": 24,
+        "printedPage": 23
       },
       "verificationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING"
     },
@@ -75,9 +83,20 @@
           "GENERAL_TERTIARY": 20000
         }
       },
-      "limitText": "가입금액별 1회 통원 한도",
-      "requiresAccumulator": false,
-      "enforcement": null,
+      "limitText": "급여 상해/질병 각각 입원·통원 합산 연간 보험가입금액(최대 50,000,000원); 통원 1회당 최대 200,000원",
+      "accumulation": {
+        "benefit": "G5-CONVERSION-COVERED-{cause}",
+        "count": "G5-CONV-02-{cause}",
+        "serviceDays": "G5-CONV-02-{cause}",
+        "deductible": "G5-CONV-02"
+      },
+      "requiresAccumulator": true,
+      "enforcement": {
+        "annualBenefitCap": 50000000,
+        "requiresContractBenefitCap": true,
+        "requiresPerOccurrenceBenefitCap": true,
+        "maxPerOccurrenceBenefitCap": 200000
+      },
       "specialConditions": [
         "POLICY_EXCLUSIONS_MUST_BE_CLEARED",
         "MULTIPLE_POLICY_PROPORTIONAL_PAYMENT_REQUIRED_IF_APPLICABLE",
@@ -92,10 +111,10 @@
         "applicableContractTypes": [
           "CONVERSION"
         ],
-        "article": "쉽게 이해하는 상품 및 약관 요약서",
-        "paragraph": "급여 통원",
-        "pdfPage": 8,
-        "printedPage": 7
+        "article": "제3조 (보장종목별 보상내용)",
+        "paragraph": "(1) 상해급여 제1항 통원 표1",
+        "pdfPage": 24,
+        "printedPage": 23
       },
       "verificationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING"
     },
@@ -129,10 +148,17 @@
           "condition": "GENERAL_OR_TERTIARY_HOSPITAL_EXCLUDING_SPECIFIED_THREE"
         }
       },
-      "limitText": "상급종합·종합병원 자기부담 최대 5,000,000원(특정 3대 제외)",
-      "requiresAccumulator": false,
+      "limitText": "상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000); 상급종합·종합병원 입원 공제금액 연 5,000,000원 상한. 근골격계 이학요법·체외충격파 및 주사료 제외, MRI 포함(PDF 62쪽).",
+      "accumulation": {
+        "benefit": "G5-CONVERSION-SEVERE-GENERAL-{cause}",
+        "count": "G5-CONV-03-{cause}",
+        "serviceDays": "G5-CONV-03-{cause}",
+        "deductible": "G5-CONVERSION-SEVERE-INPATIENT"
+      },
+      "requiresAccumulator": true,
       "enforcement": {
         "annualBenefitCap": 50000000,
+        "requiresContractBenefitCap": true,
         "annualDeductibleCap": 5000000,
         "appliesWhen": "GENERAL_OR_TERTIARY_HOSPITAL_EXCLUDING_SPECIFIED_THREE"
       },
@@ -150,10 +176,10 @@
         "applicableContractTypes": [
           "CONVERSION"
         ],
-        "article": "쉽게 이해하는 상품 및 약관 요약서",
-        "paragraph": "중증 비급여 입원",
-        "pdfPage": 8,
-        "printedPage": 7
+        "article": "제3조 (보장종목별 보상내용)",
+        "paragraph": "(1) 상해비급여 제1항 입원",
+        "pdfPage": 51,
+        "printedPage": 50
       },
       "verificationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING"
     },
@@ -174,14 +200,25 @@
         "deductibleRate": 0.3,
         "minimumAmount": 30000
       },
-      "limitText": "상해/질병 각각 연 최대 100회",
+      "limitText": "상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 50,000,000) / 연 통원 100회 / 연 가입금액 5천만·3천만·1천만원별 1회 한도 20만·15만·10만원",
+      "accumulation": {
+        "benefit": "G5-CONVERSION-SEVERE-GENERAL-{cause}",
+        "count": "G5-CONV-04-{cause}",
+        "serviceDays": "G5-CONV-04-{cause}",
+        "deductible": "G5-CONV-04"
+      },
       "requiresAccumulator": true,
       "enforcement": {
         "annualBenefitCap": 50000000,
+        "requiresContractBenefitCap": true,
         "maxAnnualCount": 100,
         "countUnit": "VISIT",
         "separateBy": "INJURY_OR_DISEASE",
-        "fixedPerOccurrenceBenefitCap": 200000
+        "perOccurrenceCapByContract": {
+          "10000000": 100000,
+          "30000000": 150000,
+          "50000000": 200000
+        }
       },
       "specialConditions": [
         "POLICY_EXCLUSIONS_MUST_BE_CLEARED",
@@ -197,10 +234,10 @@
         "applicableContractTypes": [
           "CONVERSION"
         ],
-        "article": "쉽게 이해하는 상품 및 약관 요약서",
-        "paragraph": "중증 비급여 통원",
-        "pdfPage": 8,
-        "printedPage": 7
+        "article": "제3조 (보장종목별 보상내용)",
+        "paragraph": "(1) 상해비급여 제1항 통원 표1",
+        "pdfPage": 52,
+        "printedPage": 51
       },
       "verificationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING"
     },
@@ -222,6 +259,19 @@
         "minimumAmount": 30000
       },
       "limitText": "근골격계 이학요법·체외충격파: 350만원/50회(최초 10회 후 증상 개선 확인 시 10회 단위); 주사 250만원/50회; MRI/MRA 300만원",
+      "accumulation": {
+        "benefit": "G5-CONVERSION-SEVERE-THREE-{category}",
+        "count": "G5-CONV-05-{cause}",
+        "serviceDays": "G5-CONV-05-{cause}",
+        "deductible": "G5-CONV-05",
+        "deductibleOverrides": [
+          {
+            "category": "MRI",
+            "careSetting": "INPATIENT",
+            "group": "G5-CONVERSION-SEVERE-INPATIENT"
+          }
+        ]
+      },
       "requiresAccumulator": true,
       "enforcement": {
         "categoryLimits": {
@@ -239,7 +289,10 @@
           "MRI": {
             "annualBenefitCap": 3000000,
             "countUnit": "DIAGNOSTIC_ACTION",
-            "aggregationUnitMustBeProvided": true
+            "aggregationUnitMustBeProvided": true,
+            "annualDeductibleCap": 5000000,
+            "deductibleCapInpatientOnly": true,
+            "appliesWhen": "GENERAL_OR_TERTIARY_HOSPITAL_EXCLUDING_SPECIFIED_THREE"
           }
         }
       },
@@ -258,10 +311,10 @@
         "applicableContractTypes": [
           "CONVERSION"
         ],
-        "article": "쉽게 이해하는 상품 및 약관 요약서",
-        "paragraph": "중증 비급여 3대",
-        "pdfPage": 9,
-        "printedPage": 8
+        "article": "제3조 (보장종목별 보상내용)",
+        "paragraph": "(3) 3대비급여 제1항",
+        "pdfPage": 55,
+        "printedPage": 54
       },
       "verificationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING"
     },
@@ -292,10 +345,17 @@
           }
         ]
       },
-      "limitText": "(상급)종합병원 외 병·의원은 회당 3,000,000원 한도",
-      "requiresAccumulator": false,
+      "limitText": "상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 10,000,000) / 종합·상급종합병원 외 입원 1회 3,000,000원",
+      "accumulation": {
+        "benefit": "G5-CONVERSION-NONSEVERE-GENERAL-{cause}",
+        "count": "G5-CONV-06-{cause}",
+        "serviceDays": "G5-CONV-06-{cause}",
+        "deductible": "G5-CONV-06"
+      },
+      "requiresAccumulator": true,
       "enforcement": {
         "annualBenefitCap": 10000000,
+        "requiresContractBenefitCap": true,
         "fixedPerOccurrenceBenefitCap": 3000000,
         "fixedPerOccurrenceCapAppliesWhen": "NON_GENERAL_OR_TERTIARY_HOSPITAL"
       },
@@ -313,8 +373,8 @@
         "applicableContractTypes": [
           "CONVERSION"
         ],
-        "article": "제3조",
-        "paragraph": "제1항 (1) 상해비급여",
+        "article": "제3조 (보장종목별 보상내용)",
+        "paragraph": "(1) 상해비급여 제1항 입원",
         "pdfPage": 64,
         "printedPage": 63
       },
@@ -338,14 +398,25 @@
         "deductibleRate": 0.5,
         "minimumAmount": 50000
       },
-      "limitText": "상해/질병 각각 연 최대 100일; 가입금액별 1일 한도",
+      "limitText": "상해·질병 각각 입원+통원 합산 계약가입금액(최대 연 10,000,000) / 연 통원 100일 / 연 가입금액 1천만·600만·200만원별 1일 한도 20만·15만·10만원",
+      "accumulation": {
+        "benefit": "G5-CONVERSION-NONSEVERE-GENERAL-{cause}",
+        "count": "G5-CONV-07-{cause}",
+        "serviceDays": "G5-CONV-07-{cause}",
+        "deductible": "G5-CONV-07"
+      },
       "requiresAccumulator": true,
       "enforcement": {
         "annualBenefitCap": 10000000,
+        "requiresContractBenefitCap": true,
         "maxAnnualCount": 100,
         "countUnit": "SERVICE_DAY",
         "separateBy": "INJURY_OR_DISEASE",
-        "fixedPerOccurrenceBenefitCap": 200000
+        "perOccurrenceCapByContract": {
+          "2000000": 100000,
+          "6000000": 150000,
+          "10000000": 200000
+        }
       },
       "specialConditions": [
         "POLICY_EXCLUSIONS_MUST_BE_CLEARED",
@@ -361,10 +432,10 @@
         "applicableContractTypes": [
           "CONVERSION"
         ],
-        "article": "제3조",
-        "paragraph": "제1항 (1) 상해비급여",
-        "pdfPage": 64,
-        "printedPage": 63
+        "article": "제3조 (보장종목별 보상내용)",
+        "paragraph": "(1) 상해비급여 제1항 통원 표1",
+        "pdfPage": 65,
+        "printedPage": 64
       },
       "verificationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING"
     },
@@ -387,6 +458,12 @@
         "minimumAmount": 50000
       },
       "limitText": "연 2,000,000원",
+      "accumulation": {
+        "benefit": "G5-CONV-08",
+        "count": "G5-CONV-08-{cause}",
+        "serviceDays": "G5-CONV-08-{cause}",
+        "deductible": "G5-CONV-08"
+      },
       "requiresAccumulator": true,
       "enforcement": {
         "annualBenefitCap": 2000000,
@@ -406,10 +483,10 @@
         "applicableContractTypes": [
           "CONVERSION"
         ],
-        "article": "쉽게 이해하는 상품 및 약관 요약서",
-        "paragraph": "비중증 비급여 MRI/MRA",
-        "pdfPage": 9,
-        "printedPage": 8
+        "article": "제3조 (보장종목별 보상내용)",
+        "paragraph": "(3) 비급여 자기공명영상진단 제1항",
+        "pdfPage": 67,
+        "printedPage": 66
       },
       "verificationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING"
     },
@@ -459,6 +536,12 @@
         "effectiveFrom": "2028-05-06"
       },
       "limitText": "2028-05-06부터 적용; 장기요양 1·2등급 관련 비급여는 차등 산정에서 제외",
+      "accumulation": {
+        "benefit": "G5-CONV-09",
+        "count": "G5-CONV-09-{cause}",
+        "serviceDays": "G5-CONV-09-{cause}",
+        "deductible": "G5-CONV-09"
+      },
       "requiresAccumulator": false,
       "enforcement": null,
       "specialConditions": [
@@ -475,10 +558,10 @@
         "applicableContractTypes": [
           "CONVERSION"
         ],
-        "article": "쉽게 이해하는 상품 및 약관 요약서",
-        "paragraph": "비중증 비급여 보험료 차등",
-        "pdfPage": 10,
-        "printedPage": 9
+        "article": "제6조 (보험료의 계산)",
+        "paragraph": "제3항 요율 상대도 표 및 제4항~제5항",
+        "pdfPage": 75,
+        "printedPage": 74
       },
       "verificationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING"
     }

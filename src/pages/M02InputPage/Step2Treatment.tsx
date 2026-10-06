@@ -4,27 +4,40 @@ import { type CopayInstitution, type CopayRegion } from "../../domain/insuranceI
 import { genericGen23CareSetting, syncGen23CareSetting } from "../../domain/samsungGen23CareSetting";
 import { Gen23Inputs } from "../../components/samsung/Gen23Inputs";
 import { MASKED_INSURER } from "../../domain/displayMask";
+import { GEN23_CONTRACT_DETAIL_KEYS } from "../../domain/contractDetails";
+import { NON_COVERED_TREATMENT_TYPES, nonCoveredTreatmentTypeLabel, toNonCoveredTreatmentType } from "../../domain/nonCoveredTreatmentType";
 import type { BenefitClass, CareSetting, ClaimCause, NationalHealthInsuranceStatus, SeverityClass } from "../../domain/medical";
 import { formatWonInput, getWonInputValue, IsoDateInput } from "./M02Shared";
 import type { M02Form } from "./useM02Form";
+
+/** 예정 치료의 2·3세대 세부 입력에서 숨기는 칸: 공통 칸(치료 원인 등)과 STEP 1에서 받는 계약 상세·올해 이용 내역. */
+const GEN23_HIDDEN_IN_TREATMENT: ReadonlySet<string> = new Set([
+  "gen23PriorPaidBenefit", "gen23BenefitLimitRestored",
+  "gen23SameDayAggregationConfirmed", "gen23AggregationUnit", "gen23EligibleExpense",
+  "claimCause", "nationalHealthInsuranceStatus", "gen23PolicyExclusionsCleared", "gen23TreatmentType",
+  ...GEN23_CONTRACT_DETAIL_KEYS,
+  // 연간 계약 단위 올해 이용 내역은 STEP 1-2에서 받는다.
+  "gen23PriorAnnualCount", "gen23PriorEligibleDeductible",
+]);
+/** 입원의 '이미 받은 보험금'(1상해·1질병 한도)만 예정 치료에서 받는다. 외래·처방·3대 특약은 STEP 1-2 값을 쓴다. */
+const gen23HiddenInTreatment = (inpatient: boolean, special: boolean): ReadonlySet<string> =>
+  inpatient && !special ? GEN23_HIDDEN_IN_TREATMENT : new Set([...GEN23_HIDDEN_IN_TREATMENT, "gen23PriorPaidBenefit"]);
 
 export default function Step2Treatment({ form }: { form: M02Form }) {
   const {
     claimCause,
     gen1CoveredRoomAndTreatment,
     gen1NonNhiInpatientTotal,
-    gen1PolicyExclusionsCleared,
-    gen1PriorPaidBenefit,
-    gen1PriorServiceDays,
+    policyExclusionsCleared,
+    gen1DaysSinceAccident,
     gen1Product,
     gen1RoomDifference,
     nationalHealthInsuranceStatus,
     setClaimCause,
     setGen1CoveredRoomAndTreatment,
     setGen1NonNhiInpatientTotal,
-    setGen1PolicyExclusionsCleared,
-    setGen1PriorPaidBenefit,
-    setGen1PriorServiceDays,
+    setPolicyExclusionsCleared,
+    setGen1DaysSinceAccident,
     setGen1RoomDifference,
     setNationalHealthInsuranceStatus,
     applyCopayDefault,
@@ -46,12 +59,14 @@ export default function Step2Treatment({ form }: { form: M02Form }) {
     healthInsuranceCopayRatePercent,
     institutionType,
     isTreatmentFormOpen,
-    isTreatmentHelpConfirmed,
     isTreatmentLimitReached,
     patientCostHelpDialogRef,
     plannedUsages,
     samsungGen23Variant,
     setBenefitClass,
+    treatmentCategory,
+    setTreatmentCategory,
+    contractDetails,
     setCopayInstitution,
     setCopayRegion,
     setCoveredAmount,
@@ -73,13 +88,13 @@ export default function Step2Treatment({ form }: { form: M02Form }) {
   } = form;
 
   return (
-    <section className="form-card">
+    <section id="input-step-2" tabIndex={-1} className="form-card">
         {treatmentSampleNotice && <p className="notice-box" role="status">{treatmentSampleNotice}</p>}
-        <span className="step-badge">STEP 2-2</span>
+        <span className="step-badge">STEP 2 · 예정 치료</span>
         <div className="treatment-heading-row">
           <h2 className="card-title" style={{ margin: 0 }}>예정 치료</h2>
           <div className="treatment-compact-actions">
-            <button type="button" className={`sample-button required-confirm-button${isTreatmentHelpConfirmed ? " is-confirmed" : ""}`} aria-haspopup="dialog" onClick={() => treatmentHelpDialogRef.current?.showModal()}>{isTreatmentHelpConfirmed ? "✓ 필수 입력 안내 확인 완료" : "필수 입력 안내 확인"}</button>
+            <button type="button" className="sample-button" aria-haspopup="dialog" onClick={() => treatmentHelpDialogRef.current?.showModal()}>입력 도움말</button>
             <button type="button" className="sample-button" aria-haspopup="dialog" onClick={() => treatmentSampleDialogRef.current?.showModal()} disabled={isTreatmentLimitReached}>치료 샘플 불러오기</button>
           </div>
         </div>
@@ -195,7 +210,7 @@ export default function Step2Treatment({ form }: { form: M02Form }) {
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
               <label htmlFor="patient-unit-cost" style={{ marginBottom: 0 }}>한 번 진료받을 때 내가 내는 금액 (필수)</label>
-              <button type="button" className="sample-button" style={{ minHeight: "30px", padding: "4px 9px", fontSize: "0.8rem" }} aria-label="진료비 입력 안내 확인" aria-haspopup="dialog" aria-controls="patient-cost-dialog" onClick={() => patientCostHelpDialogRef.current?.showModal()}>확인</button>
+              <button type="button" className="sample-button" style={{ minHeight: "30px", padding: "4px 9px", fontSize: "0.8rem" }} aria-label="진료비 입력 도움말" aria-haspopup="dialog" aria-controls="patient-cost-dialog" onClick={() => patientCostHelpDialogRef.current?.showModal()}>도움말</button>
             </div>
             <span className="input-unit-row"><input
               id="patient-unit-cost"
@@ -249,8 +264,8 @@ export default function Step2Treatment({ form }: { form: M02Form }) {
             </select>
           </label>}
 
-          <label>
-            건강보험 본인부담률 (r)
+          {benefitClass === "COVERED" && careSetting === "OUTPATIENT" && <label>
+            건강보험 본인부담률
             <span className="input-unit-row"><input
               type="number"
               onWheel={(e) => e.currentTarget.blur()}
@@ -267,7 +282,7 @@ export default function Step2Treatment({ form }: { form: M02Form }) {
               }
               placeholder="예: 40"
             /><span className="input-unit-label">%</span></span>
-          </label>
+          </label>}
         </div>
 
         <div className="form-grid">
@@ -286,6 +301,7 @@ export default function Step2Treatment({ form }: { form: M02Form }) {
             }
 
             if (field.key === "severityClass") {
+              if (benefitClass !== "NON_COVERED") return null;
               return (
                 <label key={field.key}>
                   {field.label}
@@ -337,32 +353,80 @@ export default function Step2Treatment({ form }: { form: M02Form }) {
           })}
         </div>
 
-          {(generation === 2 || generation === 3) && <Gen23Inputs generation={generation} riderManaged={generation === 3} variant={samsungGen23Variant} insurerName={MASKED_INSURER} embedded institutionManaged value={gen23Form} onChange={(values) => {
+        {/* 모든 세대 공통: 현재 계약과 5세대 전환 계산이 같은 값을 쓴다. */}
+        <fieldset className="treatment-section" aria-label="치료 원인과 보장 확인">
+          <legend><h3>치료 원인과 보장 확인</h3></legend>
+          <div className="form-grid">
+            <label>
+              치료 원인 (필수)
+              <InputHelp title="치료 원인" description="사고로 다친 치료면 상해, 그 밖의 병 치료면 질병을 선택하세요. 상해와 질병은 보장 한도와 계산 규칙이 다릅니다." source="진료기록·진단서" />
+              <select value={claimCause} onChange={(event) => setClaimCause(event.target.value as ClaimCause)}>
+                <option value="UNKNOWN">선택해주세요</option>
+                <option value="INJURY">상해</option>
+                <option value="DISEASE">질병</option>
+              </select>
+            </label>
+            <label>
+              이번 진료의 국민건강보험 적용 (필수)
+              <InputHelp title="국민건강보험 적용" description="대부분의 병원 진료는 건강보험이 적용됩니다. 비급여 항목이 있다는 이유만으로 '적용되지 않음'을 고르지 마세요." source="진료비 영수증·병원 원무과" />
+              <select value={nationalHealthInsuranceStatus} onChange={(event) => setNationalHealthInsuranceStatus(event.target.value as NationalHealthInsuranceStatus)}>
+                <option value="APPLIED">적용됨</option>
+                <option value="NOT_APPLIED">적용되지 않음</option>
+                <option value="PARTIAL">일부 적용</option>
+              </select>
+            </label>
+          </div>
+          {benefitClass === "NON_COVERED" && (
+            <div className="form-grid">
+              <label>
+                비급여 치료 종류
+                <InputHelp title="비급여 치료 종류" description="도수치료·체외충격파·증식치료, 비급여 주사, MRI/MRA는 약관에서 공제금액과 한도를 따로 정합니다. 해당하지 않으면 일반 비급여를 고르세요." source="진료비 세부내역서·병원 안내" />
+                <select value={toNonCoveredTreatmentType(benefitClass, treatmentCategory)} onChange={(event) => setTreatmentCategory(event.target.value)}>
+                  {NON_COVERED_TREATMENT_TYPES.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+                </select>
+              </label>
+            </div>
+          )}
+          {nationalHealthInsuranceStatus === "PARTIAL" && <div className="notice-box warning">건강보험 일부 적용은 비용을 나누는 기준이 확인되지 않아 계산이 보류됩니다.</div>}
+          <label className="no-treatment-option">
+            <input type="checkbox" checked={policyExclusionsCleared} onChange={(event) => setPolicyExclusionsCleared(event.target.checked)} />
+            <span><strong>증권·약관에서 보장 제외 사유가 없음을 확인함 (선택)</strong></span>
+          </label>
+        </fieldset>
+
+          {(generation === 2 || generation === 3) && <Gen23Inputs generation={generation} riderManaged={generation === 3} variant={samsungGen23Variant} insurerName={MASKED_INSURER} embedded institutionManaged hiddenKeys={new Set([...(careSetting === "OUTPATIENT" ? ["gen23CoveredCopay", "gen23NonCoveredExpense"] : []), ...gen23HiddenInTreatment(careSetting === "INPATIENT", generation === 3 && toNonCoveredTreatmentType(benefitClass, treatmentCategory) !== ""), ...(form.comparisonBasis === "FRESH_YEAR" ? ["gen23PriorPaidBenefit", "gen23BenefitLimitRestored"] : [])])} value={{ ...gen23Form, ...contractDetails, claimCause, nationalHealthInsuranceStatus, gen23PolicyExclusionsCleared: String(policyExclusionsCleared), ...(generation === 3 ? { gen23TreatmentType: toNonCoveredTreatmentType(benefitClass, treatmentCategory) || "BASE" } : {}) }} onChange={(values) => {
             setGen23Form(values);
             const selectedCare = genericGen23CareSetting(values.gen23CareSetting);
             if (selectedCare && selectedCare !== careSetting) changeCareSetting(selectedCare);
           }} />}
+
+        {generation === 4 && careSetting === 'INPATIENT' && benefitClass === 'NON_COVERED' && <fieldset className="treatment-section">
+          <legend><h3>입원 비용 구분</h3></legend>
+          <p className="sample-note">병실료 차액은 보상 비율과 하루 한도가 달라 따로 계산합니다. 위 보장대상 금액에 포함된 차액을 입력하세요.</p>
+          <div className="form-grid">
+            <label>병실료 차액 (없으면 0)<span className="input-unit-row"><input type="text" inputMode="numeric" value={formatWonInput(gen1RoomDifference)} onChange={event => setGen1RoomDifference(getWonInputValue(event.target.value))} /><span className="input-unit-label">원</span></span></label>
+            {Number(gen1RoomDifference) > 0 && <label>입원일수<span className="input-unit-row"><input type="number" min="1" step="1" value={gen23Form.gen23InpatientDays ?? ''} onChange={event => setGen23Form({ ...gen23Form, gen23InpatientDays: event.target.value })} /><span className="input-unit-label">일</span></span></label>}
+          </div>
+        </fieldset>}
 
         {/* 세대별 세부 입력: 1세대는 삼성 0904.2 D1 계산에 필요한 값을 여기서 입력한다. */}
         {generation === 1 && gen1Product === "SAMSUNG_0904_2" && (
           <fieldset className="form-card" aria-label="1세대 세부 입력">
             <legend><h3>1세대 세부 입력 (D1 계산 조건)</h3></legend>
             <div className="form-grid">
-              <label>질병 / 상해<select value={claimCause} onChange={(event) => setClaimCause(event.target.value as ClaimCause)}><option value="UNKNOWN">확인할 수 없음</option><option value="INJURY">상해</option><option value="DISEASE">질병</option></select></label>
-              <label>이번 진료의 국민건강보험 적용 여부<select value={nationalHealthInsuranceStatus} onChange={(event) => setNationalHealthInsuranceStatus(event.target.value as NationalHealthInsuranceStatus)}><option value="UNKNOWN">확인할 수 없음</option><option value="APPLIED">적용됨</option><option value="NOT_APPLIED">적용되지 않음</option><option value="PARTIAL">일부 적용</option></select></label>
+              <label>
+                사고일·발병일부터 경과일 (필수)
+                <InputHelp title="사고일·발병일부터 경과일" description="상해는 사고일, 질병은 발병일부터 이번 진료일까지의 날수입니다. 1세대는 이 날부터 365일까지만 보장합니다." source="진료기록·진단서" />
+                <span className="input-unit-row"><input type="number" min="0" step="1" value={gen1DaysSinceAccident} onChange={(event) => setGen1DaysSinceAccident(event.target.value)} placeholder="예: 30" /><span className="input-unit-label">일</span></span>
+              </label>
             </div>
-            {nationalHealthInsuranceStatus === "PARTIAL" && <div className="notice-box warning">일부 적용 조합은 RULE_NOT_VERIFIED로 처리됩니다.</div>}
             {careSetting === "INPATIENT" && nationalHealthInsuranceStatus === "APPLIED" && <div className="form-grid">
               <label>실제 부담액<input type="text" inputMode="numeric" value={formatWonInput(gen1CoveredRoomAndTreatment)} onChange={(event) => setGen1CoveredRoomAndTreatment(getWonInputValue(event.target.value))} />원</label>
               <label>병실료 차액<input type="text" inputMode="numeric" value={formatWonInput(gen1RoomDifference)} onChange={(event) => setGen1RoomDifference(getWonInputValue(event.target.value))} placeholder="없으면 0" />원</label>
             </div>}
             {careSetting === "INPATIENT" && nationalHealthInsuranceStatus === "NOT_APPLIED" && <label>입원의료비 총액<input type="text" inputMode="numeric" value={formatWonInput(gen1NonNhiInpatientTotal)} onChange={(event) => setGen1NonNhiInpatientTotal(getWonInputValue(event.target.value))} />원</label>}
             {careSetting === "OUTPATIENT" && <p className="sample-note">통원 금액은 위의 ‘한 번 진료받을 때 내가 내는 금액’을 사용합니다.</p>}
-            <div className="form-grid">
-              <label>이전 지급액<input type="text" inputMode="numeric" value={formatWonInput(gen1PriorPaidBenefit)} onChange={(event) => setGen1PriorPaidBenefit(getWonInputValue(event.target.value))} />원</label>
-              {careSetting === "OUTPATIENT" && <label>이전 이용일수<input type="number" min="0" step="1" value={gen1PriorServiceDays} onChange={(event) => setGen1PriorServiceDays(event.target.value)} />일</label>}
-            </div>
-            <label className="no-treatment-option"><input type="checkbox" checked={gen1PolicyExclusionsCleared} onChange={(event) => setGen1PolicyExclusionsCleared(event.target.checked)} /><span><strong>보상하지 않는 사항에 해당하지 않음을 확인했습니다.</strong></span></label>
+
           </fieldset>
         )}
 
@@ -473,7 +537,7 @@ export default function Step2Treatment({ form }: { form: M02Form }) {
                       {usage.treatmentCategory && (
                         <div>
                           <strong style={{ marginRight: "8px" }}>치료 분류:</strong>
-                          {usage.treatmentCategory}
+                          {nonCoveredTreatmentTypeLabel(usage.treatmentCategory)}
                         </div>
                       )}
 

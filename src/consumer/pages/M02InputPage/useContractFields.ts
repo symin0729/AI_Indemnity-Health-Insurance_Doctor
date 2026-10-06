@@ -1,3 +1,4 @@
+import { validateContractDetails } from './contractRequirements';
 import { gen2VariantsForInceptionDate } from "../../../domain/insuranceInputDefaults";
 import { GEN3_RIDER_DEFAULT, type Gen3RiderSelections } from "../../../domain/gen3Riders";
 import { contractStepResetPatch, type ContractPatch } from "./contractTransitions";
@@ -7,6 +8,9 @@ import { useState } from "react";
 import type { ClaimCause, NationalHealthInsuranceStatus } from "../../../domain/medical";
 import { SAMPLE_POLICY_OPTIONS, type SampleId } from "../../../services/samplePolicyService";
 import { type RiderEnrollmentStatus } from "../../store/useAnalysisStore";
+import { contractDetailsFromUsage, type ContractDetailForm } from "../../../domain/contractDetails";
+import { gen23PriorFormFromUsages } from "../../../domain/gen23PriorUsage";
+import { samsungContractForm, type SamsungContractForm } from '../../../domain/samsungContractFacts';
 
 import type { BaseApi } from "./useM02Base";
 
@@ -15,8 +19,10 @@ export function useContractFields(deps: BaseApi) {
     generation,
     goToInputStep,
     samsungGen23Variant,
+    savedCalculationAssumptions,
     savedContract,
     savedProductCalculationSelections,
+    savedUsages,
     setErrorMessage,
     isGenerationSelected,
     setGeneration,
@@ -132,8 +138,9 @@ const [gen1D1Coverage, setGen1D1Coverage] =
 
   const [claimCause, setClaimCause] = useState<ClaimCause>("UNKNOWN");
 
+  // 정책: 건강보험 적용 여부는 필수이며 기본값은 '적용됨'이다(대부분의 진료가 해당).
   const [nationalHealthInsuranceStatus, setNationalHealthInsuranceStatus] =
-    useState<NationalHealthInsuranceStatus>("UNKNOWN");
+    useState<NationalHealthInsuranceStatus>("APPLIED");
 
   const [gen1CoveredRoomAndTreatment, setGen1CoveredRoomAndTreatment] = useState("");
 
@@ -145,7 +152,26 @@ const [gen1D1Coverage, setGen1D1Coverage] =
 
   const [gen1PriorServiceDays, setGen1PriorServiceDays] = useState("");
 
-  const [gen1PolicyExclusionsCleared, setGen1PolicyExclusionsCleared] = useState(false);
+  const [gen1DaysSinceAccident, setGen1DaysSinceAccident] = useState("");
+
+  // 현재 계약 상세(가입금액·다른 실손·보장기간). 보험증권에서 확인하는 값이라 STEP 1에서 받는다.
+  const [currentContractFactsForm, setCurrentContractFactsForm] = useState<SamsungContractForm>(() => samsungContractForm(savedCalculationAssumptions.currentContractFacts ?? {
+    coveredBenefitCap: savedCalculationAssumptions.contractBenefitCap,
+    coveredOutpatientCap: savedCalculationAssumptions.perOccurrenceBenefitCap,
+  }));
+  const [contractDetails, setContractDetails] = useState<ContractDetailForm>(() => {
+    if (savedContract?.generation === 2 || savedContract?.generation === 3) return { ...contractDetailsFromUsage(savedUsages[0]), ...gen23PriorFormFromUsages(savedUsages) };
+    if (savedContract?.generation === 4) {
+      return {
+        ...(savedCalculationAssumptions.contractBenefitCap !== undefined ? { gen4ContractBenefitCap: String(savedCalculationAssumptions.contractBenefitCap) } : {}),
+        ...(savedCalculationAssumptions.perOccurrenceBenefitCap !== undefined ? { gen4PerOccurrenceBenefitCap: String(savedCalculationAssumptions.perOccurrenceBenefitCap) } : {}),
+      };
+    }
+    return {};
+  });
+
+  /** 모든 세대 공통: 보상하지 않는 사항에 해당하지 않음 확인(현재 계약과 5세대 전환 계산 모두 필요). */
+  const [policyExclusionsCleared, setPolicyExclusionsCleared] = useState(false);
 
 
   const gen2Availability = gen2VariantsForInceptionDate(inceptionDate);
@@ -196,6 +222,10 @@ const [gen1D1Coverage, setGen1D1Coverage] =
     if (patch.reentryCycleYears !== undefined) setReentryCycleYears(patch.reentryCycleYears);
     if (patch.selectedSampleId !== undefined) setSelectedSampleId(patch.selectedSampleId as SampleId | null);
     if (patch.isSampleConfirmed !== undefined) setIsSampleConfirmed(patch.isSampleConfirmed);
+    if (patch.contractDetails !== undefined) {
+      setContractDetails(patch.contractDetails);
+      setCurrentContractFactsForm({});
+    }
   };
 
 
@@ -228,8 +258,12 @@ const [gen1D1Coverage, setGen1D1Coverage] =
       return;
     }
     if (failure.message) setErrorMessage(failure.message);
-    if (failure.focusId) document.getElementById(failure.focusId)?.focus();
     if (failure.goToStep) goToInputStep(failure.goToStep);
+    if (failure.focusId) window.requestAnimationFrame(() => {
+      const field = document.getElementById(failure.focusId!);
+      field?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      field?.focus();
+    });
   };
 
 
@@ -252,6 +286,8 @@ const [gen1D1Coverage, setGen1D1Coverage] =
       return;
     }
 
+    const detailFailure = validateContractDetails({ generation, contractDetails, currentContractFactsForm, gen4NonCoveredRider });
+    if (detailFailure) { applyInputFailure(detailFailure); return; }
     goToInputStep(2);
   };
 
@@ -304,8 +340,14 @@ const [gen1D1Coverage, setGen1D1Coverage] =
     setGen1PriorPaidBenefit,
     gen1PriorServiceDays,
     setGen1PriorServiceDays,
-    gen1PolicyExclusionsCleared,
-    setGen1PolicyExclusionsCleared,
+    gen1DaysSinceAccident,
+    setGen1DaysSinceAccident,
+    contractDetails,
+    currentContractFactsForm,
+    setCurrentContractFactsForm,
+    setContractDetails,
+    policyExclusionsCleared,
+    setPolicyExclusionsCleared,
     gen2Availability,
     gen23VariantItems,
     isGen1Placeholder,

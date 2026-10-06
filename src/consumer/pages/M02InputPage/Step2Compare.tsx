@@ -1,25 +1,24 @@
 import { InputHelp } from "../../../components/InputHelp";
 import { formatWonInput, getWonInputValue } from "./M02Shared";
 import type { M02Form } from "./useM02Form";
+import SamsungContractFactsFields from '../../../components/samsung/SamsungContractFactsFields';
 
 export default function Step2Compare({ form }: { form: M02Form }) {
   const {
     hasTarget5GSpecialRider1,
     hasTarget5GSpecialRider2,
-    isTargetPremiumHelpConfirmed,
     riderDetailVisible,
     setHasTarget5GSpecialRider1,
     setHasTarget5GSpecialRider2,
-    setIsTargetPremiumHelpConfirmed,
     setTarget5GMonthlyPremiumInput,
     target5GMonthlyPremium,
     toggleRiderDetail,
   } = form;
 
   return (
-    <section id="input-step-2" tabIndex={-1} className="compare-card">
+    <section id="input-step-3" tabIndex={-1} className="compare-card">
         <span className="step-badge">
-          STEP 2-1
+          STEP 3 · 5세대 비교 조건
         </span>
 
         <h2 className="card-title">
@@ -27,13 +26,20 @@ export default function Step2Compare({ form }: { form: M02Form }) {
         </h2>
 
         <p className="card-description">
-          5세대로 전환한다고 가정했을 때
-          사용할 비교 조건입니다.
+          2단계에서 입력한 동일한 예정 치료를 현재 보험과 5세대에 각각 적용합니다.
+          여기서는 5세대의 견적 보험료와 가입할 보장만 입력하세요.
         </p>
+
+        <section className="notice-box" aria-label="두 계약에 공통으로 적용할 예정 치료">
+          <strong>동일한 의료 이용으로 비교합니다</strong>
+          <ul>{form.plannedUsages.map(usage => <li key={usage.id}>{usage.treatmentName} · {usage.careSetting === 'INPATIENT' ? '입원' : '통원'} · {usage.benefitClass === 'COVERED' ? '급여' : usage.benefitClass === 'NON_COVERED' ? '비급여' : '급여 구분 확인 필요'} · 회당 {usage.unitCost.toLocaleString('ko-KR')}원 · {usage.frequency}회</li>)}</ul>
+          <p>치료·비용·횟수는 같고, 보험금은 각 계약의 가입 보장·공제·한도에 따라 달라집니다.</p>
+          <button type="button" className="review-edit-button" onClick={() => form.goToInputStep(2)}>예정 치료 수정</button>
+        </section>
 
         <label id="target-premium-help-area" htmlFor="target-premium">
           비교용 5세대 월 보험료 (필수)
-            <InputHelp title="비교용 5세대 월 보험료" description="5세대 전환 시 예상되는 월 보험료입니다. 현재 보험료와 구분하고, 보험사에서 받은 견적을 입력하세요." source="보험사의 전환 견적 또는 상담" attention confirmed={isTargetPremiumHelpConfirmed} onConfirm={() => setIsTargetPremiumHelpConfirmed(true)} />
+            <InputHelp title="비교용 5세대 월 보험료" description="5세대 전환 시 예상되는 월 보험료입니다. 현재 보험료와 구분하고, 보험사에서 받은 견적을 입력하세요." source="보험사의 전환 견적 또는 상담" />
           <span className="input-unit-row"><input id="target-premium"
             type="text"
             inputMode="numeric"
@@ -52,7 +58,7 @@ export default function Step2Compare({ form }: { form: M02Form }) {
         <div className="select-like-field" style={{ marginTop: "14px", marginBottom: 0 }}>
           <span id="target-rider-title">
             특약 가입 여부 <span className="optional-mark">선택</span>
-            <small className="sample-note rider-row__hint">가입한 특약만 체크. 체크하지 않은 특약은 미가입으로 계산.</small>
+            <small className="sample-note rider-row__hint">전환 견적에서 가입할 특약을 체크하세요. 현재 보험의 특약은 자동으로 복사되지 않습니다.</small>
           </span>
         </div>
 
@@ -108,7 +114,7 @@ export default function Step2Compare({ form }: { form: M02Form }) {
           >
             <h3 style={{ margin: "0 0 10px" }}>중증 비급여 (특약1)</h3>
             <p style={{ margin: 0, color: "var(--color-text-sub)", lineHeight: 1.7 }}>
-              암, 뇌혈관·심장질환, 희귀난치성질환 등 건강보험 산정특례 대상 질환 및 그 합병증 치료를 집중 보장하는 필수 의료 지원 특약입니다. 상해·질병당 연간 5,000만 원 한도(통원 회당 20만 원, 연 100회)와 30%의 자기부담률 등 기존 4세대의 보장 수준을 유지하며, 상급종합병원 및 종합병원 입원 시 연간 자기부담금 500만 원 상한제를 신설하여 고액 치료비 부담을 크게 줄였습니다. 또한 비중증에서 제외되는 도수치료나 비급여 주사제라도 중증 질환 치료 목적임이 인정되면 통합 한도 내에서 보장되며, 비급여 이용량에 따른 보험료 할증도 적용되지 않습니다.
+              산정특례 대상 질환과 관련 치료에 적용됩니다. 상해·질병 각각 입원·통원을 합산하며, 가입금액 5천만·3천만·1천만원에 따라 통원 1회 한도는 20만·15만·10만원입니다. 일반 중증 비급여의 자기부담률은 30%이며, 종합·상급종합병원 입원의 연간 자기부담 상한은 500만원입니다. 근골격계 이학요법·체외충격파와 주사는 이 상한에서 제외되고 MRI는 포함됩니다. 3대 비급여는 별도 공제·금액·횟수 한도를 적용합니다.
             </p>
           </div>
 
@@ -158,11 +164,20 @@ export default function Step2Compare({ form }: { form: M02Form }) {
           >
             <h3 style={{ margin: "0 0 10px" }}>비중증 비급여 (특약2)</h3>
             <p style={{ margin: 0, color: "var(--color-text-sub)", lineHeight: 1.7 }}>
-              중증 비급여(특약1) 외 일반 비급여 치료를 대상으로 하며, 과잉 의료 이용 방지와 가입자 부담 완화를 위해 보장 구조가 개편되었습니다. 연간 보상한도는 1,000만 원(통원 일당 20만 원, 병·의원 입원 회당 300만 원, 비급여 MRI/MRA 연 300만 원)으로 조정되고 자기부담률은 50%로 상향되었습니다. 과잉 진료 우려가 큰 근골격계 물리치료(도수·체외충격파 등), 비급여 주사제, 미등재 신의료기술은 보장 대상에서 제외되며, 직전 2년 무사고 시 10% 보험료 할인 혜택 및 연간 수령액(100만 원 이상부터 할증)에 따라 최대 300%까지 차등 할증되는 제도가 적용됩니다.
+              중증 비급여 외 보장대상 치료에 적용되며 자기부담률은 50%입니다. 상해·질병 각각 입원·통원 합산 가입금액 1천만·600만·200만원에 따라 통원 1일 한도는 20만·15만·10만원입니다. 종합·상급종합병원 외 입원은 1회 300만원, 비중증 MRI/MRA는 연 200만원 한도입니다. 보장 제외 항목은 진료내역과 약관으로 확인해야 합니다. 보험료 차등은 2028년 5월 6일부터 적용되며 비중증 보험금 수령액에 따른 구간과 제외 대상을 따로 확인합니다.
             </p>
           </div>
         </div>
 
+        <p className="notice-box" role="status">
+          {hasTarget5GSpecialRider1 || hasTarget5GSpecialRider2
+            ? `5세대 비교안: 급여 주계약 + ${[hasTarget5GSpecialRider1 && '특약1(중증 비급여)', hasTarget5GSpecialRider2 && '특약2(비중증 비급여)'].filter(Boolean).join(' + ')}`
+            : '5세대 비교안: 급여 주계약만 선택되어 있습니다. 비급여 특약 미가입 조건으로 비교합니다.'}
+        </p>
+        <fieldset className="form-card" aria-label="5세대 비교 계약 상세">
+          <legend>5세대 비교 계약의 가입금액</legend>
+          <SamsungContractFactsFields value={form.targetContractFactsForm} onChange={form.setTargetContractFactsForm} generation={5} prefix="target-contract" mode="consumer" singleContract showSevere={hasTarget5GSpecialRider1} showNonSevere={hasTarget5GSpecialRider2} />
+        </fieldset>
         <div className="notice-box">
           비교용 보험료는 사용자가 직접
           입력한 가정값입니다. 실제 5세대

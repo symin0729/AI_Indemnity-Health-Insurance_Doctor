@@ -22,7 +22,13 @@
         "Codex AI"
       ],
       "status": "AI_SOURCE_VALIDATED",
-      "notes": "AI 원문 교차검증 완료"
+      "notes": "AI 원문 교차검증 완료",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 2,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_0904_2_E_G1-02",
@@ -44,7 +50,13 @@
         "Codex AI"
       ],
       "status": "AI_SOURCE_VALIDATED",
-      "notes": "AI 원문 교차검증 완료"
+      "notes": "AI 원문 교차검증 완료",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 3,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_0904_2_E_G1-03",
@@ -66,7 +78,13 @@
         "Codex AI"
       ],
       "status": "AI_SOURCE_VALIDATED",
-      "notes": "AI 원문 교차검증 완료"
+      "notes": "AI 원문 교차검증 완료",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 4,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_0904_2_E_G1-04",
@@ -88,7 +106,13 @@
         "Codex AI"
       ],
       "status": "AI_SOURCE_VALIDATED",
-      "notes": "AI 원문 교차검증 완료"
+      "notes": "AI 원문 교차검증 완료",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 5,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_0904_2_E_G1-05",
@@ -110,7 +134,13 @@
         "Codex AI"
       ],
       "status": "AI_SOURCE_VALIDATED",
-      "notes": "정식 0904.2 PDF 113페이지의 질병 입원 제2조 산식으로 교정; 종전 118페이지는 오분류된 0904.1 PDF 기준"
+      "notes": "정식 0904.2 PDF 113페이지의 질병 입원 제2조 산식으로 교정; 종전 118페이지는 오분류된 0904.1 PDF 기준",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 6,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_1611_7_E_G2-STD-01",
@@ -132,7 +162,13 @@
         "Codex AI"
       ],
       "status": "AI_SOURCE_VALIDATED",
-      "notes": "PDF 요약서의 상급병실료 차액 50%(일평균 10만원 한도) 구성요소를 추가"
+      "notes": "PDF 요약서의 상급병실료 차액 50%(일평균 10만원 한도) 구성요소를 추가",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 10,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_1611_7_E_G2-STD-02",
@@ -154,7 +190,13 @@
         "Codex AI"
       ],
       "status": "AI_SOURCE_VALIDATED",
-      "notes": "AI 원문 교차검증 완료"
+      "notes": "AI 원문 교차검증 완료",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 11,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_1611_7_E_G2-STD-03",
@@ -176,7 +218,13 @@
         "Codex AI"
       ],
       "status": "AI_SOURCE_VALIDATED",
-      "notes": "AI 원문 교차검증 완료"
+      "notes": "AI 원문 교차검증 완료",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 12,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_1611_7_E_G2-STD-04",
@@ -188,9 +236,9 @@
       "article": "상품요약서",
       "paragraph": "기관별 외래 공제",
       "sourceSection": "보험금 지급사유·지급금액·지급제한사항",
-      "pdfPage": 16,
+      "pdfPage": 50,
       "printedPage": null,
-      "quoteSummary": "의원 등 10,000원 / 병원 등 15,000원 / 종합전문·상급종합 20,000원",
+      "quoteSummary": "의원 등 10,000원 / 병원·일반 종합병원 등 15,000원 / 종합전문요양기관·상급종합병원 20,000원",
       "sourceUrl": "https://www.samsungfire.com/publication/pdf/96178_0_20170101_file1.pdf",
       "aiReviewedAt": "2026-09-28",
       "verifiedAt": "2026-09-29",
@@ -198,7 +246,13 @@
         "Codex AI"
       ],
       "status": "AI_SOURCE_VALIDATED",
-      "notes": "AI 원문 교차검증 완료"
+      "notes": "AI 원문 교차검증 완료",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 13,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_1611_7_E_G2-SEL2-01",
@@ -220,7 +274,13 @@
         "Codex AI"
       ],
       "status": "AI_SOURCE_VALIDATED",
-      "notes": "PDF 요약서의 상급병실료 차액 50%(일평균 10만원 한도) 구성요소를 추가"
+      "notes": "PDF 요약서의 상급병실료 차액 50%(일평균 10만원 한도) 구성요소를 추가",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 7,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_1611_7_E_G2-SEL2-02",
@@ -242,7 +302,13 @@
         "Codex AI"
       ],
       "status": "AI_SOURCE_VALIDATED",
-      "notes": "AI 원문 교차검증 완료"
+      "notes": "AI 원문 교차검증 완료",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 8,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_1611_7_E_G2-SEL2-03",
@@ -264,7 +330,13 @@
         "Codex AI"
       ],
       "status": "AI_SOURCE_VALIDATED",
-      "notes": "AI 원문 대조에서 기존 14_S Rule 목록에 빠진 담보를 추가"
+      "notes": "AI 원문 대조에서 기존 14_S Rule 목록에 빠진 담보를 추가",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 9,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_1704_1_E_G3-STD-01",
@@ -286,7 +358,13 @@
         "Codex AI"
       ],
       "status": "AI_SOURCE_VALIDATED",
-      "notes": "AI 원문 교차검증 완료"
+      "notes": "AI 원문 교차검증 완료",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 18,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_1704_1_E_G3-STD-02",
@@ -308,7 +386,13 @@
         "Codex AI"
       ],
       "status": "AI_SOURCE_VALIDATED",
-      "notes": "AI 원문 교차검증 완료"
+      "notes": "AI 원문 교차검증 완료",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 19,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_1704_1_E_G3-STD-03",
@@ -330,7 +414,13 @@
         "Codex AI"
       ],
       "status": "AI_SOURCE_VALIDATED",
-      "notes": "AI 원문 교차검증 완료"
+      "notes": "AI 원문 교차검증 완료",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 20,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_1704_1_E_G3-SEL2-01",
@@ -352,7 +442,13 @@
         "Codex AI"
       ],
       "status": "AI_SOURCE_VALIDATED",
-      "notes": "적용 범위를 입원으로 명확화하고 상급병실료 구성요소를 추가"
+      "notes": "적용 범위를 입원으로 명확화하고 상급병실료 구성요소를 추가",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 14,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_1704_1_E_G3-SEL2-02",
@@ -374,7 +470,13 @@
         "Codex AI"
       ],
       "status": "AI_SOURCE_VALIDATED",
-      "notes": "14_S 초안은 공제액만 기재하여 보험금 산식으로 수정"
+      "notes": "14_S 초안은 공제액만 기재하여 보험금 산식으로 수정",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 15,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_1704_1_E_G3-STD-BASE-01",
@@ -396,7 +498,13 @@
         "Codex AI"
       ],
       "status": "AI_SOURCE_VALIDATED",
-      "notes": "AI 원문 대조에서 기존 14_S Rule 목록에 빠진 담보를 추가"
+      "notes": "AI 원문 대조에서 기존 14_S Rule 목록에 빠진 담보를 추가",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 21,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_1704_1_E_G3-STD-BASE-02",
@@ -418,7 +526,13 @@
         "Codex AI"
       ],
       "status": "AI_SOURCE_VALIDATED",
-      "notes": "AI 원문 대조에서 기존 14_S Rule 목록에 빠진 담보를 추가"
+      "notes": "AI 원문 대조에서 기존 14_S Rule 목록에 빠진 담보를 추가",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 22,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_1704_1_E_G3-STD-BASE-03",
@@ -440,7 +554,13 @@
         "Codex AI"
       ],
       "status": "AI_SOURCE_VALIDATED",
-      "notes": "AI 원문 대조에서 기존 14_S Rule 목록에 빠진 담보를 추가"
+      "notes": "AI 원문 대조에서 기존 14_S Rule 목록에 빠진 담보를 추가",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 23,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_1704_1_E_G3-SEL2-BASE-02",
@@ -462,7 +582,13 @@
         "Codex AI"
       ],
       "status": "AI_SOURCE_VALIDATED",
-      "notes": "AI 원문 대조에서 기존 14_S Rule 목록에 빠진 담보를 추가"
+      "notes": "AI 원문 대조에서 기존 14_S Rule 목록에 빠진 담보를 추가",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 16,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_1704_1_E_G3-SEL2-BASE-03",
@@ -484,7 +610,13 @@
         "Codex AI"
       ],
       "status": "AI_SOURCE_VALIDATED",
-      "notes": "AI 원문 대조에서 기존 14_S Rule 목록에 빠진 담보를 추가"
+      "notes": "AI 원문 대조에서 기존 14_S Rule 목록에 빠진 담보를 추가",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 17,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_2107_1_E_G4-01",
@@ -506,7 +638,13 @@
         "Codex AI"
       ],
       "status": "AI_SOURCE_VALIDATED",
-      "notes": "검수 의견에 따라 요약서 PDF 9쪽 대신 본문 PDF 39쪽으로 정정. AI 원문 재검증 완료"
+      "notes": "검수 의견에 따라 요약서 PDF 9쪽 대신 본문 PDF 39쪽으로 정정. AI 원문 재검증 완료",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 24,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_2107_1_E_G4-02",
@@ -528,7 +666,13 @@
         "Codex AI"
       ],
       "status": "AI_SOURCE_VALIDATED",
-      "notes": "검수 의견에 따라 요약서 PDF 9쪽 대신 본문 PDF 43쪽으로 정정. AI 원문 재검증 완료"
+      "notes": "검수 의견에 따라 요약서 PDF 9쪽 대신 본문 PDF 43쪽으로 정정. AI 원문 재검증 완료",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 25,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_2107_1_E_G4-08",
@@ -550,7 +694,13 @@
         "Codex AI"
       ],
       "status": "AI_SOURCE_VALIDATED",
-      "notes": "기존 규칙 목록에서 누락되어 본문 PDF 39~41페이지를 직접 대조해 추가"
+      "notes": "기존 규칙 목록에서 누락되어 본문 PDF 39~41페이지를 직접 대조해 추가",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 31,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_2107_1_E_G4-09",
@@ -572,7 +722,13 @@
         "Codex AI"
       ],
       "status": "AI_SOURCE_VALIDATED",
-      "notes": "기존 규칙 목록에서 누락되어 본문 PDF 43~45페이지를 직접 대조해 추가"
+      "notes": "기존 규칙 목록에서 누락되어 본문 PDF 43~45페이지를 직접 대조해 추가",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 32,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_2107_1_E_G4-03",
@@ -594,7 +750,13 @@
         "Codex AI"
       ],
       "status": "AI_SOURCE_VALIDATED",
-      "notes": "상해 조항은 PDF 95쪽(인쇄 65쪽), 동일한 질병 조항은 PDF 99쪽(인쇄 69쪽)에서 확인"
+      "notes": "상해 조항은 PDF 95쪽(인쇄 65쪽), 동일한 질병 조항은 PDF 99쪽(인쇄 69쪽)에서 확인",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 26,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_2107_1_E_G4-04",
@@ -616,7 +778,13 @@
         "Codex AI"
       ],
       "status": "AI_SOURCE_VALIDATED",
-      "notes": "상해 조항은 PDF 95쪽(인쇄 65쪽), 동일한 질병 조항은 PDF 99쪽(인쇄 69쪽)에서 확인"
+      "notes": "상해 조항은 PDF 95쪽(인쇄 65쪽), 동일한 질병 조항은 PDF 99쪽(인쇄 69쪽)에서 확인",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 27,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_2107_1_E_G4-05",
@@ -638,7 +806,13 @@
         "Codex AI"
       ],
       "status": "AI_SOURCE_VALIDATED",
-      "notes": "PDF 103페이지 주석의 10회 단위 증상 개선 확인 조건을 한도에 추가"
+      "notes": "PDF 103페이지 주석의 10회 단위 증상 개선 확인 조건을 한도에 추가",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 28,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_2107_1_E_G4-06",
@@ -660,7 +834,13 @@
         "Codex AI"
       ],
       "status": "AI_SOURCE_VALIDATED",
-      "notes": "AI 원문 교차검증 완료"
+      "notes": "AI 원문 교차검증 완료",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 29,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_2107_1_E_G4-07",
@@ -682,7 +862,13 @@
         "Codex AI"
       ],
       "status": "AI_SOURCE_VALIDATED",
-      "notes": "AI 원문 교차검증 완료"
+      "notes": "AI 원문 교차검증 완료",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 30,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_2605_1_E_GENERAL_G5-01",
@@ -691,11 +877,11 @@
       "documentId": "SAMSUNG_2605_1_GENERAL_TERMS",
       "coverage": "급여 입원",
       "variant": "general",
-      "article": "쉽게 이해하는 상품 및 약관 요약서",
-      "paragraph": "급여 입원",
-      "sourceSection": "자기부담금·보장한도",
-      "pdfPage": 8,
-      "printedPage": 7,
+      "article": "제3조 (보장종목별 보상내용)",
+      "paragraph": "(1) 상해급여 제1항 입원",
+      "sourceSection": "기본형 실손의료보험(급여 실손의료비)",
+      "pdfPage": 24,
+      "printedPage": 23,
       "quoteSummary": "보장대상의료비 × 80% (자기부담 20%)",
       "sourceUrl": null,
       "aiReviewedAt": "2026-09-28",
@@ -708,7 +894,13 @@
       "applicableContractTypes": [
         "GENERAL"
       ],
-      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF"
+      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 33,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_2605_1_E_GENERAL_G5-02",
@@ -717,11 +909,11 @@
       "documentId": "SAMSUNG_2605_1_GENERAL_TERMS",
       "coverage": "급여 통원",
       "variant": "general",
-      "article": "쉽게 이해하는 상품 및 약관 요약서",
-      "paragraph": "급여 통원",
-      "sourceSection": "자기부담금·보장한도",
-      "pdfPage": 8,
-      "printedPage": 7,
+      "article": "제3조 (보장종목별 보상내용)",
+      "paragraph": "(1) 상해급여 제1항 통원 표1",
+      "sourceSection": "기본형 실손의료보험(급여 실손의료비)",
+      "pdfPage": 24,
+      "printedPage": 23,
       "quoteSummary": "보장대상의료비 - MAX(병원급별 공제 10,000~20,000원, 보장대상의료비×20%, 보장대상의료비×건강보험 본인부담률)",
       "sourceUrl": null,
       "aiReviewedAt": "2026-09-28",
@@ -734,7 +926,13 @@
       "applicableContractTypes": [
         "GENERAL"
       ],
-      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF"
+      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 34,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_2605_1_E_GENERAL_G5-03",
@@ -743,11 +941,11 @@
       "documentId": "SAMSUNG_2605_1_GENERAL_TERMS",
       "coverage": "중증 비급여 입원",
       "variant": "general",
-      "article": "쉽게 이해하는 상품 및 약관 요약서",
-      "paragraph": "중증 비급여 입원",
-      "sourceSection": "자기부담금·보장한도",
-      "pdfPage": 8,
-      "printedPage": 7,
+      "article": "제3조 (보장종목별 보상내용)",
+      "paragraph": "(1) 상해비급여 제1항 입원",
+      "sourceSection": "실손의료비보험 특별약관1(중증 비급여 실손의료비)",
+      "pdfPage": 51,
+      "printedPage": 50,
       "quoteSummary": "(중증 비급여 입원의료비(비급여 병실료 제외) × 70%) + MIN(비급여 병실료 × 50%, 입원일수 × 100,000원)",
       "sourceUrl": null,
       "aiReviewedAt": "2026-09-28",
@@ -760,7 +958,13 @@
       "applicableContractTypes": [
         "GENERAL"
       ],
-      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF"
+      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 35,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_2605_1_E_GENERAL_G5-04",
@@ -769,11 +973,11 @@
       "documentId": "SAMSUNG_2605_1_GENERAL_TERMS",
       "coverage": "중증 비급여 통원",
       "variant": "general",
-      "article": "쉽게 이해하는 상품 및 약관 요약서",
-      "paragraph": "중증 비급여 통원",
-      "sourceSection": "자기부담금·보장한도",
-      "pdfPage": 8,
-      "printedPage": 7,
+      "article": "제3조 (보장종목별 보상내용)",
+      "paragraph": "(1) 상해비급여 제1항 통원 표1",
+      "sourceSection": "실손의료비보험 특별약관1(중증 비급여 실손의료비)",
+      "pdfPage": 52,
+      "printedPage": 51,
       "quoteSummary": "보장대상의료비 - MAX(30,000원, 보장대상의료비 × 30%)",
       "sourceUrl": null,
       "aiReviewedAt": "2026-09-28",
@@ -786,7 +990,13 @@
       "applicableContractTypes": [
         "GENERAL"
       ],
-      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF"
+      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 36,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_2605_1_E_GENERAL_G5-05",
@@ -795,11 +1005,11 @@
       "documentId": "SAMSUNG_2605_1_GENERAL_TERMS",
       "coverage": "중증 비급여 3대",
       "variant": "general",
-      "article": "쉽게 이해하는 상품 및 약관 요약서",
-      "paragraph": "중증 비급여 3대",
-      "sourceSection": "자기부담금·보장한도",
-      "pdfPage": 9,
-      "printedPage": 8,
+      "article": "제3조 (보장종목별 보상내용)",
+      "paragraph": "(3) 3대비급여 제1항",
+      "sourceSection": "실손의료비보험 특별약관1(중증 비급여 실손의료비)",
+      "pdfPage": 55,
+      "printedPage": 54,
       "quoteSummary": "각 행위별 보상대상의료비 - MAX(30,000원, 보상대상의료비 × 30%)",
       "sourceUrl": null,
       "aiReviewedAt": "2026-09-28",
@@ -812,7 +1022,13 @@
       "applicableContractTypes": [
         "GENERAL"
       ],
-      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF"
+      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 37,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_2605_1_E_GENERAL_G5-06",
@@ -821,9 +1037,9 @@
       "documentId": "SAMSUNG_2605_1_GENERAL_TERMS",
       "coverage": "비중증 비급여 입원",
       "variant": "general",
-      "article": "제3조",
-      "paragraph": "제1항 (1) 상해비급여",
-      "sourceSection": "특별약관2 비중증 비급여",
+      "article": "제3조 (보장종목별 보상내용)",
+      "paragraph": "(1) 상해비급여 제1항 입원",
+      "sourceSection": "실손의료비보험 특별약관2(비중증 비급여 실손의료비)",
       "pdfPage": 64,
       "printedPage": 63,
       "quoteSummary": "(비중증 비급여 입원의료비(비급여 병실료 제외) × 50%) + MIN(비급여 병실료 × 50%, 입원일수 × 100,000원)",
@@ -838,7 +1054,13 @@
       "applicableContractTypes": [
         "GENERAL"
       ],
-      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF"
+      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 38,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_2605_1_E_GENERAL_G5-07",
@@ -847,12 +1069,12 @@
       "documentId": "SAMSUNG_2605_1_GENERAL_TERMS",
       "coverage": "비중증 비급여 통원",
       "variant": "general",
-      "article": "제3조",
-      "paragraph": "제1항 (1) 상해비급여",
-      "sourceSection": "특별약관2 비중증 비급여",
-      "pdfPage": 64,
-      "printedPage": 63,
-      "quoteSummary": "보장대상의료비 - MAX(50,000원, 보장대상의료비 × 50%)",
+      "article": "제3조 (보장종목별 보상내용)",
+      "paragraph": "(1) 상해비급여 제1항 통원 표1",
+      "sourceSection": "실손의료비보험 특별약관2(비중증 비급여 실손의료비)",
+      "pdfPage": 65,
+      "printedPage": 64,
+      "quoteSummary": "1일 외래·처방 합산 보장대상의료비 - MAX(50,000원, 해당 1일 보장대상의료비 × 50%)",
       "sourceUrl": null,
       "aiReviewedAt": "2026-09-28",
       "verifiedAt": "2026-09-29",
@@ -864,7 +1086,13 @@
       "applicableContractTypes": [
         "GENERAL"
       ],
-      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF"
+      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 39,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_2605_1_E_GENERAL_G5-08",
@@ -873,11 +1101,11 @@
       "documentId": "SAMSUNG_2605_1_GENERAL_TERMS",
       "coverage": "비중증 비급여 MRI/MRA",
       "variant": "general",
-      "article": "쉽게 이해하는 상품 및 약관 요약서",
-      "paragraph": "비중증 비급여 MRI/MRA",
-      "sourceSection": "자기부담금·보장한도",
-      "pdfPage": 9,
-      "printedPage": 8,
+      "article": "제3조 (보장종목별 보상내용)",
+      "paragraph": "(3) 비급여 자기공명영상진단 제1항",
+      "sourceSection": "실손의료비보험 특별약관2(비중증 비급여 실손의료비)",
+      "pdfPage": 67,
+      "printedPage": 66,
       "quoteSummary": "보장대상의료비 - MAX(50,000원, 보장대상의료비 × 50%)",
       "sourceUrl": null,
       "aiReviewedAt": "2026-09-28",
@@ -890,7 +1118,13 @@
       "applicableContractTypes": [
         "GENERAL"
       ],
-      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF"
+      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 40,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_2605_1_E_GENERAL_G5-09",
@@ -899,11 +1133,11 @@
       "documentId": "SAMSUNG_2605_1_GENERAL_TERMS",
       "coverage": "비중증 비급여 보험료 차등",
       "variant": "general",
-      "article": "쉽게 이해하는 상품 및 약관 요약서",
-      "paragraph": "비중증 비급여 보험료 차등",
-      "sourceSection": "비중증 비급여 보험료 차등",
-      "pdfPage": 10,
-      "printedPage": 9,
+      "article": "제6조 (보험료의 계산)",
+      "paragraph": "제3항 요율 상대도 표 및 제4항~제5항",
+      "sourceSection": "실손의료비보험 특별약관2(비중증 비급여 실손의료비)",
+      "pdfPage": 75,
+      "printedPage": 74,
       "quoteSummary": "보험료 갱신 전 3개월 말일부터 직전 12개월 비중증 비급여 보험금: 0원=할인, 0원 초과~100만원 미만=100%, 100~150만원 미만=200%, 150~300만원 미만=300%, 300만원 이상=400%",
       "sourceUrl": null,
       "aiReviewedAt": "2026-09-28",
@@ -916,7 +1150,13 @@
       "applicableContractTypes": [
         "GENERAL"
       ],
-      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF"
+      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 41,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_2605_1_E_CONVERSION_G5-01",
@@ -925,11 +1165,11 @@
       "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS",
       "coverage": "급여 입원",
       "variant": "conversion",
-      "article": "쉽게 이해하는 상품 및 약관 요약서",
-      "paragraph": "급여 입원",
-      "sourceSection": "자기부담금·보장한도",
-      "pdfPage": 8,
-      "printedPage": 7,
+      "article": "제3조 (보장종목별 보상내용)",
+      "paragraph": "(1) 상해급여 제1항 입원",
+      "sourceSection": "기본형 실손의료보험(급여 실손의료비)",
+      "pdfPage": 24,
+      "printedPage": 23,
       "quoteSummary": "보장대상의료비 × 80% (자기부담 20%)",
       "sourceUrl": null,
       "aiReviewedAt": "2026-09-28",
@@ -942,7 +1182,13 @@
       "applicableContractTypes": [
         "CONVERSION"
       ],
-      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF"
+      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 42,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_2605_1_E_CONVERSION_G5-02",
@@ -951,11 +1197,11 @@
       "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS",
       "coverage": "급여 통원",
       "variant": "conversion",
-      "article": "쉽게 이해하는 상품 및 약관 요약서",
-      "paragraph": "급여 통원",
-      "sourceSection": "자기부담금·보장한도",
-      "pdfPage": 8,
-      "printedPage": 7,
+      "article": "제3조 (보장종목별 보상내용)",
+      "paragraph": "(1) 상해급여 제1항 통원 표1",
+      "sourceSection": "기본형 실손의료보험(급여 실손의료비)",
+      "pdfPage": 24,
+      "printedPage": 23,
       "quoteSummary": "보장대상의료비 - MAX(병원급별 공제 10,000~20,000원, 보장대상의료비×20%, 보장대상의료비×건강보험 본인부담률)",
       "sourceUrl": null,
       "aiReviewedAt": "2026-09-28",
@@ -968,7 +1214,13 @@
       "applicableContractTypes": [
         "CONVERSION"
       ],
-      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF"
+      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 43,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_2605_1_E_CONVERSION_G5-03",
@@ -977,11 +1229,11 @@
       "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS",
       "coverage": "중증 비급여 입원",
       "variant": "conversion",
-      "article": "쉽게 이해하는 상품 및 약관 요약서",
-      "paragraph": "중증 비급여 입원",
-      "sourceSection": "자기부담금·보장한도",
-      "pdfPage": 8,
-      "printedPage": 7,
+      "article": "제3조 (보장종목별 보상내용)",
+      "paragraph": "(1) 상해비급여 제1항 입원",
+      "sourceSection": "실손의료비보험 특별약관1(중증 비급여 실손의료비)",
+      "pdfPage": 51,
+      "printedPage": 50,
       "quoteSummary": "(중증 비급여 입원의료비(비급여 병실료 제외) × 70%) + MIN(비급여 병실료 × 50%, 입원일수 × 100,000원)",
       "sourceUrl": null,
       "aiReviewedAt": "2026-09-28",
@@ -994,7 +1246,13 @@
       "applicableContractTypes": [
         "CONVERSION"
       ],
-      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF"
+      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 44,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_2605_1_E_CONVERSION_G5-04",
@@ -1003,11 +1261,11 @@
       "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS",
       "coverage": "중증 비급여 통원",
       "variant": "conversion",
-      "article": "쉽게 이해하는 상품 및 약관 요약서",
-      "paragraph": "중증 비급여 통원",
-      "sourceSection": "자기부담금·보장한도",
-      "pdfPage": 8,
-      "printedPage": 7,
+      "article": "제3조 (보장종목별 보상내용)",
+      "paragraph": "(1) 상해비급여 제1항 통원 표1",
+      "sourceSection": "실손의료비보험 특별약관1(중증 비급여 실손의료비)",
+      "pdfPage": 52,
+      "printedPage": 51,
       "quoteSummary": "보장대상의료비 - MAX(30,000원, 보장대상의료비 × 30%)",
       "sourceUrl": null,
       "aiReviewedAt": "2026-09-28",
@@ -1020,7 +1278,13 @@
       "applicableContractTypes": [
         "CONVERSION"
       ],
-      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF"
+      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 45,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_2605_1_E_CONVERSION_G5-05",
@@ -1029,11 +1293,11 @@
       "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS",
       "coverage": "중증 비급여 3대",
       "variant": "conversion",
-      "article": "쉽게 이해하는 상품 및 약관 요약서",
-      "paragraph": "중증 비급여 3대",
-      "sourceSection": "자기부담금·보장한도",
-      "pdfPage": 9,
-      "printedPage": 8,
+      "article": "제3조 (보장종목별 보상내용)",
+      "paragraph": "(3) 3대비급여 제1항",
+      "sourceSection": "실손의료비보험 특별약관1(중증 비급여 실손의료비)",
+      "pdfPage": 55,
+      "printedPage": 54,
       "quoteSummary": "각 행위별 보상대상의료비 - MAX(30,000원, 보상대상의료비 × 30%)",
       "sourceUrl": null,
       "aiReviewedAt": "2026-09-28",
@@ -1046,7 +1310,13 @@
       "applicableContractTypes": [
         "CONVERSION"
       ],
-      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF"
+      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 46,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_2605_1_E_CONVERSION_G5-06",
@@ -1055,9 +1325,9 @@
       "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS",
       "coverage": "비중증 비급여 입원",
       "variant": "conversion",
-      "article": "제3조",
-      "paragraph": "제1항 (1) 상해비급여",
-      "sourceSection": "특별약관2 비중증 비급여",
+      "article": "제3조 (보장종목별 보상내용)",
+      "paragraph": "(1) 상해비급여 제1항 입원",
+      "sourceSection": "실손의료비보험 특별약관2(비중증 비급여 실손의료비)",
       "pdfPage": 64,
       "printedPage": 63,
       "quoteSummary": "(비중증 비급여 입원의료비(비급여 병실료 제외) × 50%) + MIN(비급여 병실료 × 50%, 입원일수 × 100,000원)",
@@ -1072,7 +1342,13 @@
       "applicableContractTypes": [
         "CONVERSION"
       ],
-      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF"
+      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 47,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_2605_1_E_CONVERSION_G5-07",
@@ -1081,12 +1357,12 @@
       "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS",
       "coverage": "비중증 비급여 통원",
       "variant": "conversion",
-      "article": "제3조",
-      "paragraph": "제1항 (1) 상해비급여",
-      "sourceSection": "특별약관2 비중증 비급여",
-      "pdfPage": 64,
-      "printedPage": 63,
-      "quoteSummary": "보장대상의료비 - MAX(50,000원, 보장대상의료비 × 50%)",
+      "article": "제3조 (보장종목별 보상내용)",
+      "paragraph": "(1) 상해비급여 제1항 통원 표1",
+      "sourceSection": "실손의료비보험 특별약관2(비중증 비급여 실손의료비)",
+      "pdfPage": 65,
+      "printedPage": 64,
+      "quoteSummary": "1일 외래·처방 합산 보장대상의료비 - MAX(50,000원, 해당 1일 보장대상의료비 × 50%)",
       "sourceUrl": null,
       "aiReviewedAt": "2026-09-28",
       "verifiedAt": "2026-09-29",
@@ -1098,7 +1374,13 @@
       "applicableContractTypes": [
         "CONVERSION"
       ],
-      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF"
+      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 48,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_2605_1_E_CONVERSION_G5-08",
@@ -1107,11 +1389,11 @@
       "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS",
       "coverage": "비중증 비급여 MRI/MRA",
       "variant": "conversion",
-      "article": "쉽게 이해하는 상품 및 약관 요약서",
-      "paragraph": "비중증 비급여 MRI/MRA",
-      "sourceSection": "자기부담금·보장한도",
-      "pdfPage": 9,
-      "printedPage": 8,
+      "article": "제3조 (보장종목별 보상내용)",
+      "paragraph": "(3) 비급여 자기공명영상진단 제1항",
+      "sourceSection": "실손의료비보험 특별약관2(비중증 비급여 실손의료비)",
+      "pdfPage": 67,
+      "printedPage": 66,
       "quoteSummary": "보장대상의료비 - MAX(50,000원, 보장대상의료비 × 50%)",
       "sourceUrl": null,
       "aiReviewedAt": "2026-09-28",
@@ -1124,7 +1406,13 @@
       "applicableContractTypes": [
         "CONVERSION"
       ],
-      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF"
+      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 49,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "evidenceId": "SAMSUNG_2605_1_E_CONVERSION_G5-09",
@@ -1133,11 +1421,11 @@
       "documentId": "SAMSUNG_2605_1_CONVERSION_TERMS",
       "coverage": "비중증 비급여 보험료 차등",
       "variant": "conversion",
-      "article": "쉽게 이해하는 상품 및 약관 요약서",
-      "paragraph": "비중증 비급여 보험료 차등",
-      "sourceSection": "비중증 비급여 보험료 차등",
-      "pdfPage": 10,
-      "printedPage": 9,
+      "article": "제6조 (보험료의 계산)",
+      "paragraph": "제3항 요율 상대도 표 및 제4항~제5항",
+      "sourceSection": "실손의료비보험 특별약관2(비중증 비급여 실손의료비)",
+      "pdfPage": 75,
+      "printedPage": 74,
       "quoteSummary": "보험료 갱신 전 3개월 말일부터 직전 12개월 비중증 비급여 보험금: 0원=할인, 0원 초과~100만원 미만=100%, 100~150만원 미만=200%, 150~300만원 미만=300%, 300만원 이상=400%",
       "sourceUrl": null,
       "aiReviewedAt": "2026-09-28",
@@ -1150,7 +1438,13 @@
       "applicableContractTypes": [
         "CONVERSION"
       ],
-      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF"
+      "sourceProvenance": "USER_PROVIDED_OFFICIAL_PDF",
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 50,
+        "reviewDate": "2026-10-06"
+      }
     }
   ]
 }

@@ -1,3 +1,5 @@
+import { samsungLimitGroups as limitGroups } from "./samsungLimitGroups";
+import { prepareUsageForSamsungComparison } from "./prepareSamsungComparison";
 import { toGen1EngineProduct } from "../domain/gen1Product";
 import type { InsuranceContract } from '../domain/insurance';
 import type { MedicalUsage } from '../domain/medical';
@@ -7,8 +9,11 @@ import { calculateSamsungGen2Sample } from './calculateSamsungGen2';
 import { calculateSamsungGen3Sample } from './calculateSamsungGen3';
 import { calculateSamsungGen4Claim } from './calculateSamsungGen4';
 import { calculateSamsungGen5Claim } from './calculateSamsungGen5';
-import type { SamsungDraftCalculationInput } from './evaluateSamsungExecutionSpec';
+import type { SamsungCalculationDetails, SamsungDraftCalculationInput } from './evaluateSamsungExecutionSpec';
 import { calculateBreakEvenBySimulation } from './calculateBreakEven';
+import { applySamsungDefaultAssumptions } from './samsungDefaultAssumptions';
+import { gen4PriorUsage } from './samsungPriorUsage';
+import { contractFactsForUsage } from '../domain/samsungContractFacts';
 
 /**
  * 5세대 통원 보장은 상해·질병별 연 100회 한도가 있으므로
@@ -38,10 +43,55 @@ function normalizeGen23Usage(usage: MedicalUsage, assumptions: AnalysisCalculati
     gen23Institution: usage.gen23Institution ?? institution,
     gen23TreatmentType: usage.gen23TreatmentType ?? treatmentType,
     gen23EligibleExpense: usage.gen23EligibleExpense ?? expense,
+    gen23AggregationUnit: usage.gen23AggregationUnit ?? (treatmentType === 'MRI' ? 'DIAGNOSTIC_ACTION' : treatmentType === 'MANUAL_THERAPY' ? 'TREATMENT' : 'VISIT'),
   };
 }
 
-export function calculateSamsungComparisonItem(contract: InsuranceContract, selections: ProductCalculationSelections, usage: MedicalUsage, assumptions: AnalysisCalculationAssumptions, target = false) {
+export interface SamsungComparisonItemResult {
+  calculationDetails?: SamsungCalculationDetails;
+  claim: number | null;
+  deductible: number | null;
+  capEligibleDeductible: number | null;
+  reasons: string[];
+  ruleId: string;
+  /** 사용자가 입력하지 않아 약관상 표준값으로 채운 항목(결과 화면의 "적용된 가정"). */
+  appliedAssumptions?: string[];
+}
+
+export function calculateSamsungComparisonItem(contract: InsuranceContract, selections: ProductCalculationSelections, usage: MedicalUsage, assumptions: AnalysisCalculationAssumptions, target = false): SamsungComparisonItemResult {
+  const explicitEligibleExpense = usage.samsungCalculationInput?.eligibleExpense;
+  usage = prepareUsageForSamsungComparison(usage, assumptions);
+  if (!target && contract.generation === 1 && usage.careSetting === 'OUTPATIENT') {
+    usage = { ...usage, samsungCalculationInput: { ...usage.samsungCalculationInput, eligibleExpense: explicitEligibleExpense } };
+  }
+  // Planner comparisons use one contract even when a persisted case contains old sharing inputs.
+  if (assumptions.assumeSingleIndemnityContract) {
+    usage = { ...usage, gen23OtherIndemnityPoliciesExist: false, gen23ProportionalPaymentFactor: undefined,
+      samsungCalculationInput: { ...usage.samsungCalculationInput, otherIndemnityPoliciesExist: false, proportionalPaymentFactor: undefined } };
+    assumptions = { ...assumptions,
+      currentContractFacts: { ...assumptions.currentContractFacts, otherIndemnityPoliciesExist: false, proportionalPaymentFactor: undefined },
+      targetContractFacts: { ...assumptions.targetContractFacts, otherIndemnityPoliciesExist: false, proportionalPaymentFactor: undefined } };
+  }
+  const appliedAssumptions: string[] = [];
+  if (assumptions.assumeNoPolicyExclusions) {
+    const input = usage.samsungCalculationInput ?? {};
+    if (input.policyExclusionsCleared === undefined) {
+      usage = { ...usage, gen1PolicyExclusionsCleared: usage.gen1PolicyExclusionsCleared ?? true,
+        gen23PolicyExclusionsCleared: usage.gen23PolicyExclusionsCleared ?? true,
+        samsungCalculationInput: { ...input, policyExclusionsCleared: true },
+        samsungGen5Facts: usage.samsungGen5Facts && usage.samsungGen5Facts.policyExcludedTreatment === 'UNKNOWN'
+          ? { ...usage.samsungGen5Facts, policyExcludedTreatment: 'NO' } : usage.samsungGen5Facts };
+      appliedAssumptions.push('보장 제외 사유가 없다는 가정으로 모의 계산함. 실제 면책 심사 결과가 아님');
+    }
+  }
+  if (assumptions.assumeEachOccurrenceSeparate) {
+    usage = { ...usage, gen23SameDayAggregationConfirmed: usage.gen23SameDayAggregationConfirmed ?? true,
+      samsungCalculationInput: { ...usage.samsungCalculationInput, sameDayAggregationConfirmed: usage.samsungCalculationInput?.sameDayAggregationConfirmed ?? true } };
+  }
+  return { ...calculateComparisonItem(contract, selections, usage, assumptions, target, appliedAssumptions), appliedAssumptions };
+}
+
+function calculateComparisonItem(contract: InsuranceContract, selections: ProductCalculationSelections, usage: MedicalUsage, assumptions: AnalysisCalculationAssumptions, target: boolean, appliedAssumptions: string[]) {
   const generation = target ? 5 : contract.generation;
   const hold = (reason: string) => ({ claim: null as number | null, deductible: null as number | null, capEligibleDeductible: null as number | null, reasons: [reason], ruleId: '' });
   if (!target && !contract.insurer.includes('삼성')) return hold('현재는 지원하는 상품의 계산만 제공합니다.');
@@ -54,11 +104,16 @@ export function calculateSamsungComparisonItem(contract: InsuranceContract, sele
       gen23PriorEligibleDeductible: normalizedUsage.gen23PriorEligibleDeductible ?? 0,
     } : normalizedUsage;
     const result = (generation === 2 ? calculateSamsungGen2Sample : calculateSamsungGen3Sample)(selections.samsungGen23Variant, calculationUsage);
-    return 'reason' in result ? hold(result.reason) : { claim: result.claim, deductible: result.deductible, capEligibleDeductible: result.enforcementTrace?.capEligibleDeductible ?? result.deductible, reasons: result.warnings, ruleId: result.ruleId };
+    return 'reason' in result ? hold(result.reason) : { calculationDetails: result.calculationDetails, claim: result.claim, deductible: result.deductible, capEligibleDeductible: result.enforcementTrace?.capEligibleDeductible ?? result.deductible, reasons: result.warnings, ruleId: result.ruleId };
   }
   const expense = usage.coveredAmount ?? (assumptions.assumeEntireMedicalCostCovered ? usage.patientPaidAmount ?? usage.unitCost : undefined);
   const input: SamsungDraftCalculationInput = {
     ...usage.samsungCalculationInput,
+    careSetting: usage.careSetting,
+    specifiedThreeNonCoveredTreatment: usage.samsungCalculationInput?.specifiedThreeNonCoveredTreatment
+      ?? (['MANUAL_THERAPY', 'INJECTION'].includes(usage.samsungGen5Facts?.threeNonCoveredCategory ?? usage.treatmentCategory?.toUpperCase() ?? '')),
+    ...(target ? contractFactsForUsage(assumptions.targetContractFacts ?? {}, usage, 5)
+      : assumptions.currentContractFacts ? contractFactsForUsage(assumptions.currentContractFacts, usage, generation) : {}),
     eligibleExpense: usage.samsungCalculationInput?.eligibleExpense ?? expense,
     healthInsuranceCopayRate: usage.healthInsuranceCopayRate,
     institution: usage.institutionType,
@@ -68,17 +123,20 @@ export function calculateSamsungComparisonItem(contract: InsuranceContract, sele
   if (assumptions.assumeNoPriorLimitUsage) {
     input.priorPaidBenefit ??= 0; input.priorAnnualCount ??= 0; input.priorServiceDays ??= 0; input.priorEligibleDeductible ??= 0;
   }
+  appliedAssumptions.push(...applySamsungDefaultAssumptions(input, { generation, target, usage, assumeEachOccurrenceSeparate: assumptions.assumeEachOccurrenceSeparate, contractBenefitCap: assumptions.contractBenefitCap, perOccurrenceBenefitCap: assumptions.perOccurrenceBenefitCap }));
   if (generation === 1) {
     const result = calculateSamsungGen1Sample({ product: toGen1EngineProduct(selections.gen1Product), contractBasis: selections.gen1ContractBasis, d1Coverage: selections.gen1D1Coverage, claimCause: usage.claimCause ?? 'UNKNOWN', careSetting: usage.careSetting, nhiStatus: usage.nationalHealthInsuranceStatus ?? 'UNKNOWN' }, {
       ...input, coveredRoomAndTreatment: usage.gen1CoveredRoomAndTreatment ?? input.coveredRoomAndTreatment,
       roomDifference: usage.gen1RoomDifference ?? input.roomDifference, nonNhiInpatientTotal: usage.gen1NonNhiInpatientTotal ?? input.nonNhiInpatientTotal,
-      outpatientExpense: usage.samsungCalculationInput?.eligibleExpense ?? usage.unitCost, // 명시한 인정금액이 없으면 "한 번 진료받을 때 내가 내는 금액"을 쓴다 priorPaidBenefit: usage.gen1PriorPaidBenefit ?? input.priorPaidBenefit,
+      // 명시한 인정금액이 없으면 "한 번 진료받을 때 내가 내는 금액"을 쓴다
+      outpatientExpense: usage.samsungCalculationInput?.eligibleExpense ?? usage.unitCost,
+      priorPaidBenefit: usage.gen1PriorPaidBenefit ?? input.priorPaidBenefit,
       priorServiceDays: usage.gen1PriorServiceDays ?? input.priorServiceDays,
       policyExclusionsCleared: input.policyExclusionsCleared ?? usage.gen1PolicyExclusionsCleared,
       requiredCoverageConfirmed: selections.gen1D1Coverage !== 'UNKNOWN' && selections.gen1D1Coverage !== 'NONE',
     });
     if ('reason' in result && result.status === 'NOT_ENROLLED') return { claim: 0, deductible: 0, capEligibleDeductible: 0, reasons: [result.reason], ruleId: '' };
-    return 'reason' in result ? hold(result.reason) : { claim: result.claim, deductible: result.deductible, capEligibleDeductible: result.enforcementTrace?.capEligibleDeductible ?? result.deductible, reasons: result.warnings, ruleId: result.ruleId };
+    return 'reason' in result ? hold(result.reason) : { calculationDetails: result.calculationDetails, claim: result.claim, deductible: result.deductible, capEligibleDeductible: result.enforcementTrace?.capEligibleDeductible ?? result.deductible, reasons: result.warnings, ruleId: result.ruleId };
   }
   if (usage.benefitClass === 'UNKNOWN') return hold('급여·비급여 구분을 확인해주세요.');
   if (usage.nationalHealthInsuranceStatus === 'PARTIAL') return hold('건강보험 일부 적용 비용을 분리해주세요.');
@@ -87,17 +145,16 @@ export function calculateSamsungComparisonItem(contract: InsuranceContract, sele
     if (usage.claimCause !== 'INJURY' && usage.claimCause !== 'DISEASE') return hold('상해·질병을 확인해주세요.');
     const result = calculateSamsungGen4Claim({ baseCoveredConfirmed: input.requiredCoverageConfirmed === true, nonCoveredRider: selections.gen4NonCoveredRider, benefitClass: usage.benefitClass, careSetting: usage.careSetting, claimCause: usage.claimCause, treatmentType: category === 'MRI' || category === 'MRI_MRA' ? 'MRI_MRA' : category === 'MANUAL_THERAPY' ? 'MANUAL_THERAPY' : category === 'INJECTION' ? 'INJECTION' : 'GENERAL' }, input);
     if (result.status === 'NOT_COVERED') return {claim:0,deductible:0,capEligibleDeductible:0,reasons:[result.reason],ruleId:''};
-    return result.status === 'CALCULATED' ? {claim:result.result.claim,deductible:result.result.deductible,capEligibleDeductible:result.result.enforcementTrace?.capEligibleDeductible ?? result.result.deductible,reasons:result.result.warnings,ruleId:result.ruleId} : hold('reason' in result ? result.reason : '담보 확인이 필요합니다.');
+    return result.status === 'CALCULATED' ? {calculationDetails:result.result.calculationDetails,claim:result.result.claim,deductible:result.result.deductible,capEligibleDeductible:result.result.enforcementTrace?.capEligibleDeductible ?? result.result.deductible,reasons:result.result.warnings,ruleId:result.ruleId} : hold('reason' in result ? result.reason : '담보 확인이 필요합니다.');
   }
   const facts = usage.samsungGen5Facts ?? (usage.benefitClass === 'COVERED' ? {specialCaseDisease: 'UNKNOWN' as const, treatmentRelatedness: 'UNKNOWN' as const, policyExcludedTreatment: 'UNKNOWN' as const} : undefined);
   if (!facts) return hold('5세대 산정특례·치료 관련성·보장 제외 여부 확인이 필요합니다.');
   if (target) input.requiredCoverageConfirmed = true;
   const result = calculateSamsungGen5Claim(target ? 'GENERAL' : selections.gen5ContractType, target ? {baseCovered:'ENROLLED',severeNonCoveredRider:contract.coverages.includes('SPECIAL_RIDER_1')?'ENROLLED':'NOT_ENROLLED',nonSevereNonCoveredRider:contract.coverages.includes('SPECIAL_RIDER_2')?'ENROLLED':'NOT_ENROLLED'} : {baseCovered:input.requiredCoverageConfirmed ? 'ENROLLED':'UNKNOWN',severeNonCoveredRider:selections.gen5SevereRider,nonSevereNonCoveredRider:selections.gen5NonSevereRider}, {...facts,benefitClass:usage.benefitClass,careSetting:usage.careSetting}, input);
   if (result.status === 'NOT_COVERED') return {claim:0,deductible:0,capEligibleDeductible:0,reasons:[result.reason],ruleId:''};
-  return result.status === 'CALCULATED' ? {claim:result.result.claim,deductible:result.result.deductible,capEligibleDeductible:result.result.enforcementTrace?.capEligibleDeductible ?? result.result.deductible,reasons:result.result.warnings,ruleId:result.result.ruleId} : hold('reason' in result ? result.reason : '분류 확인이 필요합니다.');
+  return result.status === 'CALCULATED' ? {calculationDetails:result.result.calculationDetails,claim:result.result.claim,deductible:result.result.deductible,capEligibleDeductible:result.result.enforcementTrace?.capEligibleDeductible ?? result.result.deductible,reasons:result.result.warnings,ruleId:result.result.ruleId} : hold('reason' in result ? result.reason : '분류 확인이 필요합니다.');
 }
 
-export type SamsungComparisonItemResult = ReturnType<typeof calculateSamsungComparisonItem>;
 
 export interface SamsungAnnualComparisonItem {
   usage: MedicalUsage;
@@ -114,51 +171,23 @@ interface RunningLimitState {
   eligibleDeductible: number;
 }
 
-interface LimitGroups {
-  benefit: string;
-  count: string;
-  serviceDays: string;
-  deductible: string;
-}
-
 interface RunningLimitAccumulator {
   paid: Map<string, number>;
   count: Map<string, number>;
   serviceDays: Map<string, number>;
   eligibleDeductible: Map<string, number>;
   countedEvents: Set<string>;
+  unresolvedGroups: Set<string>;
+  unresolvedClassification: boolean;
 }
 
 function createAccumulator(): RunningLimitAccumulator {
-  return { paid: new Map(), count: new Map(), serviceDays: new Map(), eligibleDeductible: new Map(), countedEvents: new Set() };
-}
-
-function limitGroups(generation: number, ruleId: string, usage: MedicalUsage): LimitGroups {
-  const cause = usage.claimCause ?? 'UNKNOWN';
-  const category = usage.samsungGen5Facts?.threeNonCoveredCategory ?? usage.gen23TreatmentType ?? usage.treatmentCategory ?? 'GENERAL';
-  let benefit = ruleId;
-  let count = ruleId;
-  let serviceDays = ruleId;
-  let deductible = ruleId;
-  if (generation === 1 && ['G1-01', 'G1-02'].includes(ruleId)) benefit = 'G1-INJURY-INPATIENT';
-  if (generation === 4) {
-    if (['G4-01', 'G4-08'].includes(ruleId)) benefit = 'G4-COVERED-INJURY';
-    if (['G4-02', 'G4-09'].includes(ruleId)) benefit = 'G4-COVERED-DISEASE';
-    if (['G4-03', 'G4-04'].includes(ruleId)) benefit = 'G4-NONCOVERED-GENERAL';
-  }
-  if (generation === 5) {
-    const conversion = ruleId.includes('CONV') ? 'CONVERSION' : 'GENERAL';
-    const suffix = ruleId.replace('G5-CONV-', '').replace('G5-', '');
-    if (['03', '04'].includes(suffix)) benefit = `G5-${conversion}-SEVERE-GENERAL`;
-    if (['06', '07'].includes(suffix)) benefit = `G5-${conversion}-NONSEVERE-GENERAL`;
-    if (suffix === '05') benefit = `G5-${conversion}-SEVERE-THREE-${category}`;
-    count = `${ruleId}-${cause}`;
-    serviceDays = `${ruleId}-${cause}`;
-  }
-  return { benefit, count, serviceDays, deductible };
+  return { paid: new Map(), count: new Map(), serviceDays: new Map(), eligibleDeductible: new Map(), countedEvents: new Set(), unresolvedGroups: new Set(), unresolvedClassification: false };
 }
 
 function eventKey(usage: MedicalUsage, occurrence: number): string {
+  // 예상 횟수 N회는 N번의 방문이다. 진료 예정일은 첫 방문일 뿐이라 2회차부터는 같은 날로 보지 않는다.
+  if (occurrence > 0) return `OCCURRENCE:${usage.id}:${occurrence}`;
   if (usage.sameDayGroupId) return `DAY:${usage.sameDayGroupId}`;
   if (usage.treatmentDate) return `DATE:${usage.treatmentDate}`;
   if (usage.admissionId) return `ADMISSION:${usage.admissionId}`;
@@ -197,7 +226,11 @@ function withRunningState(usage: MedicalUsage, generation: number, state?: Runni
   };
 }
 
-function initialState(usage: MedicalUsage, generation: number): RunningLimitState {
+/** 5세대는 새로 가입하는 계약이므로 올해 사용한 보험금·횟수·자기부담 없이 시작한다. */
+const NEW_CONTRACT_STATE: RunningLimitState = { paid: 0, count: 0, serviceDays: 0, eligibleDeductible: 0 };
+
+function initialState(usage: MedicalUsage, generation: number, target = false): RunningLimitState {
+  if (target) return NEW_CONTRACT_STATE;
   if (generation === 2 || generation === 3) return {
     paid: usage.gen23PriorPaidBenefit ?? 0,
     count: usage.gen23PriorAnnualCount ?? 0,
@@ -212,7 +245,7 @@ function initialState(usage: MedicalUsage, generation: number): RunningLimitStat
   };
 }
 
-function calculateScenarioOccurrences(
+function calculateScenarioOccurrencesUnchecked(
   contract: InsuranceContract,
   selections: ProductCalculationSelections,
   usage: MedicalUsage,
@@ -221,6 +254,8 @@ function calculateScenarioOccurrences(
   accumulator: RunningLimitAccumulator,
 ) {
   const generation = target ? 5 : contract.generation;
+  // 현재 계약에 입력한 올해 사용분이 5세대 계산에 섞이지 않도록, 5세대 계산용 치료에서는 사용분을 새 계약 기준으로 바꾼다.
+  if (target) usage = withRunningState(usage, generation, NEW_CONTRACT_STATE);
   const medicalCost = usage.patientPaidAmount ?? usage.unitCost;
   if (
     !Number.isInteger(usage.frequency) ||
@@ -272,13 +307,39 @@ function calculateScenarioOccurrences(
   }
   let total = 0;
   let latest: SamsungComparisonItemResult | null = null;
+  // 4세대 현재 계약은 STEP 1-2에서 입력한 담보별 올해 이용 내역을 쓴다. 규칙(담보)을 알아야 어느 값인지 정해지므로
+  // 첫 계산은 올해 사용분 확인을 건너뛰고 규칙만 알아낸 뒤, 아래에서 담보별 값 유무를 직접 확인한다.
+  const usesGroupPrior = !target && generation === 4;
   for (let occurrence = 0; occurrence < usage.frequency; occurrence += 1) {
-    let result = calculateSamsungComparisonItem(contract, selections, usage, assumptions, target);
+    let result = calculateSamsungComparisonItem(contract, selections, usage, usesGroupPrior ? { ...assumptions, assumeNoPriorLimitUsage: true } : assumptions, target);
     if (result.claim === null) return { total: null, latest: result };
     const groups = limitGroups(generation, result.ruleId || usage.id, usage);
-    const initial = initialState(usage, generation);
+    if (accumulator.unresolvedClassification || Object.values(groups).some(key => accumulator.unresolvedGroups.has(key))) {
+      return { total: null, latest: { ...result, claim: null, deductible: null, capEligibleDeductible: null,
+        reasons: ['앞선 미확인 치료가 같은 한도에 영향을 줄 수 있어 이 치료의 연간 보험금도 보류합니다.'] } };
+    }
+    let initial = initialState(usage, generation, target);
+    if (usesGroupPrior) {
+      const prior = gen4PriorUsage(assumptions.currentContractFacts, result.ruleId, usage.claimCause);
+      const legacy = usage.samsungCalculationInput;
+      const paid = prior.paid ?? legacy?.priorPaidBenefit;
+      const count = prior.count ?? legacy?.priorAnnualCount;
+      const eligibleDeductible = prior.eligibleDeductible ?? legacy?.priorEligibleDeductible;
+      const missing = (prior.needs.paid && paid === undefined) || (prior.needs.count && count === undefined) || (prior.needs.eligibleDeductible && eligibleDeductible === undefined);
+      if (missing && !assumptions.assumeNoPriorLimitUsage) {
+        return { total: null, latest: { ...result, claim: null, deductible: null, capEligibleDeductible: null,
+          reasons: ['올해 이미 이용한 내역을 입력하거나(STEP 1-2), 사용한 한도가 없다고 선택해야(STEP 3) 한도를 계산할 수 있습니다.'] } };
+      }
+      initial = { paid: paid ?? 0, count: count ?? 0, serviceDays: initial.serviceDays, eligibleDeductible: eligibleDeductible ?? 0 };
+    }
     const occurrenceEvent = `${groups.count}|${eventKey(usage, occurrence)}`;
     const eventAlreadyCounted = accumulator.countedEvents.has(occurrenceEvent);
+    const combinedOutpatient = generation === 4 && ['G4-04', 'G4-08', 'G4-09'].includes(result.ruleId)
+      || generation === 5 && /^(G5-|G5-CONV-)(02|04|07)$/.test(result.ruleId);
+    if (eventAlreadyCounted && combinedOutpatient) {
+      return { total: null, latest: { ...result, claim: null, deductible: null, capEligibleDeductible: null,
+        reasons: ['같은 날 동일 담보의 외래·처방은 의료비를 합산한 한 항목으로 입력해주세요. 중복 공제·한도 적용을 방지하기 위해 계산을 보류합니다.'] } };
+    }
     const storedCount = accumulator.count.get(groups.count) ?? initial.count;
     const storedServiceDays = accumulator.serviceDays.get(groups.serviceDays) ?? initial.serviceDays;
     const state = {
@@ -300,6 +361,24 @@ function calculateScenarioOccurrences(
   return { total, latest: latest ?? calculateSamsungComparisonItem(contract, selections, usage, assumptions, target) };
 }
 
+/** Failed items must not commit partially calculated usage or make later shared limits look certain. */
+function calculateScenarioOccurrences(
+  contract: InsuranceContract, selections: ProductCalculationSelections, usage: MedicalUsage,
+  assumptions: AnalysisCalculationAssumptions, target: boolean, accumulator: RunningLimitAccumulator,
+) {
+  const trial: RunningLimitAccumulator = {
+    paid: new Map(accumulator.paid), count: new Map(accumulator.count), serviceDays: new Map(accumulator.serviceDays),
+    eligibleDeductible: new Map(accumulator.eligibleDeductible), countedEvents: new Set(accumulator.countedEvents),
+    unresolvedGroups: new Set(accumulator.unresolvedGroups), unresolvedClassification: accumulator.unresolvedClassification,
+  };
+  const result = calculateScenarioOccurrencesUnchecked(contract, selections, usage, assumptions, target, trial);
+  if (result.total !== null) Object.assign(accumulator, trial);
+  else if (result.latest.ruleId) {
+    for (const key of Object.values(limitGroups(target ? 5 : contract.generation, result.latest.ruleId, usage))) accumulator.unresolvedGroups.add(key);
+  } else accumulator.unresolvedClassification = true;
+  return result;
+}
+
 export function calculateSamsungAnnualComparison(
   contract: InsuranceContract,
   target5GMonthlyPremium: number,
@@ -308,6 +387,14 @@ export function calculateSamsungAnnualComparison(
   usages: MedicalUsage[],
   assumptions: AnalysisCalculationAssumptions,
 ) {
+  if (assumptions.comparisonBasis === 'FRESH_YEAR') {
+    usages = usages.map(usage => withRunningState(usage, contract.generation, NEW_CONTRACT_STATE));
+    const facts = { ...assumptions.currentContractFacts };
+    for (const key of Object.keys(facts) as Array<keyof typeof facts>) {
+      if (key.startsWith('prior')) delete facts[key];
+    }
+    assumptions = { ...assumptions, currentContractFacts: facts, assumeNoPriorLimitUsage: true };
+  }
   const currentStates = createAccumulator();
   const targetStates = createAccumulator();
   const targetContract = { ...contract, generation: 5 as const, coverages: target5GCoverages };
@@ -324,14 +411,16 @@ export function calculateSamsungAnnualComparison(
   const medicalCost = usageCosts.every((cost) => Number.isFinite(cost) && cost >= 0)
     ? usageCosts.reduce((sum, cost) => sum + cost, 0)
     : null;
-  const complete = premiumsValid
-    && medicalCost !== null
-    && items.every((item) => item.currentClaimTotal !== null && item.targetClaimTotal !== null);
-  const currentClaimTotal = complete ? items.reduce((sum, item) => sum + (item.currentClaimTotal ?? 0), 0) : null;
-  const targetClaimTotal = complete ? items.reduce((sum, item) => sum + (item.targetClaimTotal ?? 0), 0) : null;
+  const currentComplete = premiumsValid && medicalCost !== null && items.every(item => item.currentClaimTotal !== null);
+  const targetComplete = premiumsValid && medicalCost !== null && items.every(item => item.targetClaimTotal !== null);
+  const complete = currentComplete && targetComplete;
+  const currentClaimTotal = currentComplete ? items.reduce((sum, item) => sum + item.currentClaimTotal!, 0) : null;
+  const targetClaimTotal = targetComplete ? items.reduce((sum, item) => sum + item.targetClaimTotal!, 0) : null;
   return {
     items,
     complete,
+    currentComplete,
+    targetComplete,
     medicalCost,
     currentClaimTotal,
     targetClaimTotal,

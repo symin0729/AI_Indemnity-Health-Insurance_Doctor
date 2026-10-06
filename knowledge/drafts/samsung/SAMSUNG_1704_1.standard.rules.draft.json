@@ -19,7 +19,13 @@
       "evidenceIds": [
         "SAMSUNG_1704_1_E_G3-STD-01"
       ],
-      "aiSourceValidated": true
+      "aiSourceValidated": true,
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 18,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "id": "G3-STD-02",
@@ -32,7 +38,13 @@
       "evidenceIds": [
         "SAMSUNG_1704_1_E_G3-STD-02"
       ],
-      "aiSourceValidated": true
+      "aiSourceValidated": true,
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 19,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "id": "G3-STD-03",
@@ -45,7 +57,13 @@
       "evidenceIds": [
         "SAMSUNG_1704_1_E_G3-STD-03"
       ],
-      "aiSourceValidated": true
+      "aiSourceValidated": true,
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 20,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "id": "G3-STD-BASE-01",
@@ -53,13 +71,19 @@
       "coverage": "표준형 기본형 입원",
       "page": 16,
       "formula": "(입원실료·입원제비용·입원수술비 본인 실제부담액 × 80%) + MIN(상급병실료 차액 × 50%, 입원일수 × 100,000원)",
-      "limit": "연간 자기부담 200만원 초과분 보상; 입원 보험가입금액 한도",
+      "limit": "연간 자기부담 2,000,000원 초과분 보상; 1상해·1질병당 계약가입금액 한도(최대 50,000,000)",
       "status": "RULE_DRAFTED",
       "sourceCorrection": "AI 원문 대조에서 기존 14_S Rule 목록에 빠진 담보를 추가",
       "evidenceIds": [
         "SAMSUNG_1704_1_E_G3-STD-BASE-01"
       ],
-      "aiSourceValidated": true
+      "aiSourceValidated": true,
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 21,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "id": "G3-STD-BASE-02",
@@ -73,7 +97,13 @@
       "evidenceIds": [
         "SAMSUNG_1704_1_E_G3-STD-BASE-02"
       ],
-      "aiSourceValidated": true
+      "aiSourceValidated": true,
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 22,
+        "reviewDate": "2026-10-06"
+      }
     },
     {
       "id": "G3-STD-BASE-03",
@@ -87,7 +117,13 @@
       "evidenceIds": [
         "SAMSUNG_1704_1_E_G3-STD-BASE-03"
       ],
-      "aiSourceValidated": true
+      "aiSourceValidated": true,
+      "spreadsheetReview": {
+        "sourcePath": "knowledge/validation/samsung/spreadsheet-review-2026-10-06.json",
+        "sheet": "4.규칙목록(참고)",
+        "row": 23,
+        "reviewDate": "2026-10-06"
+      }
     }
   ]
 }

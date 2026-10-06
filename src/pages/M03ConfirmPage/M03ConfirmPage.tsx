@@ -21,8 +21,7 @@ function M03ConfirmPage() {
     setIsCalculating,
   ] = useState(false);
 
-  const [isFinalConfirmationChecked, setIsFinalConfirmationChecked] =
-    useState(false);
+  const [confirmation, setConfirmation] = useState({ signature: "", checked: false });
 
   const contract = useAnalysisStore(
     (state) => state.contract
@@ -50,20 +49,21 @@ function M03ConfirmPage() {
         state.calculationAssumptions
     );
 
-  const setCalculationAssumptions = useAnalysisStore(
-    (state) => state.setCalculationAssumptions
-  );
-
   const productCalculationSelections = useAnalysisStore(
     (state) => state.productCalculationSelections
   );
+
+  const signature = JSON.stringify({ contract, usages, target5GMonthlyPremium, target5GCoverages, calculationAssumptions, productCalculationSelections });
+  const isFinalConfirmationChecked = confirmation.signature === signature && confirmation.checked;
+  const setIsFinalConfirmationChecked = (checked: boolean) => setConfirmation({ signature, checked });
+  if (confirmation.signature !== signature) setConfirmation({ signature, checked: false });
 
   if (
     !contract ||
     target5GMonthlyPremium === null
   ) {
     return (
-      <AppShell currentStep={4}><main className="navy-page">
+      <AppShell currentStep={5}><main className="navy-page">
         <header className="page-header">
           <span className="page-brand">
             AI 실손 닥터
@@ -155,7 +155,6 @@ function M03ConfirmPage() {
       usage.gen23PriorEligibleDeductible,
       usage.gen23PriorPaidBenefit,
       usage.gen23PriorAnnualCount,
-      usage.gen23PriorContinuationCount,
       usage.samsungCalculationInput?.priorEligibleDeductible,
       usage.samsungCalculationInput?.priorPaidBenefit,
       usage.samsungCalculationInput?.priorAnnualCount,
@@ -190,7 +189,7 @@ function M03ConfirmPage() {
           description: `보장대상 인정금액이 없는 치료가 ${missingCoveredAmountCount}건 있습니다.`,
         }
       : null,
-    !hasPriorUsageInputForAllTreatments &&
+    calculationAssumptions.comparisonBasis === "REMAINING_LIMITS" && !hasPriorUsageInputForAllTreatments &&
     !calculationAssumptions.assumeNoPriorLimitUsage
       ? {
           title: "기존 지급·한도 사용 이력을 확인해주세요.",
@@ -206,17 +205,6 @@ function M03ConfirmPage() {
       : null,
   ].filter((issue): issue is { title: string; description: string } => issue !== null);
 
-  const handleAssumptionChange = (
-    key: keyof typeof calculationAssumptions,
-    checked: boolean
-  ) => {
-    setCalculationAssumptions({
-      ...calculationAssumptions,
-      [key]: checked,
-    });
-    setIsFinalConfirmationChecked(false);
-  };
-
   const handleCalculate = () => {
     if (isCalculating || !isFinalConfirmationChecked) {
       return;
@@ -230,9 +218,9 @@ function M03ConfirmPage() {
   };
 
   return (
-    <AppShell currentStep={4}><main className="navy-page navy-confirm-page">
+    <AppShell currentStep={5}><main className="navy-page navy-confirm-page">
       <header className="page-header confirm-page-header">
-        <span className="step-badge">STEP 04 · 입력 확인</span>
+        <span className="step-badge">STEP 5 · 입력 확인</span>
         <h1>계산 전 정보를 확인해주세요.</h1>
         <p className="page-description">
           현재 계약과 5세대에 동일한 의료이용 조건을 적용합니다.
@@ -246,7 +234,7 @@ function M03ConfirmPage() {
             <h2 id="planner-confirmation-summary-title">
               계산 전에 확인할 항목이 {confirmationIssues.length}건 있습니다.
             </h2>
-            <p>입력 내용을 수정하거나 Step4-4에서 적용할 가정을 선택해주세요.</p>
+            <p>입력 내용을 수정하거나 4단계 명시적 계산 가정에서 적용할 조건을 선택해주세요.</p>
           </div>
           <div className="planner-confirmation-summary__issues">
             {confirmationIssues.map((issue, index) => (
@@ -266,7 +254,7 @@ function M03ConfirmPage() {
       {/* STEP 1 */}
       <section className="form-card">
         <span className="step-badge">
-          STEP 4-1
+          STEP 5-1
         </span>
 
         <h2 className="card-title">
@@ -429,7 +417,7 @@ function M03ConfirmPage() {
       {/* STEP 2 */}
       <section className="compare-card">
         <span className="step-badge">
-          STEP 4-2
+          STEP 5-2
         </span>
 
         <h2 className="card-title">
@@ -487,7 +475,7 @@ function M03ConfirmPage() {
       {/* STEP 3 */}
       <section className="form-card">
         <span className="step-badge">
-          STEP 4-3
+          STEP 5-3
         </span>
 
         <h2 className="card-title">
@@ -621,10 +609,10 @@ function M03ConfirmPage() {
         )}
       </section>
 
-      {/* STEP 4 */}
+      {/* STEP 5 */}
       <section className="app-card">
         <span className="step-badge">
-          STEP 4-4
+          STEP 5-4
         </span>
 
         <h2 className="card-title">
@@ -632,7 +620,7 @@ function M03ConfirmPage() {
         </h2>
 
         <p className="card-description">
-          입력값이 있으면 해당 값을 사용합니다. 확인되지 않은 항목만 아래에서 가정을 선택해주세요.
+          4단계에서 선택한 가정과 비교 기준입니다. 변경하려면 명시적 계산 가정 페이지로 돌아가세요.
         </p>
 
         <div className="planner-comparison-basis">
@@ -640,102 +628,12 @@ function M03ConfirmPage() {
           <strong>1년 · 현재 계약과 5세대에 동일한 의료 이용 조건 적용</strong>
         </div>
 
-        <div className="planner-assumption-list" aria-label="누락 정보 및 계산 가정">
-          <article className="planner-assumption-item">
-            <div className="planner-assumption-item__heading">
-              <div>
-                <strong>보장대상 인정금액(C)</strong>
-                <small>
-                  {missingCoveredAmountCount === 0
-                    ? "모든 예정 치료에 보장대상 인정금액이 입력되어 있습니다."
-                    : `${missingCoveredAmountCount}건의 보장대상 인정금액이 입력되지 않았습니다.`}
-                </small>
-              </div>
-              <span className={`planner-assumption-status ${missingCoveredAmountCount === 0 ? "is-confirmed" : calculationAssumptions.assumeEntireMedicalCostCovered ? "is-assumed" : "is-required"}`}>
-                {missingCoveredAmountCount === 0
-                  ? "입력 완료"
-                  : calculationAssumptions.assumeEntireMedicalCostCovered
-                  ? "가정 적용"
-                  : "확인 필요"}
-              </span>
-            </div>
-            {missingCoveredAmountCount > 0 && (
-              <label className="planner-assumption-choice">
-                <input
-                  type="checkbox"
-                  checked={calculationAssumptions.assumeEntireMedicalCostCovered}
-                  onChange={(event) => handleAssumptionChange("assumeEntireMedicalCostCovered", event.target.checked)}
-                />
-                <span>미입력 치료는 환자부담 의료비(M) 전액을 C로 가정해 계산</span>
-              </label>
-            )}
-          </article>
-
-          <article className="planner-assumption-item">
-            <div className="planner-assumption-item__heading">
-              <div>
-                <strong>현재 보장기간의 지급·한도 사용 이력</strong>
-                <small>
-                  {hasPriorUsageInputForAllTreatments
-                    ? "입력한 지급액과 누적 사용량을 계산에 사용합니다."
-                    : "일부 치료의 지급액 또는 누적 사용량이 입력되지 않았습니다."}
-                </small>
-              </div>
-              <span className={`planner-assumption-status ${calculationAssumptions.assumeNoPriorLimitUsage ? "is-assumed" : hasPriorUsageInputForAllTreatments ? "is-confirmed" : "is-required"}`}>
-                {calculationAssumptions.assumeNoPriorLimitUsage
-                  ? "가정 적용"
-                  : hasPriorUsageInputForAllTreatments
-                  ? "입력값 사용"
-                  : "확인 필요"}
-              </span>
-            </div>
-            <label className="planner-assumption-choice">
-              <input
-                type="checkbox"
-                checked={calculationAssumptions.assumeNoPriorLimitUsage}
-                onChange={(event) => handleAssumptionChange("assumeNoPriorLimitUsage", event.target.checked)}
-              />
-              <span>확인되지 않은 기존 지급액과 한도·상한 사용량을 0으로 가정해 계산</span>
-            </label>
-          </article>
-
-          <article className="planner-assumption-item">
-            <div className="planner-assumption-item__heading">
-              <div>
-                <strong>치료 방문·합산 단위</strong>
-                <small>
-                  {needsVisitUnitConfirmation
-                    ? "반복 치료 중 동일 입원·동일일자 정보가 없는 항목이 있습니다."
-                    : "입력한 날짜와 동일 입원·동일일자 구분을 계산에 사용합니다."}
-                </small>
-              </div>
-              <span className={`planner-assumption-status ${!needsVisitUnitConfirmation ? "is-confirmed" : calculationAssumptions.assumeEachOccurrenceSeparate ? "is-assumed" : "is-required"}`}>
-                {!needsVisitUnitConfirmation
-                  ? "입력 완료"
-                  : calculationAssumptions.assumeEachOccurrenceSeparate
-                  ? "가정 적용"
-                  : "확인 필요"}
-              </span>
-            </div>
-            {needsVisitUnitConfirmation && (
-              <label className="planner-assumption-choice">
-                <input
-                  type="checkbox"
-                  checked={calculationAssumptions.assumeEachOccurrenceSeparate}
-                  onChange={(event) => handleAssumptionChange("assumeEachOccurrenceSeparate", event.target.checked)}
-                />
-                <span>날짜·입원 구분이 없는 반복 치료는 각각 별도 방문으로 가정해 계산</span>
-              </label>
-            )}
-          </article>
-
-          <button
-            type="button"
-            className="planner-assumption-edit"
-            onClick={() => navigate("/input#input-step-2")}
-          >
-            예정 치료 입력 확인하기
-          </button>
+        <div role="region" className="planner-assumption-list" aria-label="선택한 계산 가정 확인">
+          <article className="planner-assumption-item"><strong>보장 제외 사유</strong><p>{calculationAssumptions.assumeNoPolicyExclusions ? '미확인 치료에는 보장 제외 사유가 없다는 가정 적용' : '확인된 사실만 적용하며 미확인 조건은 확인 필요로 표시'}</p></article>
+          <article className="planner-assumption-item"><strong>보장대상 인정금액(C)</strong><p>{missingCoveredAmountCount === 0 ? '입력한 인정금액 사용' : calculationAssumptions.assumeEntireMedicalCostCovered ? '미입력 치료는 환자부담 의료비 전액을 보장대상 금액으로 가정' : '미입력 보장대상 금액은 확인 필요로 표시'}</p></article>
+          <article className="planner-assumption-item"><strong>비교 시작 조건과 기존 사용분</strong><p>{calculationAssumptions.comparisonBasis !== 'REMAINING_LIMITS' ? '한도 사용 전부터 1년 비교: 양쪽 계약 모두 기존 사용분 0에서 시작' : calculationAssumptions.assumeNoPriorLimitUsage ? '현재 계약의 입력한 기존 사용분을 반영하고 빈 값만 0으로 가정. 5세대는 기존 사용분 0에서 시작' : '현재 계약의 입력한 기존 사용분 반영. 미확인 사용분은 확인 필요로 표시. 5세대는 기존 사용분 0에서 시작'}</p></article>
+          <article className="planner-assumption-item"><strong>치료 방문·합산 단위</strong><p>{calculationAssumptions.assumeEachOccurrenceSeparate ? '반복 치료를 각각 별도 방문으로 가정' : '입력한 방문 구분을 사용하고 미확인 반복 치료는 확인 필요로 표시'}</p></article>
+          <button type="button" className="planner-assumption-edit" onClick={() => navigate('/input#input-step-4')}>명시적 계산 가정 수정하기</button>
         </div>
 
         <details className="planner-calculation-details">
@@ -765,7 +663,7 @@ function M03ConfirmPage() {
             onChange={(event) => setIsFinalConfirmationChecked(event.target.checked)}
           />
           <span>
-            <strong>계약·담보·예정 치료와 위 계산 가정을 모두 확인했습니다.</strong>
+            <strong>입력한 계약·담보·예정 치료와 선택한 계산 가정을 확인했습니다.</strong>
             <small>현재 선택된 개별 계산 가정을 적용해 비교안을 계산합니다.</small>
           </span>
         </label>
@@ -783,7 +681,7 @@ function M03ConfirmPage() {
           className="secondary-button"
           disabled={isCalculating}
           onClick={() =>
-            navigate("/input#input-step-3")
+            navigate("/input#input-step-4")
           }
         >
           이전

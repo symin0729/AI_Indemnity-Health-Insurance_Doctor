@@ -22,16 +22,13 @@ function M02InputPage() {
     handleNext,
     handleStep1Next,
     handleStep2Next,
+    handleStep3Next,
     isResetModalOpen,
-    isStep3Confirmed,
-    isTargetPremiumHelpConfirmed,
-    isTreatmentHelpConfirmed,
     isVariantUnregistered,
     navigate,
     patientCostHelpDialogRef,
     pendingDeleteUsage,
     setIsTreatmentHelpConfirmed,
-    showTargetPremiumHelp,
     transitionDirection,
     treatmentHelpDialogRef,
     treatmentSampleDialogRef,
@@ -40,15 +37,37 @@ function M02InputPage() {
   return (
     <AppShell currentStep={activeStep} onReset={handleConfirmResetAll} hideResetButton
       onStepChange={(step) => {
-        if (step === 4) { handleNext(); return; }
-        if (step === 3 && activeStep === 2) { handleStep2Next(); return; }
-        if (step === 3 && !isTargetPremiumHelpConfirmed) {
-          showTargetPremiumHelp();
+        if (step > activeStep && step <= 5) {
+          if (activeStep === 1) handleStep1Next();
+          else if (activeStep === 2) handleStep2Next();
+          else if (activeStep === 3) handleStep3Next();
+          else handleNext();
           return;
         }
-        if (step === 1 || step === 2 || step === 3) goToInputStep(step);
+        if (step <= 4) goToInputStep(step as 1 | 2 | 3 | 4);
       }}>
     <main className="navy-page navy-input-page">
+      {/* 입력 1단계: 고객 보험 정보 (왼쪽 단계 목록의 1) */}
+      <div className="workflow-panel" data-direction={transitionDirection} hidden={activeStep !== 1}>
+      <Step1Contract form={form} />
+      </div>
+
+      {/* 입력 2단계: 두 계약에 공통으로 적용할 예정 치료 */}
+      <div className="workflow-panel" data-direction={transitionDirection} hidden={activeStep !== 2}>
+
+      {/* 예정 치료 입력 */}
+      <Step2Treatment form={form} />
+      </div>
+
+      {/* 입력 3단계: 5세대 비교 조건 */}
+      <div className="workflow-panel" data-direction={transitionDirection} hidden={activeStep !== 3}>
+      <Step2Compare form={form} />
+      </div>
+
+      <div className="workflow-panel" data-direction={transitionDirection} hidden={activeStep !== 4}>
+      <Step3Assumptions form={form} />
+      </div>
+
       {isVariantUnregistered && (
         <div
           id="variant-unregistered-banner"
@@ -69,29 +88,11 @@ function M02InputPage() {
         </div>
       )}
 
-      {/* 입력 1단계: 내 보험 정보 (왼쪽 단계 목록의 1) */}
-      <div className="workflow-panel" data-direction={transitionDirection} hidden={activeStep !== 1}>
-      <Step1Contract form={form} />
-      </div>
-
-      {/* 입력 2단계: 5세대 전환 비교 + 예정 치료 (단계 목록의 2) */}
-      <div className="workflow-panel" data-direction={transitionDirection} hidden={activeStep !== 2}>
-      <Step2Compare form={form} />
-
-      {/* 입력 2단계의 두 번째 카드: 예정 치료 입력 */}
-      <Step2Treatment form={form} />
-      </div>
-
-      {/* 입력 3단계: 계산 가정 (단계 목록의 3) */}
-      <div className="workflow-panel" data-direction={transitionDirection} hidden={activeStep !== 3}>
-      <Step3Assumptions form={form} />
-      </div>
-
       <div className="button-group">
         <button
           type="button"
           className="secondary-button"
-          onClick={() => activeStep === 1 ? navigate("/") : goToInputStep((activeStep - 1) as 1 | 2)}
+          onClick={() => activeStep === 1 ? navigate("/") : goToInputStep((activeStep - 1) as 1 | 2 | 3)}
         >
           이전
         </button>
@@ -99,14 +100,14 @@ function M02InputPage() {
         <button
           type="button"
           className="primary-button"
-          disabled={activeStep === 3 && (!isStep3Confirmed || !isTreatmentHelpConfirmed)}
           onClick={() => {
             if (activeStep === 1) handleStep1Next();
             else if (activeStep === 2) handleStep2Next();
+            else if (activeStep === 3) handleStep3Next();
             else handleNext();
           }}
         >
-          {activeStep < 3 ? "다음 단계" : "입력 정보 확인하기"}
+          {activeStep < 4 ? "다음 단계" : "입력 정보 확인하기"}
         </button>
       </div>
 

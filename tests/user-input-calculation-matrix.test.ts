@@ -1,3 +1,4 @@
+import { confirmedContractFacts } from './fixtures/confirmed-contract-facts';
 import { describe, expect, it } from "vitest";
 
 import { calculateSamsungAnnualBreakEven, calculateSamsungAnnualComparison } from "../src/engine/calculateSamsungComparison";
@@ -15,7 +16,7 @@ const variants = ["standard", "selected2"] as const;
 const riderStates = ["ENROLLED", "NOT_ENROLLED"] as const;
 const amountFactors = [0.5, 1, 2] as const;
 const frequencies = [1, 4, 12] as const;
-const assumptions = {
+const assumptions = { targetContractFacts: confirmedContractFacts, currentContractFacts: confirmedContractFacts,
   assumeEntireMedicalCostCovered: false,
   assumeNoPriorLimitUsage: true,
   assumeEachOccurrenceSeparate: true,

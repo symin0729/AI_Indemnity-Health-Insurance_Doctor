@@ -49,7 +49,7 @@ function priorityChecks(item, rule) {
   if ([2, 3].includes(rule.generation)) checks.push(`종형이 '${item.variant}'인지 표제·소제목에서 확인하고 표준형과 선택형Ⅱ 수치를 섞지 않는다.`);
   if (["G4-05", "G5-05", "G5-CONV-05"].includes(item.ruleId)) checks.push("최초 10회 후 검사결과로 증상 개선·병변 호전이 확인된 경우에만 10회 단위로 추가 보장되는지 확인한다.");
   if (item.ruleId.startsWith("G5-CONV-")) checks.push("계약전환·재개·자녀보험전환 세부유형과 전환 자격·계속 치료 적용 조건을 확인한다.");
-  if (item.ruleId === "G5-07") checks.push("PDF 64쪽의 인쇄 쪽수가 63쪽인지 확인하고, 계약 유형에 따른 예외 조항을 섞지 않는다.");
+  if (item.ruleId === "G5-07") checks.push("PDF 65쪽의 비중증 통원 1일 단위 조항을 확인하고, 계약 유형에 따른 예외 조항을 섞지 않는다.");
   if (rule.limitText) checks.push(`한도·횟수·합산 기준을 원문과 대조한다: ${rule.limitText}`);
   checks.push("동일 의료비에 다수계약 비례보상이 적용되는지, 적용된다면 계약별 분담식과 총 보상 상한을 확인한다.");
   return checks;

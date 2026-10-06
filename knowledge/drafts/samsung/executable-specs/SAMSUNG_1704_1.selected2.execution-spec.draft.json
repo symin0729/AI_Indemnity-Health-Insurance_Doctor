@@ -42,7 +42,13 @@
           "benefitRate": 0.4
         }
       },
-      "limitText": "연간 자기부담 상한 및 가입금액 적용",
+      "limitText": "연 자기부담 상한 2,000,000 / 1상해·1질병당 계약가입금액 한도(최대 50,000,000)",
+      "accumulation": {
+        "benefit": "G3-SEL2-01",
+        "count": "G3-SEL2-01",
+        "serviceDays": "G3-SEL2-01",
+        "deductible": "G3-SEL2-01"
+      },
       "requiresAccumulator": true,
       "enforcement": {
         "annualDeductibleCap": 2000000,
@@ -85,6 +91,12 @@
         "minimumAmount": 20000
       },
       "limitText": "도수 350만원/50회; 주사 250만원/50회; MRI 300만원",
+      "accumulation": {
+        "benefit": "G3-SEL2-02",
+        "count": "G3-SEL2-02",
+        "serviceDays": "G3-SEL2-02",
+        "deductible": "G3-SEL2-02"
+      },
       "requiresAccumulator": true,
       "enforcement": {
         "categoryLimits": {
@@ -150,10 +162,17 @@
         "minimumByInstitution": {
           "CLINIC": 10000,
           "HOSPITAL": 15000,
+          "GENERAL_HOSPITAL": 15000,
           "GENERAL_TERTIARY": 20000
         }
       },
       "limitText": "매년 계약해당일부터 1년간 방문 180회",
+      "accumulation": {
+        "benefit": "G3-SEL2-BASE-02",
+        "count": "G3-SEL2-BASE-02",
+        "serviceDays": "G3-SEL2-BASE-02",
+        "deductible": "G3-SEL2-BASE-02"
+      },
       "requiresAccumulator": true,
       "enforcement": {
         "maxAnnualCount": 180,
@@ -205,7 +224,13 @@
         "minimumAmount": 8000
       },
       "limitText": "매년 계약해당일부터 1년간 처방전 180건",
-      "requiresAccumulator": false,
+      "accumulation": {
+        "benefit": "G3-SEL2-BASE-03",
+        "count": "G3-SEL2-BASE-03",
+        "serviceDays": "G3-SEL2-BASE-03",
+        "deductible": "G3-SEL2-BASE-03"
+      },
+      "requiresAccumulator": true,
       "enforcement": {
         "maxAnnualCount": 180,
         "countUnit": "PRESCRIPTION",

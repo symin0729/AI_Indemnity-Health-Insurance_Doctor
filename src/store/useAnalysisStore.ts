@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import type { SamsungContractFacts } from '../domain/samsungContractFacts';
 
 import type { SamsungGen23Variant } from "../domain/samsungGen23Variant";
 import type { Gen1ProductChoice } from "../domain/gen1Product";
@@ -13,6 +14,11 @@ import type {
 } from "../domain/medical";
 
 export interface AnalysisCalculationAssumptions {
+  comparisonBasis?: "FRESH_YEAR" | "REMAINING_LIMITS";
+  /** 미래 비교에서 보장 제외 사유가 없다는 명시적 가정. 확인된 제외 사실은 덮어쓰지 않는다. */
+  assumeNoPolicyExclusions?: boolean;
+  /** 설계사 입력에서 명시한 단일 실손 계약 비교 범위. 다수보험 분담은 제외한다. */
+  assumeSingleIndemnityContract?: boolean;
   /**
    * true일 때만 C 미입력 시 M 전체를 C로 본다.
    */
@@ -28,6 +34,17 @@ export interface AnalysisCalculationAssumptions {
    * 각 회차를 서로 다른 계산 단위로 본다.
    */
   assumeEachOccurrenceSeparate: boolean;
+
+  /**
+   * 4세대 현재 계약의 연간 보험가입금액(약관상 최대 5천만원, 계약자 선택).
+   * 미확인 시 계산을 보류한다. 기존 저장 데이터 호환용이다.
+   */
+  contractBenefitCap?: number;
+
+  /** 4세대 현재 계약의 통원 1회당 보험가입금액(약관상 최대 20만원, 계약자 선택). */
+  perOccurrenceBenefitCap?: number;
+  currentContractFacts?: SamsungContractFacts;
+  targetContractFacts?: SamsungContractFacts;
 }
 
 export type RiderEnrollmentStatus = "ENROLLED" | "NOT_ENROLLED" | "UNKNOWN";

@@ -1,4 +1,7 @@
-import { createDraftFromUsage, createEmptyTreatmentDraft, type TreatmentDraft } from "./treatmentSequence";
+import { singleContractDetails } from './contractRequirements';
+import { toNonCoveredTreatmentType } from "../../../domain/nonCoveredTreatmentType";
+import { applyGen23ContractInputs } from "../../../domain/contractDetails";
+import { createDraftFromUsage, createEmptyTreatmentDraft, policyExclusionsFromUsage, type TreatmentDraft } from "./treatmentSequence";
 import { type CopayInstitution, type CopayRegion } from "../../../domain/insuranceInputDefaults";
 import { gen23CareSettingError } from "../../../domain/samsungGen23CareSetting";
 import { parseGen23Form, restoreGen23Form } from "../../../domain/samsungGen23Form";
@@ -28,12 +31,16 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
     frequency,
     gen1CoveredRoomAndTreatment,
     gen1NonNhiInpatientTotal,
-    gen1PolicyExclusionsCleared,
+    policyExclusionsCleared,
     gen1PriorPaidBenefit,
     gen1PriorServiceDays,
+    gen1DaysSinceAccident,
+    gen1Product,
+    contractDetails,
     gen1RoomDifference,
     gen23Form,
     gen3Riders,
+    samsungGen23Variant,
     generation,
     healthInsuranceCopayRatePercent,
     institutionType,
@@ -51,9 +58,10 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
     setFrequency,
     setGen1CoveredRoomAndTreatment,
     setGen1NonNhiInpatientTotal,
-    setGen1PolicyExclusionsCleared,
+    setPolicyExclusionsCleared,
     setGen1PriorPaidBenefit,
     setGen1PriorServiceDays,
+    setGen1DaysSinceAccident,
     setGen1RoomDifference,
     setGen23Form,
     setHealthInsuranceCopayRatePercent,
@@ -102,7 +110,8 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
     gen1NonNhiInpatientTotal,
     gen1PriorPaidBenefit,
     gen1PriorServiceDays,
-    gen1PolicyExclusionsCleared,
+    gen1DaysSinceAccident,
+    policyExclusionsCleared,
   });
 
 
@@ -129,7 +138,8 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
     setGen1NonNhiInpatientTotal(draft.gen1NonNhiInpatientTotal);
     setGen1PriorPaidBenefit(draft.gen1PriorPaidBenefit);
     setGen1PriorServiceDays(draft.gen1PriorServiceDays);
-    setGen1PolicyExclusionsCleared(draft.gen1PolicyExclusionsCleared);
+    setGen1DaysSinceAccident(draft.gen1DaysSinceAccident ?? "");
+    setPolicyExclusionsCleared(draft.policyExclusionsCleared);
   };
 
 
@@ -172,7 +182,8 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
     setGen1NonNhiInpatientTotal(emptyDraft.gen1NonNhiInpatientTotal);
     setGen1PriorPaidBenefit(emptyDraft.gen1PriorPaidBenefit);
     setGen1PriorServiceDays(emptyDraft.gen1PriorServiceDays);
-    setGen1PolicyExclusionsCleared(emptyDraft.gen1PolicyExclusionsCleared);
+    setGen1DaysSinceAccident(emptyDraft.gen1DaysSinceAccident);
+    setPolicyExclusionsCleared(emptyDraft.policyExclusionsCleared);
     setEditingUsageId(null);
     setTreatmentDrafts((previous) => ({
       ...previous,
@@ -289,10 +300,34 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
       return null;
     }
 
+    // 모든 세대 공통 필수: 현재 계약과 5세대 전환 계산이 모두 이 값을 쓴다.
+    if (claimCause !== "INJURY" && claimCause !== "DISEASE") {
+      setErrorMessage("치료 원인(질병/상해)을 선택해주세요.");
+      return null;
+    }
+    if (nationalHealthInsuranceStatus === "UNKNOWN") {
+      setErrorMessage("이번 진료의 국민건강보험 적용 여부를 선택해주세요.");
+      return null;
+    }
+    const daysSinceAccidentNumber = gen1DaysSinceAccident === "" ? null : Number(gen1DaysSinceAccident);
+    // 경과일은 1세대 대표상품(0904.2) 세부 입력에서만 받는다.
+    if (generation === 1 && gen1Product === "SAMSUNG_0904_2" && (daysSinceAccidentNumber === null || !Number.isInteger(daysSinceAccidentNumber) || daysSinceAccidentNumber < 0)) {
+      setErrorMessage("1세대는 사고일 또는 발병일부터의 경과일을 0 이상의 정수로 입력해주세요.");
+      return null;
+    }
+
+    const nonCoveredType = toNonCoveredTreatmentType(benefitClass, treatmentCategory);
     let gen23Values: Partial<MedicalUsage> = {};
     if (generation === 2 || generation === 3) {
       try {
-        gen23Values = parseGen23Form(gen23Form);
+        gen23Values = {
+          ...parseGen23Form(gen23Form),
+          claimCause,
+          nationalHealthInsuranceStatus,
+          gen23PolicyExclusionsCleared: policyExclusionsCleared || undefined,
+          // 3세대 치료 분류는 공통 칸의 비급여 치료 종류에서 가져온다.
+          ...(generation === 3 ? { gen23TreatmentType: nonCoveredType || "BASE" } : {}),
+        };
         const careError = gen23CareSettingError({ careSetting, gen23CareSetting: gen23Values.gen23CareSetting });
         if (careError) throw new Error(careError);
       }
@@ -331,12 +366,10 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
         ? { treatmentDate }
         : {}),
 
-      ...(treatmentCategory.trim()
-        ? {
-            treatmentCategory:
-              treatmentCategory.trim(),
-          }
-        : {}),
+      // 비급여 치료 종류만 저장한다(급여 치료나 일반 비급여는 비워 샘플 값이 남지 않게 한다).
+      treatmentCategory: nonCoveredType || undefined,
+      // 5세대 판정값은 화면 입력(중증 여부·면책 확인·치료 종류)으로 계산 시점에 다시 만든다. 샘플 값이 남지 않게 비운다.
+      samsungGen5Facts: undefined,
 
       ...(copayInstitution ? { copayInstitution } : {}),
       ...(copayRegion ? { copayRegion } : {}),
@@ -358,15 +391,16 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
           }
         : {}),
 
+      claimCause,
+      nationalHealthInsuranceStatus,
+
       ...(generation === 1 ? {
-        claimCause,
-        nationalHealthInsuranceStatus,
         gen1CoveredRoomAndTreatment: optionalAmount(gen1CoveredRoomAndTreatment),
         gen1RoomDifference: optionalAmount(gen1RoomDifference),
         gen1NonNhiInpatientTotal: optionalAmount(gen1NonNhiInpatientTotal),
         gen1PriorPaidBenefit: optionalAmount(gen1PriorPaidBenefit),
         gen1PriorServiceDays: optionalAmount(gen1PriorServiceDays),
-        gen1PolicyExclusionsCleared,
+        gen1PolicyExclusionsCleared: policyExclusionsCleared || undefined,
       } : {}),
     };
 
@@ -386,9 +420,6 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
         otherIndemnityPoliciesExist:
           sourceUsage.samsungCalculationInput?.otherIndemnityPoliciesExist ??
           usage.gen23OtherIndemnityPoliciesExist,
-        coveragePeriodConfirmed:
-          sourceUsage.samsungCalculationInput?.coveragePeriodConfirmed ??
-          usage.gen23CoveragePeriodConfirmed,
         sameDayAggregationConfirmed:
           sourceUsage.samsungCalculationInput?.sameDayAggregationConfirmed ??
           usage.gen23SameDayAggregationConfirmed,
@@ -402,6 +433,27 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
           sourceUsage.samsungCalculationInput?.priorEligibleDeductible ??
           usage.gen23PriorEligibleDeductible,
       };
+    }
+
+    // 공통 확인값은 샘플 값보다 사용자가 입력한 값을 우선한다(5세대 전환 계산도 이 값을 읽는다).
+    usage.samsungCalculationInput = {
+      ...usage.samsungCalculationInput,
+      policyExclusionsCleared: policyExclusionsCleared || undefined,
+      ...(careSetting === 'INPATIENT' && benefitClass === 'NON_COVERED' ? {
+        roomDifference: optionalAmount(generation === 2 || generation === 3 ? gen23Form.gen23RoomDifference ?? "" : gen1RoomDifference),
+        inpatientDays: optionalAmount(gen23Form.gen23InpatientDays ?? ''),
+      } : {}),
+      ...(generation === 1 && daysSinceAccidentNumber !== null ? { daysSinceAccidentOrDiagnosis: daysSinceAccidentNumber } : {}),
+    };
+
+    // 2·3세대: STEP 1의 가입금액·계약 상세를 반영한다(입력을 확정할 때도 다시 반영한다).
+    if (generation === 2 || generation === 3) {
+      try {
+        return applyGen23ContractInputs(usage, singleContractDetails(contractDetails, samsungGen23Variant));
+      } catch (error) {
+        setErrorMessage(`내 보험 정보(STEP 1)의 가입금액·계약 상세를 확인해주세요. ${error instanceof Error ? error.message : ""}`);
+        return null;
+      }
     }
 
     return usage;
@@ -564,15 +616,16 @@ export function useTreatmentActions(deps: BaseApi & ContractApi & CompareApi & T
             usage.coveredAmount
           )
     );
-    setGen23Form(restoreGen23Form(usage));
+    setGen23Form(createDraftFromUsage(usage).gen23Form);
     setClaimCause(usage.claimCause ?? "UNKNOWN");
-    setNationalHealthInsuranceStatus(usage.nationalHealthInsuranceStatus ?? "UNKNOWN");
+    setNationalHealthInsuranceStatus(usage.nationalHealthInsuranceStatus ?? "APPLIED");
     setGen1CoveredRoomAndTreatment(usage.gen1CoveredRoomAndTreatment === undefined ? "" : String(usage.gen1CoveredRoomAndTreatment));
-    setGen1RoomDifference(usage.gen1RoomDifference === undefined ? "" : String(usage.gen1RoomDifference));
+    setGen1RoomDifference(createDraftFromUsage(usage).gen1RoomDifference);
     setGen1NonNhiInpatientTotal(usage.gen1NonNhiInpatientTotal === undefined ? "" : String(usage.gen1NonNhiInpatientTotal));
     setGen1PriorPaidBenefit(usage.gen1PriorPaidBenefit === undefined ? "" : String(usage.gen1PriorPaidBenefit));
     setGen1PriorServiceDays(usage.gen1PriorServiceDays === undefined ? "" : String(usage.gen1PriorServiceDays));
-    setGen1PolicyExclusionsCleared(usage.gen1PolicyExclusionsCleared ?? false);
+    setPolicyExclusionsCleared(policyExclusionsFromUsage(usage));
+    setGen1DaysSinceAccident(usage.samsungCalculationInput?.daysSinceAccidentOrDiagnosis === undefined ? "" : String(usage.samsungCalculationInput.daysSinceAccidentOrDiagnosis));
   };
 
 

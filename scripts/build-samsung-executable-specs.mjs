@@ -5,10 +5,11 @@ const root = path.resolve(import.meta.dirname, "..");
 const draftDir = path.join(root, "knowledge/drafts/samsung");
 const outputDir = path.join(draftDir, "executable-specs");
 const evidenceMap = JSON.parse(await readFile(path.join(root, "knowledge/rule-evidence-map.json"), "utf8"));
+const accumulationGroups = JSON.parse(await readFile(path.join(root, "knowledge/rules/samsung/accumulation-groups.json"), "utf8"));
 const sourceAndEngineValidatedProducts = new Set(["SAMSUNG_0904_2", "SAMSUNG_1611_7", "SAMSUNG_1704_1", "SAMSUNG_2107_1", "SAMSUNG_2605_1"]);
 await mkdir(outputDir, { recursive: true });
 
-const institutionMinimums = { CLINIC: 10000, HOSPITAL: 15000, GENERAL_TERTIARY: 20000 };
+const institutionMinimums = { CLINIC: 10000, HOSPITAL: 15000, GENERAL_HOSPITAL: 15000, GENERAL_TERTIARY: 20000 };
 
 const component = (basis, benefitRate, extra = {}) => ({ basis, benefitRate, ...extra });
 const rate = (benefitRate, basis = "ELIGIBLE_EXPENSE") => ({ type: "RATE_BENEFIT", components: [component(basis, benefitRate)] });
@@ -62,15 +63,18 @@ function calculation(ruleId) {
   };
   if (/^G3-(STD-0[1-3]|SEL2-02)$/.test(ruleId)) return maxDeductible(0.3, 20000);
 
+  // 급여 입원: 나머지 20% 자기부담이 연 200만원을 넘으면 초과분 보상(4세대 약관 제6조 ④, PDF 51쪽)
   if (["G4-01", "G4-02"].includes(ruleId)) return {
     ...rate(0.8),
+    annualDeductibleCap: 2000000,
     nonNhiFallback: { benefitRate: 0.4 },
   };
   if (["G4-08", "G4-09"].includes(ruleId)) return {
     ...maxDeductible(0.2, null),
     minimumByInstitution: { CLINIC_HOSPITAL: 10000, GENERAL_TERTIARY: 20000 },
   };
-  if (ruleId === "G5-01") return rate(0.8);
+  // 급여 입원 연 200만원 자기부담 상한(5세대 일반형·계약전환형 약관 제6조 ④, PDF 30쪽)
+  if (ruleId === "G5-01") return { ...rate(0.8), annualDeductibleCap: 2000000 };
   if (ruleId === "G4-03") return {
     type: "COMPONENT_SUM",
     components: [component("NON_COVERED_INPATIENT_EXCLUDING_ROOM", 0.7), component("ROOM_DIFFERENCE", 0.5, { dailyBenefitCap: 100000 })],
@@ -176,7 +180,7 @@ function enforcement(ruleId) {
     },
   };
   if (ruleId === "G4-07") return { annualBenefitCap: 3000000, countUnit: "DIAGNOSTIC_ACTION", aggregationUnitMustBeProvided: true };
-  if (["G4-01", "G4-02"].includes(ruleId)) return { annualBenefitCap: 50000000, requiresContractBenefitCap: true };
+  if (["G4-01", "G4-02"].includes(ruleId)) return { annualBenefitCap: 50000000, requiresContractBenefitCap: true, annualDeductibleCap: 2000000 };
   if (["G4-08", "G4-09"].includes(ruleId)) return {
     annualBenefitCap: 50000000,
     requiresContractBenefitCap: true,
@@ -192,18 +196,25 @@ function enforcement(ruleId) {
     requiresPerOccurrenceBenefitCap: true,
     maxPerOccurrenceBenefitCap: 200000,
   };
-  if (ruleId === "G5-01") return { annualBenefitCap: 50000000, requiresContractBenefitCap: true };
-  if (ruleId === "G5-03") return { annualBenefitCap: 50000000, annualDeductibleCap: 5000000, appliesWhen: "GENERAL_OR_TERTIARY_HOSPITAL_EXCLUDING_SPECIFIED_THREE" };
-  if (ruleId === "G5-04") return { annualBenefitCap: 50000000, maxAnnualCount: 100, countUnit: "VISIT", separateBy: "INJURY_OR_DISEASE", fixedPerOccurrenceBenefitCap: 200000 };
+  if (ruleId === "G5-01") return { annualBenefitCap: 50000000, requiresContractBenefitCap: true, annualDeductibleCap: 2000000 };
+  // 급여 통원: 상해·질병 각각 연간 보험가입금액(최대 5천만원), 통원 1회당 20만원 이내(5세대 약관 제6조 ①·⑤, PDF 30쪽)
+  if (ruleId === "G5-02") return {
+    annualBenefitCap: 50000000,
+    requiresContractBenefitCap: true,
+    requiresPerOccurrenceBenefitCap: true,
+    maxPerOccurrenceBenefitCap: 200000,
+  };
+  if (ruleId === "G5-03") return { annualBenefitCap: 50000000, requiresContractBenefitCap: true, annualDeductibleCap: 5000000, appliesWhen: "GENERAL_OR_TERTIARY_HOSPITAL_EXCLUDING_SPECIFIED_THREE" };
+  if (ruleId === "G5-04") return { annualBenefitCap: 50000000, requiresContractBenefitCap: true, maxAnnualCount: 100, countUnit: "VISIT", separateBy: "INJURY_OR_DISEASE", perOccurrenceCapByContract: { 50000000: 200000, 30000000: 150000, 10000000: 100000 } };
   if (ruleId === "G5-05") return {
     categoryLimits: {
       MANUAL_THERAPY: { annualBenefitCap: 3500000, maxAnnualCount: 50, countUnit: "TREATMENT", improvementEvidenceAfterCount: 10 },
       INJECTION: { annualBenefitCap: 2500000, maxAnnualCount: 50, countUnit: "TREATMENT" },
-      MRI: { annualBenefitCap: 3000000, countUnit: "DIAGNOSTIC_ACTION", aggregationUnitMustBeProvided: true },
+      MRI: { annualBenefitCap: 3000000, countUnit: "DIAGNOSTIC_ACTION", aggregationUnitMustBeProvided: true, annualDeductibleCap: 5000000, deductibleCapInpatientOnly: true, appliesWhen: "GENERAL_OR_TERTIARY_HOSPITAL_EXCLUDING_SPECIFIED_THREE" },
     },
   };
-  if (ruleId === "G5-06") return { annualBenefitCap: 10000000, fixedPerOccurrenceBenefitCap: 3000000, fixedPerOccurrenceCapAppliesWhen: "NON_GENERAL_OR_TERTIARY_HOSPITAL" };
-  if (ruleId === "G5-07") return { annualBenefitCap: 10000000, maxAnnualCount: 100, countUnit: "SERVICE_DAY", separateBy: "INJURY_OR_DISEASE", fixedPerOccurrenceBenefitCap: 200000 };
+  if (ruleId === "G5-06") return { annualBenefitCap: 10000000, requiresContractBenefitCap: true, fixedPerOccurrenceBenefitCap: 3000000, fixedPerOccurrenceCapAppliesWhen: "NON_GENERAL_OR_TERTIARY_HOSPITAL" };
+  if (ruleId === "G5-07") return { annualBenefitCap: 10000000, requiresContractBenefitCap: true, maxAnnualCount: 100, countUnit: "SERVICE_DAY", separateBy: "INJURY_OR_DISEASE", perOccurrenceCapByContract: { 10000000: 200000, 6000000: 150000, 2000000: 100000 } };
   if (ruleId === "G5-08") return { annualBenefitCap: 2000000, countUnit: "DIAGNOSTIC_ACTION" };
   return null;
 }
@@ -214,6 +225,7 @@ for (const file of draftFiles) {
   const draft = JSON.parse(await readFile(path.join(draftDir, file), "utf8"));
   const rules = draft.rules.map((rule) => {
     const evidence = evidenceMap.mappings.find((item) => item.ruleId === rule.id && item.productCode === draft.productCode);
+    if (!accumulationGroups[rule.id]) throw new Error(`Missing accumulation scope: ${rule.id}`);
     if (!evidence) throw new Error(`Missing evidence: ${draft.productCode}/${rule.id}`);
     return {
       ruleId: rule.id,
@@ -227,7 +239,8 @@ for (const file of draftFiles) {
       requiredCoverages: requiredCoverages(draft.generation, rule.coverage, draft.variant),
       calculation: calculation(rule.id),
       limitText: rule.limit,
-      requiresAccumulator: /(연|365일|180회|100회|100일|50회|30일)/.test(rule.limit),
+      accumulation: accumulationGroups[rule.id],
+      requiresAccumulator: /(연|매년|1년간|365일|180회|100회|100일|50회|30일)/.test(rule.limit),
       enforcement: enforcement(rule.id),
       specialConditions: specialConditions(draft.generation, rule.id),
       evidenceIds: rule.evidenceIds,

@@ -38,7 +38,13 @@
           "benefitRate": 0.4
         }
       },
-      "limitText": "나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상",
+      "limitText": "나머지 20% 자기부담이 연간 2,000,000원을 초과하면 초과분 보상; 1상해·1질병당 계약가입금액 한도(최대 50,000,000)",
+      "accumulation": {
+        "benefit": "G2-STD-01",
+        "count": "G2-STD-01",
+        "serviceDays": "G2-STD-01",
+        "deductible": "G2-STD-01"
+      },
       "requiresAccumulator": true,
       "enforcement": {
         "annualDeductibleCap": 2000000,
@@ -81,10 +87,17 @@
         "minimumByInstitution": {
           "CLINIC": 10000,
           "HOSPITAL": 15000,
+          "GENERAL_HOSPITAL": 15000,
           "GENERAL_TERTIARY": 20000
         }
       },
       "limitText": "연간 방문 180회",
+      "accumulation": {
+        "benefit": "G2-STD-02",
+        "count": "G2-STD-02",
+        "serviceDays": "G2-STD-02",
+        "deductible": "G2-STD-02"
+      },
       "requiresAccumulator": true,
       "enforcement": {
         "maxAnnualCount": 180,
@@ -127,6 +140,12 @@
         "minimumAmount": 8000
       },
       "limitText": "연간 처방전 180건",
+      "accumulation": {
+        "benefit": "G2-STD-03",
+        "count": "G2-STD-03",
+        "serviceDays": "G2-STD-03",
+        "deductible": "G2-STD-03"
+      },
       "requiresAccumulator": true,
       "enforcement": {
         "maxAnnualCount": 180,
@@ -168,11 +187,18 @@
         "minimumByInstitution": {
           "CLINIC": 10000,
           "HOSPITAL": 15000,
+          "GENERAL_HOSPITAL": 15000,
           "GENERAL_TERTIARY": 20000
         },
         "combinedWithRuleId": "G2-STD-02"
       },
       "limitText": "공제금액과 20% 중 큰 금액",
+      "accumulation": {
+        "benefit": "G2-STD-04",
+        "count": "G2-STD-04",
+        "serviceDays": "G2-STD-04",
+        "deductible": "G2-STD-04"
+      },
       "requiresAccumulator": false,
       "enforcement": null,
       "specialConditions": [
@@ -188,7 +214,7 @@
         "documentId": "SAMSUNG_1611_7_TERMS",
         "article": "상품요약서",
         "paragraph": "기관별 외래 공제",
-        "pdfPage": 16,
+        "pdfPage": 50,
         "printedPage": null
       },
       "verificationStatus": "SOURCE_AND_ENGINE_VALIDATED_RAG_PENDING"

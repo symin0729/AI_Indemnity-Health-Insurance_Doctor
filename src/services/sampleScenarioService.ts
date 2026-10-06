@@ -268,7 +268,6 @@ export function loadTreatmentSample(sampleId: SampleId, generation: number, kind
         requiredCoverageConfirmed: true,
         policyExclusionsCleared: true,
         otherIndemnityPoliciesExist: false,
-        coveragePeriodConfirmed: true,
         sameDayAggregationConfirmed: true,
         priorPaidBenefit: 0,
         priorAnnualCount: 0,
@@ -291,7 +290,6 @@ export function loadTreatmentSample(sampleId: SampleId, generation: number, kind
         gen23PriorEligibleDeductible: 0,
         gen23OutpatientBenefitCap: 250000, gen23PrescriptionBenefitCap: 50000,
         gen23OtherIndemnityPoliciesExist: false,
-        gen23CoveragePeriod: "ACTIVE", gen23CoveragePeriodConfirmed: true,
         gen23RequiredCoverageConfirmed: true, gen23PolicyExclusionsCleared: true,
         gen23SameDayAggregationConfirmed: true,
         ...(generation === 3 ? {
@@ -320,7 +318,6 @@ export function loadTreatmentSample(sampleId: SampleId, generation: number, kind
       requiredCoverageConfirmed: true,
       policyExclusionsCleared: true,
       otherIndemnityPoliciesExist: false,
-      coveragePeriodConfirmed: true,
       sameDayAggregationConfirmed: true,
       priorPaidBenefit: 0,
       priorAnnualCount: 0,
@@ -350,7 +347,6 @@ export function loadTreatmentSample(sampleId: SampleId, generation: number, kind
       gen23PriorPaidBenefit: 0, gen23PriorAnnualCount: 0,
       gen23OutpatientBenefitCap: 250000, gen23PrescriptionBenefitCap: 50000,
       gen23OtherIndemnityPoliciesExist: false,
-      gen23CoveragePeriod: "ACTIVE" as const, gen23CoveragePeriodConfirmed: true,
       gen23RequiredCoverageConfirmed: true, gen23PolicyExclusionsCleared: true,
       gen23SameDayAggregationConfirmed: true,
       ...(generation === 3 ? {

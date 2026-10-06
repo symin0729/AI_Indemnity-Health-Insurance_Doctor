@@ -6,9 +6,10 @@ import { formatInceptionDateInput, generationForInceptionDate, inceptionDateForG
 import type { SamsungGen23Variant } from "../../../domain/samsungGen23Variant";
 import type { InsuranceContract } from "../../../domain/insurance";
 import type { RiderEnrollmentStatus } from "../../store/useAnalysisStore";
+import { GEN23_SAMPLE_CONTRACT_DETAILS, type ContractDetailForm } from "../../../domain/contractDetails";
 
 /**
- * STEP 1(내 보험 정보)의 입력이 서로 어떻게 영향을 주는지를 한 곳에 모은 규칙이다.
+ * STEP 1(고객 보험 정보)의 입력이 서로 어떻게 영향을 주는지를 한 곳에 모은 규칙이다.
  * 각 함수는 "어떤 값을 어떻게 바꿀지"만 돌려주고(Patch), 화면(훅)은 그대로 적용한다.
  *
  * 규칙 요약
@@ -36,6 +37,8 @@ export type ContractPatch = Partial<{
   reentryCycleYears: string;
   selectedSampleId: string | null;
   isSampleConfirmed: boolean;
+  /** 가입금액·다른 실손·보장기간 등 계약 상세 */
+  contractDetails: ContractDetailForm;
 }>;
 
 /** 상품 종형·특약 선택(세대 공통)을 처음 상태로 되돌린다. 가입일이 바뀔 때 쓴다. */
@@ -44,6 +47,8 @@ export const PRODUCT_TYPE_RESET = {
   samsungGen23Variant: "UNKNOWN",
   gen4NonCoveredRider: "NOT_ENROLLED",
   gen3Riders: GEN3_RIDER_DEFAULT,
+  // 세대·상품 구조가 바뀌면 그 세대에 맞춰 입력한 가입금액·계약 상세도 다시 입력한다.
+  contractDetails: {},
 } as const satisfies ContractPatch;
 
 /** 세대를 바꿀 때는 1세대 특약 선택도 함께 되돌린다. */
@@ -90,6 +95,8 @@ export function samplePolicyPatch(sampleId: string, sample: InsuranceContract): 
     // 2·3세대 샘플은 상품 종형을 표준형으로 선택하고, 특약은 하나도 선택하지 않은 상태로 시작한다.
     ...(generation === 2 || generation === 3 ? { samsungGen23Variant: "standard" as const } : {}),
     ...(generation === 4 ? { gen4NonCoveredRider: "ENROLLED" as const } : {}),
+    // 2·3세대 샘플은 가입금액·계약 상세도 설명용 값으로 채운다(4세대는 비워 약관상 최대값을 가정).
+    ...(generation === 2 || generation === 3 ? { contractDetails: GEN23_SAMPLE_CONTRACT_DETAILS } : {}),
     monthlyPremium: String(sample.monthlyPremium),
     renewalCycleMonths: sample.renewalCycleMonths != null ? String(sample.renewalCycleMonths) : "",
     reentryCycleYears: sample.reentryCycleMonths != null ? String(sample.reentryCycleMonths / 12) : "",
