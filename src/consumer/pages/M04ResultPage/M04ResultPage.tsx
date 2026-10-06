@@ -1780,20 +1780,6 @@ function M04ResultPage() {
             </h2>
           </div>
 
-          {isComparisonAvailable && result.target5GSaving !== null && (
-            <div
-              style={{
-                padding: "12px 16px",
-                borderRadius: "999px",
-                background: "rgba(255,255,255,0.14)",
-                border: "1px solid rgba(255,255,255,0.22)",
-                fontWeight: 900,
-                whiteSpace: "nowrap",
-              }}
-            >
-              차이 {Math.abs(result.target5GSaving).toLocaleString()}원
-            </div>
-          )}
         </div>
 
         <div
@@ -2075,7 +2061,6 @@ function M04ResultPage() {
                 }}
               >
                 내 계약은 어디에 있고, 무엇과 비교하고 있을까요?
-                <span className="rule-info" style={{ display: "inline-block", marginLeft: "10px", verticalAlign: "middle" }}>1세대 → 5세대</span>
               </h3>
 
               <p

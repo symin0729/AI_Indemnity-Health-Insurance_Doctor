@@ -104,13 +104,6 @@ export default function ResultChatbot() {
             <h1>실손보험, 궁금한 점을<br />쉽게 물어보세요.</h1>
             <p>공식 자료를 바탕으로 5세대 전환을 판단할 때 필요한 질문에 답합니다.</p>
           </div>
-          <div className="chat-privacy-card">
-            <span aria-hidden="true">✓</span>
-            <div>
-              <strong>개인 비교 정보와 분리되어 있어요</strong>
-              <p>STEP 1~5의 계약·치료정보와 계산 결과를 읽거나 외부로 전달하지 않습니다.</p>
-            </div>
-          </div>
         </header>
 
         <section className="chat-panel">
