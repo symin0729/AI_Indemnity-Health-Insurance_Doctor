@@ -687,3 +687,10 @@ select.is-placeholder option { color: var(--color-text); }
 /* 4단계에서 수정하러 온 경우: 돌아가기 버튼을 '다음 단계' 바로 왼쪽에 붙인다. */
 .button-group .return-to-assumptions { margin-left: auto; }
 .button-group .return-to-assumptions + .primary-button { margin-left: 0; }
+
+/* 2·3세대 가입금액 칸 아래의 최대 금액 안내(회색). */
+.contract-max-hint { display: block; margin-top: 6px; color: #8793a5; }
+
+/* STEP 1 샘플 선택 창의 세대별 샘플 버튼. */
+.contract-sample-option { display: grid; gap: 4px; text-align: left; }
+.contract-sample-option small { color: var(--color-text-sub, #5b6677); font-weight: 400; line-height: 1.5; }

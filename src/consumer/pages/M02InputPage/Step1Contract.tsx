@@ -1,16 +1,18 @@
+import { useRef } from "react";
 import { MASKED_INSURER, MASKED_PRODUCT_NAME } from "../../../domain/displayMask";
 import { GEN3_RIDERS, type Gen3RiderKey } from "../../../domain/gen3Riders";
 import { GEN1_COMPANY_OPTIONS, gen1CoverageChecks, gen1CoverageFromChecks, GEN1_PRODUCT_INSURER_DISPLAY, GEN1_PRODUCT_LABEL, GEN1_PRODUCT_NAME_DISPLAY, GEN1_UNREGISTERED_NOTE, gen1CompanyLabel, gen1CompanyProductName } from "../../../domain/gen1Product";
 import OptionDropdown from "../../../components/OptionDropdown";
 import { generationSelectedPatch, inceptionDateTypedPatch } from "./contractTransitions";
 import type { InsuranceGeneration } from "../../../domain/insurance";
-import { SAMPLE_POLICY_OPTIONS } from "../../../services/samplePolicyService";
+import { CONTRACT_SAMPLES } from "../../../domain/contractSamples";
 import { type SamsungGen23Variant } from "../../store/useAnalysisStore";
 import { formatWonInput, getWonInputValue, IsoDateInput } from "./M02Shared";
 import type { M02Form } from "./useM02Form";
 import Step1ContractDetails from "./Step1ContractDetails";
 
 export default function Step1Contract({ form }: { form: M02Form }) {
+  const contractSampleDialogRef = useRef<HTMLDialogElement>(null);
   const {
     gen1D1Coverage,
     gen1Product,
@@ -19,20 +21,18 @@ export default function Step1Contract({ form }: { form: M02Form }) {
     gen4NonCoveredRider,
     generation: formGeneration,
     isGenerationSelected,
-    handleLoadSamplePolicy,
+    handleLoadContractSample,
     handleResetAll,
     inceptionDate,
     insurerLabel,
     isGen1Placeholder,
     isGenerationPickerOpen,
-    isSampleConfirmed,
     monthlyPremium,
     productLabel,
     reentryCycleYears,
     renewalCycleMonths,
     applyContractPatch,
     samsungGen23Variant,
-    selectedSample,
     selectedSampleId,
     setGen1D1Coverage,
     setGen1Product,
@@ -40,7 +40,6 @@ export default function Step1Contract({ form }: { form: M02Form }) {
     setGen4NonCoveredRider,
     setInsurerLabel,
     setIsGenerationPickerOpen,
-    setIsSampleConfirmed,
     setMonthlyPremium,
     setProductLabel,
     setReentryCycleYears,
@@ -72,7 +71,7 @@ export default function Step1Contract({ form }: { form: M02Form }) {
           <button
             type="button"
             className="sample-button"
-            onClick={() => handleLoadSamplePolicy("NON_COVERED")}
+            onClick={() => contractSampleDialogRef.current?.showModal()}
           >
             샘플 불러오기
           </button>
@@ -89,185 +88,21 @@ export default function Step1Contract({ form }: { form: M02Form }) {
             </span>
           )}
         </div>
-        <p className="sample-note">
-          MVP에서는 사전에 검증한 샘플 정보를 사용할 수 있습니다.
-          샘플을 불러온 경우 계산 전 사용자가 내용을 확인합니다.
-        </p>
 
-        <div
-          className="legacy-sample-picker"
-          style={{
-            marginBottom: "26px",
-            padding: "20px",
-            border: "1px solid var(--color-border)",
-            borderRadius: "var(--radius-md)",
-            background: "var(--color-primary-050)",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "flex-start",
-              justifyContent: "space-between",
-              gap: "16px",
-              flexWrap: "wrap",
-              marginBottom: "16px",
-            }}
-          >
-            <div>
-              <p
-                className="amount-label"
-                style={{ marginBottom: "4px" }}
-              >
-                빠른 시작
-              </p>
-
-              <h3 style={{ marginBottom: "6px" }}>
-                샘플 보험증권 불러오기
-              </h3>
-
-              <p
-                className="treatment-meta"
-                style={{ marginBottom: 0 }}
-              >
-                샘플을 선택하면 현재 계약 정보가 자동으로 채워집니다.
-                불러온 뒤 직접 수정할 수도 있습니다.
-              </p>
+        <dialog ref={contractSampleDialogRef} className="treatment-help-dialog" aria-labelledby="contract-sample-title">
+          <section className="app-card" style={{ margin: 0 }}>
+            <h2 id="contract-sample-title" className="card-title">샘플 선택</h2>
+            <p>불러올 세대의 샘플을 고르면 현재 보험 정보 칸이 채워집니다. 값은 연습용 가정이니 직접 수정하세요.</p>
+            <div style={{ display: "grid", gap: "12px" }}>
+              {CONTRACT_SAMPLES.map((sample) => (
+                <button key={sample.id} type="button" className="sample-button contract-sample-option" onClick={() => { handleLoadContractSample(sample.id); contractSampleDialogRef.current?.close(); }}>
+                  <strong>{sample.label}</strong>
+                </button>
+              ))}
+              <button type="button" className="secondary-button" onClick={() => contractSampleDialogRef.current?.close()}>닫기</button>
             </div>
-
-            <span className="rule-info">
-              공모전 시연용
-            </span>
-          </div>
-
-          <div className="card-grid">
-            {SAMPLE_POLICY_OPTIONS.map(
-              (option) => {
-                const isSelected =
-                  selectedSampleId ===
-                  option.id;
-
-                return (
-                  <button
-                    key={option.id}
-                    type="button"
-                    onClick={() =>
-                      handleLoadSamplePolicy(
-                        option.id
-                      )
-                    }
-                    aria-pressed={isSelected}
-                    style={{
-                      width: "100%",
-                      minHeight: "108px",
-                      padding: "16px",
-                      border:
-                        isSelected
-                          ? "2px solid var(--color-primary-700)"
-                          : "1px solid var(--color-border)",
-                      borderRadius:
-                        "var(--radius-sm)",
-                      background:
-                        isSelected
-                          ? "#ffffff"
-                          : "var(--color-surface)",
-                      color:
-                        "var(--color-text)",
-                      textAlign: "left",
-                      boxShadow:
-                        isSelected
-                          ? "0 8px 20px rgba(29, 86, 143, 0.10)"
-                          : "none",
-                    }}
-                  >
-                    <span
-                      style={{
-                        display: "block",
-                        marginBottom: "7px",
-                        color:
-                          isSelected
-                            ? "var(--color-primary-700)"
-                            : "var(--color-text)",
-                        fontWeight: 900,
-                        fontSize: "1rem",
-                      }}
-                    >
-                      {option.label}
-                    </span>
-
-                    <span
-                      style={{
-                        display: "block",
-                        color:
-                          "var(--color-text-sub)",
-                        fontSize: "0.84rem",
-                        lineHeight: 1.55,
-                      }}
-                    >
-                      {option.description}
-                    </span>
-                  </button>
-                );
-              }
-            )}
-          </div>
-
-          {selectedSample && (
-            <div
-              style={{
-                marginTop: "16px",
-                padding: "16px",
-                borderRadius:
-                  "var(--radius-sm)",
-                background: "#ffffff",
-                border:
-                  "1px solid var(--color-border)",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent:
-                    "space-between",
-                  gap: "12px",
-                  flexWrap: "wrap",
-                  marginBottom: "10px",
-                }}
-              >
-                <strong>
-                  {selectedSample.label} 샘플을 불러왔습니다
-                </strong>
-
-                <span className="status-badge success">
-                  자동 입력 완료
-                </span>
-              </div>
-
-              <label
-                style={{
-                  marginBottom: 0,
-                  paddingTop: "12px",
-                  borderTop:
-                    "1px solid var(--color-border)",
-                }}
-              >
-                <input
-                  type="checkbox"
-                  checked={
-                    isSampleConfirmed
-                  }
-                  onChange={(e) =>
-                    setIsSampleConfirmed(
-                      e.target.checked
-                    )
-                  }
-                />{" "}
-                불러온 계약 정보를 직접 확인했습니다.
-              </label>
-            </div>
-          )}
-        </div>
+          </section>
+        </dialog>
 
         <div className="form-grid">
           <label>

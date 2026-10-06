@@ -41,6 +41,11 @@ export default function Step2Compare({ form }: { form: M02Form }) {
           2단계에서 입력한 동일한 예정 치료를 현재 보험과 5세대에 각각 적용합니다.
         </p>
 
+        <div className="html-sample-actions">
+          <button type="button" className="sample-button" onClick={form.handleLoadTargetSample}>샘플 불러오기</button>
+          <button type="button" className="sample-button" onClick={form.handleResetAll}>초기화</button>
+        </div>
+
 
         <div className="target-contract-grid">
         <label className="target-premium-field" id="target-premium-help-area" htmlFor="target-premium">
@@ -57,7 +62,7 @@ export default function Step2Compare({ form }: { form: M02Form }) {
                 getWonInputValue(e.target.value)
               )
             }
-            placeholder="예: 35,000"
+            placeholder="예: 15,000"
           /><span className="input-unit-label">원</span></span>
         </label>
         {premiumExamplesVisible && <aside className="target-premium-examples" id="target-premium-examples" aria-label="5세대 월 보험료 예시">

@@ -1,8 +1,7 @@
 import { currentContractFormForSelection, singleContractDetails, singleContractForm, validateContractDetails } from '../src/pages/M02InputPage/contractRequirements';
 import { describe, expect, it } from "vitest";
 import { applyGen23ContractDetails, contractDetailsFromUsage, GEN23_SAMPLE_CONTRACT_DETAILS, parseGen23ContractDetails } from "../src/domain/contractDetails";
-import { generationSelectedPatch, inceptionDateTypedPatch, samplePolicyPatch } from "../src/pages/M02InputPage/contractTransitions";
-import { samplePolicyService } from "../src/services/samplePolicyService";
+import { generationSelectedPatch, inceptionDateTypedPatch, contractSamplePatch } from "../src/pages/M02InputPage/contractTransitions";
 import type { MedicalUsage } from "../src/domain/medical";
 
 const usage = { id: "u", treatmentName: "t", careSetting: "OUTPATIENT", benefitClass: "COVERED", severityClass: "UNKNOWN", frequency: 1, unitCost: 100_000 } as MedicalUsage;
@@ -34,11 +33,10 @@ describe("현재 계약 상세(가입금액·주계약 가입)", () => {
     expect(inceptionDateTypedPatch("2016-01-01").contractDetails).toEqual({});
   });
 
-  it("2·3세대 샘플 계약은 계약 상세도 설명용 값으로 채우고, 4세대 샘플은 비워 약관상 최대값을 가정한다", () => {
-    for (const id of ["LOW_USAGE", "NON_COVERED", "COVERAGE_GAP"] as const) {
-      const sample = samplePolicyService.load(id);
-      const patch = samplePolicyPatch(id, sample);
-      expect(patch.contractDetails, id).toEqual(sample.generation === 2 || sample.generation === 3 ? GEN23_SAMPLE_CONTRACT_DETAILS : {});
+  it("2·3세대 샘플 계약은 계약 상세도 설명용 값으로 채우고, 1·4세대 샘플은 비운다(4세대 가입금액은 따로 채운다)", () => {
+    for (const id of ["GEN1", "GEN2", "GEN3", "GEN4"] as const) {
+      const patch = contractSamplePatch(id);
+      expect(patch.contractDetails, id).toEqual(id === "GEN2" || id === "GEN3" ? GEN23_SAMPLE_CONTRACT_DETAILS : {});
     }
   });
 });

@@ -49,7 +49,7 @@ const STEP_ITEMS: Array<{
   },
   {
     step: 7,
-    label: "챗봇",
+    label: "보험 이해 도우미",
   },
 ];
 
@@ -162,7 +162,7 @@ function AppShell({
                 className="app-shell-text-button"
                 onClick={handleOpenReset}
               >
-                초기화
+                전체 초기화
               </button>
             )}
           </div>
@@ -305,7 +305,7 @@ function AppShell({
             }}
           >
             <h2 id="app-shell-reset-title">
-              입력값을 초기화할까요?
+              전체 입력값을 초기화할까요?
             </h2>
 
             <p id="app-shell-reset-description">
@@ -328,7 +328,7 @@ function AppShell({
                 className="app-shell-button app-shell-button-primary"
                 onClick={handleConfirmReset}
               >
-                초기화
+                전체 초기화
               </button>
             </div>
           </section>

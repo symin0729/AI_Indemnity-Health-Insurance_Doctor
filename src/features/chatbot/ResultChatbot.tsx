@@ -100,11 +100,10 @@ export default function ResultChatbot() {
       <main className="navy-page chat-page">
         <header className="chat-hero">
           <div>
-            <span className="step-badge">선택 STEP 7 · 보험 이해 도우미</span>
+            <span className="step-badge">STEP 7 · 보험 이해 도우미</span>
             <h1>실손보험, 궁금한 점을<br />쉽게 물어보세요.</h1>
             <p>공식 자료를 바탕으로 5세대 전환을 판단할 때 필요한 질문에 답합니다.</p>
           </div>
-
         </header>
 
         <section className="chat-panel">
@@ -116,10 +115,19 @@ export default function ResultChatbot() {
             {consentGranted && <span className="chat-consent-badge">외부 AI 이용 동의됨</span>}
           </div>
 
+          <p className="chat-privacy-line" role="note">
+            <span aria-hidden="true">🔒</span>
+            <strong>개인 비교 정보와 분리되어 있어요</strong>
+            <span className="chat-privacy-line__text">STEP 1~5의 계약·치료정보와 계산 결과를 <em>읽거나 외부로 전달하지 않습니다.</em></span>
+          </p>
           <QuestionChips disabled={isLoading} onSelect={requestQuestion} />
 
           <form className="chat-composer" onSubmit={handleSubmit}>
             <label htmlFor="chat-question">직접 질문하기</label>
+            <p className="chat-privacy-line" role="note">
+              <span aria-hidden="true">🔒</span>
+              <strong>개인정보, 치료기록, 증권번호는 입력하지 마세요.</strong>
+            </p>
             <div className="chat-composer__row">
               <textarea
                 id="chat-question"
@@ -135,7 +143,6 @@ export default function ResultChatbot() {
               </button>
             </div>
             <div className="chat-composer__meta">
-              <span>개인정보, 치료기록, 증권번호는 입력하지 마세요.</span>
               <span>{question.length} / 300</span>
             </div>
           </form>

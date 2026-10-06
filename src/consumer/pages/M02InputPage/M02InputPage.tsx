@@ -20,6 +20,7 @@ function M02InputPage() {
     handleCancelResetAll,
     handleConfirmRemoveTreatment,
     handleConfirmResetAll,
+    handleFullReset,
     handleLoadSampleTreatments,
     handleNext,
     handleStep1Next,
@@ -35,7 +36,7 @@ function M02InputPage() {
   } = form;
 
   return (
-    <AppShell currentStep={activeStep} onReset={handleConfirmResetAll} hideResetButton
+    <AppShell currentStep={activeStep} onReset={handleFullReset}
       onStepChange={(step) => {
         if (step > activeStep && step <= 5) {
           if (activeStep === 1) handleStep1Next();
@@ -192,7 +193,7 @@ function M02InputPage() {
               id="input-reset-dialog-description"
               className="card-description"
             >
-              현재 화면(STEP 1)에 입력한 내용이 초기화됩니다. 다른 단계의 입력은 유지됩니다.
+              현재 화면(STEP {activeStep})에 입력한 내용이 초기화됩니다. 다른 단계의 입력은 유지됩니다.
             </p>
 
             <div
