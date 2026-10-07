@@ -8,6 +8,7 @@ import { classifyQuestion } from "./_lib/classifyQuestion.js";
 import { chatbotDatasetId, getConfig, hasLlmConfig, hasRagConfig } from "./_lib/config.js";
 import { fallback, outNotice } from "./_lib/fallback.js";
 import { jsonResponse } from "./_lib/http.js";
+import { checkRateLimit, clientKey } from "./_lib/rateLimit.js";
 import { redactPersonalData } from "./_lib/redactPersonalData.js";
 import type { ApiErrorBody, ChatResponse } from "./_lib/types.js";
 import { ConsentValidationError, validateConsent } from "./_lib/validateConsent.js";
@@ -28,6 +29,17 @@ async function handler(request: Request): Promise<Response> {
     // 질문 유형 분류(외부 호출 없음). OUT·개인정보·범위 밖은 RAG·LLM 을 거치지 않고 고정 안내문만 보여 준다.
     const classification = classifyQuestion(input.question);
     if (classification.route !== "IN") return jsonResponse(outNotice(classification.id as Parameters<typeof outNotice>[0], requestId));
+
+    // 외부 LLM·검색을 부르기 전에 호출 횟수를 확인한다(무료 쿼터·비용 보호).
+    const limit = checkRateLimit(clientKey(request), { perMinute: config.rateLimitPerMinute, perDay: config.rateLimitPerDay });
+    if (!limit.allowed) {
+      const response = jsonResponse(
+        { error: { code: "RATE_LIMITED", message: "질문이 너무 많습니다. 잠시 후 다시 시도해 주세요." }, requestId } satisfies ApiErrorBody,
+        429,
+      );
+      response.headers.set("retry-after", String(limit.retryAfterSeconds));
+      return response;
+    }
 
     // IN 질문에 "저는 병원을" 같은 가벼운 개인 표현이 있으면 삭제 표시로 바꾼 문장만 외부로 보낸다.
     const redacted = redactPersonalData(input.question);
