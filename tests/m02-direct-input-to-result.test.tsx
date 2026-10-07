@@ -610,7 +610,7 @@ describe("샘플 없이 직접 입력한 값으로 결과 계산", () => {
     ["1세대 샘플", "1", "2008-06-01", "70,000"],
     ["2세대 샘플", "2", "2016-03-01", "45,000"],
     ["3세대 샘플", "3", "2018-03-01", "60,000"],
-    ["4세대 샘플", "4", "2022-03-01", "40,000"],
+    ["4세대 샘플", "4", "2022-01-01", "50,000"],
   ])("샘플 불러오기: %s를 고르면 계약 정보가 채워지고 바로 다음 단계로 갈 수 있다 (설계사용)", async (label, generation, date, premium) => {
     const user = renderPage();
     await user.click(screen.getByRole("button", { name: "샘플 불러오기" }));
@@ -639,6 +639,7 @@ describe("샘플 없이 직접 입력한 값으로 결과 계산", () => {
     await goToStep3(user);
     const step3 = panel(3);
     await user.click(step3.getByRole("button", { name: "샘플 불러오기" }));
+    await user.click(screen.getByRole("button", { name: /^샘플1/ }));
     expect((document.getElementById("target-premium") as HTMLInputElement).value).toBe("15,000");
     expect((step3.getByRole("checkbox", { name: /^중증 비급여 특약/ }) as HTMLInputElement).checked).toBe(true);
     expect((step3.getByRole("checkbox", { name: /비중증 비급여 특약/ }) as HTMLInputElement).checked).toBe(true);
@@ -654,10 +655,24 @@ describe("샘플 없이 직접 입력한 값으로 결과 계산", () => {
     expect((document.getElementById("generation-select") as HTMLSelectElement).value).toBe("4"); // 1단계 입력은 유지
   });
 
+  it("5세대 조건: 샘플2는 월 2만원, 비급여 특약 미가입, 급여 가입금액만 채운다 (설계사용)", async () => {
+    const user = renderPage();
+    await goToStep3(user);
+    const step3 = panel(3);
+    await user.click(step3.getByRole("button", { name: "샘플 불러오기" }));
+    await user.click(screen.getByRole("button", { name: /^샘플2/ }));
+    expect((document.getElementById("target-premium") as HTMLInputElement).value).toBe("20,000");
+    expect((step3.getByRole("checkbox", { name: /^중증 비급여 특약/ }) as HTMLInputElement).checked).toBe(false);
+    expect((step3.getByRole("checkbox", { name: /비중증 비급여 특약/ }) as HTMLInputElement).checked).toBe(false);
+    expect((document.getElementById("target-contract-coveredBenefitCap") as HTMLInputElement).value).toBe("50,000,000");
+    expect((document.getElementById("target-contract-coveredOutpatientCap") as HTMLInputElement).value).toBe("200,000");
+  });
+
   it("오른쪽 상단 전체 초기화는 모든 단계의 입력을 지우고 1단계로 돌아간다 (설계사용)", async () => {
     const user = renderPage();
     await goToStep3(user);
     await user.click(panel(3).getByRole("button", { name: "샘플 불러오기" }));
+    await user.click(screen.getByRole("button", { name: /^샘플1/ }));
     await user.click(screen.getByRole("button", { name: "전체 초기화" }));
     await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "전체 초기화" }));
     expect((document.getElementById("generation-select") as HTMLSelectElement).value).toBe("");

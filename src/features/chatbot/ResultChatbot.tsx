@@ -41,11 +41,8 @@ export default function ResultChatbot() {
         mode: "GENERAL",
         consentGranted: true,
         consentPolicyVersion: "ai-chat-1.0",
-        context: contract ? {
-          screen: "RESULT",
-          productCode: ({1:"SAMSUNG_0904_2",2:"SAMSUNG_1611_7",3:"SAMSUNG_1704_1",4:"SAMSUNG_2107_1",5:"SAMSUNG_2605_1"} as const)[contract.generation],
-          generation: contract.generation,
-        } : { screen: "RESULT" },
+        // 계약 정보(세대·상품 코드)는 서버로 보내지 않는다. 안내 문구("입력값을 전달하지 않습니다")와 실제 동작을 맞춘다.
+        context: { screen: "RESULT" },
       }, controller.signal);
       setAnswer(response);
     } catch (error) {
@@ -118,7 +115,7 @@ export default function ResultChatbot() {
           <p className="chat-privacy-line" role="note">
             <span aria-hidden="true">🔒</span>
             <strong>개인 비교 정보와 분리되어 있어요</strong>
-            <span className="chat-privacy-line__text">STEP 1~5의 계약·치료정보와 계산 결과를 <em>읽거나 외부로 전달하지 않습니다.</em></span>
+            <span className="chat-privacy-line__text">STEP 1~5의 계약·치료 입력값과 계산 결과를 <em>읽거나 서버·외부 AI로 전달하지 않습니다.</em></span>
           </p>
           <QuestionChips disabled={isLoading} onSelect={requestQuestion} />
 
@@ -173,10 +170,10 @@ export default function ResultChatbot() {
           <section className="app-shell-modal-card chat-consent-modal" role="dialog" aria-modal="true" aria-labelledby="chat-consent-title">
             <span className="chat-consent-modal__icon" aria-hidden="true">AI</span>
             <h2 id="chat-consent-title">외부 AI 이용 안내</h2>
-            <p>입력한 일반 질문은 답변 생성을 위해 외부 AI 서비스로 전달될 수 있습니다.</p>
+            <p>입력한 일반 질문은 답변 생성을 위해 외부 AI 서비스(Google Gemini API)로 전달되며, 해외 서버에서 처리될 수 있습니다. 무료 서비스 약관에 따라 질문 내용은 Google의 서비스 개선에 사용될 수 있습니다. 이 서비스는 질문 내용을 서버에 저장하지 않습니다.</p>
             <div className="chat-consent-detail">
               <p><strong>전달하지 않는 정보</strong><br />STEP 1~5의 보험 비교 입력값과 계산 결과</p>
-              <p><strong>입력 시 주의사항</strong><br />개인정보와 치료정보는 질문에 입력하지 마세요.</p>
+              <p><strong>입력 시 주의사항</strong><br />이름·연락처·병원·진단명 등 개인정보와 치료정보는 질문에 입력하지 마세요.</p>
             </div>
             <div className="app-shell-modal-actions">
               <button type="button" className="app-shell-button app-shell-button-secondary" autoFocus onClick={() => {

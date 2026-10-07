@@ -215,7 +215,7 @@ export const sampleScenarioService = {
 };
 
 /** 사용자가 치료 샘플 버튼을 누른 경우에만 쓰는 입력 연습용 예시. 금액·횟수는 세대와 상관없이 고정이다. */
-export type TreatmentSampleKind = "OUTPATIENT" | "EXAM" | "NON_COVERED_MRI" | "MANUAL_THERAPY" | "NON_COVERED_INPATIENT";
+export type TreatmentSampleKind = "OUTPATIENT" | "EXAM" | "NON_COVERED_MRI" | "MANUAL_THERAPY" | "NON_COVERED_INPATIENT" | "COVERED_DISEASE_OUTPATIENT";
 
 /** 치료 샘플 버튼에 보이는 이름 순서. */
 export const TREATMENT_SAMPLE_KINDS: ReadonlyArray<{ kind: TreatmentSampleKind; label: string }> = [
@@ -224,6 +224,7 @@ export const TREATMENT_SAMPLE_KINDS: ReadonlyArray<{ kind: TreatmentSampleKind; 
   { kind: "NON_COVERED_MRI", label: "비급여 외래 치료" },
   { kind: "MANUAL_THERAPY", label: "도수치료 (11회 이상)" },
   { kind: "NON_COVERED_INPATIENT", label: "비급여 입원" },
+  { kind: "COVERED_DISEASE_OUTPATIENT", label: "질병 급여 통원치료 (월 1회)" },
 ];
 
 interface TreatmentSampleSpec {
@@ -237,6 +238,8 @@ interface TreatmentSampleSpec {
   frequency: number;
   /** 화면 설명용 한 줄(샘플 완료 안내에 사용) */
   summary: string;
+  /** true이면 회당 보장대상 인정금액(C)을 채우지 않는다(계산 가정 단계에서 전액 인정으로 처리). */
+  omitRecognizedAmount?: boolean;
 }
 
 const TREATMENT_SAMPLE_SPECS: Record<TreatmentSampleKind, TreatmentSampleSpec> = {
@@ -245,6 +248,7 @@ const TREATMENT_SAMPLE_SPECS: Record<TreatmentSampleKind, TreatmentSampleSpec> =
   NON_COVERED_MRI: { name: "비급여 외래 치료", category: "MRI", careSetting: "OUTPATIENT", benefitClass: "NON_COVERED", amount: 400_000, frequency: 3, summary: "치료 종류 MRI, 의원급, 비급여" },
   MANUAL_THERAPY: { name: "도수치료", category: "MANUAL_THERAPY", careSetting: "OUTPATIENT", benefitClass: "NON_COVERED", amount: 100_000, frequency: 12, summary: "치료 종류 도수치료, 의원급, 비급여, 연 12회(10회 초과)" },
   NON_COVERED_INPATIENT: { name: "비급여 입원 치료", category: "", careSetting: "INPATIENT", benefitClass: "NON_COVERED", amount: 1_500_000, frequency: 1, summary: "비급여 입원, 의원급, 병실료 차액 0원" },
+  COVERED_DISEASE_OUTPATIENT: { name: "질병 급여 통원치료", category: "", careSetting: "OUTPATIENT", benefitClass: "COVERED", amount: 10_000, frequency: 12, summary: "치료 종류 기타(직접 입력), 의원급, 급여, 월 1회, 보장대상 인정금액 미입력", omitRecognizedAmount: true },
 };
 
 function buildTreatmentSampleUsage(kind: TreatmentSampleKind, generation: number): MedicalUsage {
@@ -263,7 +267,7 @@ function buildTreatmentSampleUsage(kind: TreatmentSampleKind, generation: number
     frequency: spec.frequency,
     unitCost: amount,
     patientPaidAmount: amount,
-    coveredAmount: amount,
+    ...(spec.omitRecognizedAmount ? {} : { coveredAmount: amount }),
     institutionType: "CLINIC_HOSPITAL",
     copayInstitution: "CLINIC",
     // 급여 외래만 건강보험 본인부담률을 둔다(의원급 30%). 비급여는 미적용.
@@ -271,7 +275,7 @@ function buildTreatmentSampleUsage(kind: TreatmentSampleKind, generation: number
     claimCause: "DISEASE",
     nationalHealthInsuranceStatus: "APPLIED",
     samsungCalculationInput: {
-      eligibleExpense: amount,
+      ...(spec.omitRecognizedAmount ? {} : { eligibleExpense: amount }),
       requiredCoverageConfirmed: true,
       policyExclusionsCleared: true,
       otherIndemnityPoliciesExist: false,

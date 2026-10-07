@@ -1554,7 +1554,7 @@ function M04ResultPage() {
   const handleConfirmStartOver = () => {
     setIsResetModalOpen(false);
     resetAnalysis();
-    navigate("/");
+    navigate("/?mode=planner");
   };
 
   const handleDownloadPdf = async () => {

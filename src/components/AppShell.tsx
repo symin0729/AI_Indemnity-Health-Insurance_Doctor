@@ -98,7 +98,7 @@ function AppShell({
   };
 
   const handleBrandClick = () => {
-    navigate("/");
+    navigate("/?mode=planner");
   };
 
   const handleOpenReset = () => {

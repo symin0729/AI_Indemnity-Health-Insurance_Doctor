@@ -609,7 +609,7 @@ describe("소비자용 직접 입력부터 비교 결과까지", () => {
     ["1세대 샘플", "1", "2008-06-01", "70,000"],
     ["2세대 샘플", "2", "2016-03-01", "45,000"],
     ["3세대 샘플", "3", "2018-03-01", "60,000"],
-    ["4세대 샘플", "4", "2022-03-01", "40,000"],
+    ["4세대 샘플", "4", "2022-01-01", "50,000"],
   ])("샘플 불러오기: %s를 고르면 계약 정보가 채워지고 바로 다음 단계로 갈 수 있다 (소비자용)", async (label, generation, date, premium) => {
     const user = renderPage();
     await user.click(screen.getByRole("button", { name: "샘플 불러오기" }));
@@ -638,6 +638,7 @@ describe("소비자용 직접 입력부터 비교 결과까지", () => {
     await goToStep3(user);
     const step3 = panel(3);
     await user.click(step3.getByRole("button", { name: "샘플 불러오기" }));
+    await user.click(screen.getByRole("button", { name: /^샘플1/ }));
     expect((document.getElementById("target-premium") as HTMLInputElement).value).toBe("15,000");
     expect((step3.getByRole("checkbox", { name: /^중증 비급여 특약/ }) as HTMLInputElement).checked).toBe(true);
     expect((step3.getByRole("checkbox", { name: /비중증 비급여 특약/ }) as HTMLInputElement).checked).toBe(true);
@@ -653,10 +654,54 @@ describe("소비자용 직접 입력부터 비교 결과까지", () => {
     expect((document.getElementById("generation-select") as HTMLSelectElement).value).toBe("4"); // 1단계 입력은 유지
   });
 
+  it("5세대 조건: 샘플2는 월 2만원, 비급여 특약 미가입, 급여 가입금액만 채운다 (소비자용)", async () => {
+    const user = renderPage();
+    await goToStep3(user);
+    const step3 = panel(3);
+    await user.click(step3.getByRole("button", { name: "샘플 불러오기" }));
+    expect(screen.getByRole("button", { name: /^샘플1/ })).toBeTruthy();
+    await user.click(screen.getByRole("button", { name: /^샘플2/ }));
+    expect((document.getElementById("target-premium") as HTMLInputElement).value).toBe("20,000");
+    expect((step3.getByRole("checkbox", { name: /^중증 비급여 특약/ }) as HTMLInputElement).checked).toBe(false);
+    expect((step3.getByRole("checkbox", { name: /비중증 비급여 특약/ }) as HTMLInputElement).checked).toBe(false);
+    expect((document.getElementById("target-contract-coveredBenefitCap") as HTMLInputElement).value).toBe("50,000,000");
+    expect((document.getElementById("target-contract-coveredOutpatientCap") as HTMLInputElement).value).toBe("200,000");
+  });
+
+  it("4세대 샘플 + 질병 급여 통원치료 샘플: 보장대상 인정금액은 비워 두고 STEP 4 전액 인정 가정으로 계산한다 (소비자용)", async () => {
+    const user = renderPage();
+    await user.click(screen.getByRole("button", { name: "샘플 불러오기" }));
+    await user.click(screen.getByRole("button", { name: /^4세대 샘플/ }));
+    expect((screen.getByLabelText(/현재 월 보험료/) as HTMLInputElement).value).toBe("50,000");
+    expect((document.getElementById("generation-select") as HTMLSelectElement).value).toBe("4");
+    expect((screen.getByLabelText(/보험사/) as HTMLInputElement).value).toBe("OO 보험");
+    await user.click(nextButton());
+    const step2 = panel(2);
+    await user.click(step2.getByRole("button", { name: "치료 샘플 불러오기" }));
+    await user.click(screen.getByRole("button", { name: "질병 급여 통원치료 (월 1회)" }));
+    expect((step2.getByLabelText(/급여 여부/) as HTMLSelectElement).value).toBe("COVERED");
+    await user.click(step2.getByRole("button", { name: "추가하기" }));
+    expect(alertText()).toBe("");
+    const [saved] = useAnalysisStore.getState().usages;
+    expect(saved.treatmentName).toBe("질병 급여 통원치료");
+    expect(saved.unitCost).toBe(10_000);
+    expect(saved.frequency).toBe(12);
+    expect(saved.coveredAmount).toBeUndefined();
+    expect(saved.healthInsuranceCopayRate).toBe(0.3);
+    expect(saved.institutionType).toBe("CLINIC_HOSPITAL");
+    await user.click(nextButton());
+    await user.click(panel(3).getByRole("button", { name: "샘플 불러오기" }));
+    await user.click(screen.getByRole("button", { name: /^샘플2/ }));
+    await user.click(nextButton());
+    expect(alertText()).toBe("");
+    expect(panel(4).getByText(/내가 낸 금액 전체를 보험이 인정하는 금액으로 보고/)).toBeTruthy();
+  });
+
   it("오른쪽 상단 전체 초기화는 모든 단계의 입력을 지우고 1단계로 돌아간다 (소비자용)", async () => {
     const user = renderPage();
     await goToStep3(user);
     await user.click(panel(3).getByRole("button", { name: "샘플 불러오기" }));
+    await user.click(screen.getByRole("button", { name: /^샘플1/ }));
     await user.click(screen.getByRole("button", { name: "전체 초기화" }));
     await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "전체 초기화" }));
     expect((document.getElementById("generation-select") as HTMLSelectElement).value).toBe("");
@@ -764,6 +809,7 @@ describe("소비자용 직접 입력부터 비교 결과까지", () => {
     ["비급여 외래 치료", "MRI", "400,000", "3", "통원", "NON_COVERED"],
     ["도수치료 (11회 이상)", "MANUAL_THERAPY", "100,000", "12", "통원", "NON_COVERED"],
     ["비급여 입원", "", "1,500,000", "1", "입원", "NON_COVERED"],
+    ["질병 급여 통원치료 (월 1회)", "", "10,000", "12", "통원", "COVERED"],
   ])("치료 샘플 '%s': 치료 정보 칸이 명세대로 채워진다 (소비자용)", async (label, kindValue, cost, frequency, care, benefit) => {
     const user = renderPage();
     await fillStep1(user, 4);

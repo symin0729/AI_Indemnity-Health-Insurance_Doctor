@@ -91,11 +91,15 @@ describe("STEP 1 샘플 불러오기 (세대별 샘플 선택)", () => {
     expect(contractSamplePatch("GEN2")).toMatchObject({ generation: 2, inceptionDate: "2016-03-01", samsungGen23Variant: "standard", monthlyPremium: "45000" });
     expect(contractSamplePatch("GEN2").contractDetails).toMatchObject({ gen23ContractBenefitCap: "50000000", gen23OutpatientBenefitCap: "250000", gen23PrescriptionBenefitCap: "50000" });
   });
-  it("4세대 샘플: 비급여 특약 가입, 약관 최대 가입금액 입력", () => {
-    expect(contractSamplePatch("GEN4")).toMatchObject({
-      generation: 4, inceptionDate: "2022-03-01", gen4NonCoveredRider: "ENROLLED", monthlyPremium: "40000",
-      currentContractFacts: { coveredBenefitCap: "50000000", coveredOutpatientCap: "200000", nonCoveredBenefitCap: "50000000", nonCoveredOutpatientCap: "200000" },
+  it("4세대 샘플: OO 이름, 비급여 특약 미가입, 급여 가입금액만 입력, 주기는 비움", () => {
+    const patch = contractSamplePatch("GEN4");
+    expect(patch).toMatchObject({
+      generation: 4, inceptionDate: "2022-01-01", gen4NonCoveredRider: "NOT_ENROLLED", monthlyPremium: "50000",
+      insurerLabel: "OO 보험", productLabel: "OO 실손의료보험",
+      renewalCycleMonths: "", reentryCycleYears: "",
+      currentContractFacts: { coveredBenefitCap: "50000000", coveredOutpatientCap: "200000" },
     });
+    expect(patch.currentContractFacts).not.toHaveProperty("nonCoveredBenefitCap");
   });
   it("샘플 가입일은 각 세대의 판매 시기이다", () => {
     for (const [id, generation] of [["GEN1", 1], ["GEN2", 2], ["GEN3", 3], ["GEN4", 4]] as const) {

@@ -41,6 +41,10 @@ export default function AnswerCard({ response }: AnswerCardProps) {
       )}
 
       <SourceList sources={response.sources} />
+
+      <p className="chat-answer__notice" role="note">
+        AI가 공식 자료를 바탕으로 만든 답변이라 부정확할 수 있습니다. 가입한 계약의 정확한 내용은 약관 또는 보험사에서 확인해 주세요.
+      </p>
     </article>
   );
 }

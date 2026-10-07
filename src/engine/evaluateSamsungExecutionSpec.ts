@@ -364,7 +364,6 @@ function calculated(
     appliedFormula: rule.calculation.type,
     source: rule.source,
     warnings: [
-      "AI 검증 초안입니다. 원문·경계값·RAG 검증이 완료되기 전에는 운영에 사용할 수 없습니다.",
       ...warnings,
       ...enforcementWarnings,
     ],

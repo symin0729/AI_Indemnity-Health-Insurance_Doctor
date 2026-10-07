@@ -50,6 +50,9 @@ export const getConfig = () => ({
   llmThinkingLevel: thinkingLevelFromEnv(process.env.LLM_THINKING_LEVEL),
   timeoutMs: numberFromEnv(process.env.CHAT_TIMEOUT_MS, 12000),
   maxLength: numberFromEnv(process.env.CHAT_MAX_LENGTH, 300),
+  /** IP 당 분당 질문 수(기본 10)와 전체 하루 질문 수(기본 500). 외부 LLM 을 부르는 IN 질문에만 적용한다 */
+  rateLimitPerMinute: numberFromEnv(process.env.CHAT_RATE_LIMIT_PER_MIN, 10),
+  rateLimitPerDay: numberFromEnv(process.env.CHAT_DAILY_LIMIT, 500),
   consentPolicyVersion:
     process.env.CHAT_CONSENT_POLICY_VERSION ?? "ai-chat-1.0",
 });
