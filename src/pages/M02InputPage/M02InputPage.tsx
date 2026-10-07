@@ -93,7 +93,7 @@ function M02InputPage() {
         <button
           type="button"
           className="secondary-button"
-          onClick={() => activeStep === 1 ? navigate("/") : goToInputStep((activeStep - 1) as 1 | 2 | 3)}
+          onClick={() => activeStep === 1 ? navigate("/?mode=planner") : goToInputStep((activeStep - 1) as 1 | 2 | 3)}
         >
           이전
         </button>
