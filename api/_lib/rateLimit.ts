@@ -7,7 +7,11 @@ export interface RateLimitOptions {
   perDay: number;
 }
 
-export type RateLimitResult = { allowed: true } | { allowed: false; retryAfterSeconds: number };
+/** 허용되면 retryAfterSeconds 는 0. strict 를 끈 환경(Vercel 함수 컴파일)에서도 타입이 좁혀지도록 합집합을 쓰지 않는다. */
+export interface RateLimitResult {
+  allowed: boolean;
+  retryAfterSeconds: number;
+}
 
 const MINUTE_MS = 60_000;
 const DAY_MS = 24 * 60 * MINUTE_MS;
@@ -47,7 +51,7 @@ export const checkRateLimit = (key: string, options: RateLimitOptions, now = Dat
       if (times.every((time) => now - time >= MINUTE_MS)) minuteHits.delete(other);
     }
   }
-  return { allowed: true };
+  return { allowed: true, retryAfterSeconds: 0 };
 };
 
 export const resetRateLimit = (): void => {
