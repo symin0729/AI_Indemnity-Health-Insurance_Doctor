@@ -58,7 +58,7 @@ describe("소비자용과 설계사용의 분리", () => {
     (globalThis as { window?: unknown }).window = { location: { hash: "" }, requestAnimationFrame: (f: () => void) => f(), scrollTo() {} };
     const html = renderToStaticMarkup(createElement(MemoryRouter, null, createElement(ConsumerInputPage)));
     expect(html).toContain("현재 계약");
-    expect(html).toContain("소비자 용");
+    expect(html).toContain("일반 용");
     expect(html).toContain("start-modes is-locked");
   });
 });

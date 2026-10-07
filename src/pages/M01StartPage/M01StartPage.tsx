@@ -23,7 +23,7 @@ const modeContent: Record<StartMode, {
   startLabel: string;
 }> = {
   consumer: {
-    tabLabel: "소비자용",
+    tabLabel: "일반용",
     tabHint: "내 실손보험 간편 비교",
     badge: "내 실손보험, 쉽게 확인",
     title: ["보험료뿐 아니라", "달라지는 보장까지 비교하세요."],
@@ -43,7 +43,7 @@ const modeContent: Record<StartMode, {
       "보험료와 보장 계산은 현재 브라우저에서 수행합니다. 다만 AI 설명이나 질문 기능을 이용하면 관련 입력 내용이 설명 생성을 위해 서버로 전송될 수 있습니다.",
     ],
     consent: "서비스 목적과 위 유의사항을 확인했으며, 결과가 실제 보험금 또는 상품 추천을 의미하지 않는다는 점을 이해했습니다.",
-    startLabel: "소비자용 비교 시작하기",
+    startLabel: "일반용 비교 시작하기",
   },
   planner: {
     tabLabel: "설계사용",
@@ -96,7 +96,7 @@ function M01StartPage() {
   const [hasConfirmed, setHasConfirmed] = useState(false);
   const [hasPrivacyConsent, setHasPrivacyConsent] = useState(false);
 
-  const mode: StartMode = searchParams.get("mode") === "consumer" ? "consumer" : "planner";
+  const mode: StartMode = searchParams.get("mode") === "planner" ? "planner" : "consumer";
   const content = modeContent[mode];
   const needsPrivacyConsent = Boolean(content.privacyConsent);
   const canStart = hasConfirmed && (!needsPrivacyConsent || hasPrivacyConsent);
@@ -112,7 +112,7 @@ function M01StartPage() {
   };
 
   const selectMode = (next: StartMode) => {
-    setSearchParams(next === "planner" ? {} : { mode: next }, { replace: true });
+    setSearchParams(next === "consumer" ? {} : { mode: next }, { replace: true });
   };
 
   return (

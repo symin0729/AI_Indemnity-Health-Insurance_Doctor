@@ -1,7 +1,7 @@
 export type UserMode = "consumer" | "planner";
 
 const MODE_LABELS: Record<UserMode, string> = {
-  consumer: "소비자 용",
+  consumer: "일반 용",
   planner: "설계사 용",
 };
 
