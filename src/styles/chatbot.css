@@ -211,6 +211,13 @@
 
 .chat-confirmations p { margin: 6px 0 0; color: var(--muted); }
 
+.chat-answer__notice {
+  margin: 16px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
 .chat-sources {
   margin-top: 20px;
   padding-top: 18px;
