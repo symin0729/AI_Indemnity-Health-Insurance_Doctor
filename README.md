@@ -46,6 +46,43 @@ npm run build
 
 챗봇을 로컬에서 쓰려면 프로젝트 루트에 `.env.local`(git 제외)을 만들어 값을 넣습니다. 항목은 [.env.example](.env.example)을 참고하세요. **키 값은 절대 저장소에 올리지 않습니다.**
 
+## 근거 자료(knowledge/) 안내
+
+`knowledge/`에는 두 종류의 근거 자료가 **용도별로 나뉘어** 있습니다. 챗봇 답변의 근거와 보험료·보험금 계산 규칙의 근거는 서로 다른 자료입니다.
+
+### 챗봇 답변의 근거: 정책 자료 (RAG)
+
+| 위치 | 내용 |
+|---|---|
+| `knowledge/documents/fsc/A_5세대_핵심/` | 금융위·손해보험협회 5세대 보도자료·Q&A·안내 (6개) |
+| `knowledge/documents/fsc/B_세대비교/` | 1~4세대 출시·특징 자료와 5세대 약관 3사 비교 요약(INS-01) (9개) |
+| `knowledge/metadata/policy/policy-docs.json` | 위 15개 문서의 출처·발행일·검증 상태 |
+| `api/_data/policy-chunks.json` | 위 문서를 조각(274개)으로 나눈 검색 데이터. **챗봇이 실제로 검색하는 파일**이며 배포에 포함됩니다 |
+
+- `fsc/E_약관원문_INS01근거/`: 비교 요약(INS-01)의 원문(KB손보·신한 약관). 근거 확인용입니다.
+- `fsc/C_참고_업로드안함/`, `fsc/D_표준_근거확인용/`: 참고·확인용이며 챗봇 검색에는 넣지 않았습니다.
+- 챗봇은 출시·시행된 확정 문서만 근거로 삼고, 근거가 없으면 "확인되지 않습니다"로 답합니다.
+
+### 계산 규칙의 근거: 삼성화재 약관
+
+| 위치 | 내용 |
+|---|---|
+| `knowledge/documents/samsung/gen1~gen5/` | 삼성화재 1~5세대 공식 약관 PDF. 챗봇 검색에는 쓰지 않습니다 |
+| `knowledge/extraction/` | 약관 조항별 추출문 |
+| `knowledge/rule-evidence-map.json` | 계산 규칙과 약관 쪽수의 연결 (49건) |
+| `knowledge/drafts/samsung/` | 규칙 초안·실행 스펙·규칙 마스터(엑셀). 실행 코드에서 import하지 않습니다 |
+| `src/rules/samsung/` | 계산 엔진이 실제로 읽는 규칙 파일 (1~5세대) |
+
+### 검증 기록과 공통 파일
+
+| 위치 | 내용 |
+|---|---|
+| `knowledge/validation/` | 약관 원문 검증 보고서, 검색·종단 평가 결과, 팀 검수표 |
+| `knowledge/manifest.json` | 문서 파일명·SHA-256 해시·출처 |
+| `evals/` | 평가 질문(골든 질문 세트)과 종단 평가 도구 |
+
+> 현재 챗봇 근거 조각은 전부 `AI_CROSS_CHECKED`(AI 교차검증 + 팀 확인) 상태이고, 계산 규칙은 `REVIEW_REQUIRED`(초안 검산) 상태입니다. 공모전 시연 단계의 예외 운영이며 사유와 결정 기록은 [policies/privacy-security-policy.md](policies/privacy-security-policy.md) 15절에 있습니다.
+
 ## 개인정보와 보안
 
 ### 챗봇 이용 안내 (동의창 문구)
@@ -76,6 +113,8 @@ npm run build
 - 계산 규칙은 AI 원문 검증까지 마친 "초안 검산" 상태로, 확정 보험금이 아닙니다.
 - 챗봇은 상품 필터 없이 동작해 삼성 외 상품을 구분하지 못하며, 1·2세대 약관은 검색 자료에 없습니다.
 
+자세한 내용은 [프로젝트 전체 가이드](docs/PROJECT_OVERVIEW.md)를 참고하세요.
+
 ## Health API 상태 계약
 
 `GET /api/health`는 비밀값을 노출하지 않고 API와 외부 서비스의 설정 상태만 반환합니다.
@@ -85,3 +124,8 @@ npm run build
 - `services.rag`, `services.llm`: 필수 환경변수 유무에 따라 `configured` 또는 `unconfigured`
 
 `not_configured`, `ok`, `error`는 이 API의 상태값으로 사용하지 않습니다.
+
+## 문서
+
+- [프로젝트 전체 가이드](docs/PROJECT_OVERVIEW.md): 목적, 화면, 구조, 계산, 챗봇, 자료, 검증, 폴더, 진행 과정
+- [개인정보·정보보안 정책](policies/privacy-security-policy.md): 데이터 처리 원칙과 시연 단계 예외
