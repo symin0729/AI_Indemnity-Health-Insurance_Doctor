@@ -10,6 +10,7 @@ import { fallback, outNotice } from "./_lib/fallback.js";
 import { jsonResponse } from "./_lib/http.js";
 import { checkRateLimit, clientKey } from "./_lib/rateLimit.js";
 import { redactPersonalData } from "./_lib/redactPersonalData.js";
+import { withRequestLog } from "./_lib/requestLog.js";
 import type { ApiErrorBody, ChatResponse } from "./_lib/types.js";
 import { ConsentValidationError, validateConsent } from "./_lib/validateConsent.js";
 import { answerFailureReasons, validateAnswer } from "./_lib/validateAnswer.js";
@@ -139,4 +140,5 @@ async function handler(request: Request): Promise<Response> {
 }
 
 // Vercel 실행기는 default 함수에 fetch 속성이 있으면 웹 표준 핸들러로 인식한다. 로컬 플러그인·테스트는 함수 호출 그대로 쓴다.
-export default Object.assign(handler, { fetch: handler })
+const loggedHandler = withRequestLog("chat", handler);
+export default Object.assign(loggedHandler, { fetch: loggedHandler })

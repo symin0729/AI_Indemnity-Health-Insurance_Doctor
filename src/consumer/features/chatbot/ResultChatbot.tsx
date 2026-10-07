@@ -41,11 +41,8 @@ export default function ResultChatbot() {
         mode: "GENERAL",
         consentGranted: true,
         consentPolicyVersion: "ai-chat-1.0",
-        context: contract ? {
-          screen: "RESULT",
-          productCode: ({1:"SAMSUNG_0904_2",2:"SAMSUNG_1611_7",3:"SAMSUNG_1704_1",4:"SAMSUNG_2107_1",5:"SAMSUNG_2605_1"} as const)[contract.generation],
-          generation: contract.generation,
-        } : { screen: "RESULT" },
+        // 계약 정보(세대·상품 코드)는 서버로 보내지 않는다. 안내 문구("입력값을 전달하지 않습니다")와 실제 동작을 맞춘다.
+        context: { screen: "RESULT" },
       }, controller.signal);
       setAnswer(response);
     } catch (error) {
@@ -118,7 +115,7 @@ export default function ResultChatbot() {
           <p className="chat-privacy-line" role="note">
             <span aria-hidden="true">🔒</span>
             <strong>개인 비교 정보와 분리되어 있어요</strong>
-            <span className="chat-privacy-line__text">STEP 1~5의 계약·치료정보와 계산 결과를 <em>읽거나 외부로 전달하지 않습니다.</em></span>
+            <span className="chat-privacy-line__text">STEP 1~5의 계약·치료 입력값과 계산 결과를 <em>읽거나 서버·외부 AI로 전달하지 않습니다.</em></span>
           </p>
           <QuestionChips disabled={isLoading} onSelect={requestQuestion} />
 
