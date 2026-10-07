@@ -20,14 +20,6 @@ export const CONTRACT_SAMPLES: readonly ContractSample[] = [
   { id: "GEN4", generation: 4, label: "4세대 샘플", description: "4세대(2107.1) · 가입 2022-03-01 · 비급여 특약 가입, 약관 최대 가입금액 · 월 40,000원", inceptionDate: "2022-03-01", monthlyPremium: 40_000 },
 ];
 
-/** 4세대 샘플의 가입금액(약관 최대값). */
-export const GEN4_SAMPLE_CONTRACT_FACTS = {
-  coveredBenefitCap: "50000000",
-  coveredOutpatientCap: "200000",
-  nonCoveredBenefitCap: "50000000",
-  nonCoveredOutpatientCap: "200000",
-} as const;
-
 /** 5세대 조건(STEP 3) 샘플의 가입금액(설명용 가정). 급여 연 5천만·통원 20만, 중증 비급여(특약1) 5천만, 비중증 비급여(특약2) 1천만원. */
 export const TARGET_SAMPLE_CONTRACT_FACTS = {
   coveredBenefitCap: "50000000",
@@ -35,3 +27,50 @@ export const TARGET_SAMPLE_CONTRACT_FACTS = {
   nonCoveredBenefitCap: "50000000",
   nonSevereBenefitCap: "10000000",
 } as const;
+
+/** STEP 1의 4세대 샘플 값(설명용 가정). 비급여 특약 미가입이라 급여 가입금액만 둔다. */
+export const GEN4_SAMPLE = {
+  insurer: "삼성화재",
+  productName: "4세대 실손의료비보험 (가상 시나리오)",
+  inceptionDate: "2022-01-01",
+  monthlyPremium: 50_000,
+  contractFacts: {
+    coveredBenefitCap: "50000000",
+    coveredOutpatientCap: "200000",
+  },
+} as const;
+
+export type TargetSampleId = "SAMPLE1" | "SAMPLE2";
+
+export interface TargetSample {
+  id: TargetSampleId;
+  label: string;
+  /** 선택 창에 보이는 한 줄 설명 */
+  description: string;
+  monthlyPremium: string;
+  hasSpecialRider1: boolean;
+  hasSpecialRider2: boolean;
+  contractFacts: Readonly<Record<string, string>>;
+}
+
+/** STEP 3 '샘플 불러오기'에서 고르는 5세대 조건 샘플(설명용 가정). */
+export const TARGET_SAMPLES: readonly TargetSample[] = [
+  {
+    id: "SAMPLE1",
+    label: "샘플1",
+    description: "월 15,000원 · 중증·비중증 비급여 특약 모두 가입",
+    monthlyPremium: "15000",
+    hasSpecialRider1: true,
+    hasSpecialRider2: true,
+    contractFacts: TARGET_SAMPLE_CONTRACT_FACTS,
+  },
+  {
+    id: "SAMPLE2",
+    label: "샘플2",
+    description: "월 20,000원 · 비급여 특약 모두 미가입 · 급여만 비교",
+    monthlyPremium: "20000",
+    hasSpecialRider1: false,
+    hasSpecialRider2: false,
+    contractFacts: { coveredBenefitCap: "50000000", coveredOutpatientCap: "200000" },
+  },
+];

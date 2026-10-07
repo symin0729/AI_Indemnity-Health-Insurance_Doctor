@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { TARGET_SAMPLES } from "../../../domain/contractSamples";
 import { formatWonInput, getWonInputValue } from "./M02Shared";
 import type { M02Form } from "./useM02Form";
 import SamsungContractFactsFields from '../../../components/samsung/SamsungContractFactsFields';
 
 export default function Step2Compare({ form }: { form: M02Form }) {
   const [premiumExamplesVisible, setPremiumExamplesVisible] = useState(false);
+  const targetSampleDialogRef = useRef<HTMLDialogElement>(null);
   const {
     hasTarget5GSpecialRider1,
     hasTarget5GSpecialRider2,
@@ -32,9 +34,24 @@ export default function Step2Compare({ form }: { form: M02Form }) {
         </p>
 
         <div className="html-sample-actions">
-          <button type="button" className="sample-button" onClick={form.handleLoadTargetSample}>샘플 불러오기</button>
+          <button type="button" className="sample-button" onClick={() => targetSampleDialogRef.current?.showModal()}>샘플 불러오기</button>
           <button type="button" className="sample-button" onClick={form.handleResetAll}>초기화</button>
         </div>
+
+        <dialog ref={targetSampleDialogRef} className="treatment-help-dialog" aria-labelledby="target-sample-title">
+          <section className="app-card" style={{ margin: 0 }}>
+            <h2 id="target-sample-title" className="card-title">샘플 선택</h2>
+            <p>고른 샘플로 5세대 월 보험료·특약·가입금액이 채워집니다. 값은 연습용 가정이니 직접 수정하세요.</p>
+            <div style={{ display: "grid", gap: "12px" }}>
+              {TARGET_SAMPLES.map((sample) => (
+                <button key={sample.id} type="button" className="sample-button contract-sample-option" onClick={() => { form.handleLoadTargetSample(sample.id); targetSampleDialogRef.current?.close(); }}>
+                  <strong>{sample.label}</strong> <small>{sample.description}</small>
+                </button>
+              ))}
+              <button type="button" className="secondary-button" onClick={() => targetSampleDialogRef.current?.close()}>닫기</button>
+            </div>
+          </section>
+        </dialog>
 
 
         <div className="target-contract-grid">

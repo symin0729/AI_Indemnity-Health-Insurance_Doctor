@@ -7,7 +7,7 @@ import { usagesNeedingInstitutionAssumption, usagesNeedingSeverityAssumption } f
 import { parseSamsungContractFacts } from '../../domain/samsungContractFacts';
 import { applyGen23ContractInputs } from "../../domain/contractDetails";
 import { contractSamplePatch } from "./contractTransitions";
-import { TARGET_SAMPLE_CONTRACT_FACTS, type ContractSampleId } from "../../domain/contractSamples";
+import { TARGET_SAMPLES, type ContractSampleId, type TargetSampleId } from "../../domain/contractSamples";
 
 import type { BaseApi } from "./useM02Base";
 import type { ContractApi } from "./useContractFields";
@@ -178,11 +178,13 @@ export function useM02Flow(deps: BaseApi & ContractApi & CompareApi & TreatmentA
   };
 
   /** 5세대 조건(STEP 3)의 샘플 불러오기: 설명용 가정값으로 월 보험료·특약·가입금액을 채운다. */
-  const handleLoadTargetSample = () => {
-    setTarget5GMonthlyPremiumInput("15000");
-    setHasTarget5GSpecialRider1(true);
-    setHasTarget5GSpecialRider2(true);
-    setTargetContractFactsForm({ ...TARGET_SAMPLE_CONTRACT_FACTS });
+  const handleLoadTargetSample = (sampleId: TargetSampleId) => {
+    const sample = TARGET_SAMPLES.find((item) => item.id === sampleId);
+    if (!sample) return;
+    setTarget5GMonthlyPremiumInput(sample.monthlyPremium);
+    setHasTarget5GSpecialRider1(sample.hasSpecialRider1);
+    setHasTarget5GSpecialRider2(sample.hasSpecialRider2);
+    setTargetContractFactsForm({ ...sample.contractFacts });
     setErrorMessage("");
   };
 

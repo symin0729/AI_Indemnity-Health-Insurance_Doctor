@@ -32,9 +32,16 @@ describe("treatment samples (치료 샘플 5종)", () => {
     samsungGen23Variant: "standard" as const,
   });
 
+  it("질병 급여 통원치료 샘플: 월 1회·회당 1만원·본인부담률 30%, 보장대상 인정금액은 비워 둔다", () => {
+    const [usage] = loadTreatmentSample("NON_COVERED", 4, "COVERED_DISEASE_OUTPATIENT").plannedUsages;
+    expect(usage).toMatchObject({ treatmentName: "질병 급여 통원치료", treatmentCategory: "", careSetting: "OUTPATIENT", benefitClass: "COVERED", claimCause: "DISEASE", institutionType: "CLINIC_HOSPITAL", healthInsuranceCopayRate: 0.3, frequency: 12, unitCost: 10_000, patientPaidAmount: 10_000 });
+    expect(usage.coveredAmount).toBeUndefined();
+    expect(usage.samsungCalculationInput?.eligibleExpense).toBeUndefined();
+  });
+
   it("샘플 버튼 목록과 이름이 명세와 같다", () => {
-    expect(TREATMENT_SAMPLE_KINDS.map(({ label }) => label)).toEqual(SPECS.map(({ label }) => label));
-    expect(TREATMENT_SAMPLE_KINDS.map(({ kind }) => kind)).toEqual(SPECS.map(({ kind }) => kind));
+    expect(TREATMENT_SAMPLE_KINDS.map(({ label }) => label)).toEqual([...SPECS.map(({ label }) => label), "질병 급여 통원치료 (월 1회)"]);
+    expect(TREATMENT_SAMPLE_KINDS.map(({ kind }) => kind)).toEqual([...SPECS.map(({ kind }) => kind), "COVERED_DISEASE_OUTPATIENT"]);
   });
 
   it.each(SPECS)("$label: 치료 정보가 세대와 상관없이 같은 고정값으로 채워진다", (spec) => {

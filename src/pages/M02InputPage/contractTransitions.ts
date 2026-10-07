@@ -5,7 +5,7 @@ import type { InsuranceGeneration } from "../../domain/insurance";
 import { formatInceptionDateInput, generationForInceptionDate, inceptionDateForGeneration } from "../../domain/insuranceInputDefaults";
 import type { SamsungGen23Variant } from "../../domain/samsungGen23Variant";
 import type { RiderEnrollmentStatus } from "../../store/useAnalysisStore";
-import { CONTRACT_SAMPLES, GEN4_SAMPLE_CONTRACT_FACTS, type ContractSampleId } from "../../domain/contractSamples";
+import { CONTRACT_SAMPLES, GEN4_SAMPLE, type ContractSampleId } from "../../domain/contractSamples";
 import type { SamsungContractForm } from "../../domain/samsungContractFacts";
 import { GEN23_SAMPLE_CONTRACT_DETAILS, type ContractDetailForm } from "../../domain/contractDetails";
 
@@ -86,23 +86,26 @@ export function inceptionDateTypedPatch(raw: string): ContractPatch {
 
 /** STEP 1의 샘플 불러오기: 고른 세대의 현재 계약만 채운다. */
 export function contractSamplePatch(sampleId: ContractSampleId): ContractPatch {
-  const sample = CONTRACT_SAMPLES.find((item) => item.id === sampleId)!;
-  const generation = sample.generation;
+  const base = CONTRACT_SAMPLES.find((item) => item.id === sampleId)!;
+  const generation = base.generation;
+  const gen4 = generation === 4 ? GEN4_SAMPLE : null;
+  const sample = gen4 ? { ...base, inceptionDate: gen4.inceptionDate, monthlyPremium: gen4.monthlyPremium } : base;
   return {
     ...GENERATION_CHANGE_RESET,
     generation,
     isGenerationSelected: true,
     inceptionDate: sample.inceptionDate,
     // 1세대 외에는 실제 이름 대신 OO 이름을 자동으로 채운다.
-    insurerLabel: generation === 1 ? "" : MASKED_INSURER,
-    productLabel: generation === 1 ? "" : MASKED_PRODUCT_NAME,
+    insurerLabel: gen4 ? gen4.insurer : generation === 1 ? "" : MASKED_INSURER,
+    productLabel: gen4 ? gen4.productName : generation === 1 ? "" : MASKED_PRODUCT_NAME,
     ...(generation === 1 ? { gen1Product: "SAMSUNG_0904_2" as const, gen1D1Coverage: "BOTH" as const } : {}),
     ...(generation === 2 || generation === 3 ? { samsungGen23Variant: "standard" as const, contractDetails: GEN23_SAMPLE_CONTRACT_DETAILS } : {}),
     ...(generation === 3 ? { gen3Riders: { manualTherapy: "ENROLLED", injection: "ENROLLED", mri: "ENROLLED" } as const } : {}),
-    ...(generation === 4 ? { gen4NonCoveredRider: "ENROLLED" as const, currentContractFacts: { ...GEN4_SAMPLE_CONTRACT_FACTS } } : {}),
+    ...(gen4 ? { gen4NonCoveredRider: "NOT_ENROLLED" as const, currentContractFacts: { ...gen4.contractFacts } } : {}),
     monthlyPremium: String(sample.monthlyPremium),
-    renewalCycleMonths: "12",
-    reentryCycleYears: "1",
+    // 4세대 샘플은 갱신·재가입 주기를 비워 둔다.
+    renewalCycleMonths: gen4 ? "" : "12",
+    reentryCycleYears: gen4 ? "" : "1",
     selectedSampleId: "NON_COVERED",
     isSampleConfirmed: true,
   };
