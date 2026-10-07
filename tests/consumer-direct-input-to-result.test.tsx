@@ -674,7 +674,7 @@ describe("소비자용 직접 입력부터 비교 결과까지", () => {
     await user.click(screen.getByRole("button", { name: /^4세대 샘플/ }));
     expect((screen.getByLabelText(/현재 월 보험료/) as HTMLInputElement).value).toBe("50,000");
     expect((document.getElementById("generation-select") as HTMLSelectElement).value).toBe("4");
-    expect(screen.getByLabelText(/보험사/) && (screen.getByLabelText(/보험사/) as HTMLInputElement).value).toBe("삼성화재");
+    expect((screen.getByLabelText(/보험사/) as HTMLInputElement).value).toBe("OO 보험");
     await user.click(nextButton());
     const step2 = panel(2);
     await user.click(step2.getByRole("button", { name: "치료 샘플 불러오기" }));

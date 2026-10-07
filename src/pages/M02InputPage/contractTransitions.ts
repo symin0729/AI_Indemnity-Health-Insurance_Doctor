@@ -96,8 +96,8 @@ export function contractSamplePatch(sampleId: ContractSampleId): ContractPatch {
     isGenerationSelected: true,
     inceptionDate: sample.inceptionDate,
     // 1세대 외에는 실제 이름 대신 OO 이름을 자동으로 채운다.
-    insurerLabel: gen4 ? gen4.insurer : generation === 1 ? "" : MASKED_INSURER,
-    productLabel: gen4 ? gen4.productName : generation === 1 ? "" : MASKED_PRODUCT_NAME,
+    insurerLabel: generation === 1 ? "" : MASKED_INSURER,
+    productLabel: generation === 1 ? "" : MASKED_PRODUCT_NAME,
     ...(generation === 1 ? { gen1Product: "SAMSUNG_0904_2" as const, gen1D1Coverage: "BOTH" as const } : {}),
     ...(generation === 2 || generation === 3 ? { samsungGen23Variant: "standard" as const, contractDetails: GEN23_SAMPLE_CONTRACT_DETAILS } : {}),
     ...(generation === 3 ? { gen3Riders: { manualTherapy: "ENROLLED", injection: "ENROLLED", mri: "ENROLLED" } as const } : {}),

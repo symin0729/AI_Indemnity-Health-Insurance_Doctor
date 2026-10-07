@@ -30,8 +30,6 @@ export const TARGET_SAMPLE_CONTRACT_FACTS = {
 
 /** STEP 1의 4세대 샘플 값(설명용 가정). 비급여 특약 미가입이라 급여 가입금액만 둔다. */
 export const GEN4_SAMPLE = {
-  insurer: "삼성화재",
-  productName: "4세대 실손의료비보험 (가상 시나리오)",
   inceptionDate: "2022-01-01",
   monthlyPremium: 50_000,
   contractFacts: {
